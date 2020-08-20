@@ -1,54 +1,10 @@
 {
   "name": "@oneblink/apps-react",
-  "version": "0.1.0",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "main": "index.js",
-  "scripts": {
-    "eslint": "eslint --fix --cache .",
-    "fixpack": "fixpack",
-    "flow_check": "flow check",
-    "jest": "jest",
-    "tsc": "tsc",
-    "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
-    "test": "npm run jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/oneblink/apps-react.git"
-  },
+  "version": "0.1.0",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
-  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
-  },
-  "homepage": "https://github.com/oneblink/apps-react#readme",
-  "engines": {
-    "node": ">=12",
-    "npm": ">=6"
-  },
-  "files": [
-    "src",
-    "index.js",
-    "index.d.ts"
-  ],
-  "devDependencies": {
-    "@oneblink/flow-types": "github:oneblink/flow-types#master",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.6",
-    "eslint-plugin-react-hooks": "^4.1.0",
-    "flow-bin": "^0.131.0",
-    "jest": "^26.4.0",
-    "prettier": "^2.0.5",
-    "typescript": "^3.9.7"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0"
   },
   "dependencies": {
     "@babel/core": "^7.11.1",
@@ -126,5 +82,50 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.1.1",
     "whatwg-fetch": "^3.4.0"
+  },
+  "devDependencies": {
+    "@oneblink/flow-types": "github:oneblink/flow-types#master",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.0",
+    "fixpack": "^3.0.6",
+    "flow-bin": "^0.131.0",
+    "jest": "^26.4.0",
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.7"
+  },
+  "engines": {
+    "node": ">=12",
+    "npm": ">=6"
+  },
+  "files": [
+    "src",
+    "index.js",
+    "index.d.ts"
+  ],
+  "homepage": "https://github.com/oneblink/apps-react#readme",
+  "license": "GPL-3.0-only",
+  "main": "index.js",
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oneblink/apps-react.git"
+  },
+  "scripts": {
+    "eslint": "eslint --fix --cache .",
+    "fixpack": "fixpack",
+    "flow_check": "flow check",
+    "jest": "jest",
+    "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
+    "test": "npm run jest",
+    "tsc": "tsc"
   }
 }
