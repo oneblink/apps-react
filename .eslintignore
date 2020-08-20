@@ -1,0 +1,11 @@
+
+build
+node_modules
+plugins
+platforms
+coverage
+
+dist
+www
+
+flow-typed
