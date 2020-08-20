@@ -33,7 +33,7 @@
   ],
   "devDependencies": {
     "@oneblink/flow-types": "github:oneblink/flow-types#master",
-    "eslint": "^6.6.0",
+    "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "flow-bin": "^0.131.0",
