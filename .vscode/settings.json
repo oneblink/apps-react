@@ -1,0 +1,28 @@
+{
+  "cSpell.words": [
+    "BPOINT",
+    "Finalising",
+    "Uncheck",
+    "bulma",
+    "checkboxes",
+    "datetime",
+    "flatpickr",
+    "formlink",
+    "formscontainer",
+    "formslist",
+    "newvalue",
+    "noforms",
+    "noformscontainer",
+    "oneblink",
+    "organisation",
+    "organisations",
+    "searchbar",
+    "transclude",
+    "validators"
+  ],
+  "html.format.wrapAttributes": "force-aligned",
+  "html.format.wrapLineLength": 200,
+  "html.format.endWithNewline": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "eslint.alwaysShowStatus": true
+}

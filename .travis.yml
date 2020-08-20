@@ -1,0 +1,24 @@
+os: linux
+dist: xenial
+language: node_js
+node_js:
+  - '12'
+
+install:
+  - npm install --global npm@6.x.x
+  - npm ci
+
+deploy:
+  - provider: npm
+    email: developers@oneblink.io
+    api_key: $NPM_ACCESS_TOKEN
+    tag: beta
+    on:
+      tags: true
+      condition: $TRAVIS_TAG =~ (beta)
+  - provider: npm
+    email: developers@oneblink.io
+    api_key: $NPM_ACCESS_TOKEN
+    on:
+      tags: true
+      condition: $TRAVIS_TAG !~ (beta)
