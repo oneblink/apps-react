@@ -8,11 +8,13 @@ import sanitizeHtml from 'sanitize-html'
 const sanitizeHtmlDefaults = sanitizeHtml.defaults
 sanitizeHtmlDefaults.allowedAttributes.span = ['class']
 
+/* ::
 type Props = {
   element: HtmlElement,
 }
+*/
 
-function FormElementHTML({ element }: Props) {
+function FormElementHTML({ element } /* : Props */) {
   const safeHtml = sanitizeHtml(element.defaultValue, {
     allowedTags: sanitizeHtmlDefaults.allowedTags.concat([
       'u',
@@ -33,4 +35,6 @@ function FormElementHTML({ element }: Props) {
   )
 }
 
-export default React.memo<Props>(FormElementHTML)
+export default (React.memo(
+  FormElementHTML,
+) /*: React.AbstractComponent<Props> */)

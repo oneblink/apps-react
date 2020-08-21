@@ -3,18 +3,20 @@
 
 import * as React from 'react'
 
-export default function useFormElementOptions({
-  element,
-  value,
-  onChange,
-  onFilter,
-}: {
+export default function useFormElementOptions(
+  {
+    element,
+    value,
+    onChange,
+    onFilter,
+  } /* : {
   element: FormElementWithOptions,
   value: mixed | void,
   onChange: (FormElement, mixed | void) => void,
   onFilter: (ChoiceElementOption) => boolean,
-}) {
-  const filteredOptions = React.useMemo<ChoiceElementOption[]>(() => {
+} */,
+) {
+  const filteredOptions /* : ChoiceElementOption[] */ = React.useMemo(() => {
     if (!element.options) {
       return []
     }

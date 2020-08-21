@@ -4,7 +4,10 @@
 import * as bulmaToast from 'bulma-toast'
 import saveAs from 'file-saver'
 
-export default async function downloadFile(dataURI: string, fileName: string) {
+export default async function downloadFile(
+  dataURI /* : string */,
+  fileName /* : string */,
+) {
   try {
     if (window.cordova) {
       const blob = await convertDataUriToBlob(dataURI)

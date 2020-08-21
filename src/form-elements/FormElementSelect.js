@@ -4,11 +4,12 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import useBooleanState from 'form/hooks/useBooleanState'
-import FormElementOptions from 'form/components/FormElementOptions'
-import useFormElementOptions from 'form/hooks/useFormElementOptions'
-import LookupButton from 'form/components/LookupButton'
+import useBooleanState from '../hooks/useBooleanState'
+import FormElementOptions from '../components/FormElementOptions'
+import useFormElementOptions from '../hooks/useFormElementOptions'
+import LookupButton from '../components/LookupButton'
 
+/* ::
 type Props = {
   id: string,
   element: SelectElement,
@@ -18,16 +19,19 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementSelect({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-  onConditionallyShowOption,
-}: Props) {
+function FormElementSelect(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+    onConditionallyShowOption,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const filteredOptions = useFormElementOptions({
@@ -123,4 +127,6 @@ function FormElementSelect({
   )
 }
 
-export default React.memo<Props>(FormElementSelect)
+export default (React.memo(
+  FormElementSelect,
+) /*: React.AbstractComponent<Props> */)

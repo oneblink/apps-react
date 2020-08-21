@@ -2,8 +2,9 @@
 'use strict'
 
 import * as React from 'react'
-import OneBlinkFormElements from 'form/components/OneBlinkFormElements'
+import OneBlinkFormElements from '../components/OneBlinkFormElements'
 
+/* ::
 type Props = {
   id: string,
   element: FormFormElement | InfoPageElement,
@@ -17,19 +18,22 @@ type Props = {
   parentFormName?: string,
   parentFormElementsCtrl: FormElementsCtrl,
 }
+*/
 
-function FormElementForm({
-  element,
-  value,
-  formElementValidation,
-  displayValidationMessage,
-  formElementConditionallyShown,
-  onChange,
-  onChangeElements,
-  onChangeModel,
-  parentFormName,
-  parentFormElementsCtrl,
-}: Props) {
+function FormElementForm(
+  {
+    element,
+    value,
+    formElementValidation,
+    displayValidationMessage,
+    formElementConditionallyShown,
+    onChange,
+    onChangeElements,
+    onChangeModel,
+    parentFormName,
+    parentFormElementsCtrl,
+  } /* : Props */,
+) {
   const handleNestedChange = React.useCallback(
     (nestedElement, nestedElementValue) => {
       if (nestedElement.type === 'page') return
@@ -101,4 +105,6 @@ function FormElementForm({
   )
 }
 
-export default React.memo<Props>(FormElementForm)
+export default (React.memo(
+  FormElementForm,
+) /*: React.AbstractComponent<Props> */)

@@ -3,14 +3,16 @@
 
 import * as React from 'react'
 
-import { OnLoading } from 'components'
+import OnLoading from './OnLoading'
 
+/* ::
 type Props = {
   options: ChoiceElementOption[] | void,
   children: React.Node,
 }
+*/
 
-function FormElementOptions({ options, children }: Props) {
+function FormElementOptions({ options, children } /* : Props */) {
   if (!options) {
     return (
       <div>
@@ -33,4 +35,6 @@ function FormElementOptions({ options, children }: Props) {
   return <div>{children}</div>
 }
 
-export default React.memo<Props>(FormElementOptions)
+export default (React.memo(
+  FormElementOptions,
+) /*: React.AbstractComponent<Props> */)

@@ -3,11 +3,12 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import { CopyToClipboardButton } from 'components'
+import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
-import useBooleanState from 'form/hooks/useBooleanState'
-import LookupButton from 'form/components/LookupButton'
+import useBooleanState from '../hooks/useBooleanState'
+import LookupButton from '../components/LookupButton'
 
+/* ::
 type Props = {
   id: string,
   element: NumberElement,
@@ -16,15 +17,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementNumber({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementNumber(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
   const text = React.useMemo(
     () => (typeof value === 'number' ? value.toString() : ''),
@@ -107,6 +111,7 @@ function FormElementNumber({
   )
 }
 
+/* ::
 type SliderControlProps = {
   id: string,
   text: string,
@@ -115,17 +120,13 @@ type SliderControlProps = {
   onChange: (SyntheticInputEvent<HTMLInputElement>) => mixed,
   onBlur: () => void,
 }
+*/
 
 const sliderBubbleWidthInPixels = 24
 
-const SliderControl = React.memo<SliderControlProps>(function SliderControl({
-  id,
-  text,
-  value,
-  element,
-  onChange,
-  onBlur,
-}: SliderControlProps) {
+const SliderControl = React.memo(function SliderControl(
+  { id, text, value, element, onChange, onBlur } /* : SliderControlProps */,
+) {
   const sliderOutputRef = React.useRef(null)
   const sliderInputRef = React.useRef(null)
 
@@ -203,4 +204,6 @@ const SliderControl = React.memo<SliderControlProps>(function SliderControl({
   )
 })
 
-export default React.memo<Props>(FormElementNumber)
+export default (React.memo(
+  FormElementNumber,
+) /*: React.AbstractComponent<Props> */)

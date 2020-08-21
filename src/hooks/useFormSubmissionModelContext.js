@@ -2,12 +2,14 @@
 
 import * as React from 'react'
 
+/* ::
 export type FormSubmissionModelContextValue = (boolean) => {
   captchaTokens: string[],
   submission: $PropertyType<FormElementsCtrl, 'model'>,
 }
+*/
 
-export const FormSubmissionModelContext = React.createContext<FormSubmissionModelContextValue>(
+export const FormSubmissionModelContext /* : React.Context<FormSubmissionModelContextValue> */ = React.createContext(
   () => ({}),
 )
 

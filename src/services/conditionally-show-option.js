@@ -3,7 +3,7 @@
 
 import conditionallyShowElement, {
   handleOptionsPredicate,
-} from 'form/services/conditionally-show-element'
+} from '../services/conditionally-show-element'
 
 const handleAttributePredicate = (predicate, model, predicateElement) => {
   const values = model[predicateElement.name]
@@ -142,11 +142,11 @@ const isAttributeFilterValid = (
 }
 
 export default function conditionallyShowOption(
-  formElementsCtrl: FormElementsCtrl,
-  elementToEvaluate: FormElementWithOptions,
-  optionToEvaluate: ChoiceElementOption,
-  optionsEvaluated: string[],
-): boolean {
+  formElementsCtrl /* : FormElementsCtrl */,
+  elementToEvaluate /* : FormElementWithOptions */,
+  optionToEvaluate /* : ChoiceElementOption */,
+  optionsEvaluated /* : string[] */,
+) /* : boolean */ {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
 

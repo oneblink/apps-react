@@ -3,10 +3,12 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import { CopyToClipboardButton } from 'components'
-import useBooleanState from 'form/hooks/useBooleanState'
-import LookupButton from 'form/components/LookupButton'
 
+import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import useBooleanState from '../hooks/useBooleanState'
+import LookupButton from '../components/LookupButton'
+
+/* ::
 type Props = {
   id: string,
   element: TelephoneElement,
@@ -15,15 +17,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementTelephone({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementTelephone(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const text = typeof value === 'string' ? value : ''
@@ -81,4 +86,6 @@ function FormElementTelephone({
   )
 }
 
-export default React.memo<Props>(FormElementTelephone)
+export default (React.memo(
+  FormElementTelephone,
+) /*: React.AbstractComponent<Props> */)

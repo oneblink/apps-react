@@ -6,17 +6,19 @@ import clsx from 'clsx'
 import bmCameraFactory from '@blinkmobile/camera'
 import jsQR from 'jsqr'
 
-import { CopyToClipboardButton, OnLoading } from 'components'
-import quaggaReader from 'services/barcode-readers/quagger.js'
-import useBooleanState from 'form/hooks/useBooleanState'
-import LookupButton from 'form/components/LookupButton'
-import useIsMounted from 'form/hooks/useIsMounted'
+import OnLoading from '../components/OnLoading'
+import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import quaggaReader from '../services/barcode-readers/quagger.js'
+import useBooleanState from '../hooks/useBooleanState'
+import LookupButton from '../components/LookupButton'
+import useIsMounted from '../hooks/useIsMounted'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
 const fadedSquareHeightInPixels = 150
 const redLineHeightInPixels = 1
 
+/* ::
 type Props = {
   id: string,
   element: BarcodeScannerElement,
@@ -25,15 +27,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementBarcodeScanner({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementBarcodeScanner(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [
     isCameraOpen,
@@ -43,7 +48,7 @@ function FormElementBarcodeScanner({
   const [error, setError] = React.useState(null)
 
   const handleScan = React.useCallback(
-    (newValue: string | void) => {
+    (newValue /* : string | void */) => {
       setIsDirty()
       onChange(element, newValue)
       stopBarcodeScanner()
@@ -165,15 +170,21 @@ function FormElementBarcodeScanner({
   )
 }
 
-export default React.memo<Props>(FormElementBarcodeScanner)
+export default (React.memo(
+  FormElementBarcodeScanner,
+) /*: React.AbstractComponent<Props> */)
 
+/* ::
 type BarcodeScannerProps = {
   element: BarcodeScannerElement,
   onScan: (string | void) => void,
   onClose: () => void,
 }
+*/
 
-function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
+function BarcodeScanner(
+  { element, onScan, onClose } /* : BarcodeScannerProps */,
+) {
   const isMounted = useIsMounted()
   const videoElementRef = React.useRef(null)
   const figureElementRef = React.useRef(null)

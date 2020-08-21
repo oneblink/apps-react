@@ -3,10 +3,11 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import { CopyToClipboardButton } from 'components'
-import useBooleanState from 'form/hooks/useBooleanState'
-import LookupButton from 'form/components/LookupButton'
+import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import useBooleanState from '../hooks/useBooleanState'
+import LookupButton from '../components/LookupButton'
 
+/* ::
 type Props = {
   id: string,
   element: TextareaElement,
@@ -15,15 +16,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementTextarea({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementTextarea(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const text = typeof value === 'string' ? value : ''
@@ -84,4 +88,6 @@ function FormElementTextarea({
   )
 }
 
-export default React.memo<Props>(FormElementTextarea)
+export default (React.memo(
+  FormElementTextarea,
+) /*: React.AbstractComponent<Props> */)

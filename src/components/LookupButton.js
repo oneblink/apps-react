@@ -3,22 +3,21 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import useLookupNotification from 'form/hooks/useLookupNotification'
-import { lookupValidationMessage } from 'form/services/form-validation'
+import useLookupNotification from '../hooks/useLookupNotification'
+import { lookupValidationMessage } from '../services/form-validation'
 
+/* ::
 type Props = {
   value: mixed | void,
   validationMessage: string | void,
   hasMarginTop?: boolean,
   isInputButton?: boolean,
 }
+*/
 
-function LookupButton({
-  value,
-  validationMessage,
-  hasMarginTop,
-  isInputButton,
-}: Props) {
+function LookupButton(
+  { value, validationMessage, hasMarginTop, isInputButton } /* : Props */,
+) {
   const { isLookup, onLookup, isDisabled } = useLookupNotification()
 
   if (!isLookup) {
@@ -60,4 +59,4 @@ function LookupButton({
   return button
 }
 
-export default React.memo<Props>(LookupButton)
+export default (React.memo(LookupButton) /*: React.AbstractComponent<Props> */)

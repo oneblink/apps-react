@@ -3,19 +3,17 @@
 import * as React from 'react'
 
 import { offlineService } from '@oneblink/apps'
-import useBooleanState from 'form/hooks/useBooleanState'
-
-export type IsOfflineContextValue = boolean
+import useBooleanState from '../hooks/useBooleanState'
 
 const defaultValue = offlineService.isOffline()
 
-const IsOfflineContext = React.createContext<IsOfflineContextValue>(
+const IsOfflineContext /* : React.Context<boolean> */ = React.createContext(
   defaultValue,
 )
 
 export const useNetworkChangeEffect = (
-  type: 'online' | 'offline',
-  listener: () => mixed,
+  type /* : 'online' | 'offline' */,
+  listener /* : () => mixed */,
 ) => {
   React.useEffect(() => {
     // Stupid cordova seems to require that offline/online
@@ -30,11 +28,9 @@ export const useNetworkChangeEffect = (
   }, [type, listener])
 }
 
-export function IsOfflineContextProvider({
-  children,
-}: {
-  children: React.Node,
-}) {
+export function IsOfflineContextProvider(
+  { children } /* : { children: React.Node } */,
+) {
   const [isOffline, goOffline, goOnline] = useBooleanState(defaultValue)
 
   useNetworkChangeEffect('online', goOnline)

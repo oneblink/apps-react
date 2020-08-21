@@ -3,13 +3,15 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import useBooleanState from 'form/hooks/useBooleanState'
-import useIsOffline from 'form/hooks/useIsOffline'
+import useBooleanState from '../hooks/useBooleanState'
+import useIsOffline from '../hooks/useIsOffline'
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
 import geolocation from '@blinkmobile/geolocation'
 import queryString from 'query-string'
-import { OnLoading } from 'components'
-import defaultCoords from 'form/services/defaultCoordinates'
+import OnLoading from '../components/OnLoading'
+import defaultCoords from '../services/defaultCoordinates'
+
+/* ::
 type Props = {
   id: string,
   element: LocationElement,
@@ -23,18 +25,22 @@ type Coords = {
   latitude: number,
   longitude: number,
 }
+*/
 
+const __GOOGLE_MAPS_API_KEY__ = ''
 const mapHeight = 300
 const initialMapZoom = 15
 const apiUrl = 'https://maps.googleapis.com/maps/api/staticmap'
-function FormElementLocation({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementLocation(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const isOffline = useIsOffline()
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [
@@ -181,14 +187,16 @@ function FormElementLocation({
   )
 }
 
+/* ::
 type LocationIsOfflineProps = {
   location: mixed | void,
   isOpen: boolean,
 }
-const LocationIsOffline = React.memo(function LocationIsOffline({
-  location,
-  isOpen,
-}: LocationIsOfflineProps) {
+*/
+
+const LocationIsOffline = React.memo(function LocationIsOffline(
+  { location, isOpen } /* : LocationIsOfflineProps */,
+) {
   return (
     <div>
       {isOpen ? (
@@ -239,16 +247,17 @@ const LocationIsOffline = React.memo(function LocationIsOffline({
   )
 })
 
+/* ::
 type LocationPickerProps = {
   value: Coords | void,
   isOpen: boolean,
   onChange: (Coords) => void,
 }
-const LocationPicker = React.memo(function SummaryResult({
-  value,
-  isOpen,
-  onChange,
-}: LocationPickerProps) {
+*/
+
+const LocationPicker = React.memo(function SummaryResult(
+  { value, isOpen, onChange } /* : LocationPickerProps */,
+) {
   const coords = React.useMemo(
     () =>
       value
@@ -319,4 +328,6 @@ const LocationPicker = React.memo(function SummaryResult({
   ) : null
 })
 
-export default React.memo<Props>(FormElementLocation)
+export default (React.memo(
+  FormElementLocation,
+) /*: React.AbstractComponent<Props> */)

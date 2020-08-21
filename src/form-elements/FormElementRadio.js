@@ -4,10 +4,11 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import FormElementOptions from 'form/components/FormElementOptions'
-import useFormElementOptions from 'form/hooks/useFormElementOptions'
-import useBooleanState from 'form/hooks/useBooleanState'
+import FormElementOptions from '../components/FormElementOptions'
+import useFormElementOptions from '../hooks/useFormElementOptions'
+import useBooleanState from '../hooks/useBooleanState'
 
+/* ::
 type Props = {
   id: string,
   element: RadioButtonElement,
@@ -17,16 +18,19 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementRadio({
-  id,
-  element,
-  value,
-  onChange,
-  onConditionallyShowOption,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementRadio(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    onConditionallyShowOption,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const filteredOptions = useFormElementOptions({
@@ -118,4 +122,6 @@ function FormElementRadio({
   )
 }
 
-export default React.memo<Props>(FormElementRadio)
+export default (React.memo(
+  FormElementRadio,
+) /*: React.AbstractComponent<Props> */)

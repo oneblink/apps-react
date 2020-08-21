@@ -3,12 +3,14 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import { CopyToClipboardButton } from 'components'
-import vocabularyService from 'services/vocabulary-service'
-import useFlatpickr from 'form/hooks/useFlatpickr'
-import useBooleanState from 'form/hooks/useBooleanState'
-import LookupButton from 'form/components/LookupButton'
+import { vocabularyService } from '@oneblink/apps'
 
+import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import useFlatpickr from '../hooks/useFlatpickr'
+import useBooleanState from '../hooks/useBooleanState'
+import LookupButton from '../components/LookupButton'
+
+/* ::
 type Props = {
   id: string,
   element: DateElement,
@@ -17,15 +19,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementDate({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementDate(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
@@ -122,4 +127,6 @@ function FormElementDate({
   )
 }
 
-export default React.memo<Props>(FormElementDate)
+export default (React.memo(
+  FormElementDate,
+) /*: React.AbstractComponent<Props> */)

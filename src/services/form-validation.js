@@ -2,8 +2,7 @@
 'use strict'
 
 import validate from 'validate.js'
-
-import vocabularyService from 'services/vocabulary-service'
+import { vocabularyService } from '@oneblink/apps'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -65,14 +64,14 @@ validate.validators.nestedElements = function (value, elementsObject) {
 // Extend validator for lookups
 // $FlowFixMe
 validate.validators.lookups = function (
-  value: mixed | void,
+  value /* : mixed | void */,
   {
     elementIdsWithLookupsExecuted,
     formElement,
-  }: {
+  } /* : {
     formElement: LookupFormElement,
     elementIdsWithLookupsExecuted: string[],
-  },
+  } */,
 ) {
   if (!formElement.isDataLookup && !formElement.isElementLookup) {
     return
@@ -90,15 +89,17 @@ validate.validators.lookups = function (
   return lookupValidationMessage
 }
 
+/* ::
 type ValidateJSSchema = Object
 type ValidateJSSchemaByPageId = {
   [pageElementId: string]: ValidateJSSchema,
 }
+*/
 
 export function generateSchemasByPages(
-  pages: PageElement[],
-  elementIdsWithLookupsExecuted: string[],
-): ValidateJSSchemaByPageId {
+  pages /* : PageElement[] */,
+  elementIdsWithLookupsExecuted /*: string[] */,
+) /* : ValidateJSSchemaByPageId */ {
   return pages.reduce((partialSchemaByPageId, pageElement) => {
     partialSchemaByPageId[pageElement.id] = generateSchemaReducer(
       pageElement.elements,
@@ -109,10 +110,10 @@ export function generateSchemasByPages(
 }
 
 export const validatePages = (
-  schemaByPageId: ValidateJSSchemaByPageId,
-  submission: $PropertyType<FormElementsCtrl, 'model'>,
-  pageElementsConditionallyShown: PageElementsConditionallyShown,
-): PageElementsValidation | void => {
+  schemaByPageId /* : ValidateJSSchemaByPageId */,
+  submission /* : $PropertyType<FormElementsCtrl, 'model'> */,
+  pageElementsConditionallyShown /* : PageElementsConditionallyShown */,
+) /* : PageElementsValidation | void  */ => {
   const pagesValidation = Object.keys(schemaByPageId).reduce(
     (partialMessagesByPageId, pageId) => {
       const schema = schemaByPageId[pageId]
@@ -148,9 +149,9 @@ export const validatePages = (
 }
 
 const clearValidationMessagesForHiddenElements = (
-  formElementsValidation: FormElementsValidation | void,
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
-): void => {
+  formElementsValidation /* : FormElementsValidation | void */,
+  formElementsConditionallyShown /* : FormElementsConditionallyShown | void */,
+) /* : void  */ => {
   // If there is no validation to check, there are no invalid elements
   // If there is no conditionally shown elements, all invalid elements should display validation messages,
   if (!formElementsValidation || !formElementsConditionallyShown) {
@@ -225,8 +226,8 @@ const clearValidationMessagesForHiddenElements = (
 const presence = (required, message) => (required ? { message } : false)
 
 const generateSchemaReducer = (
-  formElements: FormElement[],
-  elementIdsWithLookupsExecuted: string[],
+  formElements /* : FormElement[] */,
+  elementIdsWithLookupsExecuted /* : string[] */,
 ) => {
   return formElements.reduce((partialSchema, formElement) => {
     switch (formElement.type) {
@@ -492,7 +493,7 @@ const generateSchemaReducer = (
 const validateSingleMessageError = (
   submission,
   schema,
-): FormElementsValidation | void => {
+) /* : FormElementsValidation | void */ => {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
     fullMessages: false,

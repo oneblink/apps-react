@@ -4,8 +4,8 @@
 import * as React from 'react'
 
 export default function useClickOutsideElement(
-  ref: { current: ?HTMLElement },
-  callback: () => void,
+  ref /* : { current: ?HTMLElement }*/,
+  callback /* : () => void */,
 ) {
   const handleClickOutside = React.useCallback(
     (event) => {

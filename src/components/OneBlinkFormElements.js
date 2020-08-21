@@ -3,34 +3,36 @@
 
 import * as React from 'react'
 
-import useConditionallyShowOptionCallback from 'form/hooks/useConditionallyShowOptionCallback'
-import LookupNotification from 'form/components/LookupNotification'
+import useConditionallyShowOptionCallback from '../hooks/useConditionallyShowOptionCallback'
+import LookupNotification from '../components/LookupNotification'
 
-import FormElementBarcodeScanner from 'form/form-elements/FormElementBarcodeScanner'
-import FormElementEmail from 'form/form-elements/FormElementEmail'
-import FormElementText from 'form/form-elements/FormElementText'
-import FormElementTextarea from 'form/form-elements/FormElementTextarea'
-import FormElementNumber from 'form/form-elements/FormElementNumber'
-import FormElementHeading from 'form/form-elements/FormElementHeading'
-import FormElementHTML from 'form/form-elements/FormElementHTML'
-import FormElementTelephone from 'form/form-elements/FormElementTelephone'
-import FormElementSelect from 'form/form-elements/FormElementSelect'
-import FormElementDate from 'form/form-elements/FormElementDate'
+import FormElementBarcodeScanner from '../form-elements/FormElementBarcodeScanner'
+import FormElementEmail from '../form-elements/FormElementEmail'
+import FormElementText from '../form-elements/FormElementText'
+import FormElementTextarea from '../form-elements/FormElementTextarea'
+import FormElementNumber from '../form-elements/FormElementNumber'
+import FormElementHeading from '../form-elements/FormElementHeading'
+import FormElementHTML from '../form-elements/FormElementHTML'
+import FormElementTelephone from '../form-elements/FormElementTelephone'
+import FormElementSelect from '../form-elements/FormElementSelect'
+import FormElementDate from '../form-elements/FormElementDate'
 import FormElementImage from '../form-elements/FormElementImage'
-import FormElementDateTime from 'form/form-elements/FormElementDateTime'
-import FormElementTime from 'form/form-elements/FormElementTime'
-import FormElementCalculation from 'form/form-elements/FormElementCalculation'
-import FormElementRadio from 'form/form-elements/FormElementRadio'
-import FormElementAutocomplete from 'form/form-elements/FormElementAutocomplete'
-import FormElementRepeatableSet from 'form/form-elements/FormElementRepeatableSet'
-import FormElementSignature from 'form/form-elements/FormElementSignature'
-import FormElementCheckBoxes from 'form/form-elements/FormElementCheckBoxes'
-import FormElementFiles from 'form/form-elements/FormElementFiles'
-import FormElementForm from 'form/form-elements/FormElementForm'
-import FormElementCamera from 'form/form-elements/FormElementCamera'
-import FormElementSummary from 'form/form-elements/FormElementSummary'
-import FormElementCaptcha from 'form/form-elements/FormElementCaptcha'
-import FormElementLocation from 'form/form-elements/FormElementLocation'
+import FormElementDateTime from '../form-elements/FormElementDateTime'
+import FormElementTime from '../form-elements/FormElementTime'
+import FormElementCalculation from '../form-elements/FormElementCalculation'
+import FormElementRadio from '../form-elements/FormElementRadio'
+import FormElementAutocomplete from '../form-elements/FormElementAutocomplete'
+import FormElementRepeatableSet from '../form-elements/FormElementRepeatableSet'
+import FormElementSignature from '../form-elements/FormElementSignature'
+import FormElementCheckBoxes from '../form-elements/FormElementCheckBoxes'
+import FormElementFiles from '../form-elements/FormElementFiles'
+import FormElementForm from '../form-elements/FormElementForm'
+import FormElementCamera from '../form-elements/FormElementCamera'
+import FormElementSummary from '../form-elements/FormElementSummary'
+import FormElementCaptcha from '../form-elements/FormElementCaptcha'
+import FormElementLocation from '../form-elements/FormElementLocation'
+
+/* ::
 type Props = {
   model: $PropertyType<FormElementsCtrl, 'model'> | void,
   elements: FormElement[],
@@ -48,22 +50,25 @@ type Props = {
   // Nested forms
   parentFormName?: string,
 }
+*/
 
-function OneBlinkFormElements({
-  model,
-  elements,
-  isEven,
-  idPrefix,
-  displayValidationMessages,
-  formElementsValidation,
-  formElementsConditionallyShown,
-  onChange,
-  onChangeElements,
-  onChangeModel,
-  parentFormElementsCtrl,
-  parentFormName,
-}: Props) {
-  const formElementsCtrl = React.useMemo<FormElementsCtrl>(
+function OneBlinkFormElements(
+  {
+    model,
+    elements,
+    isEven,
+    idPrefix,
+    displayValidationMessages,
+    formElementsValidation,
+    formElementsConditionallyShown,
+    onChange,
+    onChangeElements,
+    onChangeModel,
+    parentFormElementsCtrl,
+    parentFormName,
+  } /* : Props */,
+) {
+  const formElementsCtrl /* : FormElementsCtrl */ = React.useMemo(
     () => ({
       elements,
       model: model || {},
@@ -114,25 +119,28 @@ function OneBlinkFormElements({
   })
 }
 
-export default React.memo<Props>(OneBlinkFormElements)
+export default (React.memo(
+  OneBlinkFormElements,
+) /*: React.AbstractComponent<Props> */)
 
-const FormElementSwitch = React.memo(function OneBlinkFormElement({
-  element,
-  value,
-  displayValidationMessage,
-  formElementValidation,
-  formElementsConditionallyShown,
-  isEven,
-  id,
-  onChange,
-  onChangeElements,
-  onChangeModel,
-  formElementsCtrl,
-  parentFormName,
-}: {
+const FormElementSwitch = React.memo(function OneBlinkFormElement(
+  {
+    element,
+    value,
+    displayValidationMessage,
+    formElementValidation,
+    formElementsConditionallyShown,
+    isEven,
+    id,
+    onChange,
+    onChangeElements,
+    onChangeModel,
+    formElementsCtrl,
+    parentFormName,
+  } /* : {
   element: FormElement,
   value: mixed,
-  formElementValidation: FormElementValidation,
+  formElementValidation: FormElementValidation | void,
   displayValidationMessage: boolean,
   formElementsConditionallyShown: FormElementsConditionallyShown | void,
   id: string,
@@ -142,7 +150,8 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onChangeModel: $PropertyType<Props, 'onChangeModel'>,
   formElementsCtrl: FormElementsCtrl,
   parentFormName?: string,
-}) {
+} */,
+) {
   const handleConditionallyShowOption = useConditionallyShowOptionCallback(
     formElementsCtrl,
     element,

@@ -7,25 +7,26 @@ import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
 import * as bulmaToast from 'bulma-toast'
 
-import useNullableState from 'form/hooks/useNullableState'
-import useBooleanState from 'form/hooks/useBooleanState'
-import { Modal } from 'components'
+import useNullableState from './hooks/useNullableState'
+import useBooleanState from './hooks/useBooleanState'
+import Modal from './components/Modal'
 
-import generateDefaultData from 'form/services/generate-default-data'
-import cleanFormElementsCtrlModel from 'form/services/clean-form-elements-ctrl-model'
-import OneBlinkFormElements from 'form/components/OneBlinkFormElements'
-import useFormValidation from 'form/hooks/useFormValidation'
-import useConditionalLogic from 'form/hooks/useConditionalLogic'
-import usePages from 'form/hooks/usePages'
-import useLookups from 'form/hooks/useLookups'
-import { ConditionallyShowOptionCallbackContext } from 'form/hooks/useConditionallyShowOptionCallback'
-import { FormSubmissionModelContext } from 'form/hooks/useFormSubmissionModelContext'
-import { FlattenElementsContext } from 'form/hooks/useFlattenElementsContext'
-import { FormDefinitionContext } from 'form/hooks/useFormDefinition'
-import { InjectPagesContext } from 'form/hooks/useInjectPages'
-import { ExecutedLookupProvider } from 'form/hooks/useExecutedLookupCallback'
-import useDynamicOptionsLoaderEffect from 'form/hooks/useDynamicOptionsLoaderEffect'
+import generateDefaultData from './services/generate-default-data'
+import cleanFormElementsCtrlModel from './services/clean-form-elements-ctrl-model'
+import OneBlinkFormElements from './components/OneBlinkFormElements'
+import useFormValidation from './hooks/useFormValidation'
+import useConditionalLogic from './hooks/useConditionalLogic'
+import usePages from './hooks/usePages'
+import useLookups from './hooks/useLookups'
+import { ConditionallyShowOptionCallbackContext } from './hooks/useConditionallyShowOptionCallback'
+import { FormSubmissionModelContext } from './hooks/useFormSubmissionModelContext'
+import { FlattenElementsContext } from './hooks/useFlattenElementsContext'
+import { FormDefinitionContext } from './hooks/useFormDefinition'
+import { InjectPagesContext } from './hooks/useInjectPages'
+import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
+import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
 
+/* ::
 type Props = {
   formsAppId: number,
   form: Form,
@@ -36,25 +37,31 @@ type Props = {
   onSaveDraft?: (DraftSubmission) => mixed,
   onChange?: ($PropertyType<FormElementsCtrl, 'model'>) => mixed,
 }
+*/
 
-function OneBlinkForm({
-  formsAppId,
-  form: _form,
-  isPreview,
-  initialSubmission,
-  onCancel,
-  onSubmit,
-  onSaveDraft,
-  onChange,
-}: Props) {
+function OneBlinkForm(
+  {
+    formsAppId,
+    form: _form,
+    isPreview,
+    initialSubmission,
+    onCancel,
+    onSubmit,
+    onSaveDraft,
+    onChange,
+  } /* : Props */,
+) {
   //
   //
   // #region Form Definition
 
-  const [definition, setDefinition] = React.useState<Form>(() =>
+  const [
+    definition,
+    setDefinition,
+  ] /* : [Form, ((Form => Form) | Form) => void] */ = React.useState(() =>
     _cloneDeep(_form),
   )
-  const pages = React.useMemo<PageElement[]>(() => {
+  const pages /* : PageElement[] */ = React.useMemo(() => {
     if (definition.isMultiPage) {
       return definition.elements.reduce((pageElements, formElement) => {
         if (formElement.type === 'page') {
@@ -117,7 +124,7 @@ function OneBlinkForm({
   )
 
   const handleBlockedNavigation = React.useCallback(
-    (location): boolean => {
+    (location) => {
       setGoToLocation(location)
       setHasConfirmedNavigation(false)
       return false
@@ -237,14 +244,14 @@ function OneBlinkForm({
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
 
   const getCurrentSubmissionData = React.useCallback(
-    (stripBinaryData: boolean) => {
+    (stripBinaryData) => {
       // Clear data from submission on fields that are hidden on visible pages
       return visiblePages.reduce(
         (
-          cleanSubmissionData: {
+          cleanSubmissionData /* : {
             submission: $PropertyType<FormElementsCtrl, 'model'>,
             captchaTokens: string[],
-          },
+          } */,
           pageElement,
         ) => {
           const formElementsConditionallyShown =
@@ -711,4 +718,4 @@ function OneBlinkForm({
   )
 }
 
-export default React.memo<Props>(OneBlinkForm)
+export default (React.memo(OneBlinkForm) /*: React.AbstractComponent<Props> */)

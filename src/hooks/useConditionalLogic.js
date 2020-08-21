@@ -3,71 +3,71 @@
 
 import * as React from 'react'
 
-import conditionallyShowElement from 'form/services/conditionally-show-element'
-import conditionallyShowOption from 'form/services/conditionally-show-option'
+import conditionallyShowElement from '../services/conditionally-show-element'
+import conditionallyShowOption from '../services/conditionally-show-option'
 
-export default function useConditionalLogic({
-  submission,
-  pages,
-}: {
+export default function useConditionalLogic(
+  {
+    submission,
+    pages,
+  } /* : {
   submission: $PropertyType<FormElementsCtrl, 'model'>,
   pages: PageElement[],
-}) {
+} */,
+) {
   const [conditionalLogicState, setConditionalLogicState] = React.useState(null)
 
-  const handleConditionallyShowElement = React.useCallback(
-    (formElementsCtrl: FormElementsCtrl, element: FormElement) => {
-      if (!element.conditionallyShow) return true
-      const elementsEvaluated = []
-      try {
-        return conditionallyShowElement(
-          formElementsCtrl,
-          element,
-          elementsEvaluated,
-        )
-      } catch (error) {
-        console.warn(
-          'Error while checking if element is conditional shown',
-          error,
-        )
-        setConditionalLogicState({
-          elements: elementsEvaluated,
-          message: error.message,
-        })
-        return false
-      }
-    },
-    [],
-  )
+  const handleConditionallyShowElement = React.useCallback((
+    formElementsCtrl /* : FormElementsCtrl */,
+    element /* : FormElement */,
+  ) => {
+    if (!element.conditionallyShow) return true
+    const elementsEvaluated = []
+    try {
+      return conditionallyShowElement(
+        formElementsCtrl,
+        element,
+        elementsEvaluated,
+      )
+    } catch (error) {
+      console.warn(
+        'Error while checking if element is conditional shown',
+        error,
+      )
+      setConditionalLogicState({
+        elements: elementsEvaluated,
+        message: error.message,
+      })
+      return false
+    }
+  }, [])
 
-  const handleConditionallyShowOption = React.useCallback(
-    (
-      formElementsCtrl: FormElementsCtrl,
-      element: FormElementWithOptions,
-      option: ChoiceElementOption,
-    ) => {
-      const elementsEvaluated = []
-      try {
-        return conditionallyShowOption(
-          formElementsCtrl,
-          element,
-          option,
-          elementsEvaluated,
-        )
-      } catch (error) {
-        setConditionalLogicState({
-          elements: elementsEvaluated,
-          message: error.message,
-        })
-        return false
-      }
-    },
-    [],
-  )
+  const handleConditionallyShowOption = React.useCallback((
+    formElementsCtrl /* : FormElementsCtrl */,
+    element /* : FormElementWithOptions */,
+    option /* : ChoiceElementOption */,
+  ) => {
+    const elementsEvaluated = []
+    try {
+      return conditionallyShowOption(
+        formElementsCtrl,
+        element,
+        option,
+        elementsEvaluated,
+      )
+    } catch (error) {
+      setConditionalLogicState({
+        elements: elementsEvaluated,
+        message: error.message,
+      })
+      return false
+    }
+  }, [])
 
-  const pageFormElements = React.useMemo<FormElement[]>(() => [...pages], [
-    pages,
-  ])
+  const pageFormElements /* : FormElement[] */ = React.useMemo(
+    () => [...pages],
+    [pages],
+  )
 
   const elementsOnPages = React.useMemo(
     () =>
@@ -90,13 +90,13 @@ export default function useConditionalLogic({
     [elementsOnPages, pageFormElements, submission],
   )
 
-  const pageElementsConditionallyShown = React.useMemo<PageElementsConditionallyShown>(() => {
+  const pageElementsConditionallyShown /* : PageElementsConditionallyShown */ = React.useMemo(() => {
     const getFormElementConditionallyShown = (
       elements,
       element,
       model,
       parentFormElementsCtrl,
-    ): FormElementConditionallyShown => {
+    ) /* : FormElementConditionallyShown */ => {
       const isShown = handleConditionallyShowElement(
         {
           elements,

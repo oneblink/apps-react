@@ -2,21 +2,23 @@
 
 import * as React from 'react'
 
+/* ::
 export type ConditionallyShowOptionCallbackContextValue = (
   FormElementsCtrl,
   FormElementWithOptions,
   ChoiceElementOption,
 ) => boolean
+*/
 
 const defaultContext = () => true
 
-export const ConditionallyShowOptionCallbackContext = React.createContext<ConditionallyShowOptionCallbackContextValue>(
+export const ConditionallyShowOptionCallbackContext /* : React.Context<ConditionallyShowOptionCallbackContextValue> */ = React.createContext(
   defaultContext,
 )
 
 export default function useConditionallyShowOptionCallback(
-  formElementsCtrl: FormElementsCtrl,
-  element: FormElement,
+  formElementsCtrl /* : FormElementsCtrl */,
+  element /* : FormElement */,
 ) {
   const onConditionallyShowOption = React.useContext(
     ConditionallyShowOptionCallbackContext,
@@ -33,7 +35,7 @@ export default function useConditionallyShowOptionCallback(
       return defaultContext
     }
 
-    return (option: ChoiceElementOption) => {
+    return (option /* : ChoiceElementOption */) => {
       return onConditionallyShowOption(formElementsCtrl, element, option)
     }
   }, [element, formElementsCtrl, onConditionallyShowOption])

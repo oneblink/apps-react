@@ -4,8 +4,10 @@
 import * as React from 'react'
 import ExpressionParser from 'morph-expressions'
 import escapeString from 'escape-string-regexp'
-import { sanitizeHtmlStandard } from 'form/services/sanitize-html'
-import useFormSubmissionModel from 'form/hooks/useFormSubmissionModelContext'
+import { sanitizeHtmlStandard } from '../services/sanitize-html'
+import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
+
+/* ::
 type Props = {
   element: CalculationElement,
   formElementsCtrl: FormElementsCtrl | void,
@@ -13,18 +15,15 @@ type Props = {
   parentFormName?: string,
   value: mixed,
 }
+*/
 
 const isUnenteredValue = (value) => {
   return !value && value !== 0
 }
 
-function FormElementCalculation({
-  element,
-  onChange,
-  formElementsCtrl,
-  parentFormName,
-  value,
-}: Props) {
+function FormElementCalculation(
+  { element, onChange, formElementsCtrl, parentFormName, value } /* : Props */,
+) {
   const getFormSubmissionModel = useFormSubmissionModel()
 
   const htmlValue = React.useMemo(() => {
@@ -57,10 +56,10 @@ function FormElementCalculation({
       {
         replacement,
         nestedElementNames,
-      }: {
+      } /* : {
         replacement: string,
         nestedElementNames: string[],
-      },
+      } */,
     ) => {
       exprParser.registerProperty(replacement, (submission) => {
         let defaultAccumulator = submission
@@ -264,4 +263,6 @@ function FormElementCalculation({
   )
 }
 
-export default React.memo<Props>(FormElementCalculation)
+export default (React.memo(
+  FormElementCalculation,
+) /*: React.AbstractComponent<Props> */)

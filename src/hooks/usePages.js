@@ -3,18 +3,20 @@
 
 import * as React from 'react'
 
-import useBooleanState from 'form/hooks/useBooleanState'
-import scrollingService from 'form/services/scrolling-service'
+import useBooleanState from '../hooks/useBooleanState'
+import scrollingService from '../services/scrolling-service'
 
-export default function usePages({
-  pages,
-  pagesValidation,
-  pageElementsConditionallyShown,
-}: {
+export default function usePages(
+  {
+    pages,
+    pagesValidation,
+    pageElementsConditionallyShown,
+  } /* : {
   pages: PageElement[],
   pagesValidation: PageElementsValidation | void,
   pageElementsConditionallyShown: PageElementsConditionallyShown,
-}) {
+} */,
+) {
   const [visitedPageIds, setVisitedPageIds] = React.useState([])
 
   const [
@@ -24,7 +26,7 @@ export default function usePages({
     toggleStepsNavigation,
   ] = useBooleanState(false)
 
-  const visiblePages = React.useMemo<PageElement[]>(() => {
+  const visiblePages /* : PageElement[] */ = React.useMemo(() => {
     return pages.filter((pageElement) => {
       return (
         pageElementsConditionallyShown[pageElement.id] &&
@@ -58,7 +60,7 @@ export default function usePages({
   }, [currentPage, visiblePages])
 
   const setPageId = React.useCallback(
-    (pageId: string) => {
+    (pageId /* : string */) => {
       setVisitedPageIds((currentVisitedPageIds) => {
         if (currentVisitedPageIds.includes(currentPageId)) {
           return currentVisitedPageIds
@@ -106,7 +108,7 @@ export default function usePages({
   }, [currentPageId, setPageId, visiblePages])
 
   const checkDisplayPageError = React.useCallback(
-    (page: PageElement) => {
+    (page /* : PageElement */) => {
       // If we have not visited the page yet, we will not display errors
       if (!visitedPageIds.includes(page.id)) {
         return false

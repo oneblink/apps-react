@@ -6,8 +6,10 @@ import clsx from 'clsx'
 import SignatureCanvas from 'react-signature-canvas'
 import * as canvasManipulation from '@blinkmobile/canvas-manipulation'
 
-import useBooleanState from 'form/hooks/useBooleanState'
-import scrollingService from 'form/services/scrolling-service'
+import useBooleanState from '../hooks/useBooleanState'
+import scrollingService from '../services/scrolling-service'
+
+/* ::
 type Props = {
   element: DrawElement,
   value: mixed,
@@ -15,14 +17,17 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementText({
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementSignature(
+  {
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isDirty] = useBooleanState(false)
   const [isDisabled, setIsDisabled, setNotDisabled] = useBooleanState(false)
   const [canvasDimensions, setCanvasDimensions] = React.useState({})
@@ -157,4 +162,6 @@ function FormElementText({
   )
 }
 
-export default React.memo<Props>(FormElementText)
+export default (React.memo(
+  FormElementSignature,
+) /*: React.AbstractComponent<Props> */)

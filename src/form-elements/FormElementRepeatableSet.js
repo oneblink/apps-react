@@ -2,11 +2,12 @@
 'use strict'
 
 import * as React from 'react'
-import useBooleanState from 'form/hooks/useBooleanState'
-import generateDefaultData from 'form/services/generate-default-data'
-import OneBlinkFormElements from 'form/components/OneBlinkFormElements'
-import { Modal } from 'components'
+import useBooleanState from '../hooks/useBooleanState'
+import generateDefaultData from '../services/generate-default-data'
+import OneBlinkFormElements from '../components/OneBlinkFormElements'
+import Modal from '../components/Modal'
 
+/* ::
 type Props = {
   id: string,
   isEven: boolean,
@@ -21,21 +22,24 @@ type Props = {
   parentFormElementsCtrl: FormElementsCtrl,
   parentFormName?: string,
 }
+*/
 
-function FormElementRepeatableSet({
-  element,
-  value,
-  formElementValidation,
-  id,
-  isEven,
-  displayValidationMessage,
-  formElementConditionallyShown,
-  parentFormElementsCtrl,
-  parentFormName,
-  onChange,
-  onChangeElements,
-  onChangeModel,
-}: Props) {
+function FormElementRepeatableSet(
+  {
+    element,
+    value,
+    formElementValidation,
+    id,
+    isEven,
+    displayValidationMessage,
+    formElementConditionallyShown,
+    parentFormElementsCtrl,
+    parentFormName,
+    onChange,
+    onChangeElements,
+    onChangeModel,
+  } /* : Props */,
+) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const entries = React.useMemo(() => (Array.isArray(value) ? value : []), [
@@ -83,7 +87,7 @@ function FormElementRepeatableSet({
 
   const handleChangeElements = React.useCallback(
     (index, elements) => {
-      const newElements: FormElement[] = parentFormElementsCtrl.elements.map(
+      const newElements /* : FormElement[] */ = parentFormElementsCtrl.elements.map(
         (parentElement) => {
           if (parentElement.id === element.id) {
             // Stupid flow can't workout what type of element it is...
@@ -196,24 +200,27 @@ function FormElementRepeatableSet({
   )
 }
 
-export default React.memo<Props>(FormElementRepeatableSet)
+export default (React.memo(
+  FormElementRepeatableSet,
+) /*: React.AbstractComponent<Props> */)
 
-const RepeatableSetEntry = React.memo(function RepeatableSetEntry({
-  id,
-  index,
-  isEven,
-  entry,
-  element,
-  formElementsConditionallyShown,
-  displayValidationMessages,
-  formElementsValidation,
-  parentFormElementsCtrl,
-  parentFormName,
-  onChange,
-  onChangeElements,
-  onChangeModel,
-  onRemove,
-}: {
+const RepeatableSetEntry = React.memo(function RepeatableSetEntry(
+  {
+    id,
+    index,
+    isEven,
+    entry,
+    element,
+    formElementsConditionallyShown,
+    displayValidationMessages,
+    formElementsValidation,
+    parentFormElementsCtrl,
+    parentFormName,
+    onChange,
+    onChangeElements,
+    onChangeModel,
+    onRemove,
+  } /* : {
   id: string,
   index: number,
   isEven: boolean,
@@ -231,7 +238,8 @@ const RepeatableSetEntry = React.memo(function RepeatableSetEntry({
     $PropertyType<FormElementsCtrl, 'model'>,
   ) => mixed,
   onRemove: (index: number) => mixed,
-}) {
+} */,
+) {
   const [isConfirmingRemove, confirmRemove, cancelRemove] = useBooleanState(
     false,
   )

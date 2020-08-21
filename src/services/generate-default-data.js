@@ -2,9 +2,9 @@
 'use strict'
 
 export default function generateDefaultData(
-  elements: FormElement[],
-  preFillData: $PropertyType<FormElementsCtrl, 'model'>,
-): { [key: string]: any } {
+  elements /* : FormElement[] */,
+  preFillData /* :  $PropertyType<FormElementsCtrl, 'model'> */,
+) /* : { [key: string]: any } */ {
   return elements.reduce((m, el) => {
     if (el.type !== 'page' && preFillData[el.name]) {
       m[el.name] = preFillData[el.name]

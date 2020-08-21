@@ -6,8 +6,8 @@ import _cloneDeep from 'lodash.clonedeep'
 import { formService } from '@oneblink/apps'
 
 export default function useDynamicOptionsLoaderEffect(
-  form: Form,
-  onSetForm: ((Form) => Form) => void,
+  form /* : Form */,
+  onSetForm /* : ((Form) => Form) => void */,
 ) {
   React.useEffect(() => {
     let ignore = false
@@ -21,7 +21,7 @@ export default function useDynamicOptionsLoaderEffect(
           return
         }
         onSetForm((currentForm) => {
-          const clonedForm: Form = _cloneDeep(currentForm)
+          const clonedForm /* : Form */ = _cloneDeep(currentForm)
           for (const { options, elementId } of optionsForElementId) {
             const formElement = formService.findFormElement(
               clonedForm.elements,

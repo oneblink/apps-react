@@ -2,15 +2,19 @@
 'use strict'
 
 import * as React from 'react'
-import useFormSubmissionModel from 'form/hooks/useFormSubmissionModelContext'
-import useFlattenElements from 'form/hooks/useFlattenElementsContext'
-import vocabularyService from 'services/vocabulary-service'
+import { vocabularyService } from '@oneblink/apps'
+
+import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
+import useFlattenElements from '../hooks/useFlattenElementsContext'
+
+/* ::
 type Props = {
   element: SummaryElement,
   formElementsCtrl: FormElementsCtrl,
   onChange: (FormElement, mixed | void) => mixed,
   value: mixed,
 }
+*/
 
 const arraysAreEqual = (a, b) => {
   if (!Array.isArray(a) || !Array.isArray(b)) {
@@ -29,12 +33,9 @@ const arraysAreEqual = (a, b) => {
   }
   return true
 }
-function FormElementSummary({
-  element,
-  onChange,
-  formElementsCtrl,
-  value,
-}: Props) {
+function FormElementSummary(
+  { element, onChange, formElementsCtrl, value } /* : Props */,
+) {
   const getFormSubmissionModel = useFormSubmissionModel()
   const flattenedElements = useFlattenElements()
 
@@ -42,7 +43,7 @@ function FormElementSummary({
     (
       partialSummary,
       formElement,
-      submission: $PropertyType<FormElementsCtrl, 'model'>,
+      submission /* : $PropertyType<FormElementsCtrl, 'model'> */,
     ) => {
       if (formElement.type === 'page') return partialSummary
       if (
@@ -206,13 +207,17 @@ function FormElementSummary({
     </div>
   )
 }
+
+/* ::
 type FormElementSummaryResults = Array<string | FormElementSummaryResults>
 type FormElementSummaryResultProps = {
   results: FormElementSummaryResults,
 }
-const SummaryResult = React.memo(function SummaryResult({
-  results,
-}: FormElementSummaryResultProps) {
+*/
+
+const SummaryResult = React.memo(function SummaryResult(
+  { results } /* : FormElementSummaryResultProps */,
+) {
   return results.map((result, i) => {
     return (
       <div
@@ -230,4 +235,7 @@ const SummaryResult = React.memo(function SummaryResult({
     )
   })
 })
-export default React.memo<Props>(FormElementSummary)
+
+export default (React.memo(
+  FormElementSummary,
+) /*: React.AbstractComponent<Props> */)

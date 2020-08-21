@@ -1,5 +1,6 @@
 // @flow
-import vocabularyService from 'services/vocabulary-service'
+
+import { vocabularyService } from '@oneblink/apps'
 
 const usCoords = { latitude: 40.75764768718219, longitude: -73.98578582987093 } //TIMES SQUARE, NY
 const auCoords = {

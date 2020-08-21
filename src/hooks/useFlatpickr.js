@@ -13,19 +13,19 @@ export default function useFlatpickr(
     isDisabled,
     onBlur,
     onChange,
-  }: {
+  } /* : {
     id: string,
     value: mixed | void,
     isDisabled: boolean,
     onBlur: () => void,
     onChange: (string | void) => void,
-  },
-  fpOpts: {
+  } */,
+  fpOpts /* : {
     dateFormat: string,
     altFormat: string,
     altInput: boolean,
     allowInput: boolean,
-  },
+  } */,
 ) {
   const [vp, setVp] = React.useState(null)
 
@@ -179,13 +179,13 @@ export default function useFlatpickr(
     if (vp) {
       if (fpOpts.allowInput) {
         // $FlowFixMe
-        const input: HTMLInputElement | null = fpOpts.altInput
+        const input /* : HTMLInputElement | null */ = fpOpts.altInput
           ? vp.altInput
           : vp.input
 
         if (input) {
           const format = fpOpts.altInput ? fpOpts.altFormat : fpOpts.dateFormat
-          const onBlurListener = (e: FocusEvent) => {
+          const onBlurListener = (e /* : FocusEvent */) => {
             onBlur()
 
             // $FlowFixMe

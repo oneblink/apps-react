@@ -6,15 +6,16 @@ import clsx from 'clsx'
 import AbortController from 'abort-controller'
 import { formService, authService } from '@oneblink/apps'
 
-import useIsOffline from 'form/hooks/useIsOffline'
-import { OnLoading } from 'components'
-import generateDefaultData from 'form/services/generate-default-data'
-import { LookupNotificationContext } from 'form/hooks/useLookupNotification'
-import useFormDefinition from 'form/hooks/useFormDefinition'
-import useInjectPages from 'form/hooks/useInjectPages'
-import cleanFormElementsCtrlModel from 'form/services/clean-form-elements-ctrl-model'
-import useExecutedLookupCallback from 'form/hooks/useExecutedLookupCallback'
+import useIsOffline from '../hooks/useIsOffline'
+import OnLoading from './OnLoading'
+import generateDefaultData from '../services/generate-default-data'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useFormDefinition from '../hooks/useFormDefinition'
+import useInjectPages from '../hooks/useInjectPages'
+import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
+import useExecutedLookupCallback from '../hooks/useExecutedLookupCallback'
 
+/* ::
 type Props = {
   isAutoLookup?: boolean,
   element: LookupFormElement,
@@ -25,17 +26,20 @@ type Props = {
   onChangeModel: ($PropertyType<FormElementsCtrl, 'model'>) => void,
   children: React.Node,
 }
+*/
 
-function LookupNotificationComponent({
-  isAutoLookup,
-  element,
-  value,
-  formElementsCtrl,
-  formElementsConditionallyShown,
-  onChangeElements,
-  onChangeModel,
-  children,
-}: Props) {
+function LookupNotificationComponent(
+  {
+    isAutoLookup,
+    element,
+    value,
+    formElementsCtrl,
+    formElementsConditionallyShown,
+    onChangeElements,
+    onChangeModel,
+    children,
+  } /* : Props */,
+) {
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
@@ -51,7 +55,7 @@ function LookupNotificationComponent({
 
   const mergeLookupData = React.useCallback(
     (dataLookupResult, elementLookupResult) => {
-      let defaultElementData: $PropertyType<FormElementsCtrl, 'model'> | void
+      let defaultElementData /* : $PropertyType<FormElementsCtrl, 'model'> | void */
 
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
@@ -290,11 +294,11 @@ function LookupNotificationComponent({
   )
 }
 
-const LookupNotificationComponentMemo = React.memo<Props>(
+const LookupNotificationComponentMemo /* : React.AbstractComponent<Props> */ = React.memo(
   LookupNotificationComponent,
 )
 
-function LookupNotification(props: Props) {
+function LookupNotification(props /* : Props */) {
   if (props.element.isDataLookup || props.element.isElementLookup) {
     return <LookupNotificationComponentMemo {...props} />
   }
@@ -302,7 +306,9 @@ function LookupNotification(props: Props) {
   return props.children
 }
 
-export default React.memo<Props>(LookupNotification)
+export default (React.memo(
+  LookupNotification,
+) /*: React.AbstractComponent<Props> */)
 
 async function fetchLookup(formElementLookupId, form, payload, abortSignal) {
   if (typeof formElementLookupId !== 'number') {

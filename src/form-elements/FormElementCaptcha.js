@@ -3,19 +3,26 @@
 
 import * as React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
+
+/* ::
 type Props = {
   element: CaptchaElement,
   onChange: (FormElement, string | void) => void,
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementCaptcha({
-  element,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+const __RECAPTCHA_SITE_KEY__ = ''
+
+function FormElementCaptcha(
+  {
+    element,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   return (
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
@@ -40,4 +47,6 @@ function FormElementCaptcha({
   )
 }
 
-export default React.memo<Props>(FormElementCaptcha)
+export default (React.memo(
+  FormElementCaptcha,
+) /*: React.AbstractComponent<Props> */)

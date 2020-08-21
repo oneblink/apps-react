@@ -3,14 +3,15 @@
 import * as React from 'react'
 import { formService } from '@oneblink/apps'
 
-import generateDefaultData from 'form/services/generate-default-data'
+import generateDefaultData from '../services/generate-default-data'
 
-export default function useLookups({
-  formId,
-  currentPageId,
-  setDefinition,
-  setSubmission,
-}: {
+export default function useLookups(
+  {
+    formId,
+    currentPageId,
+    setDefinition,
+    setSubmission,
+  } /* : {
   formId: number,
   currentPageId: string,
   setDefinition: ((Form) => Form) => void,
@@ -19,9 +20,10 @@ export default function useLookups({
       $PropertyType<FormElementsCtrl, 'model'>,
     ) => $PropertyType<FormElementsCtrl, 'model'>,
   ) => void,
-}) {
+} */,
+) {
   const handleChangeElements = React.useCallback(
-    (elements: FormElement[]) => {
+    (elements /* : FormElement[] */) => {
       setDefinition((currentDefinition) => {
         if (currentPageId === formId.toString()) {
           return {
@@ -52,7 +54,10 @@ export default function useLookups({
   )
 
   const injectPagesAfter = React.useCallback(
-    (element: LookupFormElement, elementLookupData: PageElement[]) => {
+    (
+      element /* : LookupFormElement */,
+      elementLookupData /* : PageElement[] */,
+    ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,
         injectedByElementId: element.id,
@@ -129,7 +134,7 @@ export default function useLookups({
   )
 
   const handleChangeModel = React.useCallback(
-    (model: $PropertyType<FormElementsCtrl, 'model'>) => {
+    (model /*: $PropertyType<FormElementsCtrl, 'model'> */) => {
       setSubmission(() => model)
     },
     [setSubmission],

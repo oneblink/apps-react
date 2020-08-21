@@ -2,12 +2,12 @@
 'use strict'
 
 function cleanElementValue(
-  element: FormElement,
-  formElementsCtrl: FormElementsCtrl,
-  formElementConditionallyShown: FormElementConditionallyShown | void,
-  stripBinaryData: boolean,
-  captchaTokens: string[],
-): mixed {
+  element /* : FormElement */,
+  formElementsCtrl /* : FormElementsCtrl */,
+  formElementConditionallyShown /* : FormElementConditionallyShown | void */,
+  stripBinaryData /* : boolean */,
+  captchaTokens /* : string[] */,
+) /* : mixed */ {
   const isShowing =
     !!formElementConditionallyShown && formElementConditionallyShown.isShown
 
@@ -129,13 +129,13 @@ function cleanElementValue(
 }
 
 export default function cleanFormElementsCtrlModel(
-  formElementsCtrl: FormElementsCtrl,
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
-  stripBinaryData: boolean,
-): {
+  formElementsCtrl /* : FormElementsCtrl */,
+  formElementsConditionallyShown /* : FormElementsConditionallyShown | void */,
+  stripBinaryData /* : boolean */,
+) /* : {
   model: $PropertyType<FormElementsCtrl, 'model'>,
   captchaTokens: string[],
-} {
+} */ {
   const captchaTokens = []
   const model = {}
 

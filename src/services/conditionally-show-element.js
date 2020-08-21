@@ -11,9 +11,9 @@ const fnMap = {
 }
 
 export const handleOptionsPredicate = (
-  predicate: ConditionallyShowPredicateOptions,
-  model: { +[string]: mixed },
-  predicateElement: FormElementWithOptions,
+  predicate /* : ConditionallyShowPredicateOptions */,
+  model /* : { +[string]: mixed } */,
+  predicateElement /* : FormElementWithOptions */,
 ) => {
   return predicate.optionIds.some((optionId) => {
     const option = predicateElement.options.find((o) => o.id === optionId)
@@ -78,8 +78,8 @@ const handlePredicate = (predicate, model, predicateElement) => {
 }
 
 const getPagesFormElementsCtrl = (
-  formElementsCtrl: FormElementsCtrl,
-): FormElementsCtrl => {
+  formElementsCtrl /* : FormElementsCtrl */,
+) /* : FormElementsCtrl */ => {
   if (formElementsCtrl.parentFormElementsCtrl) {
     return getPagesFormElementsCtrl(formElementsCtrl.parentFormElementsCtrl)
   }
@@ -140,10 +140,10 @@ const conditionallyShowByPredicate = (
 }
 
 export default function conditionallyShowElement(
-  formElementsCtrl: FormElementsCtrl,
-  elementToEvaluate: FormElement,
-  elementsEvaluated: string[],
-): boolean {
+  formElementsCtrl /* : FormElementsCtrl */,
+  elementToEvaluate /* : FormElement */,
+  elementsEvaluated /* : string[] */,
+) /* : boolean */ {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
   if (

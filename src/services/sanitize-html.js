@@ -15,7 +15,7 @@ const allowedAttributes = allowedTags.reduce((attributesObject, tag) => {
   return attributesObject
 }, {})
 
-const sanitizeHtmlStandard = (html: string) => {
+const sanitizeHtmlStandard = (html /* : string */) => {
   return sanitizeHtml(html, {
     allowedTags,
     allowedAttributes,

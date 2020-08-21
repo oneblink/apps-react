@@ -6,15 +6,17 @@ import * as React from 'react'
 import {
   validatePages,
   generateSchemasByPages,
-} from 'form/services/form-validation'
+} from '../services/form-validation'
 
-export default function useFormValidation(pages: PageElement[]) {
+export default function useFormValidation(pages /* : PageElement[] */) {
   const [
     elementIdsWithLookupsExecuted,
     setElementIdsWithLookupsExecuted,
   ] = React.useState([])
 
-  const executedLookup = React.useCallback((element: LookupFormElement) => {
+  const executedLookup = React.useCallback((
+    element /* : LookupFormElement */,
+  ) => {
     setElementIdsWithLookupsExecuted((currentElementIdsWithLookupsExecuted) => {
       if (currentElementIdsWithLookupsExecuted.includes(element.id)) {
         return currentElementIdsWithLookupsExecuted
@@ -22,18 +24,15 @@ export default function useFormValidation(pages: PageElement[]) {
       return [...currentElementIdsWithLookupsExecuted, element.id]
     })
   }, [])
-  const executeLookupFailed = React.useCallback(
-    (element: LookupFormElement) => {
-      setElementIdsWithLookupsExecuted(
-        (currentElementIdsWithLookupsExecuted) => {
-          return currentElementIdsWithLookupsExecuted.filter(
-            (elementId) => elementId !== element.id,
-          )
-        },
+  const executeLookupFailed = React.useCallback((
+    element /* : LookupFormElement */,
+  ) => {
+    setElementIdsWithLookupsExecuted((currentElementIdsWithLookupsExecuted) => {
+      return currentElementIdsWithLookupsExecuted.filter(
+        (elementId) => elementId !== element.id,
       )
-    },
-    [],
-  )
+    })
+  }, [])
 
   const schemaByPageId = React.useMemo(() => {
     return generateSchemasByPages(pages, elementIdsWithLookupsExecuted)
@@ -41,11 +40,9 @@ export default function useFormValidation(pages: PageElement[]) {
 
   const handleValidate = React.useCallback(
     (
-      submission: $PropertyType<FormElementsCtrl, 'model'>,
-      pageElementsConditionallyShown: PageElementsConditionallyShown,
-    ): {
-      pagesValidation: PageElementsValidation | void,
-    } => {
+      submission /* : $PropertyType<FormElementsCtrl, 'model'> */,
+      pageElementsConditionallyShown /* : PageElementsConditionallyShown */,
+    ) => {
       const pagesValidation = validatePages(
         schemaByPageId,
         submission,

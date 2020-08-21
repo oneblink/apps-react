@@ -4,11 +4,12 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import useBooleanState from 'form/hooks/useBooleanState'
-import useClickOutsideElement from 'form/hooks/useClickOutsideElement'
-import useIsMounted from 'form/hooks/useIsMounted'
-import downloadFile from 'form/services/download-file'
+import useBooleanState from '../hooks/useBooleanState'
+import useClickOutsideElement from '../hooks/useClickOutsideElement'
+import useIsMounted from '../hooks/useIsMounted'
+import downloadFile from '../services/download-file'
 
+/* ::
 type Props = {
   id: string,
   element: FilesElement,
@@ -26,15 +27,11 @@ type ChildProps = {
   file: Object,
   index: number,
 }
+*/
 
-const FormElementFile = ({
-  element,
-  onChange,
-  value,
-  setIsDirty,
-  file,
-  index,
-}: ChildProps) => {
+const FormElementFile = (
+  { element, onChange, value, setIsDirty, file, index } /* : ChildProps */,
+) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
   const isImageType = React.useMemo(() => {
@@ -129,16 +126,20 @@ const FormElementFile = ({
   )
 }
 
-const MemorisedFile = React.memo<ChildProps>(FormElementFile)
+const MemorisedFile /*: React.AbstractComponent<ChildProps> */ = React.memo(
+  FormElementFile,
+)
 
-function FormElementFiles({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementFiles(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const inputRef = React.useRef(null)
   const [isDirty, setIsDirty] = useBooleanState(false)
   const isMounted = useIsMounted()
@@ -172,7 +173,7 @@ function FormElementFiles({
     if (!inputRef.current) return
     inputRef.current.click()
   }, [])
-  const files: Object[] = Array.isArray(value) ? [...value] : []
+  const files /* : Object[] */ = Array.isArray(value) ? [...value] : []
   return (
     <div className="cypress-files-element">
       <div className="ob-form__element ob-files">
@@ -231,4 +232,6 @@ function FormElementFiles({
   )
 }
 
-export default React.memo<Props>(FormElementFiles)
+export default (React.memo(
+  FormElementFiles,
+) /*: React.AbstractComponent<Props> */)

@@ -2,11 +2,13 @@
 
 import * as React from 'react'
 
+/* ::
 type LookupNotificationContextValue = {
   isLookup: boolean,
   isDisabled: boolean,
   onLookup: () => mixed,
 }
+*/
 
 const defaultContext = {
   isLookup: false,
@@ -14,7 +16,7 @@ const defaultContext = {
   onLookup: () => {},
 }
 
-export const LookupNotificationContext = React.createContext<LookupNotificationContextValue>(
+export const LookupNotificationContext /* : React.Context<LookupNotificationContextValue> */ = React.createContext(
   defaultContext,
 )
 

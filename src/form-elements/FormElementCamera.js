@@ -6,11 +6,11 @@ import clsx from 'clsx'
 import loadImage from 'blueimp-load-image'
 import SignatureCanvas from 'react-signature-canvas'
 
-import useBooleanState from 'form/hooks/useBooleanState'
-import downloadFile from 'form/services/download-file'
-import { OnLoading } from 'components'
-import scrollingService from 'form/services/scrolling-service'
-
+import useBooleanState from '../hooks/useBooleanState'
+import downloadFile from '../services/download-file'
+import OnLoading from '../components/OnLoading'
+import scrollingService from '../services/scrolling-service'
+/* ::
 type Props = {
   id: string,
   element: CameraElement,
@@ -19,15 +19,18 @@ type Props = {
   displayValidationMessage: boolean,
   validationMessage: string | void,
 }
+*/
 
-function FormElementCamera({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-}: Props) {
+function FormElementCamera(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+  } /* : Props */,
+) {
   const [isLoading, setIsLoading, clearIsLoading] = useBooleanState(false)
   const [viewError, , , toggleError] = useBooleanState(false)
   const [cameraError, setCameraError] = React.useState(null)
@@ -310,7 +313,9 @@ function FormElementCamera({
   )
 }
 
-export default React.memo<Props>(FormElementCamera)
+export default (React.memo(
+  FormElementCamera,
+) /*: React.AbstractComponent<Props> */)
 
 const annotationButtonColours = [
   '#000000',
@@ -333,15 +338,17 @@ const annotationButtonColours = [
   '#ff5722',
 ]
 
-const CameraAnnotation = React.memo(function CameraAnnotation({
-  imageSrc,
-  onClose,
-  onSave,
-}: {
+const CameraAnnotation = React.memo(function CameraAnnotation(
+  {
+    imageSrc,
+    onClose,
+    onSave,
+  } /* : {
   imageSrc: mixed,
   onClose: () => void,
   onSave: (string) => void,
-}) {
+} */,
+) {
   const annotationContentElementRef = React.useRef(null)
   const bmSignaturePadRef = React.useRef(null)
   const signatureCanvasRef = React.useRef(null)

@@ -4,10 +4,11 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import FormElementOptions from 'form/components/FormElementOptions'
-import useFormElementOptions from 'form/hooks/useFormElementOptions'
-import LookupButton from 'form/components/LookupButton'
+import FormElementOptions from '../components/FormElementOptions'
+import useFormElementOptions from '../hooks/useFormElementOptions'
+import LookupButton from '../components/LookupButton'
 
+/* ::
 type Props = {
   id: string,
   element: CheckboxElement,
@@ -17,16 +18,19 @@ type Props = {
   validationMessage: string | void,
   onConditionallyShowOption: (ChoiceElementOption) => boolean,
 }
+*/
 
-function FormElementCheckboxes({
-  id,
-  element,
-  value,
-  onChange,
-  validationMessage,
-  displayValidationMessage,
-  onConditionallyShowOption,
-}: Props) {
+function FormElementCheckboxes(
+  {
+    id,
+    element,
+    value,
+    onChange,
+    validationMessage,
+    displayValidationMessage,
+    onConditionallyShowOption,
+  } /* : Props */,
+) {
   const changeValues = React.useCallback(
     (newValue) => {
       let hasSelectedValue = Array.isArray(value)
@@ -147,4 +151,6 @@ function FormElementCheckboxes({
   )
 }
 
-export default React.memo<Props>(FormElementCheckboxes)
+export default (React.memo(
+  FormElementCheckboxes,
+) /*: React.AbstractComponent<Props> */)

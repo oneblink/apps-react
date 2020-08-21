@@ -3,11 +3,13 @@
 
 import * as React from 'react'
 
+/* ::
 type Props = {
   element: HeadingElement,
 }
+*/
 
-function FormElementHeading({ element }: Props) {
+function FormElementHeading({ element } /* : Props */) {
   return (
     <div className="cypress-heading-element">
       <div className="ob-form__element ob-heading">
@@ -17,15 +19,19 @@ function FormElementHeading({ element }: Props) {
   )
 }
 
-export default React.memo<Props>(FormElementHeading)
+export default (React.memo(
+  FormElementHeading,
+) /*: React.AbstractComponent<Props> */)
 
-const Heading = React.memo(function Heading({
-  headingType,
-  children,
-}: {
+const Heading = React.memo(function Heading(
+  {
+    headingType,
+    children,
+  } /* : {
   headingType: number,
   children: React.Node,
-}) {
+} */,
+) {
   const className = `ob-heading__text title is-${headingType}`
   switch (headingType) {
     case 1:

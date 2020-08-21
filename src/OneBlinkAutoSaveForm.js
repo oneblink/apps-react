@@ -5,9 +5,11 @@ import * as React from 'react'
 import _throttle from 'lodash.throttle'
 import { autoSaveService } from '@oneblink/apps'
 
-import { OnLoading, Modal } from 'components'
-import OneBlinkForm from 'form/OneBlinkForm'
+import OnLoading from './components/OnLoading'
+import Modal from './components/Modal'
+import OneBlinkForm from './OneBlinkForm'
 
+/* ::
 type Props = {
   formsAppId: number,
   form: Form,
@@ -18,17 +20,20 @@ type Props = {
   onSubmit: (FormSubmission) => mixed,
   onSaveDraft?: (DraftSubmission) => mixed,
 }
+*/
 
-function OneBlinkAutoSaveForm({
-  formsAppId,
-  form,
-  isPreview,
-  autoSaveKey,
-  initialSubmission,
-  onCancel,
-  onSubmit,
-  onSaveDraft,
-}: Props) {
+function OneBlinkAutoSaveForm(
+  {
+    formsAppId,
+    form,
+    isPreview,
+    autoSaveKey,
+    initialSubmission,
+    onCancel,
+    onSubmit,
+    onSaveDraft,
+  } /* : Props */,
+) {
   const [isUsingAutoSave, setIsUsingAutoSave] = React.useState(null)
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
   const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState({
@@ -185,4 +190,6 @@ function OneBlinkAutoSaveForm({
   )
 }
 
-export default React.memo<Props>(OneBlinkAutoSaveForm)
+export default (React.memo(
+  OneBlinkAutoSaveForm,
+) /*: React.AbstractComponent<Props> */)
