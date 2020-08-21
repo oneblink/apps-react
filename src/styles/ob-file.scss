@@ -1,0 +1,63 @@
+.ob-file {
+  .file-input[disabled] {
+    opacity: 0;
+  }
+
+  .file {
+    margin-bottom: 8px;
+  }
+
+  .file-label[disabled] {
+    > .file-cta {
+      cursor: not-allowed;
+      background-color: $button-disabled-background-color;
+      border-color: $button-disabled-border-color;
+      box-shadow: $button-disabled-shadow;
+      opacity: $button-disabled-opacity;
+
+      > .file-label {
+        cursor: not-allowed;
+      }
+    }
+
+    > .file-name {
+      cursor: not-allowed;
+      color: $input-disabled-color;
+      background-color: $input-disabled-background-color;
+      border-color: $input-disabled-border-color;
+    }
+  }
+
+  .ob-button {
+    margin-top: 5px;
+  }
+
+  .file-label {
+    width: 100%;
+  }
+
+  .file-name {
+    flex: 1;
+    display: grid;
+    max-width: unset;
+    white-space: unset;
+    overflow: unset;
+    text-overflow: unset;
+
+    .file-name-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media only screen and (max-width: $tablet) {
+    .file-icon {
+      margin-right: 0;
+
+      & + .file-label {
+        display: none;
+      }
+    }
+  }
+}

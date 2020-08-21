@@ -1,0 +1,15 @@
+.ob-autocomplete {
+  .dropdown,
+  .dropdown-menu {
+    width: 100%;
+  }
+
+  .dropdown-content {
+    max-height: 300px;
+    overflow-y: auto;
+
+    a.dropdown-item {
+      transition: background-color 0.25s, color 0.25s;
+    }
+  }
+}

@@ -1,0 +1,49 @@
+.on-loading {
+  margin: auto;
+  border-style: solid;
+  border-color: $secondary;
+  border-top-color: $primary;
+  border-radius: 50%;
+
+  -webkit-animation: spin 0.75s linear infinite; /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: spin 0.75s linear infinite; /* Firefox < 16 */
+  -ms-animation: spin 0.75s linear infinite; /* Internet Explorer */
+  -o-animation: spin 0.75s linear infinite; /* Opera < 12.1 */
+  animation: spin 0.75s linear infinite;
+
+  border-width: 8px;
+  width: 75px;
+  height: 75px;
+
+  .ob-list__avatar & {
+    border-width: 2px;
+    width: 25px;
+    height: 25px;
+  }
+
+  &.small {
+    border-width: 5px;
+    width: 50px;
+    height: 50px;
+  }
+
+  &.large {
+    border-width: 10px;
+    width: 100px;
+    height: 100px;
+  }
+
+  button & {
+    border-width: 2px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+on-loading {
+  button & {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+}

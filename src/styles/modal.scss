@@ -1,0 +1,23 @@
+.modal {
+  // Need this to make sure tool tips do not cover models
+  z-index: 100000;
+
+  @media only screen and (max-width: $tablet) {
+    padding: 0 $size-8;
+  }
+}
+
+.modal-background-faded {
+  @extend .modal-background;
+  opacity: 0.2;
+}
+
+.modal-card {
+  box-shadow: $elevation-3;
+  border-radius: $radius-small;
+}
+
+.modal-card-foot {
+  padding: 0 20px 20px;
+  justify-content: flex-end;
+}
