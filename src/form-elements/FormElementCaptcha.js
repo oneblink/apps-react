@@ -4,6 +4,8 @@
 import * as React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 
+import useCaptchaSiteKey from '../hooks/useCaptchaSiteKey'
+
 /* ::
 type Props = {
   element: CaptchaElement,
@@ -13,8 +15,6 @@ type Props = {
 }
 */
 
-const __RECAPTCHA_SITE_KEY__ = ''
-
 function FormElementCaptcha(
   {
     element,
@@ -23,11 +23,13 @@ function FormElementCaptcha(
     displayValidationMessage,
   } /* : Props */,
 ) {
+  const captchaSiteKey = useCaptchaSiteKey()
+
   return (
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
         <ReCAPTCHA
-          sitekey={__RECAPTCHA_SITE_KEY__}
+          sitekey={captchaSiteKey}
           onChange={(val) => {
             if (val === null) val = undefined
             onChange(element, val)

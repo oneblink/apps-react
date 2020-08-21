@@ -17,6 +17,7 @@ type Props = {
   autoSaveKey?: string,
   initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
   googleMapsApiKey?: string,
+  captchaSiteKey?: string,
   onCancel: () => mixed,
   onSubmit: (FormSubmission) => mixed,
   onSaveDraft?: (DraftSubmission) => mixed,
@@ -26,6 +27,7 @@ type Props = {
 function OneBlinkAutoSaveForm(
   {
     googleMapsApiKey,
+    captchaSiteKey,
     formsAppId,
     form,
     isPreview,
@@ -178,6 +180,7 @@ function OneBlinkAutoSaveForm(
       )}
       <OneBlinkForm
         googleMapsApiKey={googleMapsApiKey}
+        captchaSiteKey={captchaSiteKey}
         formsAppId={formsAppId}
         isPreview={isPreview}
         initialSubmission={

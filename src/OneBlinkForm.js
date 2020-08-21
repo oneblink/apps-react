@@ -26,6 +26,7 @@ import { InjectPagesContext } from './hooks/useInjectPages'
 import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
+import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 
 /* ::
 type Props = {
@@ -34,6 +35,7 @@ type Props = {
   isPreview?: boolean,
   initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
   googleMapsApiKey?: string,
+  captchaSiteKey?: string,
   onCancel: () => mixed,
   onSubmit: (FormSubmission) => mixed,
   onSaveDraft?: (DraftSubmission) => mixed,
@@ -44,6 +46,7 @@ type Props = {
 function OneBlinkForm(
   {
     googleMapsApiKey,
+    captchaSiteKey,
     formsAppId,
     form: _form,
     isPreview,
@@ -562,37 +565,45 @@ function OneBlinkForm(
                           <GoogleMapsApiKeyContext.Provider
                             value={googleMapsApiKey}
                           >
-                            {visiblePages.map((page) => (
-                              <div
-                                key={page.id}
-                                className={clsx(
-                                  'ob-page step-content is-active cypress-page',
-                                  {
-                                    'is-invisible': currentPage.id !== page.id,
-                                  },
-                                )}
-                              >
-                                <OneBlinkFormElements
-                                  model={submission}
-                                  formElementsConditionallyShown={
-                                    pageElementsConditionallyShown[page.id]
-                                      .formElements
-                                  }
-                                  formElementsValidation={
-                                    pagesValidation && pagesValidation[page.id]
-                                  }
-                                  displayValidationMessages={
-                                    hasAttemptedSubmit ||
-                                    checkDisplayPageError(page)
-                                  }
-                                  elements={page.elements}
-                                  onChange={handleChange}
-                                  onChangeElements={handleChangeElements}
-                                  onChangeModel={handleChangeModel}
-                                  parentFormElementsCtrl={rootFormElementsCtrl}
-                                />
-                              </div>
-                            ))}
+                            <CaptchaSiteKeyContext.Provider
+                              value={captchaSiteKey}
+                            >
+                              {visiblePages.map((page) => (
+                                <div
+                                  key={page.id}
+                                  className={clsx(
+                                    'ob-page step-content is-active cypress-page',
+                                    {
+                                      'is-invisible':
+                                        currentPage.id !== page.id,
+                                    },
+                                  )}
+                                >
+                                  <OneBlinkFormElements
+                                    model={submission}
+                                    formElementsConditionallyShown={
+                                      pageElementsConditionallyShown[page.id]
+                                        .formElements
+                                    }
+                                    formElementsValidation={
+                                      pagesValidation &&
+                                      pagesValidation[page.id]
+                                    }
+                                    displayValidationMessages={
+                                      hasAttemptedSubmit ||
+                                      checkDisplayPageError(page)
+                                    }
+                                    elements={page.elements}
+                                    onChange={handleChange}
+                                    onChangeElements={handleChangeElements}
+                                    onChangeModel={handleChangeModel}
+                                    parentFormElementsCtrl={
+                                      rootFormElementsCtrl
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            </CaptchaSiteKeyContext.Provider>
                           </GoogleMapsApiKeyContext.Provider>
                         </ExecutedLookupProvider>
                       </InjectPagesContext.Provider>
