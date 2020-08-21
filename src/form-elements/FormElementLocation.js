@@ -10,6 +10,7 @@ import geolocation from '@blinkmobile/geolocation'
 import queryString from 'query-string'
 import OnLoading from '../components/OnLoading'
 import defaultCoords from '../services/defaultCoordinates'
+import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 
 /* ::
 type Props = {
@@ -27,7 +28,6 @@ type Coords = {
 }
 */
 
-const __GOOGLE_MAPS_API_KEY__ = ''
 const mapHeight = 300
 const initialMapZoom = 15
 const apiUrl = 'https://maps.googleapis.com/maps/api/staticmap'
@@ -118,7 +118,6 @@ function FormElementLocation(
         </label>
         <div className="control">
           {!isOffline ? (
-            // $FlowFixMe - mixed to Coords type
             <LocationPicker
               isOpen={locationPickerIsOpen}
               value={location}
@@ -249,7 +248,7 @@ const LocationIsOffline = React.memo(function LocationIsOffline(
 
 /* ::
 type LocationPickerProps = {
-  value: Coords | void,
+  value: mixed | void,
   isOpen: boolean,
   onChange: (Coords) => void,
 }
@@ -258,9 +257,14 @@ type LocationPickerProps = {
 const LocationPicker = React.memo(function SummaryResult(
   { value, isOpen, onChange } /* : LocationPickerProps */,
 ) {
+  const googleMapsApiKey = useGoogleMapsApiKeyKey()
+
   const coords = React.useMemo(
     () =>
-      value
+      value &&
+      typeof value === 'object' &&
+      typeof value.latitude === 'number' &&
+      typeof value.longitude === 'number'
         ? {
             lat: value.latitude,
             lng: value.longitude,
@@ -278,19 +282,19 @@ const LocationPicker = React.memo(function SummaryResult(
   const staticUrl = React.useMemo(() => {
     if (!coords) return
     const queries = {
-      key: __GOOGLE_MAPS_API_KEY__,
+      key: googleMapsApiKey,
       size: `${mapHeight}x${mapHeight}`,
       zoom: zoom,
       center: `${coords.lat},${coords.lng}`,
       markers: `color:red|${coords.lat},${coords.lng}`,
     }
     return `${apiUrl}?${queryString.stringify(queries)}`
-  }, [coords, zoom])
+  }, [coords, googleMapsApiKey, zoom])
 
   return coords ? (
     <figure>
       {isOpen ? (
-        <LoadScript googleMapsApiKey={__GOOGLE_MAPS_API_KEY__}>
+        <LoadScript googleMapsApiKey={googleMapsApiKey}>
           <GoogleMap
             onLoad={(map) => setMap(map)}
             onUnmount={() => setMap(null)}

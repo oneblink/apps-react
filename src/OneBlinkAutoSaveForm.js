@@ -16,6 +16,7 @@ type Props = {
   isPreview?: boolean,
   autoSaveKey?: string,
   initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
+  googleMapsApiKey?: string,
   onCancel: () => mixed,
   onSubmit: (FormSubmission) => mixed,
   onSaveDraft?: (DraftSubmission) => mixed,
@@ -24,6 +25,7 @@ type Props = {
 
 function OneBlinkAutoSaveForm(
   {
+    googleMapsApiKey,
     formsAppId,
     form,
     isPreview,
@@ -175,6 +177,7 @@ function OneBlinkAutoSaveForm(
         <i className="material-icons ob-form__auto-save-icon">sync</i>
       )}
       <OneBlinkForm
+        googleMapsApiKey={googleMapsApiKey}
         formsAppId={formsAppId}
         isPreview={isPreview}
         initialSubmission={
