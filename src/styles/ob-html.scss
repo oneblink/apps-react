@@ -1,0 +1,40 @@
+// Need to replace class assigned by our WYSIWYG for font sizes
+
+.ql-size-small {
+  font-size: $size-7;
+}
+
+.ql-size-large {
+  font-size: $size-4;
+}
+
+.ql-size-huge {
+  font-size: $size-3;
+}
+
+.ql-align-justify {
+  text-align: justify;
+}
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-left {
+  text-align: left;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ob-information__content {
+  ul {
+    list-style: circle;
+    margin-left: $size-3;
+  }
+
+  ol {
+    margin-left: $size-3;
+  }
+}

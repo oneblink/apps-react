@@ -1,6 +1,7 @@
 {
   "env": {
     "node": true,
+    "browser": true,
     "es2020": true
   },
   "extends": [
@@ -16,7 +17,7 @@
     "ecmaVersion": 11,
     "sourceType": "module"
   },
-  "plugins": ["flowtype", "react", "react-hooks", "prettier"],
+  "plugins": ["react", "react-hooks", "prettier"],
   "rules": {
     "react/prop-types": 0
   },

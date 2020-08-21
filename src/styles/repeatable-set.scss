@@ -1,0 +1,33 @@
+.ob-repeatable-set {
+  .ob-repeatable-set__container {
+    position: relative;
+    padding: $size-5;
+    margin-bottom: $size-5;
+
+    > .ob-button_remove {
+      margin-bottom: $size-8;
+
+      @media only screen and (min-width: $desktop) {
+        position: absolute;
+        top: $size-6;
+        right: $size-5;
+        min-width: 0;
+        border: 0;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  > .ob-button__add {
+    margin-bottom: 0;
+    min-width: 0;
+  }
+
+  &.odd > .ob-repeatable-set__container {
+    background-color: $white;
+  }
+
+  &.even > .ob-repeatable-set__container {
+    background-color: $white-bis;
+  }
+}

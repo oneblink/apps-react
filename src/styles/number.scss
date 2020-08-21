@@ -1,0 +1,42 @@
+.ob-number__output {
+  background-color: $grey-light;
+  color: $white;
+  text-align: center;
+  padding: $size-8;
+  border-radius: $radius;
+  position: relative;
+  font-size: $size-7;
+  display: inline-block;
+  min-width: $size-3;
+  -webkit-transition: background-color 0.2s ease, color 0.2s ease;
+  -moz-transition: background-color 0.2s ease, color 0.2s ease;
+  -o-transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 0;
+    height: 0;
+    border-top: solid 6px $grey-light;
+    border-left: solid 6px transparent;
+    border-right: solid 6px transparent;
+    -webkit-transition: border-top-color 0.2s ease;
+    -moz-transition: border-top-color 0.2s ease;
+    -o-transition: border-top-color 0.2s ease;
+    transition: border-top-color 0.2s ease;
+  }
+
+  &.is-dragging {
+    background-color: $primary;
+    color: $p-invert;
+
+    &:after {
+      border-top-color: $primary;
+    }
+  }
+}

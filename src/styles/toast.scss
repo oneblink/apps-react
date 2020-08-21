@@ -1,0 +1,10 @@
+.ob-toast {
+  box-shadow: $elevation-3;
+  padding: $size-7 $size-6 !important;
+
+  @media only screen and (max-width: $tablet) {
+    border-radius: 0;
+    width: calc(100% + 30px) !important;
+    margin: -15px;
+  }
+}

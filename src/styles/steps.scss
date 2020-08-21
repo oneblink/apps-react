@@ -1,0 +1,47 @@
+@media only screen and (max-width: $tablet) {
+  .steps.is-horizontal-tablet {
+    flex-direction: column;
+
+    .step-item {
+      &:not(:first-child) {
+        margin-top: $size-5;
+
+        &::before {
+          height: 100%;
+          width: 0.2em;
+          bottom: 0;
+          left: 11px;
+          top: -100%;
+        }
+      }
+
+      display: flex;
+      align-items: center;
+      flex: 0;
+
+      .step-marker {
+        position: relative;
+        left: unset;
+      }
+
+      .step-details {
+        text-align: left;
+        margin: 0;
+        padding: 0;
+        padding-left: $size-5;
+        flex: 1;
+        min-width: 0;
+
+        .step-title {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .step-subtitle {
+          position: absolute;
+        }
+      }
+    }
+  }
+}

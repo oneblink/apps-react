@@ -1,0 +1,66 @@
+.ob-files {
+  .ob-input {
+    display: none;
+  }
+}
+
+.ob-files__box {
+  position: relative;
+  background-color: $white-ter;
+  height: 100%;
+}
+
+.ob-files__content-file {
+  padding: $size-3;
+}
+
+.ob-files__attach-icon {
+  display: block;
+}
+
+.ob-files__content-image {
+  padding: $size-8;
+  height: calc(50px + #{$size-3} * 2);
+  display: flex;
+}
+
+.ob-files__image {
+  display: block;
+  margin: auto;
+  max-height: 100%;
+}
+
+.ob-files__menu {
+  position: absolute;
+  top: $size-8;
+  right: $size-8;
+}
+
+.ob-files__file-name {
+  background: $grey-lighter;
+  padding: $size-7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ob-files__add-new-button {
+  width: 100%;
+  height: 100%;
+  border-style: dashed;
+  border-width: 3px;
+  border-color: $grey-lighter;
+  color: $grey-lighter;
+  background-color: $white-ter;
+
+  &:active,
+  &:focus,
+  &:hover {
+    border-color: $grey-light;
+    color: $grey-light;
+  }
+}
+
+.ob-files__menu-remove-hidden {
+  display: none;
+}

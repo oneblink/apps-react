@@ -1,0 +1,29 @@
+.ob-lookup__notification {
+  -webkit-transition: max-height 0.5s ease-in-out;
+  -moz-transition: max-height 0.5s ease-in-out;
+  -o-transition: max-height 0.5s ease-in-out;
+  transition: max-height 0.5s ease-in-out;
+  overflow: hidden;
+  max-height: 0;
+
+  &.is-looking-up {
+    max-height: calc(#{$size-5 * 2} + #{$size-7} + 50px);
+
+    &.is-extended {
+      max-height: calc(#{$size-5 * 2} + #{$size-7 * 2} + 50px + 68px);
+
+      .notification {
+        max-height: 100%;
+        overflow-y: auto;
+      }
+    }
+  }
+
+  &.has-failed {
+    max-height: calc(#{$size-5 * 2} + #{$size-7 * 2} + 50px + 68px);
+  }
+
+  .material-icons {
+    font-size: 50px;
+  }
+}

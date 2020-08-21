@@ -1,0 +1,77 @@
+.ob-camera__annotate-button {
+  position: absolute;
+  top: $size-8;
+  right: $size-8;
+}
+
+.ob-camera__input-hidden {
+  display: none;
+}
+
+.ob-annotation {
+  z-index: inherit;
+  height: calc(100vh - #{$size-6});
+  width: calc(100vw - #{$size-6});
+  max-height: $desktop;
+  max-width: $desktop;
+  box-shadow: $elevation-2;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+}
+
+.ob-annotation__content {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white-ter;
+}
+
+.ob-annotation__signature-pad {
+  background: $white;
+}
+
+.ob-annotation__buttons {
+  display: flex;
+  align-items: center;
+  padding: $size-8;
+}
+
+.ob-annotation__buttons-actions {
+  justify-content: flex-end;
+}
+
+.ob-annotation__button-action {
+  &:not(:last-child) {
+    margin-right: $size-8;
+  }
+}
+
+.ob-annotation__buttons-colours {
+  height: calc(#{$size-8} * 2 + 60px);
+  background: $white;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ob-annotation__button-colour {
+  -webkit-transition: min-width 0.2s, height 0.2s;
+  -moz-transition: min-width 0.2s, height 0.2s;
+  -o-transition: min-width 0.2s, height 0.2s;
+  transition: min-width 0.2s, height 0.2s;
+  outline: none;
+  min-width: 50px;
+  height: 50px;
+  border-radius: 50px;
+
+  &:not(:last-child) {
+    margin-right: $size-8;
+  }
+
+  &.is-selected {
+    min-width: 60px;
+    height: 60px;
+    border-radius: 60px;
+  }
+}
