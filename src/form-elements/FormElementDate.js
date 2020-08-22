@@ -43,6 +43,8 @@ function FormElementDate(
       minDate: undefined,
       maxDate: undefined,
       defaultDate: undefined,
+      allowInvalidPreload: true,
+      onClose: setIsDirty,
     }
 
     if (element.fromDate) {
@@ -53,7 +55,7 @@ function FormElementDate(
     }
 
     return opts
-  }, [element])
+  }, [element.fromDate, element.toDate, setIsDirty])
 
   const handleChange = React.useCallback(
     (newValue) => onChange(element, newValue),
@@ -64,7 +66,6 @@ function FormElementDate(
     {
       id,
       value,
-      isDisabled: element.readOnly,
       onBlur: setIsDirty,
       onChange: handleChange,
     },
@@ -96,6 +97,7 @@ function FormElementDate(
               id={id}
               name={element.name}
               placeholder={element.placeholderValue}
+              disabled={element.readOnly}
               className="input ob-input"
             />
           </div>

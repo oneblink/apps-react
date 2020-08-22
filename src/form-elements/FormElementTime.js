@@ -46,10 +46,11 @@ function FormElementTime(
       enableTime: true,
       noCalendar: true,
       time_24hr: false,
+      onClose: setIsDirty,
     }
 
     return opts
-  }, [])
+  }, [setIsDirty])
 
   const handleChange = React.useCallback(
     (newValue) => onChange(element, newValue),
@@ -60,7 +61,6 @@ function FormElementTime(
     {
       id,
       value,
-      isDisabled: element.readOnly,
       onBlur: setIsDirty,
       onChange: handleChange,
     },
@@ -92,6 +92,7 @@ function FormElementTime(
               id={id}
               name={element.name}
               placeholder={element.placeholderValue}
+              disabled={element.readOnly}
               className="input ob-input"
             />
           </div>

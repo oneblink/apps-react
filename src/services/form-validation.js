@@ -225,6 +225,11 @@ const clearValidationMessagesForHiddenElements = (
 
 const presence = (required, message) => (required ? { message } : false)
 
+const escapeElementName = (elementName /* : string */) => {
+  const escapedName = elementName.replace(/\./g, '\\.')
+  return escapedName
+}
+
 const generateSchemaReducer = (
   formElements /* : FormElement[] */,
   elementIdsWithLookupsExecuted /* : string[] */,
@@ -241,25 +246,25 @@ const generateSchemaReducer = (
         break
       }
       case 'draw': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'A signature is required'),
         }
         break
       }
       case 'camera': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'A photo is required'),
         }
         break
       }
       case 'captcha': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(true, 'Please complete the CAPTCHA successfully'),
         }
         break
       }
       case 'location': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a location'),
           lookups: {
             formElement,
@@ -272,7 +277,7 @@ const generateSchemaReducer = (
       case 'checkboxes':
       case 'radio':
       case 'select': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Required'),
           lookups: {
             formElement,
@@ -282,7 +287,7 @@ const generateSchemaReducer = (
         break
       }
       case 'barcodeScanner': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             formElement.required,
             'Please scan a barcode or enter a value',
@@ -296,7 +301,7 @@ const generateSchemaReducer = (
       }
       case 'text':
       case 'textarea': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please enter a value'),
           lookups: {
             formElement,
@@ -306,7 +311,7 @@ const generateSchemaReducer = (
         break
       }
       case 'telephone': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             formElement.required,
             'Please enter a phone number',
@@ -319,7 +324,7 @@ const generateSchemaReducer = (
         break
       }
       case 'email': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             formElement.required,
             'Please enter an email address',
@@ -335,7 +340,7 @@ const generateSchemaReducer = (
         break
       }
       case 'time': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a time'),
           lookups: {
             formElement,
@@ -345,7 +350,7 @@ const generateSchemaReducer = (
         break
       }
       case 'date': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a date'),
           datetime: {
             format: vocabularyService.formatDate,
@@ -363,7 +368,7 @@ const generateSchemaReducer = (
         break
       }
       case 'datetime': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             formElement.required,
             'Please select a date and time',
@@ -395,7 +400,7 @@ const generateSchemaReducer = (
           minErrorMessage = maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
         }
 
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           type: 'number',
           presence: presence(formElement.required, 'Please enter a number'),
           numericality: {
@@ -412,7 +417,7 @@ const generateSchemaReducer = (
         break
       }
       case 'files': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             formElement.minEntries,
             `Please upload at least ${formElement.minEntries || 1} file(s)`,
@@ -447,7 +452,7 @@ const generateSchemaReducer = (
         break
       }
       case 'repeatableSet': {
-        partialSchema[formElement.name] = {
+        partialSchema[escapeElementName(formElement.name)] = {
           entries: {
             setSchema: {
               presence: presence(
@@ -473,7 +478,7 @@ const generateSchemaReducer = (
       }
       case 'form': {
         if (formElement.elements) {
-          partialSchema[formElement.name] = {
+          partialSchema[escapeElementName(formElement.name)] = {
             nestedElements: generateSchemaReducer(
               formElement.elements,
               elementIdsWithLookupsExecuted,
@@ -506,7 +511,7 @@ const validateSingleMessageError = (
     (messagesByFormElementName, key) => {
       const validationMessage = errorsAsArray[key][0]
       if (validationMessage) {
-        messagesByFormElementName[key] = validationMessage
+        messagesByFormElementName[key.replace(/\\./g, '.')] = validationMessage
       }
       return messagesByFormElementName
     },

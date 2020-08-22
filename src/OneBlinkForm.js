@@ -443,7 +443,7 @@ function OneBlinkForm(
     <>
       <form
         name="obForm"
-        className={`ob-form cypress-ob-form 'ob-form__page-'${
+        className={`ob-form cypress-ob-form ob-form__page-${
           currentPageIndex + 1
         }`}
         noValidate
@@ -666,7 +666,7 @@ function OneBlinkForm(
                 onClick={handleSaveDraft}
                 disabled={isPreview}
               >
-                Save Draft
+                <span>Save Draft</span>
               </button>
             )}
             <span className="ob-buttons-submit__spacer"></span>
@@ -677,7 +677,7 @@ function OneBlinkForm(
                 onClick={handleCancel}
                 disabled={isPreview}
               >
-                Cancel
+                <span>Cancel</span>
               </button>
             )}
             {isLastVisiblePage && (
@@ -686,7 +686,7 @@ function OneBlinkForm(
                 className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
                 disabled={isPreview}
               >
-                {definition.isInfoPage ? 'Done' : 'Submit'}
+                <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
               </button>
             )}
           </div>
