@@ -124,7 +124,7 @@ const conditionallyShowByPredicate = (
   })
   if (
     pageElement &&
-    !conditionallyShowElement(formElementsCtrl, pageElement, elementsEvaluated)
+    !conditionallyShowElement(formElementsCtrl, pageElement, [])
   ) {
     return false
   }

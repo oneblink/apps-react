@@ -25,6 +25,8 @@ import { FormDefinitionContext } from './hooks/useFormDefinition'
 import { InjectPagesContext } from './hooks/useInjectPages'
 import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
+import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
+import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 
 /* ::
 type Props = {
@@ -32,6 +34,8 @@ type Props = {
   form: Form,
   isPreview?: boolean,
   initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
+  googleMapsApiKey?: string,
+  captchaSiteKey?: string,
   onCancel: () => mixed,
   onSubmit: (FormSubmission) => mixed,
   onSaveDraft?: (DraftSubmission) => mixed,
@@ -41,6 +45,8 @@ type Props = {
 
 function OneBlinkForm(
   {
+    googleMapsApiKey,
+    captchaSiteKey,
     formsAppId,
     form: _form,
     isPreview,
@@ -437,7 +443,7 @@ function OneBlinkForm(
     <>
       <form
         name="obForm"
-        className={`ob-form cypress-ob-form 'ob-form__page-'${
+        className={`ob-form cypress-ob-form ob-form__page-${
           currentPageIndex + 1
         }`}
         noValidate
@@ -556,35 +562,49 @@ function OneBlinkForm(
                           executedLookup={executedLookup}
                           executeLookupFailed={executeLookupFailed}
                         >
-                          {visiblePages.map((page) => (
-                            <div
-                              key={page.id}
-                              className={clsx(
-                                'ob-page step-content is-active cypress-page',
-                                { 'is-invisible': currentPage.id !== page.id },
-                              )}
+                          <GoogleMapsApiKeyContext.Provider
+                            value={googleMapsApiKey}
+                          >
+                            <CaptchaSiteKeyContext.Provider
+                              value={captchaSiteKey}
                             >
-                              <OneBlinkFormElements
-                                model={submission}
-                                formElementsConditionallyShown={
-                                  pageElementsConditionallyShown[page.id]
-                                    .formElements
-                                }
-                                formElementsValidation={
-                                  pagesValidation && pagesValidation[page.id]
-                                }
-                                displayValidationMessages={
-                                  hasAttemptedSubmit ||
-                                  checkDisplayPageError(page)
-                                }
-                                elements={page.elements}
-                                onChange={handleChange}
-                                onChangeElements={handleChangeElements}
-                                onChangeModel={handleChangeModel}
-                                parentFormElementsCtrl={rootFormElementsCtrl}
-                              />
-                            </div>
-                          ))}
+                              {visiblePages.map((page) => (
+                                <div
+                                  key={page.id}
+                                  className={clsx(
+                                    'ob-page step-content is-active cypress-page',
+                                    {
+                                      'is-invisible':
+                                        currentPage.id !== page.id,
+                                    },
+                                  )}
+                                >
+                                  <OneBlinkFormElements
+                                    model={submission}
+                                    formElementsConditionallyShown={
+                                      pageElementsConditionallyShown[page.id]
+                                        .formElements
+                                    }
+                                    formElementsValidation={
+                                      pagesValidation &&
+                                      pagesValidation[page.id]
+                                    }
+                                    displayValidationMessages={
+                                      hasAttemptedSubmit ||
+                                      checkDisplayPageError(page)
+                                    }
+                                    elements={page.elements}
+                                    onChange={handleChange}
+                                    onChangeElements={handleChangeElements}
+                                    onChangeModel={handleChangeModel}
+                                    parentFormElementsCtrl={
+                                      rootFormElementsCtrl
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            </CaptchaSiteKeyContext.Provider>
+                          </GoogleMapsApiKeyContext.Provider>
                         </ExecutedLookupProvider>
                       </InjectPagesContext.Provider>
                     </FormDefinitionContext.Provider>
@@ -646,7 +666,7 @@ function OneBlinkForm(
                 onClick={handleSaveDraft}
                 disabled={isPreview}
               >
-                Save Draft
+                <span>Save Draft</span>
               </button>
             )}
             <span className="ob-buttons-submit__spacer"></span>
@@ -657,7 +677,7 @@ function OneBlinkForm(
                 onClick={handleCancel}
                 disabled={isPreview}
               >
-                Cancel
+                <span>Cancel</span>
               </button>
             )}
             {isLastVisiblePage && (
@@ -666,7 +686,7 @@ function OneBlinkForm(
                 className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
                 disabled={isPreview}
               >
-                {definition.isInfoPage ? 'Done' : 'Submit'}
+                <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
               </button>
             )}
           </div>

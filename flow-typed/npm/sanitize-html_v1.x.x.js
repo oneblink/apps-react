@@ -1,4 +1,4 @@
-// flow-typed signature: f12dd2ff11df3b36a34e2df45848e2cb
+// flow-typed signature: b2befe333059a2207f4fdda5de472ed7
 // flow-typed version: c6154227d1/sanitize-html_v1.x.x/flow_>=v0.104.x
 
 declare module "sanitize-html" {

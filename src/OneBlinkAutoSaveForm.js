@@ -10,28 +10,20 @@ import Modal from './components/Modal'
 import OneBlinkForm from './OneBlinkForm'
 
 /* ::
-type Props = {
-  formsAppId: number,
-  form: Form,
-  isPreview?: boolean,
+type Props = React.ElementConfig<typeof OneBlinkForm> & {
   autoSaveKey?: string,
-  initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
-  onCancel: () => mixed,
-  onSubmit: (FormSubmission) => mixed,
-  onSaveDraft?: (DraftSubmission) => mixed,
 }
 */
 
 function OneBlinkAutoSaveForm(
   {
-    formsAppId,
     form,
-    isPreview,
     autoSaveKey,
     initialSubmission,
     onCancel,
     onSubmit,
     onSaveDraft,
+    ...rest
   } /* : Props */,
 ) {
   const [isUsingAutoSave, setIsUsingAutoSave] = React.useState(null)
@@ -53,9 +45,9 @@ function OneBlinkAutoSaveForm(
             setIsAutoSaving(false)
           })
       },
-      9580,
+      9580, // https://en.wikipedia.org/wiki/100_metres
       { trailing: true, leading: false },
-    ) // https://en.wikipedia.org/wiki/100_metres
+    )
   }, [autoSaveKey, form.id])
 
   const deleteAutoSaveData = React.useCallback(() => {
@@ -175,8 +167,7 @@ function OneBlinkAutoSaveForm(
         <i className="material-icons ob-form__auto-save-icon">sync</i>
       )}
       <OneBlinkForm
-        formsAppId={formsAppId}
-        isPreview={isPreview}
+        {...rest}
         initialSubmission={
           isUsingAutoSave ? autoSaveSubmission : initialSubmission
         }
