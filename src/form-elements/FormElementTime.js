@@ -3,7 +3,7 @@
 
 import * as React from 'react'
 import clsx from 'clsx'
-import { vocabularyService } from '@oneblink/apps'
+import { localisationService } from '@oneblink/apps'
 
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import useFlatpickr from '../hooks/useFlatpickr'
@@ -37,7 +37,7 @@ function FormElementTime(
     const opts = {
       altInput: true,
       dateFormat: 'H:i',
-      altFormat: vocabularyService.flatpickrTimeFormat,
+      altFormat: localisationService.flatpickrTimeFormat,
       allowInput: false,
       altInputClass: 'input ob-input cypress-time-control',
       minDate: undefined,
@@ -71,7 +71,7 @@ function FormElementTime(
     if (typeof value !== 'string') {
       return null
     }
-    return vocabularyService.formatTime(new Date(value))
+    return localisationService.formatTime(new Date(value))
   }, [value])
 
   return (
