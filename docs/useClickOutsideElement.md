@@ -11,15 +11,24 @@ This function is a react hook for watching for click events outside of a particu
 | `ref`      | `React.useRef()` | The ref for the element to watch for clicks outside of.             |
 | `callback` | `() => void`     | The function to call when the passed element is clicked outside of. |
 
+- For performance reasons, it is important to pass a memoised function as the callback argument, eg:
+
+```js
+React.useMemo(() => {}, [])
+```
+
 ```js
 import * as React from 'react'
 import { useClickOutsideElement } from '@oneblink/apps-react'
 
 const MyComponent = () => {
   const narrowDivRef = React.useRef(null)
-  useClickOutsideElement(narrowDivRef, () => {
-    console.log('Wide Div was clicked outside of narrow div...')
-  })
+  useClickOutsideElement(
+    narrowDivRef,
+    React.useMemo(() => {
+      console.log('Wide Div was clicked outside of narrow div...')
+    }, []),
+  )
 
   return (
     <div className="wide-div">
