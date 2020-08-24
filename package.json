@@ -60,6 +60,7 @@
     "npm": ">=6"
   },
   "files": [
+    "dist",
     "src",
     "index.js",
     "index.d.ts",
@@ -73,6 +74,9 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
