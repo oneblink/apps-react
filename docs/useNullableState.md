@@ -2,7 +2,7 @@
 
 ## `useNullableState()`
 
-This function is a react hook for state of type of your choosing. It comes with a `useCallback` for setting the state.
+This function is a react hook for state of type of your choosing. It comes with two memoized functions, one for setting state and one for clearing it.
 
 - Note: `T` represents the type of the state you pass as a default value.
 
