@@ -1,4 +1,4 @@
-# OneBlink Apps-react | useIsMounted Hook
+# OneBlink Apps - ReactJS | Usage
 
 ## `useIsMounted()`
 
