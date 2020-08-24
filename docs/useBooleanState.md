@@ -4,7 +4,7 @@
 
 This function is a react hook for boolean state that comes with `useCallback`s for 'turning on', 'turning off' and toggling the state.
 
-## Paramaters
+## Parameters
 
 | Property       | Type      | Description                      |
 | -------------- | --------- | -------------------------------- |

@@ -6,7 +6,7 @@ This function is a react hook for state of type of your choosing. It comes with 
 
 - Note: `T` represents the type of the state you pass as a default value.
 
-## Paramaters
+## Parameters
 
 | Property       | Type | Description                      |
 | -------------- | ---- | -------------------------------- |
