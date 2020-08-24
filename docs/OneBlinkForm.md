@@ -4,7 +4,7 @@
 
 Component for rendering a OneBlink Form. This component will render the submit, cancel and save draft buttons but it is up to the developer to implement what happens when those buttons are clicked.
 
-It is also recommended to import the `(s)css` from this library as well.
+It is also recommended to import the `css` from this library as well.
 
 ```js
 import { OneBlinkForm } from '@oneblink/apps-react'
@@ -45,21 +45,23 @@ Inherits properties from [`NewDraftSubmission`](#newdraftsubmission)
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter, Route, useHistory } from 'react-router-dom'
 import {
   OneBlinkAppsError,
   draftService,
   submissionService,
+  FormTypes,
 } from '@oneblink/apps'
-import '@oneblink/apps-react/dist/styles.css'
 import {
   IsOfflineContextProvider,
   OneBlinkForm,
   useIsMounted,
 } from '@oneblink/apps-react'
+import '@oneblink/apps-react/dist/styles.css'
 
+const captchaSiteKey = 'ENTER_YOUR_SITE_KEY_HERE'
+const googleMapsApiKey = 'ENTER_YOUR_MAPS_API_KEY_HERE'
 const formsAppId = 1
-const form: Form = {
+const form: FormTypes.Form = {
   id: 1,
   name: 'Name of Form',
   description: '',
@@ -79,11 +81,7 @@ const form: Form = {
 
 function FormContainer() {
   const isMounted = useIsMounted()
-  const history = useHistory()
-  const [
-    postSubmissionActionErrorMessage,
-    setPostSubmissionActionErrorMessage,
-  ] = React.useState<string>('')
+
   const [{ isSavingDraft, saveDraftError }, setSaveDraftState] = React.useState(
     {
       isSavingDraft: false,
@@ -100,37 +98,17 @@ function FormContainer() {
     submitError: null,
   })
 
-  const handlePostSubmissionAction = React.useCallback(
-    async (formSubmissionResult: FormSubmissionResult) => {
-      try {
-        await submissionService.executePostSubmissionAction(
-          formSubmissionResult,
-          history.push,
-        )
-      } catch (error) {
-        if (isMounted.current) {
-          setPostSubmissionActionErrorMessage(error.message)
-        }
-      }
-    },
-    [history.push, isMounted],
-  )
-
   const handleSubmit = React.useCallback(
-    async (formSubmission: FormSubmission) => {
-      const formSubmissionResult: FormSubmissionResult = Object.assign(
+    async (newFormSubmission: FormTypes.NewFormSubmission) => {
+      const formSubmission: FormSubmission = Object.assign(
         {},
-        formSubmission,
+        newFormSubmission,
         {
+          formsAppId,
           jobId: null,
           externalId: null,
           draftId: null,
           preFillFormDataId: null,
-          isInPendingQueue: false,
-          isOffline: false,
-          payment: null,
-          submissionId: null,
-          submissionTimestamp: null,
         },
       )
 
@@ -142,8 +120,7 @@ function FormContainer() {
 
       try {
         const newFormSubmissionResult = await submissionService.submit({
-          formSubmission: formSubmissionResult,
-          paymentReceiptUrl: `${window.location.origin}/forms/${form.id}/payment-receipt`,
+          formSubmission,
         })
         if (
           newFormSubmissionResult.isOffline &&
@@ -178,8 +155,8 @@ function FormContainer() {
   )
 
   const handleSaveDraft = React.useCallback(
-    async (newDraftSubmission: NewDraftSubmission) => {
-      const draftFormSubmissionResult: DraftSubmission = {
+    async (newDraftSubmission: FormTypes.NewDraftSubmission) => {
+      const draftSubmission: FormTypes.DraftSubmission = {
         ...newDraftSubmission,
         formsAppId,
       }
@@ -196,7 +173,7 @@ function FormContainer() {
             externalId: null,
             jobId: null,
           },
-          draftFormSubmissionResult,
+          draftSubmission,
         )
 
         if (isMounted.current) {
@@ -216,6 +193,10 @@ function FormContainer() {
     },
     [isMounted],
   )
+
+  const handleCancel = React.useCallback(() => {
+    // handle cancel here...
+  }, [isMounted])
 
   if (isSubmitting) {
     // Render submitting animation/loading
@@ -243,12 +224,12 @@ function FormContainer() {
 
   return (
     <OneBlinkForm
-      captchaSiteKey={__RECAPTCHA_SITE_KEY__}
-      googleMapsApiKey={__GOOGLE_MAPS_API_KEY__}
+      captchaSiteKey={captchaSiteKey}
+      googleMapsApiKey={googleMapsApiKey}
       formsAppId={formsAppId}
-      initialSubmission={{}}
+      initialSubmission={null}
       form={form}
-      onCancel={submissionService.cancelForm}
+      onCancel={handleCancel}
       onSubmit={handleSubmit}
       onSaveDraft={handleSaveDraft}
     />
@@ -258,11 +239,7 @@ function FormContainer() {
 function App() {
   return (
     <IsOfflineContextProvider>
-      <BrowserRouter>
-        <Route path="/" exact>
-          <FormContainer />
-        </Route>
-      </BrowserRouter>
+      <FormContainer />
     </IsOfflineContextProvider>
   )
 }
