@@ -1,4 +1,4 @@
-# OneBlink Apps-react | useIsOffline Hook
+# OneBlink Apps - ReactJS | Usage
 
 ## `<IsOfflineContextProvider />`
 

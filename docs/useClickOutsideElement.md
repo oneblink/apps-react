@@ -1,4 +1,4 @@
-# OneBlink Apps-react | useClickOutsideElement Hook
+# OneBlink Apps - ReactJS | Usage
 
 ## `useClickOutsideElement()`
 
