@@ -39,6 +39,7 @@
   "devDependencies": {
     "@oneblink/apps": "0.1.0-beta.13",
     "@oneblink/flow-types": "github:oneblink/flow-types",
+    "@types/react": "^16.9.46",
     "eslint": "^7.7.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
@@ -60,7 +61,8 @@
   "files": [
     "src",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "typescript/types"
   ],
   "homepage": "https://github.com/oneblink/apps-react#readme",
   "license": "GPL-3.0-only",
