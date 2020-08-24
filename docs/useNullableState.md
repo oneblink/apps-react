@@ -39,7 +39,11 @@ const [
     profession: string
   } */,
 ] = useBooleanState(startingProfile)
+```
 
+`setuserProfile` can then called with an object of type `T` like:
+
+```js
 setUserProfile({
   name: 'Walter White',
   profession: 'Chemistry Teacher (Secondary School), Other',
