@@ -13,5 +13,5 @@ The hook can be used like:
 ```js
 import { useIsOffline } from '@oneblink/apps-react'
 
-const isOffline = useBooleanState()
+const isOffline = useIsOffline()
 ```
