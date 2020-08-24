@@ -2,15 +2,14 @@ import * as React from 'react'
 import { FormTypes } from '@oneblink/apps'
 import { FormElementsCtrl } from './typescript/types/form'
 interface OneBlinkFormProps {
-  formsAppId: number
   form: FormTypes.Form
   isPreview?: boolean
   initialSubmission: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
   captchaSiteKey?: string
   onCancel: () => unknown
-  onSubmit: (formSubmission: FormTypes.FormSubmission) => unknown
-  onSaveDraft?: (draftSubmission: FormTypes.DraftSubmission) => unknown
+  onSubmit: (formSubmission: FormTypes.NewFormSubmission) => unknown
+  onSaveDraft?: (draftSubmission: FormTypes.NewDraftSubmission) => unknown
   onChange?: (model: FormElementsCtrl['model']) => unknown
 }
 declare const OneBlinkForm: React.FunctionComponent<OneBlinkFormProps>

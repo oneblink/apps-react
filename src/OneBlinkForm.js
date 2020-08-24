@@ -30,15 +30,14 @@ import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 
 /* ::
 type Props = {
-  formsAppId: number,
   form: Form,
   isPreview?: boolean,
   initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
   googleMapsApiKey?: string,
   captchaSiteKey?: string,
   onCancel: () => mixed,
-  onSubmit: (FormSubmission) => mixed,
-  onSaveDraft?: (DraftSubmission) => mixed,
+  onSubmit: (NewFormSubmission) => mixed,
+  onSaveDraft?: (NewDraftSubmission) => mixed,
   onChange?: ($PropertyType<FormElementsCtrl, 'model'>) => mixed,
 }
 */
@@ -47,7 +46,6 @@ function OneBlinkForm(
   {
     googleMapsApiKey,
     captchaSiteKey,
-    formsAppId,
     form: _form,
     isPreview,
     initialSubmission,
@@ -317,20 +315,14 @@ function OneBlinkForm(
       allowNavigation()
 
       onSubmit({
-        formsAppId,
         definition,
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
-        draftId: null,
-        jobId: null,
-        externalId: null,
-        preFillFormDataId: null,
       })
     },
     [
       allowNavigation,
       definition,
-      formsAppId,
       getCurrentSubmissionData,
       onSubmit,
       pagesValidation,
@@ -346,22 +338,11 @@ function OneBlinkForm(
       const { submission } = getCurrentSubmissionData(false)
 
       onSaveDraft({
-        formsAppId,
         definition,
         submission,
-        draftId: null,
-        jobId: null,
-        externalId: null,
-        preFillFormDataId: null,
       })
     }
-  }, [
-    allowNavigation,
-    definition,
-    formsAppId,
-    getCurrentSubmissionData,
-    onSaveDraft,
-  ])
+  }, [allowNavigation, definition, getCurrentSubmissionData, onSaveDraft])
 
   // #endregion
   //
