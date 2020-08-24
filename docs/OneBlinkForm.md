@@ -4,7 +4,7 @@
 
 Component for rendering a OneBlink Form. This component will render the submit, cancel and save draft buttons but it is up to the developer to implement what happens when those buttons are clicked.
 
-It is also recommended to import the `(s)css` for from this library as well.
+It is also recommended to import the `(s)css` from this library as well.
 
 ```js
 import { OneBlinkForm } from '@oneblink/apps-react'
