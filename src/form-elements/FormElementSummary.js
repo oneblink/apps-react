@@ -2,7 +2,7 @@
 'use strict'
 
 import * as React from 'react'
-import { vocabularyService } from '@oneblink/apps'
+import { localisationService } from '@oneblink/apps'
 
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
@@ -127,21 +127,21 @@ function FormElementSummary(
         case 'date': {
           if (typeof formElementValue !== 'string') return partialSummary
           partialSummary.push(
-            vocabularyService.formatDate(new Date(formElementValue)),
+            localisationService.formatDate(new Date(formElementValue)),
           )
           break
         }
         case 'datetime': {
           if (typeof formElementValue !== 'string') return partialSummary
           partialSummary.push(
-            vocabularyService.formatDatetime(new Date(formElementValue)),
+            localisationService.formatDatetime(new Date(formElementValue)),
           )
           break
         }
         case 'time': {
           if (typeof formElementValue !== 'string') return partialSummary
           partialSummary.push(
-            vocabularyService.formatTime(new Date(formElementValue)),
+            localisationService.formatTime(new Date(formElementValue)),
           )
           break
         }
