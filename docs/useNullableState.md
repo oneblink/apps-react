@@ -18,6 +18,7 @@ The return type of `useNullableState(myState)` is an array where:
 
 - The first item is of type `T` (the state).
 - The second item is `(newValue: T) => void` (a function that sets the state to the `newValue`).
+- The third item is `() => void` (a function that (un)sets the state to `null` ).
 
 As such, the items in the array can be destructured and named whatever you like:
 
@@ -38,6 +39,7 @@ const [
     name: string,
     profession: string
   } */,
+  unsetUserProfile,
 ] = useBooleanState(startingProfile)
 ```
 
@@ -48,4 +50,10 @@ setUserProfile({
   name: 'Walter White',
   profession: 'Chemistry Teacher (Secondary School), Other',
 })
+```
+
+and `unsetUserProfile` can be called like:
+
+```js
+unsetUserProfile()
 ```
