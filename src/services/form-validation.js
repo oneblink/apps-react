@@ -2,7 +2,7 @@
 'use strict'
 
 import validate from 'validate.js'
-import { vocabularyService } from '@oneblink/apps'
+import { localisationService } from '@oneblink/apps'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -353,7 +353,7 @@ const generateSchemaReducer = (
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a date'),
           datetime: {
-            format: vocabularyService.formatDate,
+            format: localisationService.formatDate,
             earliest: formElement.fromDate,
             latest: formElement.toDate,
             notValid: 'Please select a valid date',
@@ -374,7 +374,7 @@ const generateSchemaReducer = (
             'Please select a date and time',
           ),
           datetime: {
-            format: vocabularyService.formatDatetime,
+            format: localisationService.formatDatetime,
             earliest: formElement.fromDate,
             latest: formElement.toDate,
             notValid: 'Please select a valid date and time',

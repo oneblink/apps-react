@@ -37,7 +37,7 @@
     "validate.js": "^0.13.1"
   },
   "devDependencies": {
-    "@oneblink/apps": "0.1.0-beta.13",
+    "@oneblink/apps": "^0.1.0",
     "@oneblink/flow-types": "github:oneblink/flow-types",
     "eslint": "^7.7.0",
     "eslint-config-prettier": "^6.11.0",
@@ -51,6 +51,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
+    "sass": "^1.26.10",
     "typescript": "^4.0.2"
   },
   "engines": {
@@ -66,7 +67,7 @@
   "license": "GPL-3.0-only",
   "main": "index.js",
   "peerDependencies": {
-    "@oneblink/apps": "0.1.0-beta.13",
+    "@oneblink/apps": "^0.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0"
@@ -76,10 +77,12 @@
     "url": "git+https://github.com/oneblink/apps-react.git"
   },
   "scripts": {
+    "build": "sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules",
     "eslint": "eslint --fix --cache .",
     "fixpack": "fixpack",
     "flow_check": "flow check",
     "jest": "jest",
+    "prepublish": "npm run build",
     "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
     "test": "npm run jest",
     "tsc": "tsc"
