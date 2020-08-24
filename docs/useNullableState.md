@@ -43,7 +43,7 @@ const [
 ] = useBooleanState(startingProfile)
 ```
 
-`setuserProfile` can then called with an object of type `T` like:
+`setUserProfile` can then be called with an object of type `T` like:
 
 ```js
 setUserProfile({
