@@ -33,12 +33,21 @@ declare const useClickOutsideElement: (
   callback: () => void,
 ) => void
 
+declare const useIsMounted: () => { current: boolean }
+
+declare const IsOfflineContextProvider: React.FunctionComponent<{
+  children: React.ReactNode
+}>
+
 declare const useIsOffline: () => boolean
+
 export {
   OneBlinkForm,
   OneBlinkAutoSaveForm,
   useBooleanState,
   useNullableState,
   useClickOutsideElement,
+  IsOfflineContextProvider,
   useIsOffline,
+  useIsMounted,
 }
