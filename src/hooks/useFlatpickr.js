@@ -3,8 +3,6 @@
 
 import * as React from 'react'
 import Flatpickr from 'flatpickr'
-// $FlowFixMe
-import 'flatpickr/dist/flatpickr.css'
 
 export default function useFlatpickr(
   {
