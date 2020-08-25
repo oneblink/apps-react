@@ -2,7 +2,7 @@
 <PROJECT_ROOT>/node_modules/.*
 !<PROJECT_ROOT>/node_modules/@oneblink/apps/.*
 <PROJECT_ROOT>/build/.*
-
+<PROJECT_ROOT>/dist/.*
 [include]
 
 [libs]
