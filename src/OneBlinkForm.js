@@ -27,6 +27,7 @@ import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
+import useChangeEffect from './hooks/useChangeEffect'
 
 /* ::
 type Props = {
@@ -383,7 +384,7 @@ function OneBlinkForm(
     }
   }, [])
 
-  React.useEffect(() => {
+  useChangeEffect(() => {
     if (onChange) {
       onChange(submission)
     }
