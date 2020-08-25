@@ -81,7 +81,7 @@ function FormElementLocation(
       }
     } catch (err) {
       console.error(err)
-      setLocation(defaultCoords)
+      setLocation(defaultCoords())
     }
     showLocationPicker()
     setIsNotLoadingLocation()

@@ -7,6 +7,7 @@ const auCoords = {
   latitude: -33.861146727854496,
   longitude: 151.20863228242192,
 } //CIRCULAR QUAY, SYDNEY
-const coords = localisationService.locale === 'en-US' ? usCoords : auCoords
+const coords = () =>
+  localisationService.locale === 'en-US' ? usCoords : auCoords
 
 export default coords
