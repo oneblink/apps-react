@@ -1,9 +1,4 @@
-.forms-renderer {
-  background-color: $white;
-  min-height: 100vh;
-  padding-bottom: 4rem;
-  padding-top: 4rem;
-
+.ob-form-container {
   .ob-form {
     padding-bottom: 4rem;
   }
@@ -266,7 +261,7 @@
       .steps-actions {
         z-index: 30;
         position: fixed;
-        bottom: $bottom-navigation-height;
+        bottom: 0;
         right: 0;
         left: 0;
         display: flex;
@@ -281,10 +276,6 @@
         box-sizing: content-box;
         padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
         padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2 */
-
-        .ob-bottom-navigation.has-hidden-menu & {
-          bottom: 0;
-        }
 
         .steps-action {
           flex-grow: 0;

@@ -422,7 +422,7 @@ function OneBlinkForm(
   }
 
   return (
-    <>
+    <div className="ob-form-container">
       <form
         name="obForm"
         className={`ob-form cypress-ob-form ob-form__page-${
@@ -716,7 +716,7 @@ function OneBlinkForm(
       >
         <p>You have unsaved changes, are you sure you want discard them?</p>
       </Modal>
-    </>
+    </div>
   )
 }
 
