@@ -31,10 +31,7 @@ function disableScrolling() {
   // $FlowFixMe
   document.body.parentNode.classList.add(overflowClass)
   // $FlowFixMe
-  document
-    .querySelector('.main-view')
-    // $FlowFixMe
-    .addEventListener('touchmove', preventDefault, false)
+  document.body.addEventListener('touchmove', preventDefault, false)
 }
 
 function enableScrolling() {
@@ -46,10 +43,7 @@ function enableScrolling() {
   // $FlowFixMe
   document.body.parentNode.classList.remove(overflowClass)
   // $FlowFixMe
-  document
-    .querySelector('.main-view')
-    // $FlowFixMe
-    .removeEventListener('touchmove', preventDefault, false)
+  document.body.removeEventListener('touchmove', preventDefault, false)
 }
 
 export default {
