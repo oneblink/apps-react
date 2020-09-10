@@ -9,14 +9,12 @@ import useBooleanState from './useBooleanState'
 
 export default function useLogin(
   {
-    onLogin,
     username,
     password,
     newPassword,
     newPasswordConfirmed,
     code,
   } /* : {
-  onLogin: () => void,
   username: string,
   password: string,
   newPassword: string,
@@ -131,8 +129,6 @@ export default function useLogin(
             loginError: null,
           })
         }
-      } else {
-        onLogin()
       }
     } catch (error) {
       if (isMounted.current) {
@@ -146,7 +142,6 @@ export default function useLogin(
     }
   }, [
     isMounted,
-    onLogin,
     password,
     passwordValidation.isInvalid,
     username,
@@ -182,7 +177,6 @@ export default function useLogin(
 
     try {
       await resetTemporaryPasswordCallback(newPassword)
-      onLogin()
     } catch (error) {
       if (isMounted.current) {
         setLoginState((current) => ({
@@ -197,7 +191,6 @@ export default function useLogin(
     newPassword,
     newPasswordConfirmedValidation.isInvalid,
     newPasswordValidation.isInvalid,
-    onLogin,
     resetTemporaryPasswordCallback,
   ])
 

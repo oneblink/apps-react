@@ -10,10 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - `useLogin()` hook to help with implementing a custom login screen
+- `useAuth()` hook and `<AuthContextProvider />` component
 
 ### Fixed
 
-- Scroll service targetting class that wasn't present on DOM
+- Scroll service targeting class that wasn't present on DOM
 
 ### Removed
 

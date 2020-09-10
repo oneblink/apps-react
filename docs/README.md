@@ -15,3 +15,4 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 - [useIsOffline()](./useIsOffline.md)
 - [useNullableState()](./useNullableState.md)
 - [useLogin()](./useLogin.md)
+- [useAuth()](./useAuth.md)
