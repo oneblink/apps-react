@@ -33,7 +33,7 @@ import useChangeEffect from './hooks/useChangeEffect'
 type Props = {
   form: Form,
   isPreview?: boolean,
-  initialSubmission: $PropertyType<FormElementsCtrl, 'model'> | null,
+  initialSubmission?: $PropertyType<FormElementsCtrl, 'model'> | null,
   googleMapsApiKey?: string,
   captchaSiteKey?: string,
   onCancel: () => mixed,
