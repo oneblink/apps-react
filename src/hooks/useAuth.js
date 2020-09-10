@@ -32,9 +32,7 @@ export function AuthContextProvider(
 } */,
 ) {
   const [value, setValue] = React.useState(() => {
-    if (formsKeyToken) {
-      authService.setFormsKeyToken(formsKeyToken)
-    }
+    authService.setFormsKeyToken(formsKeyToken)
     return {
       isLoggedIn: authService.isLoggedIn(),
       userProfile: authService.getUserProfile(),
@@ -44,13 +42,11 @@ export function AuthContextProvider(
   })
 
   React.useEffect(() => {
-    if (formsKeyToken) {
-      authService.setFormsKeyToken(formsKeyToken)
-      setValue((currentValue) => ({
-        ...currentValue,
-        isUsingFormsKey: !!formsKeyToken,
-      }))
-    }
+    authService.setFormsKeyToken(formsKeyToken)
+    setValue((currentValue) => ({
+      ...currentValue,
+      isUsingFormsKey: !!formsKeyToken,
+    }))
   }, [formsKeyToken])
 
   React.useEffect(() => {
