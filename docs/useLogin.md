@@ -116,7 +116,6 @@ function App() {
   if (hasSentForgotPasswordCode) {
     return (
       <form
-        noValidate
         onSubmit={(e) => {
           e.preventDefault()
           resetForgottenPassword()
@@ -170,7 +169,6 @@ function App() {
   if (isShowingForgotPassword) {
     return (
       <form
-        noValidate
         onSubmit={(e) => {
           e.preventDefault()
           sendForgotPasswordCode()
@@ -207,7 +205,6 @@ function App() {
   if (isPasswordTemporary) {
     return (
       <form
-        noValidate
         onSubmit={(e) => {
           e.preventDefault()
           resetTemporaryPassword()
@@ -253,7 +250,6 @@ function App() {
 
   return (
     <form
-      noValidate
       onSubmit={(e) => {
         e.preventDefault()
         loginWithUsernamePassword()
@@ -280,23 +276,10 @@ function App() {
 
       <button
         type="submit"
-        className={clsx(
-          'button ob-button is-primary is-fullwidth ob-login__button',
-          {
-            'is-loading': isLoading,
-          },
-        )}
-        disabled={isLoading || isInvalid}
+        disabled={isLoggingIn || usernameValidation.isInvalid || passwordValidation.isInvalid}
       >
         {children}
       </button>
-
-      <SubmitButton
-        isLoading={isLoggingIn}
-        isInvalid={usernameValidation.isInvalid || passwordValidation.isInvalid}
-      >
-        Sign In
-      </SubmitButton>
 
       <p>or</p>
 
