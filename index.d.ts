@@ -4,7 +4,7 @@ import { FormElementsCtrl } from './typescript/types/form'
 interface OneBlinkFormProps {
   form: FormTypes.Form
   isPreview?: boolean
-  initialSubmission: FormElementsCtrl['model'] | null
+  initialSubmission?: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
   captchaSiteKey?: string
   onCancel: () => unknown
@@ -40,6 +40,46 @@ declare const IsOfflineContextProvider: React.FunctionComponent<{
 
 declare const useIsOffline: () => boolean
 
+declare const useLogin: (options: {
+  onLogin: () => void
+  username: string
+  password: string
+  newPassword: string
+  newPasswordConfirmed: string
+  code: string
+}) => {
+  loginWithGoogle: () => void
+  loginWithUsernamePassword: () => void
+  isLoggingIn: boolean
+  loginError: Error | null
+  clearLoginError: () => void
+  isPasswordTemporary: boolean
+  isResettingTemporaryPassword: boolean
+  resetTemporaryPassword: () => void
+  isShowingForgotPassword: boolean
+  showForgotPassword: () => void
+  hideForgotPassword: () => void
+  forgotPasswordError: Error | null
+  clearForgotPasswordError: () => void
+  isSendingForgotPasswordCode: boolean
+  sendForgotPasswordCode: () => void
+  hasSentForgotPasswordCode: boolean
+  isResettingForgottenPassword: boolean
+  resetForgottenPassword: () => void
+  usernameValidation: { isInvalid: boolean }
+  passwordValidation: { isInvalid: boolean }
+  codeValidation: { isInvalid: boolean }
+  newPasswordValidation: {
+    isInvalid: boolean
+    hasLowercaseLetter: boolean
+    hasUpperCaseLetter: boolean
+    hasNumber: boolean
+    hasSpecialCharacter: boolean
+    hasMinLength: boolean
+  }
+  newPasswordConfirmedValidation: { isInvalid: boolean }
+}
+
 export {
   OneBlinkForm,
   OneBlinkAutoSaveForm,
@@ -49,4 +89,5 @@ export {
   IsOfflineContextProvider,
   useIsOffline,
   useIsMounted,
+  useLogin,
 }
