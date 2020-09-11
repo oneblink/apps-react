@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/apps'
+import { MiscTypes } from '@oneblink/types'
 import { FormElementsCtrl } from './typescript/types/form'
 interface OneBlinkFormProps {
   form: FormTypes.Form
@@ -80,6 +81,19 @@ declare const useLogin: (options: {
   newPasswordConfirmedValidation: { isInvalid: boolean }
 }
 
+declare const useAuth: () => {
+  isLoggedIn: boolean
+  userProfile: MiscTypes.UserProfile | null
+  userFriendlyName: string | null
+  isUsingFormsKey: boolean
+}
+
+interface AuthContextProviderProps {
+  children: React.ReactNode
+  formsKeyToken?: string
+}
+declare const AuthContextProvider: React.FunctionComponent<AuthContextProviderProps>
+
 export {
   OneBlinkForm,
   OneBlinkAutoSaveForm,
@@ -90,4 +104,6 @@ export {
   useIsOffline,
   useIsMounted,
   useLogin,
+  useAuth,
+  AuthContextProvider,
 }
