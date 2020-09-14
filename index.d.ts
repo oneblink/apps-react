@@ -42,7 +42,6 @@ declare const IsOfflineContextProvider: React.FunctionComponent<{
 declare const useIsOffline: () => boolean
 
 declare const useLogin: (options: {
-  onLogin: () => void
   username: string
   password: string
   newPassword: string
