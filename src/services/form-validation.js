@@ -353,7 +353,7 @@ const generateSchemaReducer = (
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a date'),
           datetime: {
-            format: localisationService.formatDate,
+            format: (v) => localisationService.formatDate(v),
             earliest: formElement.fromDate,
             latest: formElement.toDate,
             notValid: 'Please select a valid date',
@@ -374,7 +374,7 @@ const generateSchemaReducer = (
             'Please select a date and time',
           ),
           datetime: {
-            format: localisationService.formatDatetime,
+            format: (v) => localisationService.formatDatetime(v),
             earliest: formElement.fromDate,
             latest: formElement.toDate,
             notValid: 'Please select a valid date and time',

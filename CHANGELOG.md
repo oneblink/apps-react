@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- date / datetime format error in validation
 - Scroll service targeting class that wasn't present on DOM
 
 ### Removed
