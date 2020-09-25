@@ -95,6 +95,7 @@ function OneBlinkFormElements(
         key={element.id}
         className="ob-element cypress-element-container"
         data-cypress-element-name={element.name}
+        data-ob-name={element.name}
       >
         <FormElementSwitch
           element={element}
