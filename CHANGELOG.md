@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- `data-ob-name` attr to elements
 - `useLogin()` hook to help with implementing a custom login screen
 - `useAuth()` hook and `<AuthContextProvider />` component
 
