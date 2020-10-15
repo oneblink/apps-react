@@ -8,7 +8,7 @@ import OneBlinkFormElements from '../components/OneBlinkFormElements'
 type Props = {
   id: string,
   element: FormFormElement | InfoPageElement,
-  value: $PropertyType<FormElementsCtrl, 'model'>,
+  value: $PropertyType<FormElementsCtrl, 'model'> | void,
   onChange: (FormElement, mixed) => mixed,
   onChangeElements: (FormElement[]) => mixed,
   onChangeModel: ($PropertyType<FormElementsCtrl, 'model'>) => mixed,
@@ -89,6 +89,14 @@ function FormElementForm(
       : undefined
   }, [formElementConditionallyShown])
 
+  const formElementsCtrl /* : FormElementsCtrl */ = React.useMemo(() => {
+    return {
+      model: value || {},
+      elements: element.elements || [],
+      parentFormElementsCtrl,
+    }
+  }, [element.elements, parentFormElementsCtrl, value])
+
   return (
     <OneBlinkFormElements
       model={value}
@@ -100,7 +108,7 @@ function FormElementForm(
       onChangeModel={handleChangeModel}
       formElementsConditionallyShown={formElementsConditionallyShown}
       parentFormName={parentFormName}
-      parentFormElementsCtrl={parentFormElementsCtrl}
+      formElementsCtrl={formElementsCtrl}
     />
   )
 }

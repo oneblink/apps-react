@@ -244,6 +244,14 @@ const RepeatableSetEntry = React.memo(function RepeatableSetEntry(
     false,
   )
 
+  const formElementsCtrl = React.useMemo(() => {
+    return {
+      model: entry,
+      elements: element.elements,
+      parentFormElementsCtrl,
+    }
+  }, [element.elements, entry, parentFormElementsCtrl])
+
   const handleChange = React.useCallback(
     (element, value) => {
       onChange(index, element, value)
@@ -315,7 +323,6 @@ const RepeatableSetEntry = React.memo(function RepeatableSetEntry(
         </button>
 
         <OneBlinkFormElements
-          model={entry}
           idPrefix={`${id}_entry-${index}`}
           isEven={isEven}
           formElementsValidation={formElementsValidation}
@@ -324,7 +331,7 @@ const RepeatableSetEntry = React.memo(function RepeatableSetEntry(
           onChange={handleChange}
           onChangeElements={handleChangeElements}
           onChangeModel={handleChangeModel}
-          parentFormElementsCtrl={parentFormElementsCtrl}
+          formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
           parentFormName={parentFormName}
         />
