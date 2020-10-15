@@ -34,7 +34,6 @@ import FormElementLocation from '../form-elements/FormElementLocation'
 
 /* ::
 type Props = {
-  model: $PropertyType<FormElementsCtrl, 'model'> | void,
   elements: FormElement[],
   formElementsConditionallyShown: FormElementsConditionallyShown | void,
   formElementsValidation: FormElementsValidation | void,
@@ -45,7 +44,7 @@ type Props = {
   // Props passed by repeatable sets
   isEven?: boolean,
   idPrefix?: string,
-  parentFormElementsCtrl?: FormElementsCtrl,
+  formElementsCtrl: FormElementsCtrl,
 
   // Nested forms
   parentFormName?: string,
@@ -54,7 +53,6 @@ type Props = {
 
 function OneBlinkFormElements(
   {
-    model,
     elements,
     isEven,
     idPrefix,
@@ -64,19 +62,10 @@ function OneBlinkFormElements(
     onChange,
     onChangeElements,
     onChangeModel,
-    parentFormElementsCtrl,
+    formElementsCtrl,
     parentFormName,
   } /* : Props */,
 ) {
-  const formElementsCtrl /* : FormElementsCtrl */ = React.useMemo(
-    () => ({
-      elements,
-      model: model || {},
-      parentFormElementsCtrl,
-    }),
-    [elements, model, parentFormElementsCtrl],
-  )
-
   return elements.map((element) => {
     if (element.type === 'page') {
       return null
@@ -99,7 +88,7 @@ function OneBlinkFormElements(
       >
         <FormElementSwitch
           element={element}
-          value={model && model[element.name]}
+          value={formElementsCtrl.model[element.name]}
           displayValidationMessage={displayValidationMessages}
           isEven={isEven}
           id={idPrefix ? `${idPrefix}_${element.name}` : element.name}
@@ -140,7 +129,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement(
     parentFormName,
   } /* : {
   element: FormElement,
-  value: mixed,
+  value: mixed | void,
   formElementValidation: FormElementValidation | void,
   displayValidationMessage: boolean,
   formElementsConditionallyShown: FormElementsConditionallyShown | void,

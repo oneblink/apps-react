@@ -177,6 +177,7 @@ function OneBlinkForm(
   const {
     rootFormElementsCtrl,
     pageElementsConditionallyShown,
+    rootElementsConditionallyShown,
     handleConditionallyShowOption,
     conditionalLogicState,
     elementsOnPages,
@@ -259,15 +260,13 @@ function OneBlinkForm(
           } */,
           pageElement,
         ) => {
-          const formElementsConditionallyShown =
-            pageElementsConditionallyShown[pageElement.id].formElements
           const { model, captchaTokens } = cleanFormElementsCtrlModel(
             {
               elements: pageElement.elements,
               model: submission,
               parentFormElementsCtrl: rootFormElementsCtrl,
             },
-            formElementsConditionallyShown,
+            rootElementsConditionallyShown,
             stripBinaryData,
           )
           return {
@@ -285,7 +284,7 @@ function OneBlinkForm(
       )
     },
     [
-      pageElementsConditionallyShown,
+      rootElementsConditionallyShown,
       rootFormElementsCtrl,
       submission,
       visiblePages,
@@ -562,10 +561,8 @@ function OneBlinkForm(
                                   )}
                                 >
                                   <OneBlinkFormElements
-                                    model={submission}
                                     formElementsConditionallyShown={
-                                      pageElementsConditionallyShown[page.id]
-                                        .formElements
+                                      rootElementsConditionallyShown
                                     }
                                     formElementsValidation={
                                       pagesValidation &&
@@ -579,9 +576,7 @@ function OneBlinkForm(
                                     onChange={handleChange}
                                     onChangeElements={handleChangeElements}
                                     onChangeModel={handleChangeModel}
-                                    parentFormElementsCtrl={
-                                      rootFormElementsCtrl
-                                    }
+                                    formElementsCtrl={rootFormElementsCtrl}
                                   />
                                 </div>
                               ))}

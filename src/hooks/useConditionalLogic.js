@@ -241,10 +241,23 @@ export default function useConditionalLogic(
     rootFormElementsCtrl.parentFormElementsCtrl.model,
   ])
 
+  const rootElementsConditionallyShown /* : FormElementsConditionallyShown */ = React.useMemo(() => {
+    return Object.keys(pageElementsConditionallyShown).reduce((
+      memo /* : FormElementsConditionallyShown */,
+      pageId /* : string */,
+    ) => {
+      return {
+        ...memo,
+        ...pageElementsConditionallyShown[pageId].formElements,
+      }
+    }, {})
+  }, [pageElementsConditionallyShown])
+
   return {
     rootFormElementsCtrl,
     conditionalLogicState,
     pageElementsConditionallyShown,
+    rootElementsConditionallyShown,
     handleConditionallyShowOption,
     elementsOnPages,
   }
