@@ -74,7 +74,7 @@
   "license": "GPL-3.0-only",
   "main": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.2.0-beta.4",
+    "@oneblink/apps": "^0.2.0",
     "clsx": "^1.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
