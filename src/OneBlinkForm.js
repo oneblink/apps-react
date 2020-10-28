@@ -332,6 +332,7 @@ function OneBlinkForm(
   )
 
   const handleSaveDraft = React.useCallback(() => {
+    if (disabled) return
     if (onSaveDraft) {
       allowNavigation()
 
@@ -344,7 +345,13 @@ function OneBlinkForm(
         submission,
       })
     }
-  }, [allowNavigation, definition, getCurrentSubmissionData, onSaveDraft])
+  }, [
+    allowNavigation,
+    definition,
+    disabled,
+    getCurrentSubmissionData,
+    onSaveDraft,
+  ])
 
   // #endregion
   //
@@ -373,17 +380,21 @@ function OneBlinkForm(
   //
   // #region Submission/Definition Changes
 
-  const handleChange = React.useCallback((element, value) => {
-    if (element.type !== 'page') {
-      setFormSubmission((currentFormSubmission) => ({
-        isDirty: true,
-        submission: {
-          ...currentFormSubmission.submission,
-          [element.name]: value,
-        },
-      }))
-    }
-  }, [])
+  const handleChange = React.useCallback(
+    (element, value) => {
+      if (disabled) return
+      if (element.type !== 'page') {
+        setFormSubmission((currentFormSubmission) => ({
+          isDirty: true,
+          submission: {
+            ...currentFormSubmission.submission,
+            [element.name]: value,
+          },
+        }))
+      }
+    },
+    [disabled],
+  )
 
   useChangeEffect(() => {
     if (onChange) {
@@ -643,7 +654,7 @@ function OneBlinkForm(
                 type="button"
                 className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
                 onClick={handleSaveDraft}
-                disabled={isPreview}
+                disabled={isPreview || disabled}
               >
                 <span>Save Draft</span>
               </button>
@@ -654,7 +665,7 @@ function OneBlinkForm(
                 type="button"
                 className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
                 onClick={handleCancel}
-                disabled={isPreview}
+                disabled={isPreview || disabled}
               >
                 <span>Cancel</span>
               </button>
