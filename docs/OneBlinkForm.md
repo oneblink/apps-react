@@ -22,6 +22,7 @@ import '@oneblink/apps-react/dist/styles.css'
 | `onSubmit`          | `(NewFormSubmission) => void`  | Yes         | The function to call when the user submits the form with valid submission data. See [NewFormSubmission](#newformsubmission) for the structure of the argument.                                                            |
 | `onCancel`          | `() => void`                   | Yes         | The function to call when the user cancels the form                                                                                                                                                                       |
 | `onSaveDraft`       | `(NewDraftSubmission) => void` | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
+| `disabeld`          | `boolean`                      | No          | Whether the form is currently able to be submitted. False by default.                                                                                                                                                     |
 
 ### NewDraftSubmission
 
