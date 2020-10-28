@@ -248,7 +248,8 @@ function OneBlinkForm(
   // #region Submissions
 
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
-
+  const [hasSubmitted, setHasSubmitted] = useBooleanState(false)
+  const submitButton = React.useRef(null)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
       // Clear data from submission on fields that are hidden on visible pages
@@ -294,7 +295,7 @@ function OneBlinkForm(
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
-
+      if (hasSubmitted) return
       setHasAttemptedSubmit(true)
 
       if (pagesValidation) {
@@ -319,13 +320,19 @@ function OneBlinkForm(
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })
+      setHasSubmitted()
+      if (submitButton.current) {
+        submitButton.current.focus()
+      }
     },
     [
       allowNavigation,
       definition,
       getCurrentSubmissionData,
+      hasSubmitted,
       onSubmit,
       pagesValidation,
+      setHasSubmitted,
     ],
   )
 
@@ -661,7 +668,8 @@ function OneBlinkForm(
               <button
                 type="submit"
                 className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
-                disabled={isPreview}
+                disabled={isPreview || hasSubmitted}
+                ref={submitButton}
               >
                 <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
               </button>
