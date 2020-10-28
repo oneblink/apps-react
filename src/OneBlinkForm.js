@@ -248,7 +248,7 @@ function OneBlinkForm(
   // #region Submissions
 
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
-
+  const submitButton = React.useRef(null)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
       // Clear data from submission on fields that are hidden on visible pages
@@ -294,7 +294,6 @@ function OneBlinkForm(
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
-
       setHasAttemptedSubmit(true)
 
       if (pagesValidation) {
@@ -319,6 +318,11 @@ function OneBlinkForm(
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })
+
+      // TAKE FOCUS AWAY FROM TEXT FIELDS TO DISMISS MOBILE KEYBOARDS
+      if (submitButton.current) {
+        submitButton.current.focus()
+      }
     },
     [
       allowNavigation,
@@ -662,6 +666,7 @@ function OneBlinkForm(
                 type="submit"
                 className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
                 disabled={isPreview}
+                ref={submitButton}
               >
                 <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
               </button>
