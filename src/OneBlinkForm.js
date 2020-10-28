@@ -668,7 +668,7 @@ function OneBlinkForm(
                 disabled={isPreview}
                 ref={submitButton}
               >
-                <span>{definition.isInfoPage ? 'Done' : 'Submit1'}</span>
+                <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
               </button>
             )}
           </div>
