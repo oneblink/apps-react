@@ -248,7 +248,6 @@ function OneBlinkForm(
   // #region Submissions
 
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
-  const [hasSubmitted, setHasSubmitted] = useBooleanState(false)
   const submitButton = React.useRef(null)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
@@ -295,7 +294,6 @@ function OneBlinkForm(
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
-      if (hasSubmitted) return
       setHasAttemptedSubmit(true)
 
       if (pagesValidation) {
@@ -320,7 +318,8 @@ function OneBlinkForm(
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })
-      setHasSubmitted()
+
+      // TAKE FOCUS AWAY FROM TEXT FIELDS TO DISMISS MOBILE KEYBOARDS
       if (submitButton.current) {
         submitButton.current.focus()
       }
@@ -329,10 +328,8 @@ function OneBlinkForm(
       allowNavigation,
       definition,
       getCurrentSubmissionData,
-      hasSubmitted,
       onSubmit,
       pagesValidation,
-      setHasSubmitted,
     ],
   )
 
@@ -668,10 +665,10 @@ function OneBlinkForm(
               <button
                 type="submit"
                 className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
-                disabled={isPreview || hasSubmitted}
+                disabled={isPreview}
                 ref={submitButton}
               >
-                <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
+                <span>{definition.isInfoPage ? 'Done' : 'Submit1'}</span>
               </button>
             )}
           </div>
