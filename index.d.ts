@@ -4,6 +4,7 @@ import { MiscTypes } from '@oneblink/types'
 import { FormElementsCtrl } from './typescript/types/form'
 interface OneBlinkFormProps {
   form: FormTypes.Form
+  disabled?: boolean
   isPreview?: boolean
   initialSubmission?: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
