@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.2 (2020-10-30)
+
 ### Added
 
 - Disabled prop to forms to stop multiple submissions
