@@ -97,7 +97,7 @@
     "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
     "test": "npm run jest",
     "tsc": "tsc",
-    "watch": "npm-watch"
+    "start": "npm-watch"
   },
   "watch": {
     "build": "src/**/*.{js,scss}"

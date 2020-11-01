@@ -53,6 +53,15 @@ const handlePredicate = (predicate, model, predicateElement) => {
 
       return operatorFn(lhs, rhs)
     }
+    case 'BETWEEN': {
+      // $FlowFixMe
+      const value = Number.parseFloat(model[predicateElement.name])
+      if (Number.isNaN(value)) {
+        return false
+      }
+
+      return value >= predicate.min && value <= predicate.max
+    }
     case 'OPTIONS':
     default: {
       if (
