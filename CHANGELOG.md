@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `BETWEEN` conditional logic for numeric form elements
 
+### Fixed
+
+- checkboxes button not using option colour
+
 ## 0.1.2 (2020-10-30)
 
 ### Added

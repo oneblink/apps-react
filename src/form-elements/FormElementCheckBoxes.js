@@ -76,6 +76,8 @@ function FormElementCheckboxes(
             <div className="ob-button-radio-container">
               <div className="buttons ob-buttons ob-buttons-radio">
                 {filteredOptions.map((option, index) => {
+                  const isSelected =
+                    Array.isArray(value) && value.includes(option.value)
                   return (
                     <button
                       key={index}
@@ -83,17 +85,15 @@ function FormElementCheckboxes(
                       className={clsx(
                         'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
                         {
-                          'is-primary':
-                            Array.isArray(value) &&
-                            value.includes(option.value),
-                          'is-light':
-                            !Array.isArray(value) ||
-                            !value.includes(option.value),
-                          'background-color':
-                            Array.isArray(value) &&
-                            value.includes(option.value),
+                          'is-primary': isSelected,
+                          'is-light': !isSelected,
                         },
                       )}
+                      style={
+                        option.colour && isSelected
+                          ? { backgroundColor: option.colour }
+                          : undefined
+                      }
                       onClick={() => changeValues(option.value)}
                       disabled={element.readOnly}
                     >
