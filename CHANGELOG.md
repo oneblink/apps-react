@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - checkboxes button not using option colour
+- `number` element inputs not allow decimal in Safari
 
 ## 0.1.2 (2020-10-30)
 
