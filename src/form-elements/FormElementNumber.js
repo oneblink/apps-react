@@ -29,6 +29,8 @@ function FormElementNumber(
     displayValidationMessage,
   } /* : Props */,
 ) {
+  const htmlInputElementRef = React.useRef()
+
   const [isDirty, setIsDirty] = useBooleanState(false)
   const text = React.useMemo(
     () => (typeof value === 'number' ? value.toString() : ''),
@@ -46,6 +48,12 @@ function FormElementNumber(
     [element, onChange],
   )
 
+  React.useEffect(() => {
+    if (htmlInputElementRef.current) {
+      htmlInputElementRef.current.value = text
+    }
+  }, [htmlInputElementRef, text])
+
   return (
     <div className="cypress-number-element">
       <div className="ob-form__element ob-number">
@@ -61,12 +69,12 @@ function FormElementNumber(
           <div className="field has-addons">
             <div className="control is-expanded">
               <input
+                ref={htmlInputElementRef}
                 type="number"
                 placeholder={element.placeholderValue}
                 id={id}
                 name={element.name}
                 className="input ob-input cypress-number-control"
-                value={text}
                 onChange={handleChange}
                 required={element.required}
                 disabled={element.readOnly}
