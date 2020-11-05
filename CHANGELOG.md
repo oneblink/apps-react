@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.3 (2020-11-05)
+
 ### Added
 
 - `BETWEEN` conditional logic for numeric form elements
