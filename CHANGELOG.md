@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - `isInteger` validation to `number` type form elements
+- `minLength` and `maxLength` validation to `text` and `textarea` type form elements
 
 ## 0.1.3 (2020-11-05)
 
