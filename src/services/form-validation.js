@@ -408,6 +408,8 @@ const generateSchemaReducer = (
             notGreaterThanOrEqualTo: minErrorMessage,
             lessThanOrEqualTo: formElement.maxNumber,
             notLessThanOrEqualTo: maxErrorMessage,
+            onlyInteger: formElement.isInteger,
+            notInteger: 'Please enter a whole number',
           },
           lookups: {
             formElement,
