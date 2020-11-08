@@ -25,7 +25,9 @@ function CopyToClipboardButton(
       <span className="icon">
         <i className="material-icons">file_copy</i>
       </span>
-      {!!isInputButton && <span className="is-hidden-mobile">&nbsp;Copy</span>}
+      <span className={isInputButton ? 'is-hidden-mobile' : undefined}>
+        &nbsp;Copy
+      </span>
     </button>
   )
 }

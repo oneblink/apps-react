@@ -31,6 +31,8 @@ function FormElementText(
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const text = typeof value === 'string' ? value : ''
+  const isDisplayingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage
   return (
     <div className="cypress-text-element">
       <div className="ob-form__element ob-text">
@@ -72,11 +74,28 @@ function FormElementText(
             validationMessage={validationMessage}
           />
         </div>
-
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <div role="alert">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
+        {(isDisplayingValidationMessage || !!element.maxLength) && (
+          <div role="alert" className="has-margin-top-8">
+            <div className="is-flex is-justify-content-space-between">
+              {isDisplayingValidationMessage ? (
+                <div className="has-text-danger ob-error__text cypress-validation-message">
+                  {validationMessage}
+                </div>
+              ) : (
+                <div />
+              )}
+              {!!element.maxLength && (
+                <div
+                  className={clsx(
+                    'ob-max-length__text cypress-max-length-message',
+                    {
+                      'has-text-danger': text.length > element.maxLength,
+                    },
+                  )}
+                >
+                  {text.length} / {element.maxLength}
+                </div>
+              )}
             </div>
           </div>
         )}

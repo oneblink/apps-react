@@ -307,6 +307,13 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          length: {
+            minimum: formElement.minLength,
+            tooShort:
+              'Please enter a value with at least %{count} character(s)',
+            maximum: formElement.maxLength,
+            tooLong: 'Please enter a value with %{count} character(s) or less',
+          },
         }
         break
       }
