@@ -14,7 +14,7 @@ const BARCODE_TYPES = [
   'code_93_reader',
 ]
 
-export default function (imgData: string, barcodeTypes: string[] | void) {
+export default function (imgData: string, barcodeTypes?: string[]) {
   return new Promise((resolve) => {
     Quagga.decodeSingle(
       {

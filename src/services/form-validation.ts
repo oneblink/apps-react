@@ -149,8 +149,8 @@ export const validatePages = (
 }
 
 const clearValidationMessagesForHiddenElements = (
-  formElementsValidation: FormElementsValidation | void,
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
+  formElementsValidation?: FormElementsValidation,
+  formElementsConditionallyShown?: FormElementsConditionallyShown,
 ) => {
   // If there is no validation to check, there are no invalid elements
   // If there is no conditionally shown elements, all invalid elements should display validation messages,
