@@ -1,18 +1,14 @@
-// @flow
-'use strict'
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import OnLoading from './OnLoading'
 
-/* ::
 type Props = {
-  options: ChoiceElementOption[] | void,
-  children: React.Node,
+  options: FormTypes.ChoiceElementOption[] | void
+  children: React.ReactNode
 }
-*/
 
-function FormElementOptions({ options, children } /* : Props */) {
+function FormElementOptions({ options, children }: Props) {
   if (!options) {
     return (
       <div>
@@ -35,6 +31,4 @@ function FormElementOptions({ options, children } /* : Props */) {
   return <div>{children}</div>
 }
 
-export default (React.memo(
-  FormElementOptions,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementOptions)

@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import AbortController from 'abort-controller'
@@ -14,55 +11,58 @@ import useFormDefinition from '../hooks/useFormDefinition'
 import useInjectPages from '../hooks/useInjectPages'
 import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
 import useExecutedLookupCallback from '../hooks/useExecutedLookupCallback'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  isAutoLookup?: boolean,
-  element: LookupFormElement,
-  value: mixed | void,
-  formElementsCtrl: FormElementsCtrl,
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
-  onChangeElements: (FormElement[]) => void,
-  onChangeModel: ($PropertyType<FormElementsCtrl, 'model'>) => void,
-  children: React.Node,
+  isAutoLookup?: boolean
+  element: FormTypes.LookupFormElement
+  value: unknown | void
+  formElementsCtrl: FormElementsCtrl
+  formElementsConditionallyShown: FormElementsConditionallyShown | void
+  onChangeElements: (formElements: FormTypes.FormElement[]) => void
+  onChangeModel: (model: FormElementsCtrl['model']) => void
+  children: React.ReactNode
 }
-*/
 
-function LookupNotificationComponent(
-  {
-    isAutoLookup,
-    element,
-    value,
-    formElementsCtrl,
-    formElementsConditionallyShown,
-    onChangeElements,
-    onChangeModel,
-    children,
-  } /* : Props */,
-) {
+function LookupNotificationComponent({
+  isAutoLookup,
+  element,
+  value,
+  formElementsCtrl,
+  formElementsConditionallyShown,
+  onChangeElements,
+  onChangeModel,
+  children,
+}: Props) {
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
   const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
 
-  const [onCancelLookup, setOnCancelLookup] = React.useState(() => () => {})
+  const [onCancelLookup, setOnCancelLookup] = React.useState<
+    (() => void) | undefined
+  >(undefined)
   const [isLookingUp, setIsLookingUp] = React.useState(false)
   const [hasLookupFailed, setHasLookupFailed] = React.useState(false)
   const [hasLookupSucceeded, setHasLookupSucceeded] = React.useState(false)
   const [isCancellable, setIsCancellable] = React.useState(false)
   const [isDisabled, setIsDisabled] = React.useState(false)
-  const [lookupErrorHTML, setLookupErrorHTML] = React.useState(null)
+  const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
+    null,
+  )
 
   const mergeLookupData = React.useCallback(
-    (dataLookupResult, elementLookupResult) => {
-      let defaultElementData /* : $PropertyType<FormElementsCtrl, 'model'> | void */
+    (dataLookupResult, elementLookupResult: FormTypes.FormElement[]) => {
+      let defaultElementData: FormElementsCtrl['model'] | void
 
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
+          // @ts-expect-error
           injectPagesAfter(element, elementLookupResult)
           return
         }
 
+        // @ts-expect-error
         const indexOfElement = formElementsCtrl.elements.indexOf(element)
         if (indexOfElement === -1) {
           console.log('Could not find element', element)
@@ -74,14 +74,16 @@ function LookupNotificationComponent(
 
           // Filter out already injected elements
           const allElements = formElementsCtrl.elements.filter(
-            // Sorry flow, we need to check a property you don't approve of :(
-            // $FlowFixMe
+            // Sorry typescript, we need to check a property you don't approve of :(
+            // @ts-expect-error
             (e) => e.injectedByElementId !== element.id,
           )
           allElements.splice(
             indexOfElement + 1,
             0,
             ...elementLookupResult.map((e) => {
+              // Sorry typescript, we need to check a property you don't approve of :(
+              // @ts-expect-error
               e.injectedByElementId = element.id
               return e
             }),
@@ -184,7 +186,7 @@ function LookupNotificationComponent(
     } finally {
       clearTimeout(isCancellableTimeout)
       setIsDisabled(false)
-      setOnCancelLookup(null)
+      setOnCancelLookup(undefined)
     }
   }, [
     definition,
@@ -258,7 +260,7 @@ function LookupNotificationComponent(
                     <p
                       className="fade-in"
                       dangerouslySetInnerHTML={{
-                        __html: lookupErrorHTML,
+                        __html: lookupErrorHTML || '',
                       }}
                       ng-bind-html="$ctrl.obLookupCtrl.lookupErrorMessage"
                     />
@@ -294,24 +296,25 @@ function LookupNotificationComponent(
   )
 }
 
-const LookupNotificationComponentMemo /* : React.AbstractComponent<Props> */ = React.memo(
-  LookupNotificationComponent,
-)
+const LookupNotificationComponentMemo = React.memo(LookupNotificationComponent)
 
-function LookupNotification(props /* : Props */) {
+function LookupNotification(props: Props) {
   if (props.element.isDataLookup || props.element.isElementLookup) {
     return <LookupNotificationComponentMemo {...props} />
   }
 
-  return props.children
+  return <>{props.children}</>
 }
 
-export default (React.memo(
-  LookupNotification,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(LookupNotification)
 
-async function fetchLookup(formElementLookupId, form, payload, abortSignal) {
-  if (typeof formElementLookupId !== 'number') {
+async function fetchLookup(
+  formElementLookupId: number | undefined,
+  form: FormTypes.Form | undefined,
+  payload: FormElementsCtrl['model'],
+  abortSignal: AbortSignal,
+) {
+  if (typeof formElementLookupId !== 'number' || !form) {
     return
   }
 
@@ -334,7 +337,7 @@ async function fetchLookup(formElementLookupId, form, payload, abortSignal) {
     throw new Error('Could not find element lookup configuration')
   }
 
-  let headers = {
+  let headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   }

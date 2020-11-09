@@ -1,34 +1,27 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
-/* ::
 type Props = {
-  isOpen: boolean,
-  title: string,
-  children: React.Node,
-  actions: React.Node | null,
-  className?: string,
-  cardClassName?: string,
-  titleClassName?: string,
-  bodyClassName?: string,
+  isOpen: boolean
+  title: string
+  children: React.ReactNode
+  actions: React.ReactNode | null
+  className?: string
+  cardClassName?: string
+  titleClassName?: string
+  bodyClassName?: string
 }
-*/
 
-function Modal(
-  {
-    isOpen,
-    title,
-    children,
-    className,
-    cardClassName,
-    titleClassName,
-    bodyClassName,
-    actions,
-  } /* : Props */,
-) {
+function Modal({
+  isOpen,
+  title,
+  children,
+  className,
+  cardClassName,
+  titleClassName,
+  bodyClassName,
+  actions,
+}: Props) {
   return (
     <div
       className={clsx('modal ob-modal', className, {
@@ -49,4 +42,4 @@ function Modal(
   )
 }
 
-export default (React.memo(Modal) /*: React.AbstractComponent<Props> */)
+export default React.memo(Modal)

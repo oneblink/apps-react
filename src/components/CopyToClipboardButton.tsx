@@ -1,21 +1,14 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 
 import utilsService from '../services/utils-service'
 
-/* ::
 type Props = {
-  text: string,
-  className?: string,
-  isInputButton?: boolean,
+  text: string
+  className?: string
+  isInputButton?: boolean
 }
-*/
 
-function CopyToClipboardButton(
-  { className, text, isInputButton } /* : Props */,
-) {
+function CopyToClipboardButton({ className, text, isInputButton }: Props) {
   const copy = React.useCallback(() => {
     utilsService.copyToClipboard(text)
   }, [text])
@@ -32,6 +25,4 @@ function CopyToClipboardButton(
   )
 }
 
-export default (React.memo(
-  CopyToClipboardButton,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(CopyToClipboardButton)

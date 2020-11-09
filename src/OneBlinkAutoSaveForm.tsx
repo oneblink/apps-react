@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import _throttle from 'lodash.throttle'
 import { autoSaveService } from '@oneblink/apps'
@@ -9,26 +6,27 @@ import OnLoading from './components/OnLoading'
 import Modal from './components/Modal'
 import OneBlinkForm from './OneBlinkForm'
 
-/* ::
-type Props = React.ElementConfig<typeof OneBlinkForm> & {
-  autoSaveKey?: string,
+type Props = React.ComponentProps<typeof OneBlinkForm> & {
+  autoSaveKey?: string
 }
-*/
 
-function OneBlinkAutoSaveForm(
-  {
-    form,
-    autoSaveKey,
-    initialSubmission,
-    onCancel,
-    onSubmit,
-    onSaveDraft,
-    ...rest
-  } /* : Props */,
-) {
-  const [isUsingAutoSave, setIsUsingAutoSave] = React.useState(null)
+function OneBlinkAutoSaveForm({
+  form,
+  autoSaveKey,
+  initialSubmission,
+  onCancel,
+  onSubmit,
+  onSaveDraft,
+  ...rest
+}: Props) {
+  const [isUsingAutoSave, setIsUsingAutoSave] = React.useState<boolean | null>(
+    null,
+  )
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
-  const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState({
+  const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState<{
+    isLoading: boolean
+    autoSaveSubmission: FormElementsCtrl['model'] | null
+  }>({
     isLoading: true,
     autoSaveSubmission: null,
   })
@@ -86,10 +84,9 @@ function OneBlinkAutoSaveForm(
     let ignore = false
     const loadAutoSaveData = async () => {
       try {
-        const autoSaveData = await autoSaveService.getAutoSaveData(
-          form.id,
-          autoSaveKey,
-        )
+        const autoSaveData = await autoSaveService.getAutoSaveData<
+          FormElementsCtrl['model']
+        >(form.id, autoSaveKey)
         if (!ignore) {
           setAutoSaveState({
             isLoading: false,
@@ -181,6 +178,4 @@ function OneBlinkAutoSaveForm(
   )
 }
 
-export default (React.memo(
-  OneBlinkAutoSaveForm,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(OneBlinkAutoSaveForm)
