@@ -13,10 +13,8 @@ export default function useClickOutsideElement(
     [callback, ref],
   )
   React.useEffect(() => {
-    // $FlowFixMe
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      // $FlowFixMe
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [handleClickOutside])
