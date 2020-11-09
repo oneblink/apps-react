@@ -1,11 +1,8 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 
 export default function useChangeEffect(
-  effect /* : () => (void | () => void) */,
-  dependencies /* : mixed[] */,
+  effect: () => void | (() => void),
+  dependencies: unknown[],
 ) {
   const initializeRef = React.useRef(false)
 

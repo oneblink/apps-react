@@ -1,70 +1,72 @@
-// @flow
-'use strict'
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import conditionallyShowElement from '../services/conditionally-show-element'
 import conditionallyShowOption from '../services/conditionally-show-option'
 
-export default function useConditionalLogic(
-  {
-    submission,
-    pages,
-  } /* : {
-  submission: $PropertyType<FormElementsCtrl, 'model'>,
-  pages: PageElement[],
-} */,
-) {
-  const [conditionalLogicState, setConditionalLogicState] = React.useState(null)
+export default function useConditionalLogic({
+  submission,
+  pages,
+}: {
+  submission: FormElementsCtrl['model']
+  pages: FormTypes.PageElement[]
+}) {
+  const [conditionalLogicState, setConditionalLogicState] = React.useState<{
+    elements: string[]
+    message: string
+  } | null>(null)
 
-  const handleConditionallyShowElement = React.useCallback((
-    formElementsCtrl /* : FormElementsCtrl */,
-    element /* : FormElement */,
-  ) => {
-    if (!element.conditionallyShow) return true
-    const elementsEvaluated = []
-    try {
-      return conditionallyShowElement(
-        formElementsCtrl,
-        element,
-        elementsEvaluated,
-      )
-    } catch (error) {
-      console.warn(
-        'Error while checking if element is conditional shown',
-        error,
-      )
-      setConditionalLogicState({
-        elements: elementsEvaluated,
-        message: error.message,
-      })
-      return false
-    }
-  }, [])
+  const handleConditionallyShowElement = React.useCallback(
+    (formElementsCtrl: FormElementsCtrl, element: FormTypes.FormElement) => {
+      if (!element.conditionallyShow) return true
+      const elementsEvaluated: string[] = []
+      try {
+        return conditionallyShowElement(
+          formElementsCtrl,
+          element,
+          elementsEvaluated,
+        )
+      } catch (error) {
+        console.warn(
+          'Error while checking if element is conditional shown',
+          error,
+        )
+        setConditionalLogicState({
+          elements: elementsEvaluated,
+          message: error.message,
+        })
+        return false
+      }
+    },
+    [],
+  )
 
-  const handleConditionallyShowOption = React.useCallback((
-    formElementsCtrl /* : FormElementsCtrl */,
-    element /* : FormElementWithOptions */,
-    option /* : ChoiceElementOption */,
-  ) => {
-    const elementsEvaluated = []
-    try {
-      return conditionallyShowOption(
-        formElementsCtrl,
-        element,
-        option,
-        elementsEvaluated,
-      )
-    } catch (error) {
-      setConditionalLogicState({
-        elements: elementsEvaluated,
-        message: error.message,
-      })
-      return false
-    }
-  }, [])
+  const handleConditionallyShowOption = React.useCallback(
+    (
+      formElementsCtrl: FormElementsCtrl,
+      element: FormTypes.FormElementWithOptions,
+      option: FormTypes.ChoiceElementOption,
+    ) => {
+      const elementsEvaluated: string[] = []
+      try {
+        return conditionallyShowOption(
+          formElementsCtrl,
+          element,
+          option,
+          elementsEvaluated,
+        )
+      } catch (error) {
+        setConditionalLogicState({
+          elements: elementsEvaluated,
+          message: error.message,
+        })
+        return false
+      }
+    },
+    [],
+  )
 
-  const pageFormElements /* : FormElement[] */ = React.useMemo(
+  const pageFormElements = React.useMemo<FormTypes.FormElement[]>(
     () => [...pages],
     [pages],
   )
@@ -72,7 +74,10 @@ export default function useConditionalLogic(
   const elementsOnPages = React.useMemo(
     () =>
       pages.reduce(
-        (formElements, page) => [...formElements, ...page.elements],
+        (
+          formElements: FormTypes.FormElement[],
+          page: FormTypes.PageElement,
+        ) => [...formElements, ...page.elements],
         [],
       ),
     [pages],
@@ -90,13 +95,15 @@ export default function useConditionalLogic(
     [elementsOnPages, pageFormElements, submission],
   )
 
-  const pageElementsConditionallyShown /* : PageElementsConditionallyShown */ = React.useMemo(() => {
+  const pageElementsConditionallyShown = React.useMemo<
+    PageElementsConditionallyShown
+  >(() => {
     const getFormElementConditionallyShown = (
-      elements,
-      element,
-      model,
-      parentFormElementsCtrl,
-    ) /* : FormElementConditionallyShown */ => {
+      elements: FormTypes.FormElement[],
+      element: FormTypes.FormElement,
+      model: FormElementsCtrl['model'],
+      parentFormElementsCtrl?: FormElementsCtrl,
+    ): FormElementConditionallyShown => {
       const isShown = handleConditionallyShowElement(
         {
           elements,
@@ -107,7 +114,7 @@ export default function useConditionalLogic(
       )
       switch (element.type) {
         case 'page': {
-          const formElementConditionallyShown = {
+          const formElementConditionallyShown: FormElementConditionallyShown = {
             type: 'page',
             isShown,
             formElements: {},
@@ -135,7 +142,7 @@ export default function useConditionalLogic(
         }
         case 'infoPage':
         case 'form': {
-          const formElementConditionallyShown = {
+          const formElementConditionallyShown: FormElementConditionallyShown = {
             type: 'nestedForm',
             isShown,
             nested: {},
@@ -158,6 +165,7 @@ export default function useConditionalLogic(
               ] = getFormElementConditionallyShown(
                 element.elements,
                 nestedElement,
+                // @ts-expect-error
                 nestedModel,
               )
             }
@@ -165,7 +173,7 @@ export default function useConditionalLogic(
           return formElementConditionallyShown
         }
         case 'repeatableSet': {
-          const formElementConditionallyShown = {
+          const formElementConditionallyShown: FormElementConditionallyShown = {
             type: 'repeatableSet',
             isShown,
             entries: {},
@@ -177,7 +185,10 @@ export default function useConditionalLogic(
                 formElementConditionallyShown.entries[
                   index
                 ] = element.elements.reduce(
-                  (partialFormElementsConditionallyShown, nestedElement) => {
+                  (
+                    partialFormElementsConditionallyShown: FormElementsConditionallyShown,
+                    nestedElement,
+                  ) => {
                     // Should never happen, just making flow happy :)
                     if (
                       nestedElement.type !== 'page' &&
@@ -216,7 +227,11 @@ export default function useConditionalLogic(
     }
 
     return pageFormElements.reduce(
-      (partialFormElementsConditionallyShown, pageElement) => {
+      (
+        partialFormElementsConditionallyShown: PageElementsConditionallyShown,
+        pageElement,
+      ) => {
+        // @ts-expect-error
         partialFormElementsConditionallyShown[
           pageElement.id
         ] = getFormElementConditionallyShown(

@@ -1,8 +1,8 @@
-// @flow
-
 import * as React from 'react'
 
-export const GoogleMapsApiKeyContext /* : React.Context<string | void> */ = React.createContext()
+export const GoogleMapsApiKeyContext = React.createContext<string | undefined>(
+  undefined,
+)
 
 export default function useGoogleMapsApiKeyKey() {
   return React.useContext(GoogleMapsApiKeyContext)

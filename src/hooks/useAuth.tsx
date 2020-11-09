@@ -1,36 +1,27 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import { authService } from '@oneblink/apps'
 
-/* ::
 type AuthContextValue = {
-  isLoggedIn: $Call<typeof authService.isLoggedIn>,
-  userProfile: $Call<typeof authService.getUserProfile>,
-  userFriendlyName: $Call<typeof authService.getUserFriendlyName>,
-  isUsingFormsKey: boolean,
+  isLoggedIn: ReturnType<typeof authService.isLoggedIn>
+  userProfile: ReturnType<typeof authService.getUserProfile>
+  userFriendlyName: ReturnType<typeof authService.getUserFriendlyName>
+  isUsingFormsKey: boolean
 }
-*/
 
-const AuthContext /* : React.Context<AuthContextValue> */ = React.createContext(
-  {
-    isLoggedIn: false,
-    userProfile: null,
-    userFriendlyName: null,
-    isUsingFormsKey: false,
-  },
-)
+const AuthContext = React.createContext<AuthContextValue>({
+  isLoggedIn: false,
+  userProfile: null,
+  userFriendlyName: null,
+  isUsingFormsKey: false,
+})
 
-export function AuthContextProvider(
-  {
-    children,
-    formsKeyToken,
-  } /* : {
-  children: React.Node,
-  formsKeyToken?: string,
-} */,
-) {
+export function AuthContextProvider({
+  children,
+  formsKeyToken,
+}: {
+  children: React.ReactNode
+  formsKeyToken?: string
+}) {
   const [value, setValue] = React.useState(() => {
     authService.setFormsKeyToken(formsKeyToken)
     return {

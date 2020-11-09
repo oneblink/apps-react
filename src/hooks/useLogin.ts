@@ -1,27 +1,22 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import { authService } from '@oneblink/apps'
 
 import useIsMounted from './useIsMounted'
 import useBooleanState from './useBooleanState'
 
-export default function useLogin(
-  {
-    username,
-    password,
-    newPassword,
-    newPasswordConfirmed,
-    code,
-  } /* : {
-  username: string,
-  password: string,
-  newPassword: string,
-  newPasswordConfirmed: string,
-  code: string,
-} */,
-) {
+export default function useLogin({
+  username,
+  password,
+  newPassword,
+  newPasswordConfirmed,
+  code,
+}: {
+  username: string
+  password: string
+  newPassword: string
+  newPasswordConfirmed: string
+  code: string
+}) {
   const isMounted = useIsMounted()
 
   // Validation
@@ -78,7 +73,12 @@ export default function useLogin(
       resetTemporaryPasswordCallback,
     },
     setLoginState,
-  ] = React.useState({
+  ] = React.useState<{
+    isResettingTemporaryPassword: boolean
+    isLoggingIn: boolean
+    loginError: null | Error
+    resetTemporaryPasswordCallback: null | ((newPassword: string) => void)
+  }>({
     isResettingTemporaryPassword: false,
     isLoggingIn: false,
     loginError: null,
@@ -208,7 +208,14 @@ export default function useLogin(
       forgotPasswordError,
     },
     setForgotPasswordState,
-  ] = React.useState({
+  ] = React.useState<{
+    isSendingForgotPasswordCode: boolean
+    forgotPasswordError: null | Error
+    resetForgottenPasswordCallback:
+      | null
+      | ((code: string, newPassword: string) => void)
+    isResettingForgottenPassword: boolean
+  }>({
     isSendingForgotPasswordCode: false,
     forgotPasswordError: null,
     resetForgottenPasswordCallback: null,

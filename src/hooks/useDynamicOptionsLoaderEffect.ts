@@ -1,13 +1,11 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
 import { formService } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
 
 export default function useDynamicOptionsLoaderEffect(
-  form /* : Form */,
-  onSetForm /* : ((Form) => Form) => void */,
+  form: FormTypes.Form,
+  onSetForm: React.Dispatch<React.SetStateAction<FormTypes.Form>>,
 ) {
   React.useEffect(() => {
     let ignore = false
@@ -21,7 +19,7 @@ export default function useDynamicOptionsLoaderEffect(
           return
         }
         onSetForm((currentForm) => {
-          const clonedForm /* : Form */ = _cloneDeep(currentForm)
+          const clonedForm: FormTypes.Form = _cloneDeep(currentForm)
           for (const { options, elementId } of optionsForElementId) {
             const formElement = formService.findFormElement(
               clonedForm.elements,
