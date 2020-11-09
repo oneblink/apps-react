@@ -1,12 +1,10 @@
-import { FormTypes } from '@oneblink/apps'
-
-export interface FormElementsCtrl {
+declare type FormElementsCtrl = {
   model: { [property: string]: unknown }
-  elements: FormTypes.FormElement[]
+  elements: import('@oneblink/types').FormTypes.FormElement[]
   parentFormElementsCtrl?: FormElementsCtrl
 }
 
-export type FormElementValidation =
+declare type FormElementValidation =
   | string
   | undefined
   | {
@@ -21,11 +19,11 @@ export type FormElementValidation =
       nested: FormElementsValidation
     }
 
-export interface FormElementsValidation {
+declare type FormElementsValidation = {
   [formElementName: string]: FormElementValidation | undefined
 }
 
-export interface PageElementsValidation {
+declare type PageElementsValidation = {
   [pageElementId: string]: FormElementsValidation | undefined
 }
 
@@ -35,11 +33,11 @@ interface PageConditionallyShown {
   formElements: FormElementsConditionallyShown
 }
 
-export interface FormElementsConditionallyShown {
+declare type FormElementsConditionallyShown = {
   [formElementName: string]: FormElementConditionallyShown | undefined
 }
 
-export type FormElementConditionallyShown =
+declare type FormElementConditionallyShown =
   | {
       type: 'formElement'
       isShown: boolean
@@ -58,6 +56,6 @@ export type FormElementConditionallyShown =
       nested: FormElementsConditionallyShown
     }
 
-export interface PageElementsConditionallyShown {
+declare type PageElementsConditionallyShown = {
   [pageElementId: string]: PageConditionallyShown
 }
