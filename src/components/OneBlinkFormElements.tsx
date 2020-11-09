@@ -32,10 +32,13 @@ import { FormTypes } from '@oneblink/types'
 
 type Props = {
   elements: FormTypes.FormElement[]
-  formElementsConditionallyShown: FormElementsConditionallyShown | void
-  formElementsValidation: FormElementsValidation | void
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined
+  formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
-  onChange: (formElement: FormTypes.FormElement, value: unknown | void) => void
+  onChange: (
+    formElement: FormTypes.FormElement,
+    value: unknown | undefined,
+  ) => void
   onChangeElements: (formElements: FormTypes.FormElement[]) => void
   onChangeModel: (model: FormElementsCtrl['model']) => void
   // Props passed by repeatable sets
@@ -124,10 +127,10 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   parentFormName,
 }: {
   element: FormTypes.FormElement
-  value: unknown | void
-  formElementValidation: FormElementValidation | void
+  value: unknown | undefined
+  formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
-  formElementsConditionallyShown: FormElementsConditionallyShown | void
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   id: string
   isEven: Props['isEven']
   onChange: Props['onChange']
@@ -395,7 +398,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           isEven={!isEven}
           element={element}
-          value={value}
+          value={value as Array<FormElementsCtrl['model']> | undefined}
           onChange={onChange}
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}

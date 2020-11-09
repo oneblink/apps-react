@@ -1,35 +1,32 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: NumberElement,
-  value: mixed,
-  onChange: (FormElement, value: number | void) => mixed,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.NumberElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementNumber(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
-  const htmlInputElementRef = React.useRef()
+function FormElementNumber({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
+  const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
 
   const [isDirty, setIsDirty] = useBooleanState(false)
   const text = React.useMemo(
@@ -119,33 +116,34 @@ function FormElementNumber(
   )
 }
 
-/* ::
-type SliderControlProps = {
-  id: string,
-  text: string,
-  value: mixed,
-  element: NumberElement,
-  onChange: (SyntheticInputEvent<HTMLInputElement>) => mixed,
-  onBlur: () => void,
-}
-*/
-
 const sliderBubbleWidthInPixels = 24
 
-const SliderControl = React.memo(function SliderControl(
-  { id, text, value, element, onChange, onBlur } /* : SliderControlProps */,
-) {
-  const sliderOutputRef = React.useRef(null)
-  const sliderInputRef = React.useRef(null)
+const SliderControl = React.memo(function SliderControl({
+  id,
+  text,
+  value,
+  element,
+  onChange,
+  onBlur,
+}: {
+  id: string
+  text: string
+  value: unknown
+  element: FormTypes.NumberElement
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => unknown
+  onBlur: () => void
+}) {
+  const sliderOutputRef = React.useRef<HTMLOutputElement>(null)
+  const sliderInputRef = React.useRef<HTMLInputElement>(null)
 
   const number = React.useMemo(
-    () => (typeof value === 'number' ? value : parseFloat(value)),
+    () => (typeof value === 'number' ? value : parseFloat(value as string)),
     [value],
   )
 
   const removeIsDraggingClass = React.useMemo(
     () =>
-      _debounce((outputElement) => {
+      _debounce((outputElement: HTMLOutputElement) => {
         if (outputElement.classList.contains('is-dragging')) {
           outputElement.classList.remove('is-dragging')
         }
@@ -199,7 +197,9 @@ const SliderControl = React.memo(function SliderControl(
         name={element.name}
         className="slider ob-input is-fullwidth cypress-slider-number-control is-large is-circle cypress-number-control"
         step={element.sliderIncrement ? element.sliderIncrement : 1}
+        // @ts-expect-error
         min={element.minNumber}
+        // @ts-expect-error
         max={element.maxNumber}
         value={text}
         type="range"
@@ -212,6 +212,4 @@ const SliderControl = React.memo(function SliderControl(
   )
 })
 
-export default (React.memo(
-  FormElementNumber,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementNumber)

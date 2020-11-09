@@ -8,8 +8,11 @@ export default function useFormElementOptions({
   onFilter,
 }: {
   element: FormTypes.FormElementWithOptions
-  value: unknown | void
-  onChange: (formElement: FormTypes.FormElement, value: unknown | void) => void
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    value: unknown | undefined,
+  ) => void
   onFilter: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
 }) {
   const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {

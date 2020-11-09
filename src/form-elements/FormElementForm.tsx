@@ -5,13 +5,13 @@ import OneBlinkFormElements from '../components/OneBlinkFormElements'
 type Props = {
   id: string
   element: FormTypes.FormFormElement | FormTypes.InfoPageElement
-  value: FormElementsCtrl['model'] | void
+  value: FormElementsCtrl['model'] | undefined
   onChange: (formElements: FormTypes.FormElement, value: unknown) => unknown
   onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
   onChangeModel: (model: FormElementsCtrl['model']) => unknown
-  formElementValidation: FormElementValidation | void
+  formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
-  formElementConditionallyShown: FormElementConditionallyShown | void
+  formElementConditionallyShown: FormElementConditionallyShown | undefined
   parentFormName?: string
   parentFormElementsCtrl: FormElementsCtrl
 }

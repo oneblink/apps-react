@@ -1,34 +1,31 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: EmailElement,
-  value: mixed,
-  onChange: (FormElement, string) => mixed,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.EmailElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: string | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementEmail(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementEmail({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const text = typeof value === 'string' ? value : ''
@@ -86,6 +83,4 @@ function FormElementEmail(
   )
 }
 
-export default (React.memo(
-  FormElementEmail,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementEmail)

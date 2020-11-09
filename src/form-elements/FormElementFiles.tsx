@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
@@ -8,30 +5,45 @@ import useBooleanState from '../hooks/useBooleanState'
 import useClickOutsideElement from '../hooks/useClickOutsideElement'
 import useIsMounted from '../hooks/useIsMounted'
 import downloadFile from '../services/download-file'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
+type FilesElementFile = {
+  data: string
+  fileName: string
+}
+
 type Props = {
-  id: string,
-  element: FilesElement,
-  value: mixed,
-  onChange: (FormElement, Object) => mixed,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.FilesElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: FilesElementFile[] | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
 
 type ChildProps = {
-  element: FilesElement,
-  onChange: (FormElement, Object) => mixed,
-  value: mixed,
-  setIsDirty: () => void,
-  file: Object,
-  index: number,
+  element: FormTypes.FilesElement
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: FilesElementFile[] | undefined,
+  ) => unknown
+  value: unknown
+  setIsDirty: () => void
+  file: FilesElementFile
+  index: number
 }
-*/
 
-const FormElementFile = (
-  { element, onChange, value, setIsDirty, file, index } /* : ChildProps */,
-) => {
+const FormElementFile = ({
+  element,
+  onChange,
+  value,
+  setIsDirty,
+  file,
+  index,
+}: ChildProps) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
   const isImageType = React.useMemo(() => {
@@ -126,21 +138,17 @@ const FormElementFile = (
   )
 }
 
-const MemorisedFile /*: React.AbstractComponent<ChildProps> */ = React.memo(
-  FormElementFile,
-)
+const MemorisedFile = React.memo(FormElementFile)
 
-function FormElementFiles(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
-  const inputRef = React.useRef(null)
+function FormElementFiles({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
+  const inputRef = React.useRef<HTMLInputElement>(null)
   const [isDirty, setIsDirty] = useBooleanState(false)
   const isMounted = useIsMounted()
 
@@ -173,7 +181,7 @@ function FormElementFiles(
     if (!inputRef.current) return
     inputRef.current.click()
   }, [])
-  const files /* : Object[] */ = Array.isArray(value) ? [...value] : []
+  const files = Array.isArray(value) ? [...value] : []
   return (
     <div className="cypress-files-element">
       <div className="ob-form__element ob-files">
@@ -232,6 +240,4 @@ function FormElementFiles(
   )
 }
 
-export default (React.memo(
-  FormElementFiles,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementFiles)

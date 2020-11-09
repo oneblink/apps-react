@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import loadImage from 'blueimp-load-image'
@@ -10,35 +7,46 @@ import useBooleanState from '../hooks/useBooleanState'
 import downloadFile from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
-/* ::
-type Props = {
-  id: string,
-  element: CameraElement,
-  value: mixed,
-  onChange: (FormElement, Object) => mixed,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
-}
-*/
+import { FormTypes } from '@oneblink/types'
 
-function FormElementCamera(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+type Props = {
+  id: string
+  element: FormTypes.CameraElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => void
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
+}
+
+declare global {
+  interface Navigator {
+    camera: any
+  }
+}
+declare global {
+  interface Window {
+    Camera: any
+  }
+}
+function FormElementCamera({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isLoading, setIsLoading, clearIsLoading] = useBooleanState(false)
   const [viewError, , , toggleError] = useBooleanState(false)
-  const [cameraError, setCameraError] = React.useState(null)
+  const [cameraError, setCameraError] = React.useState<Error | null>(null)
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [isAnnotating, setIsAnnotating, clearIsAnnotating] = useBooleanState(
     false,
   )
-  const fileInputRef = React.useRef(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const clearImage = React.useCallback(() => {
     onChange(element, undefined)
   }, [element, onChange])
@@ -62,13 +70,14 @@ function FormElementCamera(
           const options = {
             // should be set to canvas : true to activate auto fix orientation
             canvas: true,
-            // if exif data available, update orientation
+            // @ts-expect-error if exif data available, update orientation
             orientation: data.exif ? data.exif.get('Orientation') : 0,
           }
           console.log('Loading image onto canvas to correct orientation')
           loadImage(
             file,
             (canvas) => {
+              // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
               const base64data = canvas.toDataURL(file.type)
               setIsDirty()
               onChange(element, base64data)
@@ -82,16 +91,14 @@ function FormElementCamera(
     [element, onChange, setIsLoading, setIsDirty, clearIsLoading, clearImage],
   )
   const openCamera = React.useCallback(() => {
-    // $FlowFixMe camera is only placed on navigator by cordova
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
       setIsLoading()
-      // $FlowFixMe
       navigator.camera.getPicture(
-        (base64Data) => {
+        (base64Data: string) => {
           onChange(element, `data:image/jpeg;base64,${base64Data}`)
           clearIsLoading()
         },
-        (error) => {
+        (error: Error) => {
           console.warn(
             'An error occurred while attempting to take a photo',
             error,
@@ -141,6 +148,9 @@ function FormElementCamera(
 
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        return
+      }
 
       const image = new Image()
       image.onload = function () {
@@ -180,7 +190,7 @@ function FormElementCamera(
           {!isLoading && value !== undefined && (
             <figure>
               <img
-                src={value}
+                src={value as string}
                 className="cypress-camera-image ob-camera__img"
               ></img>
               <button
@@ -313,9 +323,7 @@ function FormElementCamera(
   )
 }
 
-export default (React.memo(
-  FormElementCamera,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementCamera)
 
 const annotationButtonColours = [
   '#000000',
@@ -338,20 +346,18 @@ const annotationButtonColours = [
   '#ff5722',
 ]
 
-const CameraAnnotation = React.memo(function CameraAnnotation(
-  {
-    imageSrc,
-    onClose,
-    onSave,
-  } /* : {
-  imageSrc: mixed,
-  onClose: () => void,
-  onSave: (string) => void,
-} */,
-) {
-  const annotationContentElementRef = React.useRef(null)
-  const bmSignaturePadRef = React.useRef(null)
-  const signatureCanvasRef = React.useRef(null)
+const CameraAnnotation = React.memo(function CameraAnnotation({
+  imageSrc,
+  onClose,
+  onSave,
+}: {
+  imageSrc: unknown
+  onClose: () => void
+  onSave: (newValue: string) => void
+}) {
+  const annotationContentElementRef = React.useRef<HTMLDivElement>(null)
+  const bmSignaturePadRef = React.useRef<HTMLDivElement>(null)
+  const signatureCanvasRef = React.useRef<SignatureCanvas>(null)
 
   const [isDirty, setDirty] = useBooleanState(false)
   const [penColour, setPenColour] = React.useState(annotationButtonColours[0])
@@ -453,10 +459,9 @@ const CameraAnnotation = React.memo(function CameraAnnotation(
             className="ob-annotation__signature-pad cypress-annotation-signature-pad"
           >
             <SignatureCanvas
-              // This library component expects a callback as an argument here, so ignoring flow error
-              // $FlowFixMe
               ref={signatureCanvasRef}
               clearOnResize={false}
+              // @ts-expect-error
               onEnd={setDirty}
               penColor={penColour}
             />

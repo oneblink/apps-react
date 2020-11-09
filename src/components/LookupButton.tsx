@@ -4,8 +4,8 @@ import useLookupNotification from '../hooks/useLookupNotification'
 import { lookupValidationMessage } from '../services/form-validation'
 
 type Props = {
-  value: unknown | void
-  validationMessage: string | void
+  value: unknown | undefined
+  validationMessage: string | undefined
   hasMarginTop?: boolean
   isInputButton?: boolean
 }

@@ -128,7 +128,7 @@ const isAttributeFilterValid = (
   // now we have the model and predicate element, verify that the predicate element
   // is not hidden
   if (
-    // Will never be a page, just making flow happy :)
+    // Will never be a page, just making typescript happy :)
     predicateElement.type === 'page' ||
     !conditionallyShowElement(formElementsCtrl, predicateElement, [])
   ) {

@@ -1,15 +1,11 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  element: HeadingElement,
+  element: FormTypes.HeadingElement
 }
-*/
 
-function FormElementHeading({ element } /* : Props */) {
+function FormElementHeading({ element }: Props) {
   return (
     <div className="cypress-heading-element">
       <div className="ob-form__element ob-heading">
@@ -19,19 +15,15 @@ function FormElementHeading({ element } /* : Props */) {
   )
 }
 
-export default (React.memo(
-  FormElementHeading,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementHeading)
 
-const Heading = React.memo(function Heading(
-  {
-    headingType,
-    children,
-  } /* : {
-  headingType: number,
-  children: React.Node,
-} */,
-) {
+const Heading = React.memo(function Heading({
+  headingType,
+  children,
+}: {
+  headingType: number
+  children: React.ReactNode
+}) {
   const className = `ob-heading__text title is-${headingType}`
   switch (headingType) {
     case 1:

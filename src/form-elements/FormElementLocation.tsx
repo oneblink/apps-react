@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import useBooleanState from '../hooks/useBooleanState'
@@ -11,36 +8,36 @@ import queryString from 'query-string'
 import OnLoading from '../components/OnLoading'
 import defaultCoords from '../services/defaultCoordinates'
 import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: LocationElement,
-  value: mixed | void,
-  onChange: (FormElement, mixed | void) => void,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.LocationElement
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
 
 type Coords = {
-  latitude: number,
-  longitude: number,
+  latitude: number
+  longitude: number
 }
-*/
 
 const mapHeight = 300
 const initialMapZoom = 15
 const apiUrl = 'https://maps.googleapis.com/maps/api/staticmap'
-function FormElementLocation(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementLocation({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const isOffline = useIsOffline()
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [
@@ -61,7 +58,7 @@ function FormElementLocation(
       setLocation({ latitude, longitude })
     }
   }, [])
-  const [location, setLocation] = React.useState(undefined)
+  const [location, setLocation] = React.useState<Coords | undefined>(undefined)
   const onClear = React.useCallback(() => {
     hideLocationPicker()
     onChange(element, undefined)
@@ -70,7 +67,7 @@ function FormElementLocation(
 
   const onCancel = React.useCallback(() => {
     hideLocationPicker()
-    setLocation(value)
+    setLocation(value as Coords | undefined)
   }, [hideLocationPicker, value])
 
   const onLocate = React.useCallback(async () => {
@@ -102,7 +99,7 @@ function FormElementLocation(
   // SET DEFAULT/PREFILL DATA
   React.useEffect(() => {
     if (value) {
-      setLocation(value)
+      setLocation(value as Coords | undefined)
     }
   }, [value])
   return (
@@ -186,16 +183,13 @@ function FormElementLocation(
   )
 }
 
-/* ::
-type LocationIsOfflineProps = {
-  location: mixed | void,
-  isOpen: boolean,
-}
-*/
-
-const LocationIsOffline = React.memo(function LocationIsOffline(
-  { location, isOpen } /* : LocationIsOfflineProps */,
-) {
+const LocationIsOffline = React.memo(function LocationIsOffline({
+  location,
+  isOpen,
+}: {
+  location: Coords | undefined
+  isOpen: boolean
+}) {
   return (
     <div>
       {isOpen ? (
@@ -221,23 +215,11 @@ const LocationIsOffline = React.memo(function LocationIsOffline(
             <h4 className="title is-4">You are currently offline</h4>
             <h3 className="title is-3 ob-location__latitude">Latitude</h3>
             <p>
-              <b>
-                {
-                  // Can't call props on mixed type
-                  // $FlowFixMe
-                  location.latitude
-                }
-              </b>
+              <b>{location.latitude}</b>
             </p>
             <h3 className="title is-3 ob-location__longitude">Longitude</h3>
             <p>
-              <b>
-                {
-                  // Can't call props on mixed type
-                  // $FlowFixMe
-                  location.longitude
-                }
-              </b>
+              <b>{location.longitude}</b>
             </p>
           </div>
         </figure>
@@ -246,17 +228,15 @@ const LocationIsOffline = React.memo(function LocationIsOffline(
   )
 })
 
-/* ::
-type LocationPickerProps = {
-  value: mixed | void,
-  isOpen: boolean,
-  onChange: (Coords) => void,
-}
-*/
-
-const LocationPicker = React.memo(function SummaryResult(
-  { value, isOpen, onChange } /* : LocationPickerProps */,
-) {
+const LocationPicker = React.memo(function SummaryResult({
+  value,
+  isOpen,
+  onChange,
+}: {
+  value: Coords | undefined
+  isOpen: boolean
+  onChange: (newValue: Coords) => void
+}) {
   const googleMapsApiKey = useGoogleMapsApiKeyKey()
 
   const coords = React.useMemo(
@@ -274,9 +254,10 @@ const LocationPicker = React.memo(function SummaryResult(
   )
 
   const [map, setMap] = React.useState(null)
-  const [zoom, setZoom] = React.useState(initialMapZoom)
+  const [zoom, setZoom] = React.useState<number>(initialMapZoom)
   const onZoomChanged = React.useCallback(() => {
     if (!map) return
+    // @ts-expect-error
     setZoom(map.getZoom())
   }, [map])
   const staticUrl = React.useMemo(() => {
@@ -294,7 +275,7 @@ const LocationPicker = React.memo(function SummaryResult(
   return coords ? (
     <figure>
       {isOpen ? (
-        <LoadScript googleMapsApiKey={googleMapsApiKey}>
+        <LoadScript googleMapsApiKey={googleMapsApiKey || ''}>
           <GoogleMap
             onLoad={(map) => setMap(map)}
             onUnmount={() => setMap(null)}
@@ -332,6 +313,4 @@ const LocationPicker = React.memo(function SummaryResult(
   ) : null
 })
 
-export default (React.memo(
-  FormElementLocation,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementLocation)

@@ -197,7 +197,7 @@ function OneBlinkForm({
     pages,
   )
 
-  const pagesValidation = React.useMemo<PageElementsValidation | void>(
+  const pagesValidation = React.useMemo<PageElementsValidation | undefined>(
     () => validate(submission, pageElementsConditionallyShown).pagesValidation,
     [pageElementsConditionallyShown, submission, validate],
   )
@@ -382,7 +382,7 @@ function OneBlinkForm({
   // #region Submission/Definition Changes
 
   const handleChange = React.useCallback(
-    (element, value) => {
+    (element: FormTypes.FormElement, value: unknown | undefined): void => {
       if (disabled) return
       if (element.type !== 'page') {
         setFormSubmission((currentFormSubmission) => ({

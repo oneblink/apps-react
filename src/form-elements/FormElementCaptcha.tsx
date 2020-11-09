@@ -1,39 +1,36 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 
 import useCaptchaSiteKey from '../hooks/useCaptchaSiteKey'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  element: CaptchaElement,
-  onChange: (FormElement, string | void) => void,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  element: FormTypes.CaptchaElement
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: string | undefined,
+  ) => void
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementCaptcha(
-  {
-    element,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementCaptcha({
+  element,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const captchaSiteKey = useCaptchaSiteKey()
 
   return (
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
         <ReCAPTCHA
-          sitekey={captchaSiteKey}
+          sitekey={captchaSiteKey || ''}
           onChange={(val) => {
-            if (val === null) val = undefined
-            onChange(element, val)
+            onChange(element, val || undefined)
           }}
+          // @ts-expect-error
           className="ob-input cypress-captcha-control"
         />
 
@@ -49,6 +46,4 @@ function FormElementCaptcha(
   )
 }
 
-export default (React.memo(
-  FormElementCaptcha,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementCaptcha)

@@ -1,22 +1,21 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  element: SummaryElement,
-  formElementsCtrl: FormElementsCtrl,
-  onChange: (FormElement, mixed | void) => mixed,
-  value: mixed,
+  element: FormTypes.SummaryElement
+  formElementsCtrl: FormElementsCtrl
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  value: unknown
 }
-*/
 
-const arraysAreEqual = (a, b) => {
+const arraysAreEqual = (a: unknown[], b: unknown[]) => {
   if (!Array.isArray(a) || !Array.isArray(b)) {
     if (a !== b) return false
     return true
@@ -33,18 +32,17 @@ const arraysAreEqual = (a, b) => {
   }
   return true
 }
-function FormElementSummary(
-  { element, onChange, formElementsCtrl, value } /* : Props */,
-) {
+function FormElementSummary({
+  element,
+  onChange,
+  formElementsCtrl,
+  value,
+}: Props) {
   const getFormSubmissionModel = useFormSubmissionModel()
   const flattenedElements = useFlattenElements()
 
   const reducer = React.useCallback(
-    (
-      partialSummary,
-      formElement,
-      submission /* : $PropertyType<FormElementsCtrl, 'model'> */,
-    ) => {
+    (partialSummary, formElement, submission) => {
       if (formElement.type === 'page') return partialSummary
       if (
         formElement.type !== 'repeatableSet' &&
@@ -67,11 +65,14 @@ function FormElementSummary(
           // this structure and look at each entry in the repeatable set
           for (const entry of formElementValue) {
             const repeatableSetSummaryValues = formElement.elements.reduce(
-              (partialSummary, formElement) =>
+              (
+                partialSummary: FormElementSummaryResults,
+                formElement: FormTypes.FormElement,
+              ) =>
                 reducer(
                   partialSummary,
                   formElement,
-                  // PLEASING FLOW
+                  // Pleasing TypeScript
                   entry instanceof Object ? entry : {},
                 ),
               [],
@@ -84,11 +85,14 @@ function FormElementSummary(
         }
         case 'form': {
           const formSummaryValues = (formElement.elements || []).reduce(
-            (partialSummary, formElement) =>
+            (
+              partialSummary: FormElementSummaryResults,
+              formElement: FormTypes.FormElement,
+            ) =>
               reducer(
                 partialSummary,
                 formElement,
-                // PLEASING FLOW
+                // Pleasing TypeScript
                 formElementValue instanceof Object ? formElementValue : {},
               ),
             [],
@@ -113,7 +117,8 @@ function FormElementSummary(
             partialSummary.push(
               ...optionValues.reduce((optionLabels, optionValue) => {
                 const option = formElement.options.find(
-                  ({ value }) => optionValue === value,
+                  ({ value }: FormTypes.ChoiceElementOption) =>
+                    optionValue === value,
                 )
                 if (option) {
                   optionLabels.push(option.label)
@@ -146,7 +151,7 @@ function FormElementSummary(
           break
         }
         default: {
-          // PLEASING FLOW WHILE COVERING ALL BASES
+          // Pleasing TypeScript WHILE COVERING ALL BASES
           if (
             typeof formElementValue !== 'string' &&
             typeof formElementValue !== 'object' &&
@@ -179,7 +184,7 @@ function FormElementSummary(
     if (value === undefined) {
       if (!summary.length) return
     }
-    if (arraysAreEqual(value, summary)) {
+    if (arraysAreEqual(value as FormElementSummaryResults, summary)) {
       return
     }
     if (summary.length) {
@@ -200,42 +205,40 @@ function FormElementSummary(
   return (
     <div className="ob-form__element ob-summary cypress-summary-result ">
       {!!value && Array.isArray(value) && (
-        // THE VALUE PROP HAS TO BE MIXED
-        // $FlowFixMe
         <SummaryResult results={value}></SummaryResult>
       )}
     </div>
   )
 }
 
-/* ::
 type FormElementSummaryResults = Array<string | FormElementSummaryResults>
 type FormElementSummaryResultProps = {
-  results: FormElementSummaryResults,
+  results: FormElementSummaryResults
 }
-*/
 
-const SummaryResult = React.memo(function SummaryResult(
-  { results } /* : FormElementSummaryResultProps */,
-) {
-  return results.map((result, i) => {
+const SummaryResult = React.memo<FormElementSummaryResultProps>(
+  function SummaryResult({ results }) {
     return (
-      <div
-        key={`${result.toString()}-${i}`}
-        className="ob-summary__result-container"
-      >
-        {typeof result === 'string' ? (
-          <p className="ob-summary__result has-line-breaks cypress-summary-result-text">
-            {result}
-          </p>
-        ) : (
-          <SummaryResult results={result}></SummaryResult>
-        )}
-      </div>
+      <>
+        {results.map((result, i) => {
+          return (
+            <div
+              key={`${result.toString()}-${i}`}
+              className="ob-summary__result-container"
+            >
+              {typeof result === 'string' ? (
+                <p className="ob-summary__result has-line-breaks cypress-summary-result-text">
+                  {result}
+                </p>
+              ) : (
+                <SummaryResult results={result}></SummaryResult>
+              )}
+            </div>
+          )
+        })}
+      </>
     )
-  })
-})
+  },
+)
 
-export default (React.memo(
-  FormElementSummary,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementSummary)
