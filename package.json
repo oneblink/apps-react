@@ -40,7 +40,7 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.5",
-    "@oneblink/apps": "^0.3.0",
+    "@oneblink/apps": "^0.3.1-beta.1",
     "@oneblink/types": "github:oneblink/types",
     "@types/jest": "^26.0.15",
     "@types/lodash.clonedeep": "^4.5.6",
@@ -76,7 +76,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.3.0",
+    "@oneblink/apps": "^0.3.1-beta.1",
     "clsx": "^1.1.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",

@@ -78,7 +78,6 @@ export default function useLookups({
           (pageElement: FormTypes.FormElement) => {
             if (pageElement.type === 'page') {
               return formService.findFormElement(
-                // @ts-expect-error
                 pageElement.elements,
                 (el) => el.id === element.id,
               )

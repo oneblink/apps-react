@@ -15,7 +15,6 @@ export const useNetworkChangeEffect = (
     // Stupid cordova seems to require that offline/online
     // listeners are set on the document and browsers seem
     // to require window.
-    // @ts-expect-error
     const element = window.cordova ? document : window
     element.addEventListener(type, listener)
 
