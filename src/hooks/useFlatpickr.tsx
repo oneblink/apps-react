@@ -2,6 +2,8 @@ import * as React from 'react'
 import Flatpickr from 'flatpickr'
 import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
 
+export { FlatpickrOptions }
+
 export default function useFlatpickr(
   {
     id,
@@ -9,8 +11,8 @@ export default function useFlatpickr(
     onChange,
   }: {
     id: string
-    value: unknown | void
-    onChange: (value: string | void) => void
+    value: unknown | undefined
+    onChange: (value: string | undefined) => void
   },
   fpOpts: FlatpickrOptions,
 ) {

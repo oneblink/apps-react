@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
@@ -8,30 +5,32 @@ import useBooleanState from '../hooks/useBooleanState'
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: SelectElement,
-  value: mixed | void,
-  onChange: (FormElement, mixed | void) => void,
-  onConditionallyShowOption: (ChoiceElementOption) => boolean,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.SelectElement
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  onConditionallyShowOption: (
+    choiceElementOption: FormTypes.ChoiceElementOption,
+  ) => boolean
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementSelect(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-    onConditionallyShowOption,
-  } /* : Props */,
-) {
+function FormElementSelect({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+  onConditionallyShowOption,
+}: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const filteredOptions = useFormElementOptions({
@@ -62,6 +61,7 @@ function FormElementSelect(
                     id={id}
                     name={element.name}
                     className="cypress-select-single-control ob-input ob-select__single"
+                    // @ts-expect-error
                     value={value || ''}
                     onChange={(e) =>
                       onChange(element, e.target.value || undefined)
@@ -87,6 +87,7 @@ function FormElementSelect(
                 id={id}
                 name={element.name}
                 className="cypress-select-multiple-control ob-input ob-select__multi"
+                // @ts-expect-error
                 value={value || []}
                 onChange={(e) => {
                   const vals = []
@@ -127,6 +128,4 @@ function FormElementSelect(
   )
 }
 
-export default (React.memo(
-  FormElementSelect,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementSelect)

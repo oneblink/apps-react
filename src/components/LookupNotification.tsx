@@ -16,9 +16,9 @@ import { FormTypes } from '@oneblink/types'
 type Props = {
   isAutoLookup?: boolean
   element: FormTypes.LookupFormElement
-  value: unknown | void
+  value: unknown | undefined
   formElementsCtrl: FormElementsCtrl
-  formElementsConditionallyShown: FormElementsConditionallyShown | void
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   onChangeElements: (formElements: FormTypes.FormElement[]) => void
   onChangeModel: (model: FormElementsCtrl['model']) => void
   children: React.ReactNode
@@ -53,7 +53,7 @@ function LookupNotificationComponent({
 
   const mergeLookupData = React.useCallback(
     (dataLookupResult, elementLookupResult: FormTypes.FormElement[]) => {
-      let defaultElementData: FormElementsCtrl['model'] | void
+      let defaultElementData: FormElementsCtrl['model'] | undefined
 
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {

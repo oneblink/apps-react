@@ -1,15 +1,11 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  element: ImageElement,
+  element: FormTypes.ImageElement
 }
-*/
 
-function FormElementImage({ element } /* : Props */) {
+function FormElementImage({ element }: Props) {
   return (
     <div className="ob-form__element ob-image cypress-image-element">
       <img
@@ -21,6 +17,4 @@ function FormElementImage({ element } /* : Props */) {
   )
 }
 
-export default (React.memo(
-  FormElementImage,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementImage)

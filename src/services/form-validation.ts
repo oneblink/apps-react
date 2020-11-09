@@ -62,7 +62,7 @@ validate.validators.nestedElements = function (value, elementsObject) {
 // Extend validator for lookups
 // @ts-ignore
 validate.validators.lookups = function (
-  value: unknown | void,
+  value: unknown | undefined,
   {
     elementIdsWithLookupsExecuted,
     formElement,
@@ -113,7 +113,7 @@ export const validatePages = (
   schemaByPageId: ValidateJSSchemaByPageId,
   submission: FormElementsCtrl['model'],
   pageElementsConditionallyShown: PageElementsConditionallyShown,
-): PageElementsValidation | void => {
+): PageElementsValidation | undefined => {
   const pagesValidation = Object.keys(schemaByPageId).reduce(
     (partialMessagesByPageId: { [property: string]: any }, pageId) => {
       const schema = schemaByPageId[pageId]
@@ -518,7 +518,7 @@ const generateSchemaReducer = (
 const validateSingleMessageError = (
   submission: FormElementsCtrl['model'],
   schema: any,
-): FormElementsValidation | void => {
+): FormElementsValidation | undefined => {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
     fullMessages: false,

@@ -1,37 +1,34 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import SignatureCanvas from 'react-signature-canvas'
 import * as canvasManipulation from '@blinkmobile/canvas-manipulation'
+import { FormTypes } from '@oneblink/types'
 
 import useBooleanState from '../hooks/useBooleanState'
 import scrollingService from '../services/scrolling-service'
 
-/* ::
 type Props = {
-  element: DrawElement,
-  value: mixed,
-  onChange: (FormElement, Blob | void) => mixed,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  element: FormTypes.DrawElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementSignature(
-  {
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementSignature({
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isDirty] = useBooleanState(false)
   const [isDisabled, setIsDisabled, setNotDisabled] = useBooleanState(false)
   const [canvasDimensions, setCanvasDimensions] = React.useState({})
-  const canvasRef = React.useRef()
+  const canvasRef = React.useRef<SignatureCanvas>(null)
 
   // REACTIVE DISABLING OF CANVAS
   React.useEffect(() => {
@@ -45,12 +42,14 @@ function FormElementSignature(
 
   // SETTING CANVAS FROM PASSED VALUE
   React.useEffect(() => {
-    if (!canvasRef.current || !value || typeof value !== 'string') return
+    const signatureCanvas = canvasRef.current
+    if (!signatureCanvas || !value || typeof value !== 'string') return
     console.log('Setting signature starting value...')
     const image = new Image()
     image.onload = () => {
-      canvasManipulation.drawImageCentered(canvasRef.current.getCanvas(), image)
-      canvasRef.current._sigPad._isEmpty = false
+      canvasManipulation.drawImageCentered(signatureCanvas.getCanvas(), image)
+      // @ts-expect-error
+      signatureCanvas._sigPad._isEmpty = false
     }
     image.src = value
 
@@ -60,13 +59,18 @@ function FormElementSignature(
 
   // HANDLE RESIZE
   React.useEffect(() => {
-    if (!canvasRef.current) return
+    const signatureCanvas = canvasRef.current
+    if (!signatureCanvas) return
     const resize = () => {
-      const parentDiv = canvasRef.current.getCanvas().parentNode
-      setCanvasDimensions({
-        width: parentDiv.clientWidth,
-        height: parentDiv.clientHeight,
-      })
+      const parentDiv = signatureCanvas.getCanvas().parentNode
+      if (parentDiv) {
+        setCanvasDimensions({
+          // @ts-expect-error
+          width: parentDiv.clientWidth,
+          // @ts-expect-error
+          height: parentDiv.clientHeight,
+        })
+      }
     }
     window.addEventListener('resize', resize)
     resize()
@@ -114,13 +118,12 @@ function FormElementSignature(
         <div className="control">
           <div>
             <SignatureCanvas
-              // This library component expects a callback as an argument here, so ignoring flow error
-              // $FlowFixMe
               ref={canvasRef}
               canvasProps={{
                 ...canvasDimensions,
                 className:
                   'input ob-signature__control cypress-signature-control signature-pad',
+                // @ts-expect-error
                 disabled: isDisabled || element.readOnly,
               }}
               onEnd={handleEndDraw}
@@ -162,6 +165,4 @@ function FormElementSignature(
   )
 }
 
-export default (React.memo(
-  FormElementSignature,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementSignature)

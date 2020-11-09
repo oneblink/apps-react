@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import bmCameraFactory from '@blinkmobile/camera'
@@ -12,43 +9,43 @@ import quaggaReader from '../services/barcode-readers/quagger.js'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import useIsMounted from '../hooks/useIsMounted'
+import { FormTypes } from '@oneblink/types'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
 const fadedSquareHeightInPixels = 150
 const redLineHeightInPixels = 1
 
-/* ::
 type Props = {
-  id: string,
-  element: BarcodeScannerElement,
-  value: mixed,
-  onChange: (FormElement, string | void) => void,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.BarcodeScannerElement
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: string | undefined,
+  ) => void
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementBarcodeScanner(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementBarcodeScanner({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [
     isCameraOpen,
     startBarcodeScanner,
     stopBarcodeScanner,
   ] = useBooleanState(false)
-  const [error, setError] = React.useState(null)
+  const [error, setError] = React.useState<Error | null>(null)
 
   const handleScan = React.useCallback(
-    (newValue /* : string | void */) => {
+    (newValue: string | undefined) => {
       setIsDirty()
       onChange(element, newValue)
       stopBarcodeScanner()
@@ -59,12 +56,15 @@ function FormElementBarcodeScanner(
   const openBarcodeScanner = React.useCallback(() => {
     if (window.cordova) {
       setError(null)
+      // @ts-expect-error
       window.cordova.plugins.barcodeScanner.scan(
+        // @ts-expect-error
         (result) => {
           if (!result.cancelled) {
             handleScan(result.text)
           }
         },
+        // @ts-expect-error
         (error) => {
           setError(
             new Error(
@@ -170,30 +170,26 @@ function FormElementBarcodeScanner(
   )
 }
 
-export default (React.memo(
-  FormElementBarcodeScanner,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementBarcodeScanner)
 
-/* ::
 type BarcodeScannerProps = {
-  element: BarcodeScannerElement,
-  onScan: (string | void) => void,
-  onClose: () => void,
+  element: FormTypes.BarcodeScannerElement
+  onScan: (barcode: string | undefined) => void
+  onClose: () => void
 }
-*/
 
-function BarcodeScanner(
-  { element, onScan, onClose } /* : BarcodeScannerProps */,
-) {
+function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   const isMounted = useIsMounted()
-  const videoElementRef = React.useRef(null)
-  const figureElementRef = React.useRef(null)
+  const videoElementRef = React.useRef<HTMLVideoElement>(null)
+  const figureElementRef = React.useRef<HTMLDivElement>(null)
 
   const [selectedDeviceIndex, setSelectedDeviceIndex] = React.useState(0)
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasMultipleDevices, setHasMultipleDevices] = React.useState(false)
-  const [error, setError] = React.useState(null)
-  const [camera, setCamera] = React.useState(null)
+  const [error, setError] = React.useState<Error | null>(null)
+  const [camera, setCamera] = React.useState<ReturnType<
+    typeof bmCameraFactory
+  > | null>(null)
 
   // Create timeout using $timeout outside of the scan function so
   // so that we can cancel it when navigating away from screen
@@ -210,35 +206,42 @@ function BarcodeScanner(
         canvasElement.height = options.sourceHeight
 
         const canvasContext = canvasElement.getContext('2d')
-        canvasContext.drawImage(
-          videoElement,
-          options.sourceX,
-          options.sourceY,
-          canvasElement.width,
-          canvasElement.height,
-          0,
-          0,
-          canvasElement.width,
-          canvasElement.height,
-        )
-
-        if (
-          !element.restrictBarcodeTypes ||
-          (element.restrictedBarcodeTypes || []).indexOf('qr_reader') > -1
-        ) {
-          const imageData = canvasContext.getImageData(
+        if (canvasContext) {
+          canvasContext.drawImage(
+            videoElement,
+            options.sourceX,
+            options.sourceY,
+            canvasElement.width,
+            canvasElement.height,
             0,
             0,
             canvasElement.width,
             canvasElement.height,
           )
 
-          const code = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'dontInvert',
-          })
+          if (
+            !element.restrictBarcodeTypes ||
+            (element.restrictedBarcodeTypes || []).indexOf('qr_reader') > -1
+          ) {
+            const imageData = canvasContext.getImageData(
+              0,
+              0,
+              canvasElement.width,
+              canvasElement.height,
+            )
 
-          if (code) {
-            return onScan(code.data)
+            const code = jsQR(
+              imageData.data,
+              imageData.width,
+              imageData.height,
+              {
+                inversionAttempts: 'dontInvert',
+              },
+            )
+
+            if (code) {
+              return onScan(code.data)
+            }
           }
         }
 
@@ -359,10 +362,12 @@ function BarcodeScanner(
           }
         }
 
-        const fadedSquareElement = figureElement.getElementsByClassName(
+        // @ts-expect-error
+        const fadedSquareElement: HTMLDivElement = figureElement.getElementsByClassName(
           'ob-barcode-scanner__square',
         )[0]
-        const redLineElement = figureElement.getElementsByClassName(
+        // @ts-expect-error
+        const redLineElement: HTMLDivElement = figureElement.getElementsByClassName(
           'ob-barcode-scanner__line',
         )[0]
         console.log('videoElement Width pixels', videoElement.clientWidth)
@@ -378,16 +383,12 @@ function BarcodeScanner(
           (videoElement.clientHeight - fadedSquareHeightInPixels) / 2
         console.log('fadedSquareTopInPixels', fadedSquareTopInPixels)
 
-        fadedSquareElement.style[
-          'border-bottom'
-        ] = `${fadedSquareTopInPixels}px`
-        fadedSquareElement.style['border-top'] = `${fadedSquareTopInPixels}px`
-        fadedSquareElement.style['border-left'] = `${fadedSquareLeftInPixels}px`
-        fadedSquareElement.style[
-          'border-right'
-        ] = `${fadedSquareLeftInPixels}px`
-        fadedSquareElement.style['border-color'] = 'rgba(0, 0, 0, 0.25)'
-        fadedSquareElement.style['border-style'] = 'solid'
+        fadedSquareElement.style.borderBottom = `${fadedSquareTopInPixels}px`
+        fadedSquareElement.style.borderTop = `${fadedSquareTopInPixels}px`
+        fadedSquareElement.style.borderLeft = `${fadedSquareLeftInPixels}px`
+        fadedSquareElement.style.borderRight = `${fadedSquareLeftInPixels}px`
+        fadedSquareElement.style.borderColor = 'rgba(0, 0, 0, 0.25)'
+        fadedSquareElement.style.borderStyle = 'solid'
 
         redLineElement.style.height = `${redLineHeightInPixels}px`
         redLineElement.style.top = `${
@@ -458,7 +459,6 @@ function BarcodeScanner(
 
   return (
     <div>
-      {/* $FlowFixMe Not sure what the problem is here... */}
       <figure ref={figureElementRef}>
         <div className="figure-content has-text-centered">
           {isLoading && <OnLoading small />}

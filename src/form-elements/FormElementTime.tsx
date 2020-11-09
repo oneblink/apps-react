@@ -1,62 +1,53 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 import { localisationService } from '@oneblink/apps'
 
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
-import useFlatpickr from '../hooks/useFlatpickr'
+import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: DateTimeElement,
-  value: mixed | void,
-  onChange: (FormElement, string | void) => void,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.TimeElement
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementDateTime(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementTime({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
-    const opts = {
+    const opts: FlatpickrOptions = {
       altInput: true,
-      dateFormat: 'Y-m-dTH:i:S',
-      altFormat: localisationService.flatpickrDatetimeFormat,
+      dateFormat: 'H:i',
+      altFormat: localisationService.flatpickrTimeFormat,
       allowInput: false,
-      altInputClass: 'input ob-input cypress-date-time-control',
+      altInputClass: 'input ob-input cypress-time-control',
       minDate: undefined,
       maxDate: undefined,
       defaultDate: undefined,
       enableTime: true,
-      allowInvalidPreload: true,
+      noCalendar: true,
+      time_24hr: false,
       onClose: setIsDirty,
     }
 
-    if (element.fromDate) {
-      opts.minDate = element.fromDate
-    }
-    if (element.toDate) {
-      opts.maxDate = element.toDate
-    }
-
     return opts
-  }, [element.fromDate, element.toDate, setIsDirty])
+  }, [setIsDirty])
 
   const handleChange = React.useCallback(
     (newValue) => onChange(element, newValue),
@@ -67,7 +58,6 @@ function FormElementDateTime(
     {
       id,
       value,
-      onBlur: setIsDirty,
       onChange: handleChange,
     },
     flatpickrOptions,
@@ -77,12 +67,12 @@ function FormElementDateTime(
     if (typeof value !== 'string') {
       return null
     }
-    return localisationService.formatDatetime(new Date(value))
+    return localisationService.formatTime(new Date(value))
   }, [value])
 
   return (
-    <div className="cypress-datetime-element">
-      <div className="ob-form__element ob-datetime">
+    <div className="cypress-time-element">
+      <div className="ob-form__element ob-time">
         <label
           className={clsx('label ob-label', {
             'is-required': element.required,
@@ -94,7 +84,7 @@ function FormElementDateTime(
         <div className="field has-addons">
           <div className="control is-expanded">
             <input
-              type="datetime-local"
+              type="time"
               id={id}
               name={element.name}
               placeholder={element.placeholderValue}
@@ -130,6 +120,4 @@ function FormElementDateTime(
   )
 }
 
-export default (React.memo(
-  FormElementDateTime,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementTime)

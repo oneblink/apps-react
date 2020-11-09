@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import AbortController from 'abort-controller'
 import clsx from 'clsx'
@@ -9,33 +6,35 @@ import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import useBooleanState from '../hooks/useBooleanState'
 import { authService } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type BaseProps = {
-  id: string,
-  element: AutoCompleteElement,
-  value: mixed | void,
-  onChange: (FormElement, mixed | void) => void,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.AutoCompleteElement
+  value: unknown | undefined
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => void
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
 
 type AutocompleteFilterProps = BaseProps & {
-  onConditionallyShowOption: (ChoiceElementOption) => boolean,
+  onConditionallyShowOption: (
+    choiceElementOption: FormTypes.ChoiceElementOption,
+  ) => boolean
 }
-*/
 
-const AutocompleteFilter = React.memo(function AutocompleteFilter(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    onConditionallyShowOption,
-    validationMessage,
-    displayValidationMessage,
-  } /* : AutocompleteFilterProps */,
-) {
+const AutocompleteFilter = React.memo(function AutocompleteFilter({
+  id,
+  element,
+  value,
+  onChange,
+  onConditionallyShowOption,
+  validationMessage,
+  displayValidationMessage,
+}: AutocompleteFilterProps) {
   const [label, setLabel] = React.useState('')
   const [
     isAutocompleteOpen,
@@ -113,19 +112,17 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter(
   )
 })
 
-const AutocompleteFetch = React.memo(function AutocompleteFetch(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    validationMessage,
-    displayValidationMessage,
-    searchUrl,
-  } /* : BaseProps & {
-  searchUrl: string,
-} */,
-) {
+const AutocompleteFetch = React.memo(function AutocompleteFetch({
+  id,
+  element,
+  value,
+  onChange,
+  validationMessage,
+  displayValidationMessage,
+  searchUrl,
+}: BaseProps & {
+  searchUrl: string
+}) {
   const [label, setLabel] = React.useState('')
   const [, setError] = React.useState(null)
   const [
@@ -152,7 +149,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch(
       let newError = null
 
       try {
-        let headers = {
+        let headers: Record<string, string> = {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         }
@@ -230,38 +227,39 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch(
   )
 })
 
-const AutocompleteDropdown = React.memo(function AutocompleteDropdown(
-  {
-    id,
-    label,
-    element,
-    value,
-    options,
-    validationMessage,
-    displayValidationMessage,
-    isFetchingOptions,
-    isOpen,
-    onOpen,
-    onClose,
-    onChangeValue,
-    onChangeLabel,
-  } /* : {
-  id: string,
-  label: string,
-  element: AutoCompleteElement,
-  value: mixed | void,
-  options: ChoiceElementOption[] | null,
-  validationMessage: string | void,
-  displayValidationMessage: boolean,
-  isFetchingOptions?: boolean,
-  isOpen: boolean,
-  onOpen: () => void,
-  onClose: () => void,
-  onChangeValue: (FormElement, string | void) => void,
-  onChangeLabel: (string) => void,
-} */,
-) {
-  const optionsContainerElement = React.useRef(null)
+const AutocompleteDropdown = React.memo(function AutocompleteDropdown({
+  id,
+  label,
+  element,
+  value,
+  options,
+  validationMessage,
+  displayValidationMessage,
+  isFetchingOptions,
+  isOpen,
+  onOpen,
+  onClose,
+  onChangeValue,
+  onChangeLabel,
+}: {
+  id: string
+  label: string
+  element: FormTypes.AutoCompleteElement
+  value: unknown | undefined
+  options: FormTypes.ChoiceElementOption[] | null
+  validationMessage: string | undefined
+  displayValidationMessage: boolean
+  isFetchingOptions?: boolean
+  isOpen: boolean
+  onOpen: () => void
+  onClose: () => void
+  onChangeValue: (
+    formElement: FormTypes.FormElement,
+    newValue: string | undefined,
+  ) => void
+  onChangeLabel: (newLabel: string) => void
+}) {
+  const optionsContainerElement = React.useRef<HTMLDivElement>(null)
   const [isDirty, setIsDirty] = React.useState(false)
   const [
     currentFocusedOptionIndex,
@@ -457,7 +455,7 @@ const AutocompleteDropdown = React.memo(function AutocompleteDropdown(
   )
 })
 
-function highlightLabel(text, phrase) {
+function highlightLabel(text: string, phrase: string) {
   if (phrase) {
     text = text.replace(new RegExp('(' + phrase + ')', 'gi'), '<b>$1</b>')
   }
@@ -465,19 +463,17 @@ function highlightLabel(text, phrase) {
   return text
 }
 
-const AutocompleteContainer = React.memo(function AutocompleteContainer(
-  {
-    className,
-    element,
-    id,
-    children,
-  } /* : {
-  className: string,
-  element: AutoCompleteElement,
-  id: string,
-  children: React.Node,
-} */,
-) {
+const AutocompleteContainer = React.memo(function AutocompleteContainer({
+  className,
+  element,
+  id,
+  children,
+}: {
+  className: string
+  element: FormTypes.AutoCompleteElement
+  id: string
+  children: React.ReactNode
+}) {
   return (
     <div className={className}>
       <div className="ob-form__element ob-autocomplete">
@@ -495,9 +491,10 @@ const AutocompleteContainer = React.memo(function AutocompleteContainer(
   )
 })
 
-function FormElementAutocomplete(
-  { onConditionallyShowOption, ...props } /* : AutocompleteFilterProps */,
-) {
+function FormElementAutocomplete({
+  onConditionallyShowOption,
+  ...props
+}: AutocompleteFilterProps) {
   if (props.element.optionsType === 'SEARCH' && props.element.searchUrl) {
     return <AutocompleteFetch {...props} searchUrl={props.element.searchUrl} />
   }
@@ -510,6 +507,4 @@ function FormElementAutocomplete(
   )
 }
 
-export default (React.memo(
-  FormElementAutocomplete,
-) /*: React.AbstractComponent<AutocompleteFilterProps> */)
+export default React.memo(FormElementAutocomplete)

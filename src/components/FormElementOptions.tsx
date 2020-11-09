@@ -4,7 +4,7 @@ import * as React from 'react'
 import OnLoading from './OnLoading'
 
 type Props = {
-  options: FormTypes.ChoiceElementOption[] | void
+  options: FormTypes.ChoiceElementOption[] | undefined
   children: React.ReactNode
 }
 

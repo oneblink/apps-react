@@ -1,20 +1,15 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import sanitizeHtml from 'sanitize-html'
+import { FormTypes } from '@oneblink/types'
 
-// $FlowFixMe
 const sanitizeHtmlDefaults = sanitizeHtml.defaults
 sanitizeHtmlDefaults.allowedAttributes.span = ['class']
 
-/* ::
 type Props = {
-  element: HtmlElement,
+  element: FormTypes.HtmlElement
 }
-*/
 
-function FormElementHTML({ element } /* : Props */) {
+function FormElementHTML({ element }: Props) {
   const safeHtml = sanitizeHtml(element.defaultValue, {
     allowedTags: sanitizeHtmlDefaults.allowedTags.concat([
       'u',
@@ -35,6 +30,4 @@ function FormElementHTML({ element } /* : Props */) {
   )
 }
 
-export default (React.memo(
-  FormElementHTML,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementHTML)

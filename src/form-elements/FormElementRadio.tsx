@@ -1,36 +1,35 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import useBooleanState from '../hooks/useBooleanState'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  id: string,
-  element: RadioButtonElement,
-  value: mixed,
-  onChange: (FormElement, mixed | void) => void,
-  onConditionallyShowOption: (ChoiceElementOption) => boolean,
-  displayValidationMessage: boolean,
-  validationMessage: string | void,
+  id: string
+  element: FormTypes.RadioButtonElement
+  value: unknown
+  onChange: (
+    formElement: FormTypes.FormElement,
+    newValue: unknown | undefined,
+  ) => unknown
+  onConditionallyShowOption: (
+    choiceElementOption: FormTypes.ChoiceElementOption,
+  ) => boolean
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
 }
-*/
 
-function FormElementRadio(
-  {
-    id,
-    element,
-    value,
-    onChange,
-    onConditionallyShowOption,
-    validationMessage,
-    displayValidationMessage,
-  } /* : Props */,
-) {
+function FormElementRadio({
+  id,
+  element,
+  value,
+  onChange,
+  onConditionallyShowOption,
+  validationMessage,
+  displayValidationMessage,
+}: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const filteredOptions = useFormElementOptions({
@@ -59,6 +58,7 @@ function FormElementRadio(
                   <label
                     className="checkbox ob-radio__input-label cypress-radio-label"
                     htmlFor={`${id}_${option.value}`}
+                    // @ts-expect-error
                     disabled={element.readOnly}
                   >
                     <input
@@ -122,6 +122,4 @@ function FormElementRadio(
   )
 }
 
-export default (React.memo(
-  FormElementRadio,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementRadio)

@@ -10,7 +10,7 @@ export default function usePages({
   pageElementsConditionallyShown,
 }: {
   pages: FormTypes.PageElement[]
-  pagesValidation: PageElementsValidation | void
+  pagesValidation: PageElementsValidation | undefined
   pageElementsConditionallyShown: PageElementsConditionallyShown
 }) {
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
