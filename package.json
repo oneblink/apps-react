@@ -93,7 +93,6 @@
     "build": "tsc && sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules",
     "eslint": "eslint --fix --cache .",
     "fixpack": "fixpack",
-    "flow_check": "flow check",
     "jest": "jest",
     "prepublish": "npm run build",
     "pretest": "npm run fixpack && npm run eslint && npm run build",

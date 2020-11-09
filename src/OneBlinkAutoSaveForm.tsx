@@ -178,6 +178,4 @@ function OneBlinkAutoSaveForm({
   )
 }
 
-export default React.memo(
-  OneBlinkAutoSaveForm,
-) /*: React.AbstractComponent<Props> */
+export default React.memo(OneBlinkAutoSaveForm)

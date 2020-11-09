@@ -44,9 +44,6 @@ function FormElementForm({
       onChangeElements(
         parentFormElementsCtrl.elements.map((parentElement) => {
           if (parentElement.id === element.id) {
-            // Stupid flow can't workout what type of element it is...
-            // Wants "type: 'actual string of type'" which is not going to happen!
-            // $FlowFixMe
             return {
               ...parentElement,
               elements,
@@ -83,7 +80,7 @@ function FormElementForm({
       : undefined
   }, [formElementConditionallyShown])
 
-  const formElementsCtrl /* : FormElementsCtrl */ = React.useMemo(() => {
+  const formElementsCtrl = React.useMemo<FormElementsCtrl>(() => {
     return {
       model: value || {},
       elements: element.elements || [],
@@ -106,4 +103,4 @@ function FormElementForm({
   )
 }
 
-export default React.memo(FormElementForm) /*: React.AbstractComponent<Props> */
+export default React.memo(FormElementForm)

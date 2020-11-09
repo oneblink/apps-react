@@ -121,7 +121,7 @@ export default function useConditionalLogic({
           }
           for (const nestedElement of element.elements) {
             if (nestedElement.type === 'page') {
-              // Should never happen, just making flow happy :)
+              // Should never happen, just making typescript happy :)
               continue
             }
 
@@ -188,7 +188,7 @@ export default function useConditionalLogic({
                     partialFormElementsConditionallyShown: FormElementsConditionallyShown,
                     nestedElement,
                   ) => {
-                    // Should never happen, just making flow happy :)
+                    // Should never happen, just making typescript happy :)
                     if (
                       nestedElement.type !== 'page' &&
                       entry &&

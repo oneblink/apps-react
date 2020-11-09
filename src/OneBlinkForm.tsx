@@ -736,4 +736,4 @@ function OneBlinkForm({
   )
 }
 
-export default React.memo(OneBlinkForm) /*: React.AbstractComponent<Props> */
+export default React.memo(OneBlinkForm)
