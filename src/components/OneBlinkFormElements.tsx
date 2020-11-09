@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 
 import useConditionallyShowOptionCallback from '../hooks/useConditionallyShowOptionCallback'
@@ -31,117 +28,114 @@ import FormElementCamera from '../form-elements/FormElementCamera'
 import FormElementSummary from '../form-elements/FormElementSummary'
 import FormElementCaptcha from '../form-elements/FormElementCaptcha'
 import FormElementLocation from '../form-elements/FormElementLocation'
+import { FormTypes } from '@oneblink/types'
 
-/* ::
 type Props = {
-  elements: FormElement[],
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
-  formElementsValidation: FormElementsValidation | void,
-  displayValidationMessages: boolean,
-  onChange: (FormElement, mixed | void) => void,
-  onChangeElements: (FormElement[]) => void,
-  onChangeModel: ($PropertyType<FormElementsCtrl, 'model'>) => void,
+  elements: FormTypes.FormElement[]
+  formElementsConditionallyShown: FormElementsConditionallyShown | void
+  formElementsValidation: FormElementsValidation | void
+  displayValidationMessages: boolean
+  onChange: (formElement: FormTypes.FormElement, value: unknown | void) => void
+  onChangeElements: (formElements: FormTypes.FormElement[]) => void
+  onChangeModel: (model: FormElementsCtrl['model']) => void
   // Props passed by repeatable sets
-  isEven?: boolean,
-  idPrefix?: string,
-  formElementsCtrl: FormElementsCtrl,
+  isEven?: boolean
+  idPrefix?: string
+  formElementsCtrl: FormElementsCtrl
 
   // Nested forms
-  parentFormName?: string,
-}
-*/
-
-function OneBlinkFormElements(
-  {
-    elements,
-    isEven,
-    idPrefix,
-    displayValidationMessages,
-    formElementsValidation,
-    formElementsConditionallyShown,
-    onChange,
-    onChangeElements,
-    onChangeModel,
-    formElementsCtrl,
-    parentFormName,
-  } /* : Props */,
-) {
-  return elements.map((element) => {
-    if (element.type === 'page') {
-      return null
-    }
-
-    if (
-      formElementsConditionallyShown &&
-      formElementsConditionallyShown[element.name] &&
-      !formElementsConditionallyShown[element.name].isShown
-    ) {
-      return null
-    }
-
-    return (
-      <div
-        key={element.id}
-        className="ob-element cypress-element-container"
-        data-cypress-element-name={element.name}
-        data-ob-name={element.name}
-      >
-        <FormElementSwitch
-          element={element}
-          value={formElementsCtrl.model[element.name]}
-          displayValidationMessage={displayValidationMessages}
-          isEven={isEven}
-          id={idPrefix ? `${idPrefix}_${element.name}` : element.name}
-          formElementsConditionallyShown={formElementsConditionallyShown}
-          formElementValidation={
-            formElementsValidation
-              ? formElementsValidation[element.name]
-              : undefined
-          }
-          onChange={onChange}
-          onChangeElements={onChangeElements}
-          onChangeModel={onChangeModel}
-          formElementsCtrl={formElementsCtrl}
-          parentFormName={parentFormName}
-        />
-      </div>
-    )
-  })
+  parentFormName?: string
 }
 
-export default (React.memo(
-  OneBlinkFormElements,
-) /*: React.AbstractComponent<Props> */)
+function OneBlinkFormElements({
+  elements,
+  isEven,
+  idPrefix,
+  displayValidationMessages,
+  formElementsValidation,
+  formElementsConditionallyShown,
+  onChange,
+  onChangeElements,
+  onChangeModel,
+  formElementsCtrl,
+  parentFormName,
+}: Props) {
+  return (
+    <>
+      {elements.map((element) => {
+        if (element.type === 'page') {
+          return null
+        }
 
-const FormElementSwitch = React.memo(function OneBlinkFormElement(
-  {
-    element,
-    value,
-    displayValidationMessage,
-    formElementValidation,
-    formElementsConditionallyShown,
-    isEven,
-    id,
-    onChange,
-    onChangeElements,
-    onChangeModel,
-    formElementsCtrl,
-    parentFormName,
-  } /* : {
-  element: FormElement,
-  value: mixed | void,
-  formElementValidation: FormElementValidation | void,
-  displayValidationMessage: boolean,
-  formElementsConditionallyShown: FormElementsConditionallyShown | void,
-  id: string,
-  isEven: $PropertyType<Props, 'isEven'>,
-  onChange: $PropertyType<Props, 'onChange'>,
-  onChangeElements: $PropertyType<Props, 'onChangeElements'>,
-  onChangeModel: $PropertyType<Props, 'onChangeModel'>,
-  formElementsCtrl: FormElementsCtrl,
-  parentFormName?: string,
-} */,
-) {
+        if (
+          formElementsConditionallyShown &&
+          formElementsConditionallyShown[element.name] &&
+          !formElementsConditionallyShown[element.name]?.isShown
+        ) {
+          return null
+        }
+
+        return (
+          <div
+            key={element.id}
+            className="ob-element cypress-element-container"
+            data-cypress-element-name={element.name}
+            data-ob-name={element.name}
+          >
+            <FormElementSwitch
+              element={element}
+              value={formElementsCtrl.model[element.name]}
+              displayValidationMessage={displayValidationMessages}
+              isEven={isEven}
+              id={idPrefix ? `${idPrefix}_${element.name}` : element.name}
+              formElementsConditionallyShown={formElementsConditionallyShown}
+              formElementValidation={
+                formElementsValidation
+                  ? formElementsValidation[element.name]
+                  : undefined
+              }
+              onChange={onChange}
+              onChangeElements={onChangeElements}
+              onChangeModel={onChangeModel}
+              formElementsCtrl={formElementsCtrl}
+              parentFormName={parentFormName}
+            />
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
+export default React.memo(OneBlinkFormElements)
+
+const FormElementSwitch = React.memo(function OneBlinkFormElement({
+  element,
+  value,
+  displayValidationMessage,
+  formElementValidation,
+  formElementsConditionallyShown,
+  isEven,
+  id,
+  onChange,
+  onChangeElements,
+  onChangeModel,
+  formElementsCtrl,
+  parentFormName,
+}: {
+  element: FormTypes.FormElement
+  value: unknown | void
+  formElementValidation: FormElementValidation | void
+  displayValidationMessage: boolean
+  formElementsConditionallyShown: FormElementsConditionallyShown | void
+  id: string
+  isEven: Props['isEven']
+  onChange: Props['onChange']
+  onChangeElements: Props['onChangeElements']
+  onChangeModel: Props['onChangeModel']
+  formElementsCtrl: FormElementsCtrl
+  parentFormName?: string
+}) {
   const handleConditionallyShowOption = useConditionallyShowOptionCallback(
     formElementsCtrl,
     element,
@@ -401,7 +395,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement(
           id={id}
           isEven={!isEven}
           element={element}
-          // $FlowFixMe
           value={value}
           onChange={onChange}
           onChangeElements={onChangeElements}
@@ -412,7 +405,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement(
           }
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
-          validationMessage={validationMessage}
           parentFormElementsCtrl={formElementsCtrl}
           parentFormName={parentFormName}
         />
@@ -503,7 +495,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement(
         <FormElementForm
           id={id}
           element={element}
-          // $FlowFixMe
+          // @ts-expect-error
           value={value}
           onChange={onChange}
           onChangeElements={onChangeElements}

@@ -1,39 +1,33 @@
-// @flow
-'use strict'
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 import OneBlinkFormElements from '../components/OneBlinkFormElements'
 
-/* ::
 type Props = {
-  id: string,
-  element: FormFormElement | InfoPageElement,
-  value: $PropertyType<FormElementsCtrl, 'model'> | void,
-  onChange: (FormElement, mixed) => mixed,
-  onChangeElements: (FormElement[]) => mixed,
-  onChangeModel: ($PropertyType<FormElementsCtrl, 'model'>) => mixed,
-  formElementValidation: FormElementValidation,
-  displayValidationMessage: boolean,
-  formElementConditionallyShown: FormElementConditionallyShown | void,
-  parentFormName?: string,
-  parentFormElementsCtrl: FormElementsCtrl,
+  id: string
+  element: FormTypes.FormFormElement | FormTypes.InfoPageElement
+  value: FormElementsCtrl['model'] | void
+  onChange: (formElements: FormTypes.FormElement, value: unknown) => unknown
+  onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
+  onChangeModel: (model: FormElementsCtrl['model']) => unknown
+  formElementValidation: FormElementValidation | void
+  displayValidationMessage: boolean
+  formElementConditionallyShown: FormElementConditionallyShown | void
+  parentFormName?: string
+  parentFormElementsCtrl: FormElementsCtrl
 }
-*/
 
-function FormElementForm(
-  {
-    element,
-    value,
-    formElementValidation,
-    displayValidationMessage,
-    formElementConditionallyShown,
-    onChange,
-    onChangeElements,
-    onChangeModel,
-    parentFormName,
-    parentFormElementsCtrl,
-  } /* : Props */,
-) {
+function FormElementForm({
+  element,
+  value,
+  formElementValidation,
+  displayValidationMessage,
+  formElementConditionallyShown,
+  onChange,
+  onChangeElements,
+  onChangeModel,
+  parentFormName,
+  parentFormElementsCtrl,
+}: Props) {
   const handleNestedChange = React.useCallback(
     (nestedElement, nestedElementValue) => {
       if (nestedElement.type === 'page') return
@@ -99,7 +93,6 @@ function FormElementForm(
 
   return (
     <OneBlinkFormElements
-      model={value}
       formElementsValidation={validation}
       displayValidationMessages={displayValidationMessage}
       elements={element.elements || []}
@@ -113,6 +106,4 @@ function FormElementForm(
   )
 }
 
-export default (React.memo(
-  FormElementForm,
-) /*: React.AbstractComponent<Props> */)
+export default React.memo(FormElementForm) /*: React.AbstractComponent<Props> */

@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
@@ -29,53 +26,56 @@ import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import useChangeEffect from './hooks/useChangeEffect'
 
-/* ::
-type Props = {
-  form: Form,
-  disabled?: boolean,
-  isPreview?: boolean,
-  initialSubmission?: $PropertyType<FormElementsCtrl, 'model'> | null,
-  googleMapsApiKey?: string,
-  captchaSiteKey?: string,
-  onCancel: () => mixed,
-  onSubmit: (NewFormSubmission) => mixed,
-  onSaveDraft?: (NewDraftSubmission) => mixed,
-  onChange?: ($PropertyType<FormElementsCtrl, 'model'>) => mixed,
-}
-*/
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
-function OneBlinkForm(
-  {
-    googleMapsApiKey,
-    captchaSiteKey,
-    form: _form,
-    disabled,
-    isPreview,
-    initialSubmission,
-    onCancel,
-    onSubmit,
-    onSaveDraft,
-    onChange,
-  } /* : Props */,
-) {
+type Props = {
+  form: FormTypes.Form
+  disabled?: boolean
+  isPreview?: boolean
+  initialSubmission?: FormElementsCtrl['model'] | null
+  googleMapsApiKey?: string
+  captchaSiteKey?: string
+  onCancel: () => unknown
+  onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
+  onSaveDraft?: (
+    newDraftSubmission: SubmissionTypes.NewDraftSubmission,
+  ) => unknown
+  onChange?: (model: FormElementsCtrl['model']) => unknown
+}
+
+function OneBlinkForm({
+  googleMapsApiKey,
+  captchaSiteKey,
+  form: _form,
+  disabled,
+  isPreview,
+  initialSubmission,
+  onCancel,
+  onSubmit,
+  onSaveDraft,
+  onChange,
+}: Props) {
   //
   //
   // #region Form Definition
 
-  const [
-    definition,
-    setDefinition,
-  ] /* : [Form, ((Form => Form) | Form) => void] */ = React.useState(() =>
+  const [definition, setDefinition] = React.useState<FormTypes.Form>(() =>
     _cloneDeep(_form),
   )
-  const pages /* : PageElement[] */ = React.useMemo(() => {
+  const pages = React.useMemo<FormTypes.PageElement[]>(() => {
     if (definition.isMultiPage) {
-      return definition.elements.reduce((pageElements, formElement) => {
-        if (formElement.type === 'page') {
-          pageElements.push(formElement)
-        }
-        return pageElements
-      }, [])
+      return definition.elements.reduce(
+        (
+          pageElements: FormTypes.PageElement[],
+          formElement: FormTypes.FormElement,
+        ) => {
+          if (formElement.type === 'page') {
+            pageElements.push(formElement)
+          }
+          return pageElements
+        },
+        [],
+      )
     } else {
       return [
         {
@@ -123,12 +123,12 @@ function OneBlinkForm(
   const history = useHistory()
 
   const [isNavigationAllowed, allowNavigation] = useBooleanState(false)
-  const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState(
-    null,
-  )
-  const [goToLocation, setGoToLocation, clearGoToLocation] = useNullableState(
-    null,
-  )
+  const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState<
+    boolean | null
+  >(null)
+  const [goToLocation, setGoToLocation, clearGoToLocation] = useNullableState<
+    Location
+  >(null)
 
   const handleBlockedNavigation = React.useCallback(
     (location) => {
@@ -197,7 +197,7 @@ function OneBlinkForm(
     pages,
   )
 
-  const pagesValidation = React.useMemo(
+  const pagesValidation = React.useMemo<PageElementsValidation | void>(
     () => validate(submission, pageElementsConditionallyShown).pagesValidation,
     [pageElementsConditionallyShown, submission, validate],
   )
@@ -255,11 +255,11 @@ function OneBlinkForm(
       // Clear data from submission on fields that are hidden on visible pages
       return visiblePages.reduce(
         (
-          cleanSubmissionData /* : {
-            submission: $PropertyType<FormElementsCtrl, 'model'>,
-            captchaTokens: string[],
-          } */,
-          pageElement,
+          cleanSubmissionData: {
+            submission: FormElementsCtrl['model']
+            captchaTokens: string[]
+          },
+          pageElement: FormTypes.PageElement,
         ) => {
           const { model, captchaTokens } = cleanFormElementsCtrlModel(
             {
@@ -301,6 +301,7 @@ function OneBlinkForm(
       if (pagesValidation) {
         bulmaToast.toast({
           message: 'Please fix validation errors',
+          // @ts-expect-error
           type: 'ob-toast is-danger cypress-invalid-submit-attempt',
           position: 'bottom-right',
           duration: 4000,
@@ -424,9 +425,11 @@ function OneBlinkForm(
         <div className="content">
           {conditionalLogicState.message}
           <ul className="cypress-error-modal-elements-evaluated">
-            {conditionalLogicState.elements.map((elementName, index) => (
-              <li key={index}>{elementName}</li>
-            ))}
+            {conditionalLogicState.elements.map(
+              (elementName: string, index: number) => (
+                <li key={index}>{elementName}</li>
+              ),
+            )}
           </ul>
         </div>
       </Modal>
@@ -483,50 +486,53 @@ function OneBlinkForm(
                 })}
               >
                 <div className="steps is-small is-horizontal-tablet cypress-steps">
-                  {visiblePages.map((page, index) => {
-                    const hasErrors = checkDisplayPageError(page)
-                    return (
-                      <div
-                        key={page.id}
-                        id={`steps-navigation-step-${page.id}`}
-                        className={clsx('step-item cypress-step-item', {
-                          'is-active': currentPage.id === page.id,
-                          'is-completed': currentPageIndex > index,
-                          'is-error': hasErrors,
-                        })}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          if (page.id !== currentPage.id) {
-                            setPageId(page.id)
-                          }
-                        }}
-                      >
+                  {visiblePages.map(
+                    (page: FormTypes.PageElement, index: number) => {
+                      const hasErrors = checkDisplayPageError(page)
+                      return (
                         <div
-                          className="step-marker step-marker-error ob-step-marker cypress-step-marker"
-                          name={`cypress-page-stepper-${index + 1}`}
-                          value={index + 1}
+                          key={page.id}
+                          id={`steps-navigation-step-${page.id}`}
+                          className={clsx('step-item cypress-step-item', {
+                            'is-active': currentPage.id === page.id,
+                            'is-completed': currentPageIndex > index,
+                            'is-error': hasErrors,
+                          })}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (page.id !== currentPage.id) {
+                              setPageId(page.id)
+                            }
+                          }}
                         >
-                          {hasErrors ? (
-                            <span
-                              className="icon tooltip has-tooltip-top cypress-page-error"
-                              data-tooltip="Page has errors"
-                            >
-                              <i className="material-icons has-text-danger is-size-3">
-                                warning
-                              </i>
-                            </span>
-                          ) : (
-                            <span>{index + 1}</span>
-                          )}
+                          <div
+                            className="step-marker step-marker-error ob-step-marker cypress-step-marker"
+                            // @ts-expect-error
+                            name={`cypress-page-stepper-${index + 1}`}
+                            value={index + 1}
+                          >
+                            {hasErrors ? (
+                              <span
+                                className="icon tooltip has-tooltip-top cypress-page-error"
+                                data-tooltip="Page has errors"
+                              >
+                                <i className="material-icons has-text-danger is-size-3">
+                                  warning
+                                </i>
+                              </span>
+                            ) : (
+                              <span>{index + 1}</span>
+                            )}
+                          </div>
+                          <div className="step-details ob-step-details">
+                            <p className="step-title ob-step-title cypress-desktop-step-title">
+                              {page.label}
+                            </p>
+                          </div>
                         </div>
-                        <div className="step-details ob-step-details">
-                          <p className="step-title ob-step-title cypress-desktop-step-title">
-                            {page.label}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    },
+                  )}
                 </div>
               </div>
             </>
@@ -562,37 +568,39 @@ function OneBlinkForm(
                             <CaptchaSiteKeyContext.Provider
                               value={captchaSiteKey}
                             >
-                              {visiblePages.map((page) => (
-                                <div
-                                  key={page.id}
-                                  className={clsx(
-                                    'ob-page step-content is-active cypress-page',
-                                    {
-                                      'is-invisible':
-                                        currentPage.id !== page.id,
-                                    },
-                                  )}
-                                >
-                                  <OneBlinkFormElements
-                                    formElementsConditionallyShown={
-                                      rootElementsConditionallyShown
-                                    }
-                                    formElementsValidation={
-                                      pagesValidation &&
-                                      pagesValidation[page.id]
-                                    }
-                                    displayValidationMessages={
-                                      hasAttemptedSubmit ||
-                                      checkDisplayPageError(page)
-                                    }
-                                    elements={page.elements}
-                                    onChange={handleChange}
-                                    onChangeElements={handleChangeElements}
-                                    onChangeModel={handleChangeModel}
-                                    formElementsCtrl={rootFormElementsCtrl}
-                                  />
-                                </div>
-                              ))}
+                              {visiblePages.map(
+                                (page: FormTypes.PageElement) => (
+                                  <div
+                                    key={page.id}
+                                    className={clsx(
+                                      'ob-page step-content is-active cypress-page',
+                                      {
+                                        'is-invisible':
+                                          currentPage.id !== page.id,
+                                      },
+                                    )}
+                                  >
+                                    <OneBlinkFormElements
+                                      formElementsConditionallyShown={
+                                        rootElementsConditionallyShown
+                                      }
+                                      formElementsValidation={
+                                        pagesValidation &&
+                                        pagesValidation[page.id]
+                                      }
+                                      displayValidationMessages={
+                                        hasAttemptedSubmit ||
+                                        checkDisplayPageError(page)
+                                      }
+                                      elements={page.elements}
+                                      onChange={handleChange}
+                                      onChangeElements={handleChangeElements}
+                                      onChangeModel={handleChangeModel}
+                                      formElementsCtrl={rootFormElementsCtrl}
+                                    />
+                                  </div>
+                                ),
+                              )}
                             </CaptchaSiteKeyContext.Provider>
                           </GoogleMapsApiKeyContext.Provider>
                         </ExecutedLookupProvider>
@@ -619,7 +627,7 @@ function OneBlinkForm(
                   </button>
                 </div>
                 <div className="step-progress-mobile cypress-steps-mobile">
-                  {visiblePages.map((page) => (
+                  {visiblePages.map((page: FormTypes.PageElement) => (
                     <div
                       key={page.id}
                       className={clsx('step-progress-mobile-dot', {
@@ -728,4 +736,4 @@ function OneBlinkForm(
   )
 }
 
-export default (React.memo(OneBlinkForm) /*: React.AbstractComponent<Props> */)
+export default React.memo(OneBlinkForm) /*: React.AbstractComponent<Props> */
