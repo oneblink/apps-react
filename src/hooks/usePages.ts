@@ -104,7 +104,7 @@ export default function usePages({
   }, [currentPageId, setPageId, visiblePages])
 
   const checkDisplayPageError = React.useCallback(
-    (page /* : PageElement */) => {
+    (page: FormTypes.PageElement) => {
       // If we have not visited the page yet, we will not display errors
       if (!visitedPageIds.includes(page.id)) {
         return false

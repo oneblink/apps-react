@@ -59,10 +59,10 @@ function FormElementCalculation({
       {
         replacement,
         nestedElementNames,
-      } /* : {
-        replacement: string,
-        nestedElementNames: string[],
-      } */,
+      }: {
+        replacement: string
+        nestedElementNames: string[]
+      },
     ) => {
       exprParser.registerProperty(
         replacement,
@@ -289,6 +289,4 @@ function FormElementCalculation({
   )
 }
 
-export default React.memo(
-  FormElementCalculation,
-) /*: React.AbstractComponent<Props> */
+export default React.memo(FormElementCalculation)

@@ -240,6 +240,4 @@ function FormElementFiles({
   )
 }
 
-export default React.memo(
-  FormElementFiles,
-) /*: React.AbstractComponent<Props> */
+export default React.memo(FormElementFiles)

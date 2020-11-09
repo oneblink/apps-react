@@ -16,7 +16,7 @@ export default function useLookups({
   setSubmission: React.Dispatch<React.SetStateAction<FormElementsCtrl['model']>>
 }) {
   const handleChangeElements = React.useCallback(
-    (elements /* : FormElement[] */) => {
+    (elements: FormTypes.FormElement[]) => {
       setDefinition((currentDefinition) => {
         if (currentPageId === formId.toString()) {
           return {

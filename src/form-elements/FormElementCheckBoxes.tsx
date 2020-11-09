@@ -151,6 +151,4 @@ function FormElementCheckboxes({
   )
 }
 
-export default React.memo(
-  FormElementCheckboxes,
-) /*: React.AbstractComponent<Props> */
+export default React.memo(FormElementCheckboxes)
