@@ -1,11 +1,16 @@
-// @flow
-'use strict'
+import { FormTypes } from '@oneblink/types'
 
 import conditionallyShowElement, {
   handleOptionsPredicate,
 } from '../services/conditionally-show-element'
 
-const handleAttributePredicate = (predicate, model, predicateElement) => {
+const handleAttributePredicate = (
+  predicate:
+    | FormTypes.ConditionallyShowPredicate
+    | FormTypes.ChoiceElementOptionAttribute,
+  model: FormElementsCtrl['model'],
+  predicateElement: FormTypes.FormElementWithOptions,
+) => {
   const values = model[predicateElement.name]
   if (!values) return true
 
@@ -18,7 +23,7 @@ const handleAttributePredicate = (predicate, model, predicateElement) => {
   }
   return handleOptionsPredicate(
     // predicate is compatible with the element conditionally logic...I think (/shrug)
-    // $FlowFixMe
+    // @ts-ignore
     predicate,
     model,
     predicateElement,
@@ -26,10 +31,12 @@ const handleAttributePredicate = (predicate, model, predicateElement) => {
 }
 
 const conditionallyShowOptionByPredicate = (
-  formElementsCtrl,
-  predicate,
-  elementsEvaluated,
-) => {
+  formElementsCtrl: FormElementsCtrl,
+  predicate:
+    | FormTypes.ConditionallyShowPredicateOptions
+    | FormTypes.ChoiceElementOptionAttribute,
+  elementsEvaluated: string[],
+): boolean => {
   const predicateElement = formElementsCtrl.elements.find((element) => {
     return element.id === predicate.elementId
   })
@@ -92,10 +99,12 @@ const conditionallyShowOptionByPredicate = (
 }
 
 const isAttributeFilterValid = (
-  formElementsCtrl,
-  predicate,
-  elementsEvaluated,
-) => {
+  formElementsCtrl: FormElementsCtrl,
+  predicate:
+    | FormTypes.ConditionallyShowPredicate
+    | FormTypes.ChoiceElementOptionAttribute,
+  elementsEvaluated: string[],
+): boolean => {
   const predicateElement = formElementsCtrl.elements.find((element) => {
     return element.id === predicate.elementId
   })
@@ -142,11 +151,11 @@ const isAttributeFilterValid = (
 }
 
 export default function conditionallyShowOption(
-  formElementsCtrl /* : FormElementsCtrl */,
-  elementToEvaluate /* : FormElementWithOptions */,
-  optionToEvaluate /* : ChoiceElementOption */,
-  optionsEvaluated /* : string[] */,
-) /* : boolean */ {
+  formElementsCtrl: FormElementsCtrl,
+  elementToEvaluate: FormTypes.FormElementWithOptions,
+  optionToEvaluate: FormTypes.ChoiceElementOption,
+  optionsEvaluated: string[],
+): boolean {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
 
@@ -170,7 +179,11 @@ export default function conditionallyShowOption(
     optionsEvaluated.push(optionToEvaluate.id)
   }
 
-  const predicateFunction = (predicate) => {
+  const predicateFunction = (
+    predicate:
+      | FormTypes.ConditionallyShowPredicateOptions
+      | FormTypes.ChoiceElementOptionAttribute,
+  ) => {
     // Validate the predicate data, if it is invalid,
     // we will always show the field
     if (

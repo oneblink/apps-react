@@ -1,7 +1,5 @@
-// @flow
 import sanitizeHtml from 'sanitize-html'
 
-//$FlowFixMe
 const allowedTags = sanitizeHtml.defaults.allowedTags.concat([
   'u',
   'b',
@@ -10,12 +8,15 @@ const allowedTags = sanitizeHtml.defaults.allowedTags.concat([
   'h2',
 ])
 
-const allowedAttributes = allowedTags.reduce((attributesObject, tag) => {
-  attributesObject[tag] = ['style', 'class']
-  return attributesObject
-}, {})
+const allowedAttributes = allowedTags.reduce(
+  (attributesObject: { [property: string]: string[] }, tag: string) => {
+    attributesObject[tag] = ['style', 'class']
+    return attributesObject
+  },
+  {},
+)
 
-const sanitizeHtmlStandard = (html /* : string */) => {
+const sanitizeHtmlStandard = (html: string) => {
   return sanitizeHtml(html, {
     allowedTags,
     allowedAttributes,

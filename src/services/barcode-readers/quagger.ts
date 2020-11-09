@@ -1,6 +1,3 @@
-// @flow
-'use strict'
-
 import Quagga from 'quagga'
 
 const BARCODE_TYPES = [
@@ -17,10 +14,7 @@ const BARCODE_TYPES = [
   'code_93_reader',
 ]
 
-export default function (
-  imgData /* : string */,
-  barcodeTypes /* : string[] | void */,
-) /* : Promise<string | void> */ {
+export default function (imgData: string, barcodeTypes: string[] | void) {
   return new Promise((resolve) => {
     Quagga.decodeSingle(
       {
@@ -33,7 +27,7 @@ export default function (
         locate: true, // try to locate the barcode in the image
         src: imgData,
       },
-      function (result) {
+      function (result: any) {
         if (result && result.codeResult) {
           resolve(result.codeResult.code)
         } else {

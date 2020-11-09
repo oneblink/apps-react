@@ -1,24 +1,24 @@
-// @flow
-'use strict'
+import { FormTypes } from '@oneblink/types'
 
 const fnMap = {
-  '>': (lhs, rhs) => lhs > rhs,
-  '>=': (lhs, rhs) => lhs >= rhs,
-  '===': (lhs, rhs) => lhs === rhs,
-  '!==': (lhs, rhs) => lhs !== rhs,
-  '<=': (lhs, rhs) => lhs <= rhs,
-  '<': (lhs, rhs) => lhs < rhs,
+  '>': (lhs: number, rhs: number) => lhs > rhs,
+  '>=': (lhs: number, rhs: number) => lhs >= rhs,
+  '===': (lhs: number, rhs: number) => lhs === rhs,
+  '!==': (lhs: number, rhs: number) => lhs !== rhs,
+  '<=': (lhs: number, rhs: number) => lhs <= rhs,
+  '<': (lhs: number, rhs: number) => lhs < rhs,
 }
 
 export const handleOptionsPredicate = (
-  predicate /* : ConditionallyShowPredicateOptions */,
-  model /* : { +[string]: mixed } */,
-  predicateElement /* : FormElementWithOptions */,
+  predicate: FormTypes.ConditionallyShowPredicateOptions,
+  model: FormElementsCtrl['model'],
+  predicateElement: FormTypes.FormElementWithOptions,
 ) => {
   return predicate.optionIds.some((optionId) => {
     const option = predicateElement.options.find((o) => o.id === optionId)
     if (option) {
       if (Array.isArray(model[predicateElement.name])) {
+        //@ts-expect-error - checked above
         return model[predicateElement.name].some((modelValue) => {
           return modelValue === option.value
         })
@@ -31,7 +31,11 @@ export const handleOptionsPredicate = (
   })
 }
 
-const handlePredicate = (predicate, model, predicateElement) => {
+const handlePredicate = (
+  predicate: FormTypes.ConditionallyShowPredicate,
+  model: FormElementsCtrl['model'],
+  predicateElement: FormTypes.FormElement,
+) => {
   if (!predicateElement || predicateElement.type === 'page') {
     return false
   }
@@ -40,7 +44,7 @@ const handlePredicate = (predicate, model, predicateElement) => {
       return !predicate.hasValue === !model[predicateElement.name]
     }
     case 'NUMERIC': {
-      // $FlowFixMe
+      // @ts-ignore
       const lhs = Number.parseFloat(model[predicateElement.name])
       const rhs =
         typeof predicate.value === 'string'
@@ -54,7 +58,7 @@ const handlePredicate = (predicate, model, predicateElement) => {
       return operatorFn(lhs, rhs)
     }
     case 'BETWEEN': {
-      // $FlowFixMe
+      // @ts-ignore
       const value = Number.parseFloat(model[predicateElement.name])
       if (Number.isNaN(value)) {
         return false
@@ -87,8 +91,8 @@ const handlePredicate = (predicate, model, predicateElement) => {
 }
 
 const getPagesFormElementsCtrl = (
-  formElementsCtrl /* : FormElementsCtrl */,
-) /* : FormElementsCtrl */ => {
+  formElementsCtrl: FormElementsCtrl,
+): FormElementsCtrl => {
   if (formElementsCtrl.parentFormElementsCtrl) {
     return getPagesFormElementsCtrl(formElementsCtrl.parentFormElementsCtrl)
   }
@@ -96,13 +100,15 @@ const getPagesFormElementsCtrl = (
 }
 
 const conditionallyShowByPredicate = (
-  formElementsCtrl,
-  predicate,
-  elementsEvaluated,
-) => {
-  const predicateElement = formElementsCtrl.elements.find((element) => {
-    return element.id === predicate.elementId
-  })
+  formElementsCtrl: FormElementsCtrl,
+  predicate: FormTypes.ConditionallyShowPredicate,
+  elementsEvaluated: string[],
+): FormTypes.FormElement | boolean => {
+  const predicateElement = formElementsCtrl.elements.find(
+    (element: FormTypes.FormElement) => {
+      return element.id === predicate.elementId
+    },
+  )
 
   // If we cant find the element used for the predicate,
   // we can check to see if the element being evaluated
@@ -149,10 +155,10 @@ const conditionallyShowByPredicate = (
 }
 
 export default function conditionallyShowElement(
-  formElementsCtrl /* : FormElementsCtrl */,
-  elementToEvaluate /* : FormElement */,
-  elementsEvaluated /* : string[] */,
-) /* : boolean */ {
+  formElementsCtrl: FormElementsCtrl,
+  elementToEvaluate: FormTypes.FormElement,
+  elementsEvaluated: string[],
+): boolean {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
   if (
@@ -178,7 +184,9 @@ export default function conditionallyShowElement(
     elementsEvaluated.push(elementToEvaluate.id)
   }
 
-  const predicateFunction = (predicate) => {
+  const predicateFunction = (
+    predicate: FormTypes.ConditionallyShowPredicate,
+  ) => {
     // Validate the predicate data, if it is invalid,
     // we will always show the field
     if (

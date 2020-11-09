@@ -1,19 +1,13 @@
-// @flow
-'use strict'
-
 import * as bulmaToast from 'bulma-toast'
-import saveAs from 'file-saver'
+import fileSaver from 'file-saver'
 
-export default async function downloadFile(
-  dataURI /* : string */,
-  fileName /* : string */,
-) {
+export default async function downloadFile(dataURI: string, fileName: string) {
   try {
     if (window.cordova) {
       const blob = await convertDataUriToBlob(dataURI)
       await new Promise((resolve, reject) => {
         window.requestFileSystem(
-          window.LocalFileSystem.PERSISTENT,
+          window.PERSISTENT,
           0,
           (fs) => {
             fs.root.getFile(
@@ -27,11 +21,13 @@ export default async function downloadFile(
                 fileEntry.createWriter(
                   (fileWriter) => {
                     fileWriter.onwriteend = () => {
+                      // @ts-ignore
                       window.cordova.plugins.fileOpener2.open(
+                        // @ts-ignore
                         fileEntry.nativeURL,
                         blob.type,
                         {
-                          error: (error) => {
+                          error: (error: Error) => {
                             console.log(
                               'An error occurred opening the downloaded file',
                             )
@@ -77,7 +73,7 @@ export default async function downloadFile(
       })
       return
     } else {
-      saveAs(dataURI, fileName)
+      fileSaver.saveAs(dataURI, fileName)
     }
   } catch (error) {
     if (error) {
@@ -85,6 +81,7 @@ export default async function downloadFile(
       bulmaToast.toast({
         message:
           'Sorry, there was an issue downloading your file, please try again.',
+        // @ts-ignore
         type: 'ob-toast is-danger cypress-download-file-toast',
         position: 'bottom-right',
         dismissible: true,
@@ -95,7 +92,7 @@ export default async function downloadFile(
   }
 }
 
-async function convertDataUriToBlob(dataURI) {
+async function convertDataUriToBlob(dataURI: string) {
   const response = await fetch(dataURI)
   const blob = await response.blob()
   return blob
