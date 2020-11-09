@@ -93,7 +93,7 @@
     "flow_check": "flow check",
     "jest": "jest",
     "prepublish": "npm run build",
-    "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
+    "pretest": "npm run fixpack && npm run eslint && npm run build",
     "start": "tsc-watch",
     "test": "npm run jest",
     "typescript": "tsc --noEmit"
