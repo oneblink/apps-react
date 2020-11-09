@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `isInteger` validation to `number` type form elements
 - `minLength` and `maxLength` validation to `text` and `textarea` type form elements
 
+### Changed
+
+- source from Flow to TypeScript
+
 ## 0.1.3 (2020-11-05)
 
 ### Added

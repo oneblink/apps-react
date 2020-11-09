@@ -42,37 +42,36 @@
     "@babel/preset-react": "^7.12.5",
     "@oneblink/apps": "^0.3.0",
     "@oneblink/types": "github:oneblink/types",
-    "@types/react": "^16.9.55",
+    "@types/jest": "^26.0.15",
+    "@types/react": "^16.9.56",
     "clsx": "^1.1.1",
-    "eslint": "^7.12.1",
+    "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "fixpack": "^3.0.6",
-    "flow-bin": "^0.132.0",
     "jest": "^26.6.3",
-    "npm-watch": "^0.7.0",
     "prettier": "^2.1.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0",
     "sass": "^1.29.0",
+    "ts-jest": "^26.4.4",
+    "tsc-watch": "^4.2.9",
     "typescript": "^4.0.5"
   },
   "engines": {
-    "node": ">=12",
+    "node": ">=14",
     "npm": ">=6"
   },
   "files": [
-    "dist",
-    "src",
-    "index.d.ts",
-    "typescript/types"
+    "dist"
   ],
   "homepage": "https://github.com/oneblink/apps-react#readme",
   "license": "GPL-3.0-only",
   "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "peerDependencies": {
     "@oneblink/apps": "^0.3.0",
     "clsx": "^1.1.1",
@@ -88,18 +87,15 @@
     "url": "git+https://github.com/oneblink/apps-react.git"
   },
   "scripts": {
-    "build": "babel src --out-dir dist && sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules",
+    "build": "tsc && sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules",
     "eslint": "eslint --fix --cache .",
     "fixpack": "fixpack",
     "flow_check": "flow check",
     "jest": "jest",
     "prepublish": "npm run build",
-    "pretest": "npm run eslint && npm run flow_check && npm run tsc && npm run fixpack",
+    "pretest": "npm run fixpack && npm run eslint && npm run build",
+    "start": "tsc-watch",
     "test": "npm run jest",
-    "tsc": "tsc",
-    "start": "npm-watch"
-  },
-  "watch": {
-    "build": "src/**/*.{js,scss}"
+    "typescript": "tsc --noEmit"
   }
 }
