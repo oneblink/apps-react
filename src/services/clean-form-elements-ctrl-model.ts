@@ -3,7 +3,7 @@ import { FormTypes } from '@oneblink/types'
 function cleanElementValue(
   element: FormTypes.FormElement,
   formElementsCtrl: FormElementsCtrl,
-  formElementConditionallyShown: FormElementConditionallyShown | undefined,
+  formElementConditionallyShown: FormElementConditionallyShown | void,
   stripBinaryData: boolean,
   captchaTokens: string[],
 ) {
@@ -138,7 +138,7 @@ function cleanElementValue(
 
 export default function cleanFormElementsCtrlModel(
   formElementsCtrl: FormElementsCtrl,
-  formElementsConditionallyShown: FormElementsConditionallyShown,
+  formElementsConditionallyShown: FormElementsConditionallyShown | void,
   stripBinaryData: boolean,
 ) {
   const captchaTokens: string[] = []
