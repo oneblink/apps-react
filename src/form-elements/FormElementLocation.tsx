@@ -215,21 +215,11 @@ const LocationIsOffline = React.memo(function LocationIsOffline({
             <h4 className="title is-4">You are currently offline</h4>
             <h3 className="title is-3 ob-location__latitude">Latitude</h3>
             <p>
-              <b>
-                {
-                  // Can't call props on unknown type
-                  location.latitude
-                }
-              </b>
+              <b>{location.latitude}</b>
             </p>
             <h3 className="title is-3 ob-location__longitude">Longitude</h3>
             <p>
-              <b>
-                {
-                  // Can't call props on unknown type
-                  location.longitude
-                }
-              </b>
+              <b>{location.longitude}</b>
             </p>
           </div>
         </figure>
