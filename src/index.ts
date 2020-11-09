@@ -1,5 +1,3 @@
-// @flow
-
 export { default as OneBlinkForm } from './OneBlinkForm'
 export { default as OneBlinkAutoSaveForm } from './OneBlinkAutoSaveForm'
 export { default as useIsMounted } from './hooks/useIsMounted'

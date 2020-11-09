@@ -1,18 +1,13 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 import clsx from 'clsx'
 
-/* ::
 type Props = {
-  className?: string,
-  small?: boolean,
-  large?: boolean,
+  className?: string
+  small?: boolean
+  large?: boolean
 }
-*/
 
-function OnLoading({ className, small, large } /* : Props */) {
+function OnLoading({ className, small, large }: Props) {
   return (
     <on-loading className={className}>
       <div
@@ -25,4 +20,4 @@ function OnLoading({ className, small, large } /* : Props */) {
   )
 }
 
-export default (React.memo(OnLoading) /*: React.AbstractComponent<Props> */)
+export default React.memo(OnLoading)
