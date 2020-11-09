@@ -1,22 +1,18 @@
-// @flow
-'use strict'
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
-export default function useFormElementOptions(
-  {
-    element,
-    value,
-    onChange,
-    onFilter,
-  } /* : {
-  element: FormElementWithOptions,
-  value: mixed | void,
-  onChange: (FormElement, mixed | void) => void,
-  onFilter: (ChoiceElementOption) => boolean,
-} */,
-) {
-  const filteredOptions /* : ChoiceElementOption[] */ = React.useMemo(() => {
+export default function useFormElementOptions({
+  element,
+  value,
+  onChange,
+  onFilter,
+}: {
+  element: FormTypes.FormElementWithOptions
+  value: unknown | void
+  onChange: (formElement: FormTypes.FormElement, value: unknown | void) => void
+  onFilter: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
+}) {
+  const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
     if (!element.options) {
       return []
     }

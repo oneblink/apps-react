@@ -1,8 +1,8 @@
-// @flow
-
 import * as React from 'react'
 
-export const CaptchaSiteKeyContext /* : React.Context<string | void> */ = React.createContext()
+export const CaptchaSiteKeyContext = React.createContext<string | undefined>(
+  undefined,
+)
 
 export default function useCaptchaSiteKey() {
   return React.useContext(CaptchaSiteKeyContext)

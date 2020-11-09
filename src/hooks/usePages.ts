@@ -1,23 +1,19 @@
-// @flow
-'use strict'
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import useBooleanState from '../hooks/useBooleanState'
 import scrollingService from '../services/scrolling-service'
 
-export default function usePages(
-  {
-    pages,
-    pagesValidation,
-    pageElementsConditionallyShown,
-  } /* : {
-  pages: PageElement[],
-  pagesValidation: PageElementsValidation | void,
-  pageElementsConditionallyShown: PageElementsConditionallyShown,
-} */,
-) {
-  const [visitedPageIds, setVisitedPageIds] = React.useState([])
+export default function usePages({
+  pages,
+  pagesValidation,
+  pageElementsConditionallyShown,
+}: {
+  pages: FormTypes.PageElement[]
+  pagesValidation: PageElementsValidation | void
+  pageElementsConditionallyShown: PageElementsConditionallyShown
+}) {
+  const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
 
   const [
     isStepsHeaderActive,
@@ -26,7 +22,7 @@ export default function usePages(
     toggleStepsNavigation,
   ] = useBooleanState(false)
 
-  const visiblePages /* : PageElement[] */ = React.useMemo(() => {
+  const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
     return pages.filter((pageElement) => {
       return (
         pageElementsConditionallyShown[pageElement.id] &&
@@ -60,7 +56,7 @@ export default function usePages(
   }, [currentPage, visiblePages])
 
   const setPageId = React.useCallback(
-    (pageId /* : string */) => {
+    (pageId: string) => {
       setVisitedPageIds((currentVisitedPageIds) => {
         if (currentVisitedPageIds.includes(currentPageId)) {
           return currentVisitedPageIds

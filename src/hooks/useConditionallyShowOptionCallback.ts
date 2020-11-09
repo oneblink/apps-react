@@ -1,24 +1,21 @@
-// @flow
-
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
-/* ::
 export type ConditionallyShowOptionCallbackContextValue = (
-  FormElementsCtrl,
-  FormElementWithOptions,
-  ChoiceElementOption,
+  formElementsCtrl: FormElementsCtrl,
+  formElementWithOptions: FormTypes.FormElementWithOptions,
+  choiceElementOption: FormTypes.ChoiceElementOption,
 ) => boolean
-*/
 
 const defaultContext = () => true
 
-export const ConditionallyShowOptionCallbackContext /* : React.Context<ConditionallyShowOptionCallbackContextValue> */ = React.createContext(
-  defaultContext,
-)
+export const ConditionallyShowOptionCallbackContext = React.createContext<
+  ConditionallyShowOptionCallbackContextValue
+>(defaultContext)
 
 export default function useConditionallyShowOptionCallback(
-  formElementsCtrl /* : FormElementsCtrl */,
-  element /* : FormElement */,
+  formElementsCtrl: FormElementsCtrl,
+  element: FormTypes.FormElement,
 ) {
   const onConditionallyShowOption = React.useContext(
     ConditionallyShowOptionCallbackContext,
@@ -35,7 +32,7 @@ export default function useConditionallyShowOptionCallback(
       return defaultContext
     }
 
-    return (option /* : ChoiceElementOption */) => {
+    return (option: FormTypes.ChoiceElementOption) => {
       return onConditionallyShowOption(formElementsCtrl, element, option)
     }
   }, [element, formElementsCtrl, onConditionallyShowOption])

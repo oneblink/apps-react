@@ -1,14 +1,10 @@
-// @flow
-
 import * as React from 'react'
 
-/* ::
 type LookupNotificationContextValue = {
-  isLookup: boolean,
-  isDisabled: boolean,
-  onLookup: () => mixed,
+  isLookup: boolean
+  isDisabled: boolean
+  onLookup: () => unknown
 }
-*/
 
 const defaultContext = {
   isLookup: false,
@@ -16,9 +12,9 @@ const defaultContext = {
   onLookup: () => {},
 }
 
-export const LookupNotificationContext /* : React.Context<LookupNotificationContextValue> */ = React.createContext(
-  defaultContext,
-)
+export const LookupNotificationContext = React.createContext<
+  LookupNotificationContextValue
+>(defaultContext)
 
 export default function useLookupNotification() {
   return React.useContext(LookupNotificationContext)

@@ -1,27 +1,20 @@
-// @flow
-
 import * as React from 'react'
 import { formService } from '@oneblink/apps'
 
 import generateDefaultData from '../services/generate-default-data'
+import { FormTypes } from '@oneblink/types'
 
-export default function useLookups(
-  {
-    formId,
-    currentPageId,
-    setDefinition,
-    setSubmission,
-  } /* : {
-  formId: number,
-  currentPageId: string,
-  setDefinition: ((Form) => Form) => void,
-  setSubmission: (
-    (
-      $PropertyType<FormElementsCtrl, 'model'>,
-    ) => $PropertyType<FormElementsCtrl, 'model'>,
-  ) => void,
-} */,
-) {
+export default function useLookups({
+  formId,
+  currentPageId,
+  setDefinition,
+  setSubmission,
+}: {
+  formId: number
+  currentPageId: string
+  setDefinition: React.Dispatch<React.SetStateAction<FormTypes.Form>>
+  setSubmission: React.Dispatch<React.SetStateAction<FormElementsCtrl['model']>>
+}) {
   const handleChangeElements = React.useCallback(
     (elements /* : FormElement[] */) => {
       setDefinition((currentDefinition) => {
@@ -55,8 +48,8 @@ export default function useLookups(
 
   const injectPagesAfter = React.useCallback(
     (
-      element /* : LookupFormElement */,
-      elementLookupData /* : PageElement[] */,
+      element: FormTypes.LookupFormElement,
+      elementLookupData: FormTypes.PageElement[],
     ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,
@@ -82,7 +75,7 @@ export default function useLookups(
         }
 
         const pageWithElement = currentDefinition.elements.find(
-          (pageElement) => {
+          (pageElement: FormTypes.FormElement) => {
             if (pageElement.type === 'page') {
               return formService.findFormElement(
                 pageElement.elements,
@@ -100,9 +93,13 @@ export default function useLookups(
         return {
           ...currentDefinition,
           elements: currentDefinition.elements.reduce(
-            (partialPageElements, pageElement, index) => {
+            (
+              partialPageElements: FormTypes.FormElement[],
+              pageElement: FormTypes.FormElement,
+              index: number,
+            ) => {
               // Sorry flow, we need to add a property you don't approve of :(
-              // $FlowFixMe
+              // @ts-expect-error
               if (pageElement.injectedByElementId !== element.id) {
                 partialPageElements.push(pageElement)
               }
@@ -134,7 +131,7 @@ export default function useLookups(
   )
 
   const handleChangeModel = React.useCallback(
-    (model /*: $PropertyType<FormElementsCtrl, 'model'> */) => {
+    (model: FormElementsCtrl['model']) => {
       setSubmission(() => model)
     },
     [setSubmission],

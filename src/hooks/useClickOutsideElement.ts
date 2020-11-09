@@ -1,11 +1,8 @@
-// @flow
-'use strict'
-
 import * as React from 'react'
 
 export default function useClickOutsideElement(
-  ref /* : { current: ?HTMLElement }*/,
-  callback /* : () => void */,
+  ref: { current: HTMLElement | null },
+  callback: () => void,
 ) {
   const handleClickOutside = React.useCallback(
     (event) => {
@@ -16,10 +13,8 @@ export default function useClickOutsideElement(
     [callback, ref],
   )
   React.useEffect(() => {
-    // $FlowFixMe
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      // $FlowFixMe
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [handleClickOutside])
