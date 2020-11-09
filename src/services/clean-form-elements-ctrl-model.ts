@@ -1,13 +1,12 @@
-// @flow
-'use strict'
+import { FormTypes } from '@oneblink/types'
 
 function cleanElementValue(
-  element /* : FormElement */,
-  formElementsCtrl /* : FormElementsCtrl */,
-  formElementConditionallyShown /* : FormElementConditionallyShown | void */,
-  stripBinaryData /* : boolean */,
-  captchaTokens /* : string[] */,
-) /* : mixed */ {
+  element: FormTypes.FormElement,
+  formElementsCtrl: FormElementsCtrl,
+  formElementConditionallyShown: FormElementConditionallyShown | void,
+  stripBinaryData: boolean,
+  captchaTokens: string[],
+) {
   const isShowing =
     !!formElementConditionallyShown && formElementConditionallyShown.isShown
 
@@ -44,7 +43,9 @@ function cleanElementValue(
       // Here we will check to make sure that each embedded form
       // also has its values wiped if the element is hidden based on conditional logic
       const nestedElements = element.elements
-      const nestedModel = formElementsCtrl.model[element.name]
+      const nestedModel = formElementsCtrl.model[
+        element.name
+      ] as FormElementsCtrl['model']
       if (
         isShowing &&
         Array.isArray(nestedElements) &&
@@ -52,25 +53,29 @@ function cleanElementValue(
         nestedModel &&
         typeof nestedModel === 'object'
       ) {
-        return nestedElements.reduce((formModel, e) => {
-          if (e.type !== 'page') {
-            formModel[e.name] = cleanElementValue(
-              e,
-              {
-                elements: nestedElements,
-                model: nestedModel,
-                parentFormElementsCtrl: formElementsCtrl,
-              },
-              formElementConditionallyShown &&
-                formElementConditionallyShown.type === 'nestedForm'
-                ? formElementConditionallyShown.nested[e.name]
-                : undefined,
-              stripBinaryData,
-              captchaTokens,
-            )
-          }
-          return formModel
-        }, {})
+        return nestedElements.reduce(
+          (formModel: FormElementsCtrl['model'], e) => {
+            if (e.type !== 'page') {
+              formModel[e.name] = cleanElementValue(
+                e,
+                {
+                  elements: nestedElements,
+                  model: nestedModel,
+                  parentFormElementsCtrl: formElementsCtrl,
+                },
+                formElementConditionallyShown &&
+                  formElementConditionallyShown.type === 'nestedForm'
+                  ? formElementConditionallyShown.nested &&
+                      formElementConditionallyShown.nested[e.name]
+                  : undefined,
+                stripBinaryData,
+                captchaTokens,
+              )
+            }
+            return formModel
+          },
+          {},
+        )
       }
       break
     }
@@ -95,24 +100,27 @@ function cleanElementValue(
           const formElementsConditionallyShown = formElementsConditionallyShownEntries
             ? formElementsConditionallyShownEntries[index.toString()]
             : undefined
-          return nestedElements.reduce((entryModel, e) => {
-            if (e.type !== 'page' && entry && typeof entry === 'object') {
-              entryModel[e.name] = cleanElementValue(
-                e,
-                {
-                  elements: nestedElements,
-                  model: entry,
-                  parentFormElementsCtrl: formElementsCtrl,
-                },
-                formElementsConditionallyShown
-                  ? formElementsConditionallyShown[e.name]
-                  : undefined,
-                stripBinaryData,
-                captchaTokens,
-              )
-            }
-            return entryModel
-          }, {})
+          return nestedElements.reduce(
+            (entryModel: FormElementsCtrl['model'], e) => {
+              if (e.type !== 'page' && entry && typeof entry === 'object') {
+                entryModel[e.name] = cleanElementValue(
+                  e,
+                  {
+                    elements: nestedElements,
+                    model: entry,
+                    parentFormElementsCtrl: formElementsCtrl,
+                  },
+                  formElementsConditionallyShown
+                    ? formElementsConditionallyShown[e.name]
+                    : undefined,
+                  stripBinaryData,
+                  captchaTokens,
+                )
+              }
+              return entryModel
+            },
+            {},
+          )
         })
       }
       break
@@ -129,15 +137,12 @@ function cleanElementValue(
 }
 
 export default function cleanFormElementsCtrlModel(
-  formElementsCtrl /* : FormElementsCtrl */,
-  formElementsConditionallyShown /* : FormElementsConditionallyShown | void */,
-  stripBinaryData /* : boolean */,
-) /* : {
-  model: $PropertyType<FormElementsCtrl, 'model'>,
-  captchaTokens: string[],
-} */ {
-  const captchaTokens = []
-  const model = {}
+  formElementsCtrl: FormElementsCtrl,
+  formElementsConditionallyShown: FormElementsConditionallyShown | void,
+  stripBinaryData: boolean,
+) {
+  const captchaTokens: string[] = []
+  const model: { [property: string]: unknown } = {}
 
   // Clear data from submission on fields that are hidden on visible pages
   formElementsCtrl.elements.forEach((element) => {

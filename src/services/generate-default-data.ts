@@ -1,11 +1,10 @@
-// @flow
-'use strict'
+import { FormTypes } from '@oneblink/types'
 
 export default function generateDefaultData(
-  elements /* : FormElement[] */,
-  preFillData /* :  $PropertyType<FormElementsCtrl, 'model'> */,
-) /* : { [key: string]: any } */ {
-  return elements.reduce((m, el) => {
+  elements: FormTypes.FormElement[],
+  preFillData: FormElementsCtrl['model'],
+): { [property: string]: any } {
+  return elements.reduce((m, el: FormTypes.FormElement) => {
     if (el.type !== 'page' && preFillData[el.name]) {
       m[el.name] = preFillData[el.name]
       return m
@@ -27,15 +26,18 @@ export default function generateDefaultData(
         // Cater for multi-select and checkboxes
         if ((el.type === 'select' && el.multi) || el.type === 'checkboxes') {
           if (Array.isArray(el.defaultValue) && el.defaultValue.length) {
-            m[el.name] = el.defaultValue.reduce((optionValues, optionId) => {
-              const option = (el.options || []).find(
-                (option) => option.id === optionId,
-              )
-              if (option) {
-                optionValues.push(option.value)
-              }
-              return optionValues
-            }, [])
+            m[el.name] = el.defaultValue.reduce(
+              (optionValues: string[], optionId) => {
+                const option = (el.options || []).find(
+                  (option) => option.id === optionId,
+                )
+                if (option) {
+                  optionValues.push(option.value)
+                }
+                return optionValues
+              },
+              [],
+            )
           }
         } else {
           const option = (el.options || []).find(
@@ -77,6 +79,7 @@ export default function generateDefaultData(
           m[el.name] = []
           for (let index = 0; index < minSetEntries; index++) {
             const entry = generateDefaultData(el.elements, {})
+            // @ts-ignore
             m[el.name].push(entry)
           }
         }
@@ -104,7 +107,9 @@ export default function generateDefaultData(
       case 'email':
       case 'telephone':
       case 'textarea': {
+        // @ts-ignore
         if (el.defaultValue) {
+          // @ts-ignore
           m[el.name] = el.defaultValue
         }
         break
@@ -118,6 +123,7 @@ export default function generateDefaultData(
       case 'summary':
         break
       default: {
+         // @ts-ignore
         console.warn('Default value is not supported for element type', el.type)
       }
     }
