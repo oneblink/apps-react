@@ -301,7 +301,7 @@ function OneBlinkForm({
       if (pagesValidation) {
         bulmaToast.toast({
           message: 'Please fix validation errors',
-          // @ts-expect-error
+          // @ts-expect-error ???
           type: 'ob-toast is-danger cypress-invalid-submit-attempt',
           position: 'bottom-right',
           duration: 4000,
@@ -507,7 +507,7 @@ function OneBlinkForm({
                         >
                           <div
                             className="step-marker step-marker-error ob-step-marker cypress-step-marker"
-                            // @ts-expect-error
+                            // @ts-expect-error ???
                             name={`cypress-page-stepper-${index + 1}`}
                             value={index + 1}
                           >

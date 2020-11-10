@@ -32,7 +32,7 @@ function FormElementCheckboxes({
 }: Props) {
   const changeValues = React.useCallback(
     (newValue) => {
-      let hasSelectedValue = Array.isArray(value)
+      const hasSelectedValue = Array.isArray(value)
         ? value.includes(newValue)
         : false
       let updatedValues = null
@@ -109,7 +109,7 @@ function FormElementCheckboxes({
                   <div className="control" key={index}>
                     <label
                       className="checkbox ob-checkbox__input-label cypress-checkbox-label"
-                      // @ts-expect-error
+                      // @ts-expect-error ???
                       disabled={element.readOnly}
                       htmlFor={`${id}_${option.value}`}
                     >

@@ -257,7 +257,7 @@ const LocationPicker = React.memo(function SummaryResult({
   const [zoom, setZoom] = React.useState<number>(initialMapZoom)
   const onZoomChanged = React.useCallback(() => {
     if (!map) return
-    // @ts-expect-error
+    // @ts-expect-error ???
     setZoom(map.getZoom())
   }, [map])
   const staticUrl = React.useMemo(() => {

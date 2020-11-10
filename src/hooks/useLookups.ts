@@ -99,7 +99,7 @@ export default function useLookups({
               index: number,
             ) => {
               // Sorry typescript, we need to add a property you don't approve of :(
-              // @ts-expect-error
+              // @ts-expect-error ???
               if (pageElement.injectedByElementId !== element.id) {
                 partialPageElements.push(pageElement)
               }

@@ -61,7 +61,7 @@ function FormElementSelect({
                     id={id}
                     name={element.name}
                     className="cypress-select-single-control ob-input ob-select__single"
-                    // @ts-expect-error
+                    // @ts-expect-error ???
                     value={value || ''}
                     onChange={(e) =>
                       onChange(element, e.target.value || undefined)
@@ -87,7 +87,7 @@ function FormElementSelect({
                 id={id}
                 name={element.name}
                 className="cypress-select-multiple-control ob-input ob-select__multi"
-                // @ts-expect-error
+                // @ts-expect-error ???
                 value={value || []}
                 onChange={(e) => {
                   const vals = []

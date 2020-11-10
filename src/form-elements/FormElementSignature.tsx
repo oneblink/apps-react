@@ -48,7 +48,7 @@ function FormElementSignature({
     const image = new Image()
     image.onload = () => {
       canvasManipulation.drawImageCentered(signatureCanvas.getCanvas(), image)
-      // @ts-expect-error
+      // @ts-expect-error ???
       signatureCanvas._sigPad._isEmpty = false
     }
     image.src = value
@@ -65,9 +65,9 @@ function FormElementSignature({
       const parentDiv = signatureCanvas.getCanvas().parentNode
       if (parentDiv) {
         setCanvasDimensions({
-          // @ts-expect-error
+          // @ts-expect-error ???
           width: parentDiv.clientWidth,
-          // @ts-expect-error
+          // @ts-expect-error ???
           height: parentDiv.clientHeight,
         })
       }
@@ -123,7 +123,7 @@ function FormElementSignature({
                 ...canvasDimensions,
                 className:
                   'input ob-signature__control cypress-signature-control signature-pad',
-                // @ts-expect-error
+                // @ts-expect-error ???
                 disabled: isDisabled || element.readOnly,
               }}
               onEnd={handleEndDraw}

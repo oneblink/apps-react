@@ -1,7 +1,7 @@
 const overflowClass = 'overflow-hidden'
 let isDisabled = false
 
-function elementOrAncestorHasClass(element: any, className: any): boolean {
+function elementOrAncestorHasClass(element: any, className: string): boolean {
   if (!element || element === document) {
     return false
   }
@@ -13,33 +13,31 @@ function elementOrAncestorHasClass(element: any, className: any): boolean {
   return elementOrAncestorHasClass(element.parentNode, className)
 }
 
-function preventDefault(e: any) {
+function preventDefault(e: TouchEvent) {
   if (!elementOrAncestorHasClass(e.target, 'modal')) {
     e.preventDefault()
   }
 }
 
-function disableScrolling() {
+function disableScrolling(): void {
   if (isDisabled) {
     return
   }
   isDisabled = true
 
-  // @ts-ignore
+  // @ts-expect-error ???
   document.body.parentNode.classList.add(overflowClass)
-  // @ts-ignore
   document.body.addEventListener('touchmove', preventDefault, false)
 }
 
-function enableScrolling() {
+function enableScrolling(): void {
   if (!isDisabled) {
     return
   }
   isDisabled = false
 
-  // @ts-ignore
+  // @ts-expect-error ???
   document.body.parentNode.classList.remove(overflowClass)
-  // @ts-ignore
   document.body.removeEventListener('touchmove', preventDefault, false)
 }
 

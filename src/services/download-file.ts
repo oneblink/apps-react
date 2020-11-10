@@ -21,9 +21,9 @@ export default async function downloadFile(dataURI: string, fileName: string) {
                 fileEntry.createWriter(
                   (fileWriter) => {
                     fileWriter.onwriteend = () => {
-                      // @ts-ignore
+                      // @ts-expect-error ???
                       window.cordova.plugins.fileOpener2.open(
-                        // @ts-ignore
+                        // @ts-expect-error ???
                         fileEntry.nativeURL,
                         blob.type,
                         {
@@ -81,7 +81,7 @@ export default async function downloadFile(dataURI: string, fileName: string) {
       bulmaToast.toast({
         message:
           'Sorry, there was an issue downloading your file, please try again.',
-        // @ts-ignore
+        // @ts-expect-error ???
         type: 'ob-toast is-danger cypress-download-file-toast',
         position: 'bottom-right',
         dismissible: true,
