@@ -3,7 +3,7 @@ import { FormTypes } from '@oneblink/types'
 export default function generateDefaultData(
   elements: FormTypes.FormElement[],
   preFillData: FormElementsCtrl['model'],
-): { [property: string]: any } {
+): { [property: string]: unknown } {
   return elements.reduce((m, el: FormTypes.FormElement) => {
     if (el.type !== 'page' && preFillData[el.name]) {
       m[el.name] = preFillData[el.name]
@@ -79,7 +79,7 @@ export default function generateDefaultData(
           m[el.name] = []
           for (let index = 0; index < minSetEntries; index++) {
             const entry = generateDefaultData(el.elements, {})
-            // @ts-ignore
+            // @ts-expect-error ???
             m[el.name].push(entry)
           }
         }
@@ -107,9 +107,9 @@ export default function generateDefaultData(
       case 'email':
       case 'telephone':
       case 'textarea': {
-        // @ts-ignore
+        // @ts-expect-error ???
         if (el.defaultValue) {
-          // @ts-ignore
+          // @ts-expect-error ???
           m[el.name] = el.defaultValue
         }
         break
@@ -123,8 +123,7 @@ export default function generateDefaultData(
       case 'summary':
         break
       default: {
-         // @ts-ignore
-        console.warn('Default value is not supported for element type', el.type)
+        console.warn('Default value is not supported for element type', el)
       }
     }
 

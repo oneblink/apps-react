@@ -58,7 +58,7 @@ function FormElementRadio({
                   <label
                     className="checkbox ob-radio__input-label cypress-radio-label"
                     htmlFor={`${id}_${option.value}`}
-                    // @ts-expect-error
+                    // @ts-expect-error ???
                     disabled={element.readOnly}
                   >
                     <input

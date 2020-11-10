@@ -461,7 +461,7 @@ const CameraAnnotation = React.memo(function CameraAnnotation({
             <SignatureCanvas
               ref={signatureCanvasRef}
               clearOnResize={false}
-              // @ts-expect-error
+              // @ts-expect-error ???
               onEnd={setDirty}
               penColor={penColour}
             />

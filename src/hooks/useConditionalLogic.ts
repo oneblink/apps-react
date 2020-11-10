@@ -230,7 +230,7 @@ export default function useConditionalLogic({
         partialFormElementsConditionallyShown: PageElementsConditionallyShown,
         pageElement,
       ) => {
-        // @ts-expect-error
+        // @ts-expect-error ???
         partialFormElementsConditionallyShown[
           pageElement.id
         ] = getFormElementConditionallyShown(

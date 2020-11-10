@@ -54,6 +54,8 @@
     "@types/react-router-dom": "^5.1.6",
     "@types/react-signature-canvas": "^1.0.1",
     "@types/sanitize-html": "^1.27.0",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "clsx": "^1.1.1",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
@@ -97,8 +99,9 @@
     "url": "git+https://github.com/oneblink/apps-react.git"
   },
   "scripts": {
-    "build": "tsc && sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules",
-    "eslint": "eslint --fix --cache ",
+    "build": "tsc && npm run build:css",
+    "build:css": "sass ./src/styles.scss ./dist/styles.css --load-path ./node_modules && cp ./src/styles.scss ./dist/styles.scss && cp -r ./src/styles/ ./dist/styles/",
+    "eslint": "eslint src/**/*.{ts,tsx} --fix --cache",
     "fixpack": "fixpack",
     "jest": "jest",
     "prepublish": "npm run build",

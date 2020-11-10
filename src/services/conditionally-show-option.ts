@@ -22,8 +22,7 @@ const handleAttributePredicate = (
     return true
   }
   return handleOptionsPredicate(
-    // predicate is compatible with the element conditionally logic...I think (/shrug)
-    // @ts-ignore
+    // @ts-expect-error predicate is compatible with the element conditionally logic...I think (/shrug)
     predicate,
     model,
     predicateElement,

@@ -19,8 +19,7 @@ validate.extend(validate.validators.datetime, {
   },
 })
 
-// Extend validator for repeatable sets
-// @ts-ignore
+// @ts-expect-error Extend validator for repeatable sets
 validate.validators.entries = function (value, { setSchema, entrySchema }) {
   const entries = Array.isArray(value) ? value : []
 
@@ -45,8 +44,7 @@ validate.validators.entries = function (value, { setSchema, entrySchema }) {
   }
 }
 
-// Extend validator for form elements
-// @ts-ignore
+// @ts-expect-error Extend validator for form elements
 validate.validators.nestedElements = function (value, elementsObject) {
   if (!value || typeof value !== 'object') return
   const errors = validateSingleMessageError(value, elementsObject)
@@ -60,7 +58,6 @@ validate.validators.nestedElements = function (value, elementsObject) {
 }
 
 // Extend validator for lookups
-// @ts-ignore
 validate.validators.lookups = function (
   value: unknown | undefined,
   {
@@ -87,7 +84,7 @@ validate.validators.lookups = function (
   return lookupValidationMessage
 }
 
-type ValidateJSSchema = Object
+type ValidateJSSchema = Record<string, unknown>
 
 type ValidateJSSchemaByPageId = {
   [pageElementId: string]: ValidateJSSchema

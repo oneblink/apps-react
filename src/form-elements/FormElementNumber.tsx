@@ -197,9 +197,9 @@ const SliderControl = React.memo(function SliderControl({
         name={element.name}
         className="slider ob-input is-fullwidth cypress-slider-number-control is-large is-circle cypress-number-control"
         step={element.sliderIncrement ? element.sliderIncrement : 1}
-        // @ts-expect-error
+        // @ts-expect-error ???
         min={element.minNumber}
-        // @ts-expect-error
+        // @ts-expect-error ???
         max={element.maxNumber}
         value={text}
         type="range"

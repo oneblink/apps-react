@@ -56,15 +56,15 @@ function FormElementBarcodeScanner({
   const openBarcodeScanner = React.useCallback(() => {
     if (window.cordova) {
       setError(null)
-      // @ts-expect-error
+      // @ts-expect-error ???
       window.cordova.plugins.barcodeScanner.scan(
-        // @ts-expect-error
+        // @ts-expect-error ???
         (result) => {
           if (!result.cancelled) {
             handleScan(result.text)
           }
         },
-        // @ts-expect-error
+        // @ts-expect-error ???
         (error) => {
           setError(
             new Error(
@@ -283,7 +283,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   const switchCamera = React.useCallback(() => {
     if (camera) {
       // We will just be rotating between the available camera.
-      let nextDeviceIndex = selectedDeviceIndex + 1
+      const nextDeviceIndex = selectedDeviceIndex + 1
       if (camera.availableDevices[selectedDeviceIndex]) {
         setSelectedDeviceIndex(nextDeviceIndex)
       } else {
@@ -362,11 +362,11 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
           }
         }
 
-        // @ts-expect-error
+        // @ts-expect-error ???
         const fadedSquareElement: HTMLDivElement = figureElement.getElementsByClassName(
           'ob-barcode-scanner__square',
         )[0]
-        // @ts-expect-error
+        // @ts-expect-error ???
         const redLineElement: HTMLDivElement = figureElement.getElementsByClassName(
           'ob-barcode-scanner__line',
         )[0]

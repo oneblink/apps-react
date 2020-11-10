@@ -57,12 +57,12 @@ function LookupNotificationComponent({
 
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
-          // @ts-expect-error
+          // @ts-expect-error ???
           injectPagesAfter(element, elementLookupResult)
           return
         }
 
-        // @ts-expect-error
+        // @ts-expect-error ???
         const indexOfElement = formElementsCtrl.elements.indexOf(element)
         if (indexOfElement === -1) {
           console.log('Could not find element', element)
@@ -74,16 +74,14 @@ function LookupNotificationComponent({
 
           // Filter out already injected elements
           const allElements = formElementsCtrl.elements.filter(
-            // Sorry typescript, we need to check a property you don't approve of :(
-            // @ts-expect-error
+            // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
             (e) => e.injectedByElementId !== element.id,
           )
           allElements.splice(
             indexOfElement + 1,
             0,
             ...elementLookupResult.map((e) => {
-              // Sorry typescript, we need to check a property you don't approve of :(
-              // @ts-expect-error
+              // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
               e.injectedByElementId = element.id
               return e
             }),

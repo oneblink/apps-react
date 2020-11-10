@@ -30,7 +30,7 @@ function FormElementCaptcha({
           onChange={(val) => {
             onChange(element, val || undefined)
           }}
-          // @ts-expect-error
+          // @ts-expect-error ???
           className="ob-input cypress-captcha-control"
         />
 
