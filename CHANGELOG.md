@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - source from Flow to TypeScript
 
+### Fixed
+
+- auto save icon not getting position fixed styling
+
 ## 0.1.3 (2020-11-05)
 
 ### Added

@@ -1,14 +1,15 @@
+.ob-form__auto-save-icon {
+  position: fixed;
+  bottom: 1px;
+  left: 1px;
+  font-size: $size-5;
+  animation: spin 1.5s linear infinite;
+  z-index: 100;
+}
+
 .ob-form-container {
   .ob-form {
     padding-bottom: 4rem;
-  }
-
-  .ob-form__auto-save-icon {
-    position: fixed;
-    bottom: 1px;
-    left: 1px;
-    font-size: $size-5;
-    animation: spin 1.5s linear infinite;
   }
 
   .steps-header {
