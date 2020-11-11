@@ -2,6 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 import loadImage from 'blueimp-load-image'
 import SignatureCanvas from 'react-signature-canvas'
+import watermark from 'watermarkjs'
 
 import useBooleanState from '../hooks/useBooleanState'
 import downloadFile from '../services/download-file'
@@ -66,16 +67,23 @@ function FormElementCamera({
         // and someone else has already solved with this nice library.
         // https://nsulistiyawan.github.io/2016/07/11/Fix-image-orientation-with-Javascript.html
         const file = changeEvent.target.files[0]
-        loadImage.parseMetaData(file, function (data) {
+        loadImage.parseMetaData(file, async function (data) {
           const options = {
             // should be set to canvas : true to activate auto fix orientation
             canvas: true,
             // @ts-expect-error if exif data available, update orientation
             orientation: data.exif ? data.exif.get('Orientation') : 0,
           }
+          let blob = file
+          console.log('includeTimestampWatermark',element.includeTimestampWatermark)
+          if (element.includeTimestampWatermark) {
+            const now = new Date()
+            blob = await watermark(file)
+              .blob(watermark.text.lowerRight(now.toLocaleString(), '48px Josefin Slab', '#fff', 0.5))
+          }
           console.log('Loading image onto canvas to correct orientation')
           loadImage(
-            file,
+            blob,
             (canvas) => {
               // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
               const base64data = canvas.toDataURL(file.type)
