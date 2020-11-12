@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `isInteger` validation to `number` type form elements
 - `minLength` and `maxLength` validation to `text` and `textarea` type form elements
+- Support for `includeTimestampWatermark` for `camera` form element type
 
 ### Changed
 
