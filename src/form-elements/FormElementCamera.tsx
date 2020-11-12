@@ -32,6 +32,19 @@ declare global {
     Camera: any
   }
 }
+
+function addTextBackground() {
+  return (canvas: HTMLCanvasElement) => {
+    const context = canvas.getContext('2d')
+    if (context) {
+      context.save()
+      context.fillStyle = "rgba(20, 20, 20, 0.6)"
+      context.fillRect(canvas.width - 200, canvas.height -35, canvas.width, canvas.height - 10)
+      context.restore()
+    }
+    return canvas
+  }
+}
 function FormElementCamera({
   id,
   element,
@@ -75,11 +88,12 @@ function FormElementCamera({
             orientation: data.exif ? data.exif.get('Orientation') : 0,
           }
           let blob = file
-          console.log('includeTimestampWatermark',element.includeTimestampWatermark)
           if (element.includeTimestampWatermark) {
             const now = new Date()
-            blob = await watermark(file)
-              .blob(watermark.text.lowerRight(now.toLocaleString(), '48px Josefin Slab', '#fff', 0.5))
+            blob = await watermark([file])
+            .blob(addTextBackground())
+            .render()
+            .blob(watermark.text.lowerRight(now.toLocaleString(), '20px Arial', '#FFF', 0.85))
           }
           console.log('Loading image onto canvas to correct orientation')
           loadImage(
