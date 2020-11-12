@@ -2,13 +2,13 @@ import * as React from 'react'
 import clsx from 'clsx'
 import loadImage from 'blueimp-load-image'
 import SignatureCanvas from 'react-signature-canvas'
-import watermark from 'watermarkjs'
 
 import useBooleanState from '../hooks/useBooleanState'
 import downloadFile from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
+import { localisationService } from '@oneblink/apps'
 
 type Props = {
   id: string
@@ -33,18 +33,6 @@ declare global {
   }
 }
 
-function addTextBackground() {
-  return (canvas: HTMLCanvasElement) => {
-    const context = canvas.getContext('2d')
-    if (context) {
-      context.save()
-      context.fillStyle = "rgba(20, 20, 20, 0.6)"
-      context.fillRect(canvas.width - 200, canvas.height -35, canvas.width, canvas.height - 10)
-      context.restore()
-    }
-    return canvas
-  }
-}
 function FormElementCamera({
   id,
   element,
@@ -79,7 +67,7 @@ function FormElementCamera({
         // orientation. Luckily, we are not the only people in the work have this issue
         // and someone else has already solved with this nice library.
         // https://nsulistiyawan.github.io/2016/07/11/Fix-image-orientation-with-Javascript.html
-        const file = changeEvent.target.files[0]
+        const file: File = changeEvent.target.files[0]
         loadImage.parseMetaData(file, async function (data) {
           const options = {
             // should be set to canvas : true to activate auto fix orientation
@@ -87,19 +75,43 @@ function FormElementCamera({
             // @ts-expect-error if exif data available, update orientation
             orientation: data.exif ? data.exif.get('Orientation') : 0,
           }
-          let blob = file
-          if (element.includeTimestampWatermark) {
-            const now = new Date()
-            blob = await watermark([file])
-            .blob(addTextBackground())
-            .render()
-            .blob(watermark.text.lowerRight(now.toLocaleString(), '20px Arial', '#FFF', 0.85))
-          }
           console.log('Loading image onto canvas to correct orientation')
           loadImage(
-            blob,
-            (canvas) => {
-              // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
+            file,
+            // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
+            (canvas: HTMLCanvasElement) => {
+              if (element.includeTimestampWatermark) {
+                const context = canvas.getContext('2d')
+                if (context) {
+                  const now = localisationService.formatDatetime(
+                    new Date(file.lastModified),
+                  )
+                  const textHeight = 20
+                  context.font = `${textHeight}px Arial`
+                  const { width: textWidth } = context.measureText(now)
+                  const backgroundMargin = 10
+                  const backgroundPadding = backgroundMargin
+                  const backgroundWidth = backgroundPadding * 2 + textWidth
+                  const backgroundHeight = backgroundPadding * 2 + textHeight
+                  context.fillStyle = 'rgba(20, 20, 20, 0.6)'
+                  context.fillRect(
+                    canvas.width - backgroundWidth - backgroundMargin,
+                    canvas.height - backgroundHeight - backgroundMargin,
+                    backgroundWidth,
+                    backgroundHeight,
+                  )
+
+                  context.fillStyle = '#FFF'
+                  context.fillText(
+                    now,
+                    canvas.width -
+                      textWidth -
+                      backgroundPadding -
+                      backgroundMargin,
+                    canvas.height - 22,
+                  )
+                }
+              }
               const base64data = canvas.toDataURL(file.type)
               setIsDirty()
               onChange(element, base64data)
