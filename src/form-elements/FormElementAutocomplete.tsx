@@ -1,6 +1,7 @@
 import * as React from 'react'
 import AbortController from 'abort-controller'
 import clsx from 'clsx'
+import querystring from 'query-string'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -160,6 +161,12 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
             ...headers,
             Authorization: `Bearer ${idToken}`,
           }
+        }
+
+          // check for userToken in the query string
+        const qs = querystring.parse(location.search)
+        if (qs.userToken) {
+          headers['X-OneBlink-User-Token'] = qs.userToken as unknown as string
         }
 
         const response = await fetch(`${searchUrl}?value=${label}`, {

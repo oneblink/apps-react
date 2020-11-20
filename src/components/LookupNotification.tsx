@@ -2,6 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 import AbortController from 'abort-controller'
 import { formService, authService } from '@oneblink/apps'
+import querystring from 'query-string'
 
 import useIsOffline from '../hooks/useIsOffline'
 import OnLoading from './OnLoading'
@@ -346,6 +347,12 @@ async function fetchLookup(
       ...headers,
       Authorization: `Bearer ${idToken}`,
     }
+  }
+
+  // check for userToken in the query string
+  const qs = querystring.parse(location.search)
+  if (qs.userToken) {
+    headers['X-OneBlink-User-Token'] = qs.userToken as unknown as string
   }
 
   console.log(
