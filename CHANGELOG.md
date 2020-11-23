@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- sending userToken with requests
+
+## 0.1.4 (2020-11-12)
+
+### Added
+
 - `isInteger` validation to `number` type form elements
 - `minLength` and `maxLength` validation to `text` and `textarea` type form elements
 - Support for `includeTimestampWatermark` for `camera` form element type
-- sending userToken with requests when present in querystring
-
-## 0.1.4 (2020-11-12)
 
 ### Changed
 

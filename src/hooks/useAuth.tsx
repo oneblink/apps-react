@@ -18,12 +18,15 @@ const AuthContext = React.createContext<AuthContextValue>({
 export function AuthContextProvider({
   children,
   formsKeyToken,
+  userToken,
 }: {
   children: React.ReactNode
   formsKeyToken?: string
+  userToken?: string
 }) {
   const [value, setValue] = React.useState(() => {
     authService.setFormsKeyToken(formsKeyToken)
+    authService.setUserToken(userToken)
     return {
       isLoggedIn: authService.isLoggedIn(),
       userProfile: authService.getUserProfile(),
@@ -39,6 +42,10 @@ export function AuthContextProvider({
       isUsingFormsKey: !!formsKeyToken,
     }))
   }, [formsKeyToken])
+
+  React.useEffect(() => {
+    authService.setUserToken(userToken)
+  }, [userToken])
 
   React.useEffect(() => {
     return authService.registerAuthListener(() =>
