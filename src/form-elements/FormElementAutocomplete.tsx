@@ -163,10 +163,10 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           }
         }
 
-          // check for userToken in the query string
-        const qs = querystring.parse(location.search)
-        if (qs.userToken) {
-          headers['X-OneBlink-User-Token'] = qs.userToken as unknown as string
+        // check for userToken in the query string
+        const userToken = authService.getUserToken()
+        if (userToken) {
+          headers['X-OneBlink-User-Token'] = userToken
         }
 
         const response = await fetch(`${searchUrl}?value=${label}`, {
