@@ -348,6 +348,11 @@ async function fetchLookup(
     }
   }
 
+  const userToken = authService.getUserToken()
+  if (userToken) {
+    headers['X-OneBlink-User-Token'] = userToken
+  }
+
   console.log(
     `Attempting a ${formElementLookup.type} lookup request to:`,
     formElementLookup.url,

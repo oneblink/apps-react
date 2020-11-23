@@ -162,6 +162,11 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           }
         }
 
+        const userToken = authService.getUserToken()
+        if (userToken) {
+          headers['X-OneBlink-User-Token'] = userToken
+        }
+
         const response = await fetch(`${searchUrl}?value=${label}`, {
           headers,
           signal: abortController.signal,
