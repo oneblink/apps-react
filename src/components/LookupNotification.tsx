@@ -348,7 +348,6 @@ async function fetchLookup(
     }
   }
 
-  // check for userToken in the query string
   const userToken = authService.getUserToken()
   if (userToken) {
     headers['X-OneBlink-User-Token'] = userToken

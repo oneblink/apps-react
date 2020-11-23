@@ -1,7 +1,6 @@
 import * as React from 'react'
 import AbortController from 'abort-controller'
 import clsx from 'clsx'
-import querystring from 'query-string'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -163,7 +162,6 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           }
         }
 
-        // check for userToken in the query string
         const userToken = authService.getUserToken()
         if (userToken) {
           headers['X-OneBlink-User-Token'] = userToken
