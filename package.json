@@ -85,7 +85,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.3.1-beta.1",
+    "@oneblink/apps": "^0.4.1-beta.2",
     "clsx": "^1.1.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
