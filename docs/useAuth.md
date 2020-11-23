@@ -8,10 +8,11 @@
 
 Set the Forms Key token being used to make requests to the OneBlink API on behalf of the user.
 
-| Property        | Type         | Required | Description                                                                             |
-| --------------- | ------------ | -------- | --------------------------------------------------------------------------------------- |
-| `formsKeyToken` | `string`     | No       | A Forms Key token being used to make requests to the OneBlink API on behalf of the user |
-| `children`      | `React.Node` | Yes      | Your application components                                                             |
+| Property        | Type         | Required | Description                                                                                |
+| --------------- | ------------ | -------- | ------------------------------------------------------------------------------------------ |
+| `formsKeyToken` | `string`     | No       | A Forms Key token being used to make requests to the OneBlink API on behalf of the user    |
+| `userToken`     | `string`     | No       | An encrypted user token that will be used included in the submission on behalf of the user |
+| `children`      | `React.Node` | Yes      | Your application components                                                                |
 
 ### Usage
 
