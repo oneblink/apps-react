@@ -1,7 +1,7 @@
 import * as React from 'react'
 import ExpressionParser from 'morph-expressions'
 import escapeString from 'escape-string-regexp'
-import { sanitizeHtmlStandard } from '../services/sanitize-html'
+import sanitizeHtmlStandard from '../services/sanitize-html'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
 
