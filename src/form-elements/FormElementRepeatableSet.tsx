@@ -103,10 +103,7 @@ function FormElementRepeatableSet({
         ...parentFormElementsCtrl.model,
         [element.name]: entries.map((entry, i) => {
           if (i === index) {
-            return {
-              ...model,
-              ...entry,
-            }
+            return model
           } else {
             return entry
           }
