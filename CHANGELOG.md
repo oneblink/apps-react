@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - data lookups in repeatable sets not updating elements that already contain data
+- element lookups on multi page forms duplicating all elements
 - styles from HTML form elements not being consistent with Forms Builder
 
 ## 0.1.5 (2020-11-24)

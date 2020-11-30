@@ -16,6 +16,7 @@ import { FormTypes } from '@oneblink/types'
 type Props = {
   isAutoLookup?: boolean
   element: FormTypes.LookupFormElement
+  elements: FormTypes.FormElement[]
   value: unknown | undefined
   formElementsCtrl: FormElementsCtrl
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
@@ -27,6 +28,7 @@ type Props = {
 function LookupNotificationComponent({
   isAutoLookup,
   element,
+  elements,
   value,
   formElementsCtrl,
   formElementsConditionallyShown,
@@ -63,7 +65,7 @@ function LookupNotificationComponent({
         }
 
         // @ts-expect-error ???
-        const indexOfElement = formElementsCtrl.elements.indexOf(element)
+        const indexOfElement = elements.indexOf(element)
         if (indexOfElement === -1) {
           console.log('Could not find element', element)
         } else {
@@ -73,7 +75,7 @@ function LookupNotificationComponent({
           )
 
           // Filter out already injected elements
-          const allElements = formElementsCtrl.elements.filter(
+          const allElements = elements.filter(
             // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
             (e) => e.injectedByElementId !== element.id,
           )
@@ -99,7 +101,7 @@ function LookupNotificationComponent({
     },
     [
       element,
-      formElementsCtrl.elements,
+      elements,
       formElementsCtrl.model,
       injectPagesAfter,
       onChangeElements,

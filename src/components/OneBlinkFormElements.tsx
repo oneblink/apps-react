@@ -87,6 +87,7 @@ function OneBlinkFormElements({
           >
             <FormElementSwitch
               element={element}
+              elements={elements}
               value={formElementsCtrl.model[element.name]}
               displayValidationMessage={displayValidationMessages}
               isEven={isEven}
@@ -114,6 +115,7 @@ export default React.memo(OneBlinkFormElements)
 
 const FormElementSwitch = React.memo(function OneBlinkFormElement({
   element,
+  elements,
   value,
   displayValidationMessage,
   formElementValidation,
@@ -127,6 +129,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   parentFormName,
 }: {
   element: FormTypes.FormElement
+  elements: FormTypes.FormElement[]
   value: unknown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
@@ -158,6 +161,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -179,6 +183,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -200,6 +205,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -221,6 +227,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -242,6 +249,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -263,6 +271,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -284,6 +293,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -306,6 +316,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <LookupNotification
           isAutoLookup
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -329,6 +340,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <LookupNotification
           isAutoLookup={!element.multi}
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -352,6 +364,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <LookupNotification
           isAutoLookup
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -420,6 +433,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -441,6 +455,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -462,6 +477,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
@@ -553,6 +569,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <LookupNotification
           isAutoLookup
           element={element}
+          elements={elements}
           value={value}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
