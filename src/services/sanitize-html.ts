@@ -22,4 +22,4 @@ const sanitizeHtmlStandard = (html: string) => {
     allowedAttributes,
   })
 }
-export { sanitizeHtml, allowedTags, allowedAttributes, sanitizeHtmlStandard }
+export default sanitizeHtmlStandard
