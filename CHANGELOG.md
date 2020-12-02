@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.6 (2020-12-02)
+
 ### Fixed
 
 - data lookups in repeatable sets not updating elements that already contain data
