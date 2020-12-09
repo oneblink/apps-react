@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Hyperlinks not being clickable and Images not displaying in HTML elements
+- barcode scanner on iOS by using `navigator.mediaDevices.getUserMedia()` instead of `navigator.getUserMedia()`
 
 ## 0.1.6 (2020-12-02)
 
