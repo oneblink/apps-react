@@ -1,6 +1,5 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import bmCameraFactory from '@blinkmobile/camera'
 import jsQR from 'jsqr'
 
 import OnLoading from '../components/OnLoading'
@@ -187,9 +186,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [hasMultipleDevices, setHasMultipleDevices] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
-  const [camera, setCamera] = React.useState<ReturnType<
-    typeof bmCameraFactory
-  > | null>(null)
+  const [camera, setCamera] = React.useState<HTML5Camera | null>(null)
 
   // Create timeout using $timeout outside of the scan function so
   // so that we can cancel it when navigating away from screen
@@ -296,7 +293,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
     if (camera) {
       const nextDevice = camera.availableDevices[selectedDeviceIndex]
       if (nextDevice) {
-        camera.useDevice(nextDevice)
+        camera.open(nextDevice)
       }
     }
   }, [camera, selectedDeviceIndex])
@@ -306,7 +303,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
       return
     }
 
-    const newCamera = bmCameraFactory(videoElementRef.current)
+    const newCamera = new HTML5Camera(videoElementRef.current)
     setCamera(newCamera)
 
     return () => {
@@ -333,7 +330,6 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         }
 
         await camera.open()
-        await camera.getDevices()
 
         if (ignore) {
           return
@@ -427,7 +423,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
           case 'NotSupportedError': {
             setError(
               new Error(
-                'You browser does not support accessing your camera. Please click "Cancel" below and type in the barcode value manually.',
+                'Your browser does not support accessing your camera. Please click "Cancel" below and type in the barcode value manually.',
               ),
             )
             break
@@ -507,4 +503,57 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
       </div>
     </div>
   )
+}
+
+class HTML5Camera {
+  availableDevices: MediaDeviceInfo[]
+  htmlVideoElement: HTMLVideoElement
+  mediaStream: MediaStream | undefined
+
+  constructor(htmlVideoElement: HTMLVideoElement) {
+    this.htmlVideoElement = htmlVideoElement
+    this.availableDevices = []
+    this.mediaStream = undefined
+  }
+
+  async open(mediaDeviceInfo?: MediaDeviceInfo) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const error = new Error()
+      error.name = 'NotSupportedError'
+      throw error
+    }
+
+    const selectedMediaDevice = mediaDeviceInfo || this.availableDevices[0]
+    const constraints = {
+      video: {
+        deviceId: selectedMediaDevice?.deviceId
+          ? {
+              exact: selectedMediaDevice.deviceId,
+            }
+          : undefined,
+      },
+    }
+    const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+    this.mediaStream = mediaStream
+    this.htmlVideoElement.srcObject = mediaStream
+
+    const availableDevices = await navigator.mediaDevices.enumerateDevices()
+    this.availableDevices = availableDevices.filter(
+      (mediaDeviceInfo) =>
+        mediaDeviceInfo.kind === 'videoinput' && !!mediaDeviceInfo.deviceId,
+    )
+    await new Promise((resolve) =>
+      this.htmlVideoElement.addEventListener('canplay', resolve, {
+        once: true,
+      }),
+    )
+  }
+
+  async close() {
+    if (this.mediaStream) {
+      this.mediaStream.getTracks().forEach((track) => {
+        track.stop()
+      })
+    }
+  }
 }
