@@ -7,7 +7,6 @@
     "url": "https://github.com/oneblink/apps-react/issues"
   },
   "dependencies": {
-    "@blinkmobile/camera": "^0.0.4",
     "@blinkmobile/canvas-manipulation": "^1.0.1",
     "@blinkmobile/geolocation": "^2.0.3",
     "@react-google-maps/api": "^1.13.0",
