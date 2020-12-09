@@ -1,24 +1,18 @@
 import sanitizeHtml from 'sanitize-html'
 
-const allowedTags = sanitizeHtml.defaults.allowedTags.concat([
+const allowedTags = [
+  ...sanitizeHtml.defaults.allowedTags,
   'u',
-  'b',
   'span',
   'h1',
   'h2',
-  'img'
-])
+  'img',
+]
 
-const allowedAttributes = allowedTags.reduce(
-  (attributesObject: { [property: string]: string[] }, tag: string) => {
-    attributesObject[tag] = ['style', 'class']
-
-    return attributesObject
-  },
-  {},
-)
-
-allowedAttributes.img.push('src')
+const allowedAttributes = {
+  ...sanitizeHtml.defaults.allowedAttributes,
+  '*': ['style', 'class'],
+}
 
 const sanitizeHtmlStandard = (html: string) => {
   return sanitizeHtml(html, {
@@ -26,4 +20,5 @@ const sanitizeHtmlStandard = (html: string) => {
     allowedAttributes,
   })
 }
+
 export default sanitizeHtmlStandard
