@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Images now display in HTML elements
+- Hyperlinks not being clickable and Images not displaying in HTML elements
 
 ## 0.1.6 (2020-12-02)
 
