@@ -526,6 +526,7 @@ class HTML5Camera {
     const selectedMediaDevice = mediaDeviceInfo || this.availableDevices[0]
     const constraints = {
       video: {
+        facingMode: 'environment',
         deviceId: selectedMediaDevice?.deviceId
           ? {
               exact: selectedMediaDevice.deviceId,
