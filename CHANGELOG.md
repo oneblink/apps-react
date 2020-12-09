@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- Images now display in HTML elements
+
 ## 0.1.6 (2020-12-02)
 
 ### Fixed
