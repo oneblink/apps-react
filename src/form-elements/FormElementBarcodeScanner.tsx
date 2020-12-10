@@ -184,14 +184,23 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
     { isLoading = false, selectedDeviceId, error },
     setState,
   ] = React.useState<{
-    isScanning?: boolean
-    isLoading?: boolean
-    selectedDeviceId?: string
-    error?: Error
+    isLoading: boolean
+    selectedDeviceId: string | undefined
+    error: Error | undefined
   }>({
     isLoading: true,
+    selectedDeviceId: undefined,
+    error: undefined,
   })
   const [camera, setCamera] = React.useState<HTML5Camera | null>(null)
+
+  const setError = React.useCallback((error: Error) => {
+    setState({
+      error,
+      isLoading: false,
+      selectedDeviceId: undefined,
+    })
+  }, [])
 
   // Create timeout using $timeout outside of the scan function so
   // so that we can cancel it when navigating away from screen
@@ -285,15 +294,16 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
     // We will just be rotating between the available camera.
     const nextDeviceIndex =
       camera.availableDevices.findIndex(
-        (mediaDeviceInfo) => mediaDeviceInfo.deviceId === selectedDeviceId,
+        (mediaDeviceInfo) => mediaDeviceInfo.deviceId === camera.activeDeviceId,
       ) + 1
     const nextDevice =
       camera.availableDevices[nextDeviceIndex] || camera.availableDevices[0]
     setState({
+      error: undefined,
       isLoading: true,
       selectedDeviceId: nextDevice.deviceId,
     })
-  }, [camera, selectedDeviceId])
+  }, [camera])
 
   React.useEffect(() => {
     if (!videoElementRef.current) {
@@ -337,7 +347,9 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         }
 
         setState({
-          selectedDeviceId: camera.activeDeviceId,
+          error: undefined,
+          isLoading: false,
+          selectedDeviceId,
         })
 
         // @ts-expect-error ???
@@ -408,27 +420,27 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         console.warn('Error while attempting to open camera', error)
         switch (error.name) {
           case 'NotSupportedError': {
-            setState({
-              error: new Error(
+            setError(
+              new Error(
                 'Your browser does not support accessing your camera. Please click "Cancel" below and type in the barcode value manually.',
               ),
-            })
+            )
             break
           }
           case 'NotAllowedError': {
-            setState({
-              error: new Error(
+            setError(
+              new Error(
                 'Cannot scan for barcodes without granting the application access to the camera. Please click "Cancel" below to try again.',
               ),
-            })
+            )
             break
           }
           default: {
-            setState({
-              error: new Error(
+            setError(
+              new Error(
                 'An unknown error has occurred, please click "Cancel" below to try again. If the problem persists, please contact support.',
               ),
-            })
+            )
           }
         }
       }
@@ -437,7 +449,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
     return () => {
       ignore = true
     }
-  }, [camera, error, scanImageForBarcode, selectedDeviceId])
+  }, [camera, error, scanImageForBarcode, selectedDeviceId, setError])
 
   return (
     <div>
@@ -477,7 +489,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         >
           Cancel
         </button>
-        {!!camera?.availableDevices.length && (
+        {(camera?.availableDevices.length || 1) > 1 && (
           <button
             type="button"
             className="button ob-button ob-button__switch-camera is-primary cypress-switch-camera-button"
@@ -520,7 +532,7 @@ class HTML5Camera {
 
     const constraints = {
       video: {
-        facingMode: deviceId ? undefined : { exact: 'environment' },
+        facingMode: deviceId ? undefined : 'environment',
         deviceId: deviceId ? { exact: deviceId } : undefined,
       },
     }
