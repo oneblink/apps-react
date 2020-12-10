@@ -7,7 +7,6 @@ import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import quaggaReader from '../services/barcode-readers/quagger.js'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
-import useIsMounted from '../hooks/useIsMounted'
 import { FormTypes } from '@oneblink/types'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
@@ -178,25 +177,31 @@ type BarcodeScannerProps = {
 }
 
 function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
-  const isMounted = useIsMounted()
   const videoElementRef = React.useRef<HTMLVideoElement>(null)
   const figureElementRef = React.useRef<HTMLDivElement>(null)
 
-  const [selectedDeviceIndex, setSelectedDeviceIndex] = React.useState(0)
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [hasMultipleDevices, setHasMultipleDevices] = React.useState(false)
-  const [error, setError] = React.useState<Error | null>(null)
+  const [
+    { isLoading = false, selectedDeviceId, error },
+    setState,
+  ] = React.useState<{
+    isScanning?: boolean
+    isLoading?: boolean
+    selectedDeviceId?: string
+    error?: Error
+  }>({
+    isLoading: true,
+  })
   const [camera, setCamera] = React.useState<HTML5Camera | null>(null)
 
   // Create timeout using $timeout outside of the scan function so
   // so that we can cancel it when navigating away from screen
   const scanImageForBarcode = React.useCallback(
-    (videoElement, waitInMS, options) => {
+    (videoElement, waitInMS, options, checkStop) => {
       const restrictedBarcodeTypes = element.restrictedBarcodeTypes || []
       // Using $timeout here instead of $interval as we dont know
       // exactly how long each processing of the image will take.
       setTimeout(async () => {
-        if (!camera) return
+        if (checkStop()) return
         const canvasElement = document.createElement('canvas')
 
         canvasElement.width = options.sourceWidth
@@ -259,44 +264,36 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
           }
         }
 
-        if (isMounted.current) {
-          scanImageForBarcode(
-            videoElement,
-            MS_BETWEEN_IMAGE_PROCESSING,
-            options,
-          )
-        }
+        if (checkStop()) return
+
+        scanImageForBarcode(
+          videoElement,
+          MS_BETWEEN_IMAGE_PROCESSING,
+          options,
+          checkStop,
+        )
       }, waitInMS)
     },
-    [
-      camera,
-      element.restrictBarcodeTypes,
-      element.restrictedBarcodeTypes,
-      isMounted,
-      onScan,
-    ],
+    [element.restrictBarcodeTypes, element.restrictedBarcodeTypes, onScan],
   )
 
   const switchCamera = React.useCallback(() => {
-    if (camera) {
-      // We will just be rotating between the available camera.
-      const nextDeviceIndex = selectedDeviceIndex + 1
-      if (camera.availableDevices[selectedDeviceIndex]) {
-        setSelectedDeviceIndex(nextDeviceIndex)
-      } else {
-        setSelectedDeviceIndex(0)
-      }
+    if (!camera) {
+      return
     }
-  }, [camera, selectedDeviceIndex])
 
-  React.useEffect(() => {
-    if (camera) {
-      const nextDevice = camera.availableDevices[selectedDeviceIndex]
-      if (nextDevice) {
-        camera.open(nextDevice)
-      }
-    }
-  }, [camera, selectedDeviceIndex])
+    // We will just be rotating between the available camera.
+    const nextDeviceIndex =
+      camera.availableDevices.findIndex(
+        (mediaDeviceInfo) => mediaDeviceInfo.deviceId === selectedDeviceId,
+      ) + 1
+    const nextDevice =
+      camera.availableDevices[nextDeviceIndex] || camera.availableDevices[0]
+    setState({
+      isLoading: true,
+      selectedDeviceId: nextDevice.deviceId,
+    })
+  }, [camera, selectedDeviceId])
 
   React.useEffect(() => {
     if (!videoElementRef.current) {
@@ -312,12 +309,15 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   }, [])
 
   React.useEffect(() => {
-    if (!camera) {
+    if (
+      !camera ||
+      error ||
+      // If attempting to open the device that is currently open,
+      // we will not attempt to open again.
+      (selectedDeviceId && camera.activeDeviceId === selectedDeviceId)
+    ) {
       return
     }
-
-    setIsLoading(true)
-    setError(null)
 
     let ignore = false
 
@@ -329,34 +329,16 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
           return
         }
 
-        await camera.open()
+        console.log('Opening camera with:', selectedDeviceId || 'UNKNOWN')
+        await camera.open(selectedDeviceId)
 
         if (ignore) {
           return
         }
 
-        setIsLoading(false)
-
-        const newHasMultipleDevices = camera.availableDevices.length > 1
-
-        setHasMultipleDevices(newHasMultipleDevices)
-
-        // Bit of hack to get the back camera opening first
-        // on most devices (tested by Matt) that the label
-        // includes the work "back" or "Back".
-        if (newHasMultipleDevices) {
-          const backCameraIndex = camera.availableDevices.findIndex(
-            (device) => {
-              return (
-                typeof device.label === 'string' &&
-                device.label.toLowerCase().indexOf('back') > -1
-              )
-            },
-          )
-          if (backCameraIndex !== -1) {
-            setSelectedDeviceIndex(backCameraIndex)
-          }
-        }
+        setState({
+          selectedDeviceId: camera.activeDeviceId,
+        })
 
         // @ts-expect-error ???
         const fadedSquareElement: HTMLDivElement = figureElement.getElementsByClassName(
@@ -408,12 +390,17 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         // Wait a little before scanning the first image
         // to prevent image processing staring before
         // camera is ready.
-        scanImageForBarcode(videoElement, 250, {
-          sourceX: left,
-          sourceY: top,
-          sourceWidth: fadedSquareWidth,
-          sourceHeight: fadedSquareWidth,
-        })
+        scanImageForBarcode(
+          videoElement,
+          250,
+          {
+            sourceX: left,
+            sourceY: top,
+            sourceWidth: fadedSquareWidth,
+            sourceHeight: fadedSquareWidth,
+          },
+          () => ignore,
+        )
       } catch (error) {
         if (ignore) {
           return
@@ -421,37 +408,36 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         console.warn('Error while attempting to open camera', error)
         switch (error.name) {
           case 'NotSupportedError': {
-            setError(
-              new Error(
+            setState({
+              error: new Error(
                 'Your browser does not support accessing your camera. Please click "Cancel" below and type in the barcode value manually.',
               ),
-            )
+            })
             break
           }
           case 'NotAllowedError': {
-            setError(
-              new Error(
+            setState({
+              error: new Error(
                 'Cannot scan for barcodes without granting the application access to the camera. Please click "Cancel" below to try again.',
               ),
-            )
+            })
             break
           }
           default: {
-            setError(
-              new Error(
+            setState({
+              error: new Error(
                 'An unknown error has occurred, please click "Cancel" below to try again. If the problem persists, please contact support.',
               ),
-            )
+            })
           }
         }
-        setIsLoading(false)
       }
     })()
 
     return () => {
       ignore = true
     }
-  }, [camera, scanImageForBarcode])
+  }, [camera, error, scanImageForBarcode, selectedDeviceId])
 
   return (
     <div>
@@ -459,7 +445,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         <div className="figure-content has-text-centered">
           {isLoading && <OnLoading small />}
 
-          {error && (
+          {!!error && (
             <div>
               <h4 className="title is-4">Whoops...</h4>
               <p>{error.message}</p>
@@ -491,7 +477,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         >
           Cancel
         </button>
-        {hasMultipleDevices && (
+        {!!camera?.availableDevices.length && (
           <button
             type="button"
             className="button ob-button ob-button__switch-camera is-primary cypress-switch-camera-button"
@@ -516,33 +502,40 @@ class HTML5Camera {
     this.mediaStream = undefined
   }
 
-  async open(mediaDeviceInfo?: MediaDeviceInfo) {
+  get activeDeviceId(): string | undefined {
+    if (this.mediaStream) {
+      const [activeMediaStreamTrack] = this.mediaStream.getTracks()
+      return activeMediaStreamTrack?.getSettings()?.deviceId
+    }
+  }
+
+  async open(deviceId?: string) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       const error = new Error()
       error.name = 'NotSupportedError'
       throw error
     }
 
-    const selectedMediaDevice = mediaDeviceInfo || this.availableDevices[0]
+    this.close()
+
     const constraints = {
       video: {
-        facingMode: 'environment',
-        deviceId: selectedMediaDevice?.deviceId
-          ? {
-              exact: selectedMediaDevice.deviceId,
-            }
-          : undefined,
+        facingMode: deviceId ? undefined : { exact: 'environment' },
+        deviceId: deviceId ? { exact: deviceId } : undefined,
       },
     }
     const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
     this.mediaStream = mediaStream
     this.htmlVideoElement.srcObject = mediaStream
 
-    const availableDevices = await navigator.mediaDevices.enumerateDevices()
-    this.availableDevices = availableDevices.filter(
-      (mediaDeviceInfo) =>
-        mediaDeviceInfo.kind === 'videoinput' && !!mediaDeviceInfo.deviceId,
-    )
+    if (!this.availableDevices.length) {
+      const availableDevices = await navigator.mediaDevices.enumerateDevices()
+      this.availableDevices = availableDevices.filter(
+        (mediaDeviceInfo) =>
+          mediaDeviceInfo.kind === 'videoinput' && !!mediaDeviceInfo.deviceId,
+      )
+    }
+
     await new Promise((resolve) =>
       this.htmlVideoElement.addEventListener('canplay', resolve, {
         once: true,
@@ -550,11 +543,12 @@ class HTML5Camera {
     )
   }
 
-  async close() {
+  close() {
     if (this.mediaStream) {
       this.mediaStream.getTracks().forEach((track) => {
         track.stop()
       })
+      this.mediaStream = undefined
     }
   }
 }
