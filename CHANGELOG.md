@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.7 (2020-12-11)
+
 ### Fixed
 
 - Hyperlinks not being clickable and Images not displaying in HTML elements
 - barcode scanner on iOS by using `navigator.mediaDevices.getUserMedia()` instead of `navigator.getUserMedia()`
+
+### Dependencies
+
+- no longer depend upon [@blinkmobile/camera](https://www.npmjs.com/package/@blinkmobile/camera)
 
 ## 0.1.6 (2020-12-02)
 
