@@ -5,7 +5,7 @@ import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
-
+import useContrastColor from '../hooks/useContrastColor'
 type Props = {
   id: string
   element: FormTypes.CheckboxElement
@@ -78,26 +78,13 @@ function FormElementCheckboxes({
                   const isSelected =
                     Array.isArray(value) && value.includes(option.value)
                   return (
-                    <button
+                    <CheckboxOptionButton
                       key={index}
-                      type="button"
-                      className={clsx(
-                        'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
-                        {
-                          'is-primary': isSelected,
-                          'is-light': !isSelected,
-                        },
-                      )}
-                      style={
-                        option.colour && isSelected
-                          ? { backgroundColor: option.colour }
-                          : undefined
-                      }
+                      element={element}
+                      option={option}
+                      isSelected={isSelected}
                       onClick={() => changeValues(option.value)}
-                      disabled={element.readOnly}
-                    >
-                      {option.label}
-                    </button>
+                    />
                   )
                 })}
               </div>
@@ -150,5 +137,41 @@ function FormElementCheckboxes({
     </div>
   )
 }
+
+type CheckboxOptionButtonProps = {
+  element: Props['element']
+  option: FormTypes.ChoiceElementOption
+  isSelected: boolean
+  onClick: () => void
+}
+const CheckboxOptionButton = React.memo(function CheckboxOptionButton({
+  element,
+  option,
+  isSelected,
+  onClick,
+}: CheckboxOptionButtonProps) {
+  const buttonContrastColor = useContrastColor(option.colour)
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
+        {
+          'is-primary': isSelected,
+          'is-light': !isSelected,
+        },
+      )}
+      style={
+        option.colour && isSelected
+          ? { backgroundColor: option.colour, color: buttonContrastColor }
+          : undefined
+      }
+      onClick={onClick}
+      disabled={element.readOnly}
+    >
+      {option.label}
+    </button>
+  )
+})
 
 export default React.memo(FormElementCheckboxes)
