@@ -5,7 +5,7 @@ import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
-
+import OptionButton from './OptionButton'
 type Props = {
   id: string
   element: FormTypes.RadioButtonElement
@@ -31,7 +31,6 @@ function FormElementRadio({
   displayValidationMessage,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
-
   const filteredOptions = useFormElementOptions({
     element,
     value,
@@ -80,32 +79,29 @@ function FormElementRadio({
             </div>
           ) : (
             <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
-              {filteredOptions.map((option) => (
-                <div className="ob-button-radio-container" key={option.value}>
-                  <button
-                    type="button"
-                    className={clsx(
-                      'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',
-                      {
-                        'is-primary': value === option.value,
-                        'is-light': value !== option.value,
-                      },
-                    )}
-                    style={
-                      option.colour && option.value === value
-                        ? { backgroundColor: option.colour }
-                        : undefined
-                    }
-                    disabled={element.readOnly}
-                    onClick={() => {
-                      setIsDirty()
-                      onChange(element, option.value)
-                    }}
-                  >
-                    {` ${option.label}`}
-                  </button>
-                </div>
-              ))}
+              {filteredOptions.map((option) => {
+                const isSelected = value === option.value
+                return (
+                  <div className="ob-button-radio-container" key={option.value}>
+                    <OptionButton
+                      element={element}
+                      option={option}
+                      isSelected={isSelected}
+                      onClick={() => {
+                        setIsDirty()
+                        onChange(element, option.value)
+                      }}
+                      className={clsx(
+                        'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',
+                        {
+                          'is-primary': isSelected,
+                          'is-light': !isSelected,
+                        },
+                      )}
+                    />
+                  </div>
+                )
+              })}
             </div>
           )}
         </FormElementOptions>
@@ -121,5 +117,4 @@ function FormElementRadio({
     </div>
   )
 }
-
 export default React.memo(FormElementRadio)

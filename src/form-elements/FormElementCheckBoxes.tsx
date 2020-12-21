@@ -5,7 +5,7 @@ import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
-
+import OptionButton from './OptionButton'
 type Props = {
   id: string
   element: FormTypes.CheckboxElement
@@ -78,9 +78,12 @@ function FormElementCheckboxes({
                   const isSelected =
                     Array.isArray(value) && value.includes(option.value)
                   return (
-                    <button
+                    <OptionButton
                       key={index}
-                      type="button"
+                      element={element}
+                      option={option}
+                      isSelected={isSelected}
+                      onClick={() => changeValues(option.value)}
                       className={clsx(
                         'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
                         {
@@ -88,16 +91,7 @@ function FormElementCheckboxes({
                           'is-light': !isSelected,
                         },
                       )}
-                      style={
-                        option.colour && isSelected
-                          ? { backgroundColor: option.colour }
-                          : undefined
-                      }
-                      onClick={() => changeValues(option.value)}
-                      disabled={element.readOnly}
-                    >
-                      {option.label}
-                    </button>
+                    />
                   )
                 })}
               </div>

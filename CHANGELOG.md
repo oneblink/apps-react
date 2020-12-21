@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Checkbox and radio button contrast text determination
+
 ## 0.1.7 (2020-12-11)
 
 ### Fixed
