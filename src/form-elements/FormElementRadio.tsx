@@ -6,6 +6,8 @@ import useFormElementOptions from '../hooks/useFormElementOptions'
 import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
+
 type Props = {
   id: string
   element: FormTypes.RadioButtonElement
@@ -40,15 +42,7 @@ function FormElementRadio({
 
   return (
     <div className="cypress-radio-element">
-      <div className="ob-form__element ob-radio">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-        >
-          {element.label}
-        </label>
-
+      <FormElementLabelContainer className="ob-radio" id={id} element={element}>
         <FormElementOptions options={element.options}>
           {!element.buttons ? (
             <div>
@@ -113,7 +107,7 @@ function FormElementRadio({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

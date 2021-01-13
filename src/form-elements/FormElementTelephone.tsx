@@ -1,10 +1,10 @@
 import * as React from 'react'
-import clsx from 'clsx'
 
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -31,15 +31,11 @@ function FormElementTelephone({
   const text = typeof value === 'string' ? value : ''
   return (
     <div className="cypress-telephone-element">
-      <div className="ob-form__element ob-telephone">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-telephone"
+        id={id}
+        element={element}
+      >
         <div className="field has-addons">
           <div className="control is-expanded">
             <input
@@ -78,7 +74,7 @@ function FormElementTelephone({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

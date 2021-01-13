@@ -3,6 +3,7 @@ import * as React from 'react'
 import OneBlinkFormElements from '../components/OneBlinkFormElements'
 
 type Props = {
+  formId: number
   id: string
   element: FormTypes.FormFormElement | FormTypes.InfoPageElement
   value: FormElementsCtrl['model'] | undefined
@@ -17,6 +18,7 @@ type Props = {
 }
 
 function FormElementForm({
+  formId,
   element,
   value,
   formElementValidation,
@@ -90,6 +92,7 @@ function FormElementForm({
 
   return (
     <OneBlinkFormElements
+      formId={formId}
       formElementsValidation={validation}
       displayValidationMessages={displayValidationMessage}
       elements={element.elements || []}

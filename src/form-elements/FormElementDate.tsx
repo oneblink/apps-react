@@ -1,5 +1,4 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import { localisationService } from '@oneblink/apps'
 
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
@@ -7,6 +6,7 @@ import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -77,15 +77,7 @@ function FormElementDate({
 
   return (
     <div className="cypress-date-element">
-      <div className="ob-form__element ob-date">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer className="ob-date" id={id} element={element}>
         <div className="field has-addons">
           <div className="control is-expanded">
             <input
@@ -120,7 +112,7 @@ function FormElementDate({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

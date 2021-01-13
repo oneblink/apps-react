@@ -1,11 +1,11 @@
 import * as React from 'react'
-import clsx from 'clsx'
 
 import useBooleanState from '../hooks/useBooleanState'
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -42,16 +42,11 @@ function FormElementSelect({
 
   return (
     <div className="cypress-select-element">
-      <div className="ob-form__element ob-select">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
-
+      <FormElementLabelContainer
+        className="ob-select"
+        id={id}
+        element={element}
+      >
         <FormElementOptions options={element.options}>
           {!element.multi ? (
             <div className="field has-addons">
@@ -123,7 +118,7 @@ function FormElementSelect({
             </div>
           )}
         </FormElementOptions>
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

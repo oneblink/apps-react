@@ -278,6 +278,7 @@ const generateSchemaReducer = (
           }
           break
         }
+        case 'geoscapeAddress':
         case 'autocomplete':
         case 'checkboxes':
         case 'radio':

@@ -6,6 +6,7 @@ import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 type Props = {
   id: string
   element: FormTypes.CheckboxElement
@@ -61,15 +62,11 @@ function FormElementCheckboxes({
 
   return (
     <div className="cypress-checkbox-element">
-      <div className="ob-form__element ob-checkbox">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-checkbox"
+        id={id}
+        element={element}
+      >
         <FormElementOptions options={element.options}>
           {element.buttons ? (
             <div className="ob-button-radio-container">
@@ -140,7 +137,7 @@ function FormElementCheckboxes({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

@@ -1,10 +1,10 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -53,15 +53,11 @@ function FormElementNumber({
 
   return (
     <div className="cypress-number-element">
-      <div className="ob-form__element ob-number">
-        <label
-          htmlFor={id}
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-number"
+        id={id}
+        element={element}
+      >
         {!element.isSlider ? (
           <div className="field has-addons">
             <div className="control is-expanded">
@@ -111,7 +107,7 @@ function FormElementNumber({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

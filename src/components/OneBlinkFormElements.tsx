@@ -28,9 +28,11 @@ import FormElementCamera from '../form-elements/FormElementCamera'
 import FormElementSummary from '../form-elements/FormElementSummary'
 import FormElementCaptcha from '../form-elements/FormElementCaptcha'
 import FormElementLocation from '../form-elements/FormElementLocation'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, GeoscapeTypes } from '@oneblink/types'
+import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
 
 type Props = {
+  formId: number
   elements: FormTypes.FormElement[]
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
@@ -51,6 +53,7 @@ type Props = {
 }
 
 function OneBlinkFormElements({
+  formId,
   elements,
   isEven,
   idPrefix,
@@ -86,6 +89,7 @@ function OneBlinkFormElements({
             data-ob-name={element.name}
           >
             <FormElementSwitch
+              formId={formId}
               element={element}
               elements={elements}
               value={formElementsCtrl.model[element.name]}
@@ -114,6 +118,7 @@ function OneBlinkFormElements({
 export default React.memo(OneBlinkFormElements)
 
 const FormElementSwitch = React.memo(function OneBlinkFormElement({
+  formId,
   element,
   elements,
   value,
@@ -128,6 +133,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   formElementsCtrl,
   parentFormName,
 }: {
+  formId: number
   element: FormTypes.FormElement
   elements: FormTypes.FormElement[]
   value: unknown | undefined
@@ -386,6 +392,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'draw': {
       return (
         <FormElementSignature
+          id={id}
           element={element}
           value={value}
           onChange={onChange}
@@ -408,6 +415,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'repeatableSet': {
       return (
         <FormElementRepeatableSet
+          formId={formId}
           id={id}
           isEven={!isEven}
           element={element}
@@ -510,12 +518,14 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'infoPage':
     case 'form': {
+      // @ts-expect-error cannot convert unknown to a  typescript Record<>
+      const v: FormElementsCtrl['model'] | undefined = value
       return (
         <FormElementForm
+          formId={formId}
           id={id}
           element={element}
-          // @ts-expect-error ???
-          value={value}
+          value={v}
           onChange={onChange}
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}
@@ -580,6 +590,32 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
+            onChange={onChange}
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'geoscapeAddress': {
+      // @ts-expect-error cannot convert unknown to a  typescript Record<>
+      const v: GeoscapeTypes.GeoscapeAddress | undefined = value
+      return (
+        <LookupNotification
+          isAutoLookup
+          element={element}
+          elements={elements}
+          value={value}
+          formElementsCtrl={formElementsCtrl}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+        >
+          <FormElementGeoscapeAddress
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
             onChange={onChange}
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}

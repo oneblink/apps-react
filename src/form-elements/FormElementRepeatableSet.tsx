@@ -6,6 +6,7 @@ import Modal from '../components/Modal'
 import { FormTypes } from '@oneblink/types'
 
 type Props = {
+  formId: number
   id: string
   isEven: boolean
   element: FormTypes.RepeatableSetElement
@@ -21,6 +22,7 @@ type Props = {
 }
 
 function FormElementRepeatableSet({
+  formId,
   element,
   value,
   formElementValidation,
@@ -138,6 +140,7 @@ function FormElementRepeatableSet({
           return (
             <RepeatableSetEntry
               key={index}
+              formId={formId}
               index={index}
               id={id}
               isEven={isEven}
@@ -191,6 +194,7 @@ function FormElementRepeatableSet({
 export default React.memo(FormElementRepeatableSet)
 
 type RepeatableSetEntryProps = {
+  formId: number
   id: string
   index: number
   isEven: boolean
@@ -216,6 +220,7 @@ type RepeatableSetEntryProps = {
 
 const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
   function RepeatableSetEntry({
+    formId,
     id,
     index,
     isEven,
@@ -314,6 +319,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           </button>
 
           <OneBlinkFormElements
+            formId={formId}
             idPrefix={`${id}_entry-${index}`}
             isEven={isEven}
             formElementsValidation={formElementsValidation}

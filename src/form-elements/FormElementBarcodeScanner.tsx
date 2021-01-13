@@ -8,6 +8,7 @@ import quaggaReader from '../services/barcode-readers/quagger.js'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
@@ -83,16 +84,11 @@ function FormElementBarcodeScanner({
   const text = typeof value === 'string' ? value : ''
   return (
     <div className="cypress-barcode-scanner-element">
-      <div className="ob-form__element ob-barcode-scanner">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
-
+      <FormElementLabelContainer
+        className="ob-barcode-scanner"
+        element={element}
+        id={id}
+      >
         {error && (
           <figure>
             <div className="figure-content has-text-centered">
@@ -163,7 +159,7 @@ function FormElementBarcodeScanner({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }
