@@ -4,6 +4,7 @@ import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -35,15 +36,11 @@ function FormElementTextarea({
     (isDirty || displayValidationMessage) && !!validationMessage
   return (
     <div className="cypress-textarea-element">
-      <div className="ob-form__element ob-textarea">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-textarea"
+        id={id}
+        element={element}
+      >
         <div className="control">
           <textarea
             placeholder={element.placeholderValue}
@@ -100,7 +97,7 @@ function FormElementTextarea({
             )}
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

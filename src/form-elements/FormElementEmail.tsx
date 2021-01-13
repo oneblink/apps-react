@@ -5,6 +5,7 @@ import CopyToClipboardButton from '../components/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -31,7 +32,7 @@ function FormElementEmail({
   const text = typeof value === 'string' ? value : ''
   return (
     <div className="cypress-email-element">
-      <div className="ob-form__element ob-email">
+      <FormElementLabelContainer className="ob-email" id={id} element={element}>
         <label
           className={clsx('label ob-label', {
             'is-required': element.required,
@@ -78,7 +79,7 @@ function FormElementEmail({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

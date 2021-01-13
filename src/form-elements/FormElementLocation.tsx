@@ -1,5 +1,4 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import useBooleanState from '../hooks/useBooleanState'
 import useIsOffline from '../hooks/useIsOffline'
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
@@ -9,6 +8,7 @@ import OnLoading from '../components/OnLoading'
 import defaultCoords from '../services/defaultCoordinates'
 import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -104,15 +104,11 @@ function FormElementLocation({
   }, [value])
   return (
     <div className="cypress-location-element">
-      <div className="ob-form__element ob-location">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-location"
+        id={id}
+        element={element}
+      >
         <div className="control">
           {!isOffline ? (
             <LocationPicker
@@ -178,7 +174,7 @@ function FormElementLocation({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

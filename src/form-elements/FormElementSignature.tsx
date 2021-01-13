@@ -1,13 +1,14 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import SignatureCanvas from 'react-signature-canvas'
 import * as canvasManipulation from '@blinkmobile/canvas-manipulation'
 import { FormTypes } from '@oneblink/types'
 
 import useBooleanState from '../hooks/useBooleanState'
 import scrollingService from '../services/scrolling-service'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
+  id: string
   element: FormTypes.DrawElement
   value: unknown
   onChange: (
@@ -19,6 +20,7 @@ type Props = {
 }
 
 function FormElementSignature({
+  id,
   element,
   value,
   onChange,
@@ -107,14 +109,11 @@ function FormElementSignature({
 
   return (
     <div className="cypress-signature-element">
-      <div className="ob-form__element ob-signature">
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-signature"
+        id={id}
+        element={element}
+      >
         <div className="control">
           <div>
             <SignatureCanvas
@@ -160,7 +159,7 @@ function FormElementSignature({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

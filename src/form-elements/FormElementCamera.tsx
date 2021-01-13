@@ -9,6 +9,7 @@ import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
 import { localisationService } from '@oneblink/apps'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   id: string
@@ -211,15 +212,11 @@ function FormElementCamera({
 
   return (
     <>
-      <div className="ob-form__element ob-camera">
-        <label
-          htmlFor={id}
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-        >
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-camera"
+        element={element}
+        id={id}
+      >
         <div className="control">
           {!isLoading && value !== undefined && (
             <figure>
@@ -301,7 +298,7 @@ function FormElementCamera({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
 
       {isAnnotating && (
         <CameraAnnotation

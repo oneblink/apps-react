@@ -386,6 +386,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'draw': {
       return (
         <FormElementSignature
+          id={id}
           element={element}
           value={value}
           onChange={onChange}
