@@ -1,7 +1,12 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import { FormTypes } from '@oneblink/types'
+import useBooleanState from '../hooks/useBooleanState'
+
+type AutocompleteOption = {
+  label: string
+  value: string
+}
 
 type Props = {
   id: string
@@ -10,33 +15,36 @@ type Props = {
   placeholder: string | undefined
   required: boolean | undefined
   disabled: boolean | undefined
-  options: FormTypes.ChoiceElementOption[] | null
+  isLoading?: boolean
+  hasError?: boolean
   validationMessage: string | undefined
   displayValidationMessage: boolean
-  isFetchingOptions?: boolean
-  isOpen: boolean
-  onOpen: () => void
-  onClose: () => void
-  onChangeValue: (newValue: string | undefined) => void
+  searchDebounceMs: number
+  searchMaxCharacters: number
+  onChangeValue: (newValue: string | undefined) => Promise<void> | void
   onChangeLabel: (newLabel: string) => void
+  onSearch: (
+    label: string,
+    abortSignal: AbortSignal,
+  ) => Promise<AutocompleteOption[]>
 }
 
 function AutocompleteDropdown({
   id,
   label,
   value,
-  options,
   placeholder,
   required,
   disabled,
   validationMessage,
   displayValidationMessage,
-  isFetchingOptions,
-  isOpen,
-  onOpen,
-  onClose,
+  searchDebounceMs,
+  searchMaxCharacters,
+  isLoading,
+  hasError,
   onChangeValue,
   onChangeLabel,
+  onSearch,
 }: Props) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
   const [isDirty, setIsDirty] = React.useState(false)
@@ -44,6 +52,10 @@ function AutocompleteDropdown({
     currentFocusedOptionIndex,
     setCurrentFocusedOptionIndex,
   ] = React.useState(0)
+  const [options, setOptions] = React.useState<AutocompleteOption[]>([])
+  const [error, setError] = React.useState<Error | null>(null)
+  const [isFetchingOptions, setIsFetchingOptions] = React.useState(false)
+  const [isOpen, onOpen, onClose] = useBooleanState(false)
 
   const onSelectOption = React.useCallback(
     (option) => {
@@ -75,6 +87,7 @@ function AutocompleteDropdown({
   // the label to show the user they have not selected a value
   const handleBlur = React.useCallback(() => {
     setIsDirty(true)
+    setError(null)
     onClose()
 
     if (!value && Array.isArray(options)) {
@@ -160,6 +173,50 @@ function AutocompleteDropdown({
     [onChangeLabel, onChangeValue, onOpen],
   )
 
+  React.useEffect(() => {
+    setError(null)
+
+    if (!isOpen || label.length < searchMaxCharacters) {
+      setIsFetchingOptions(false)
+      return
+    }
+
+    setIsFetchingOptions(true)
+
+    let ignore = false
+    const abortController = new AbortController()
+
+    const timeoutId = setTimeout(async () => {
+      let newOptions: AutocompleteOption[] = []
+      let newError = null
+
+      try {
+        newOptions = await onSearch(label, abortController.signal)
+      } catch (error) {
+        // Cancelling will throw an error.
+        if (error.name !== 'AbortError') {
+          console.warn('Error while fetching autocomplete options', error)
+          newError = error
+        }
+      }
+      if (!ignore) {
+        setError(newError)
+        setOptions(newOptions)
+        setIsFetchingOptions(false)
+      }
+    }, searchDebounceMs)
+
+    return () => {
+      ignore = true
+      clearTimeout(timeoutId)
+      abortController.abort()
+    }
+  }, [isOpen, label, onSearch, searchDebounceMs, searchMaxCharacters])
+
+  const isShowingLoading = isFetchingOptions || !!isLoading
+  const isShowingValid = !isShowingLoading && value !== undefined
+  const isShowingError = !isShowingLoading && !!hasError
+
   return (
     <>
       <div
@@ -172,7 +229,8 @@ function AutocompleteDropdown({
             className={clsx(
               'cypress-autocomplete-field-control control is-expanded',
               {
-                'is-loading': isFetchingOptions,
+                'is-loading': isShowingLoading,
+                'has-icons-right': isShowingValid || isShowingError,
               },
             )}
           >
@@ -190,6 +248,20 @@ function AutocompleteDropdown({
               onKeyDown={onKeyDown}
               onChange={handleChangeLabel}
             />
+            {isShowingValid && (
+              <span className=" ob-input-icon icon is-small is-right">
+                <i className="material-icons is-size-5 has-text-success">
+                  check
+                </i>
+              </span>
+            )}
+            {isShowingError && (
+              <span className=" ob-input-icon icon is-small is-right">
+                <i className="material-icons is-size-5 has-text-danger">
+                  error
+                </i>
+              </span>
+            )}
           </div>
         </div>
 
@@ -198,7 +270,17 @@ function AutocompleteDropdown({
             ref={optionsContainerElement}
             className="ob-autocomplete__dropdown-content dropdown-content cypress-autocomplete-dropdown-content"
           >
-            {options && options.length ? (
+            {error ? (
+              <a className="dropdown-item cypress-autocomplete-error ob-autocomplete__drop-down-item-error">
+                <span className="has-text-danger">{error.message}</span>
+              </a>
+            ) : label.length < searchMaxCharacters ? (
+              <a className="dropdown-item cypress-max-characters ob-autocomplete__drop-down-item-max-characters">
+                <i>
+                  Enter at least {searchMaxCharacters} character(s) to search
+                </i>
+              </a>
+            ) : options && options.length ? (
               options.map((option, index) => (
                 <a
                   key={option.value}

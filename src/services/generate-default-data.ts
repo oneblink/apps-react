@@ -97,6 +97,7 @@ export default function generateDefaultData(
         }
         break
       }
+      case 'geoscapeAddress':
       case 'file':
       case 'files':
       case 'camera':

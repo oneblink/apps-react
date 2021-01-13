@@ -1,11 +1,9 @@
 import * as React from 'react'
-import AbortController from 'abort-controller'
 // import { generateHeaders as generateFetchHeaders } from '@oneblink/apps/dist/services/fetch'
 import { authService } from '@oneblink/apps'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import useBooleanState from '../hooks/useBooleanState'
 import AutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes } from '@oneblink/types'
@@ -53,11 +51,6 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   displayValidationMessage,
 }: AutocompleteFilterProps) {
   const [label, setLabel] = React.useState('')
-  const [
-    isAutocompleteOpen,
-    openAutocomplete,
-    closeAutocomplete,
-  ] = useBooleanState(false)
 
   const onFilter = React.useCallback(
     (option) => {
@@ -85,14 +78,13 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     onFilter,
   })
 
+  const handleSearch = React.useCallback(async () => {
+    return filteredOptions
+  }, [filteredOptions])
+
   // Ensure the label matches the value selected
   React.useEffect(() => {
     if (!Array.isArray(element.options)) {
-      return
-    }
-
-    if (!value && label) {
-      setLabel('')
       return
     }
 
@@ -118,14 +110,13 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             placeholder={element.placeholderValue}
             required={element.required}
             value={value}
-            options={filteredOptions}
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            isOpen={isAutocompleteOpen}
-            onOpen={openAutocomplete}
-            onClose={closeAutocomplete}
             onChangeValue={onChange}
             onChangeLabel={setLabel}
+            onSearch={handleSearch}
+            searchDebounceMs={0}
+            searchMaxCharacters={0}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -143,80 +134,41 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   searchUrl,
 }: AutocompleteFetchProps) {
   const [label, setLabel] = React.useState('')
-  const [, setError] = React.useState(null)
-  const [
-    isAutocompleteOpen,
-    openAutocomplete,
-    closeAutocomplete,
-  ] = useBooleanState(false)
-  const [isFetchingOptions, setIsFetchingOptions] = React.useState(false)
-  const [options, setOptions] = React.useState(null)
 
-  React.useEffect(() => {
-    if (!label || !isAutocompleteOpen) {
-      setIsFetchingOptions(false)
-      return
-    }
-
-    setIsFetchingOptions(true)
-
-    let ignore = false
-    const abortController = new AbortController()
-
-    const timeoutId = setTimeout(async () => {
-      let newOptions = []
-      let newError = null
-
-      try {
-        let headers: Record<string, string> = {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        }
-        // Check auth service for a token if user is logged in
-        const idToken = await authService.getIdToken()
-        if (idToken) {
-          headers = {
-            ...headers,
-            Authorization: `Bearer ${idToken}`,
-          }
-        }
-
-        const userToken = authService.getUserToken()
-        if (userToken) {
-          headers['X-OneBlink-User-Token'] = userToken
-        }
-
-        const response = await fetch(`${searchUrl}?value=${label}`, {
-          headers,
-          signal: abortController.signal,
-        })
-
-        if (!response.ok) {
-          const text = await response.text()
-          throw new Error(text)
-        }
-
-        newOptions = await response.json()
-      } catch (error) {
-        console.warn('Error while fetching autocomplete options', error)
-        // Cancelling will throw an error.
-        if (error.name !== 'AbortError') {
-          newError = error
+  const handleSearch = React.useCallback(
+    async (search, abortSignal) => {
+      let headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      }
+      // Check auth service for a token if user is logged in
+      const idToken = await authService.getIdToken()
+      if (idToken) {
+        headers = {
+          ...headers,
+          Authorization: `Bearer ${idToken}`,
         }
       }
-      if (!ignore) {
-        setError(newError)
-        setOptions(newOptions)
-        setIsFetchingOptions(false)
-      }
-    }, 750)
 
-    return () => {
-      ignore = true
-      clearTimeout(timeoutId)
-      abortController.abort()
-    }
-  }, [isAutocompleteOpen, label, searchUrl])
+      const userToken = authService.getUserToken()
+      if (userToken) {
+        headers['X-OneBlink-User-Token'] = userToken
+      }
+
+      const response = await fetch(`${searchUrl}?value=${search}`, {
+        headers,
+        signal: abortSignal,
+      })
+
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(text)
+      }
+
+      return await response.json()
+    },
+    [searchUrl],
+  )
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
@@ -236,19 +188,17 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
         <AutocompleteDropdown
           id={id}
           label={label}
-          isFetchingOptions={isFetchingOptions}
           disabled={element.readOnly}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}
-          options={options}
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
-          isOpen={isAutocompleteOpen}
-          onOpen={openAutocomplete}
-          onClose={closeAutocomplete}
           onChangeValue={onChange}
           onChangeLabel={setLabel}
+          searchDebounceMs={750}
+          searchMaxCharacters={1}
+          onSearch={handleSearch}
         />
       </FormElementLabelContainer>
     </div>
