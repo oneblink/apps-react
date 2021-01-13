@@ -116,7 +116,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             onChangeLabel={setLabel}
             onSearch={handleSearch}
             searchDebounceMs={0}
-            searchMaxCharacters={0}
+            searchMinCharacters={0}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -197,7 +197,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           onChangeValue={onChange}
           onChangeLabel={setLabel}
           searchDebounceMs={750}
-          searchMaxCharacters={1}
+          searchMinCharacters={1}
           onSearch={handleSearch}
         />
       </FormElementLabelContainer>

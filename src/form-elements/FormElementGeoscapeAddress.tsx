@@ -109,7 +109,7 @@ function FormElementGeoscapeAddress({
           hasError={!!error}
           onChangeLabel={setLabel}
           searchDebounceMs={750}
-          searchMaxCharacters={4}
+          searchMinCharacters={4}
           onSearch={handleSearch}
         />
       </FormElementLabelContainer>

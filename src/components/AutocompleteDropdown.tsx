@@ -20,7 +20,7 @@ type Props = {
   validationMessage: string | undefined
   displayValidationMessage: boolean
   searchDebounceMs: number
-  searchMaxCharacters: number
+  searchMinCharacters: number
   onChangeValue: (newValue: string | undefined) => Promise<void> | void
   onChangeLabel: (newLabel: string) => void
   onSearch: (
@@ -39,7 +39,7 @@ function AutocompleteDropdown({
   validationMessage,
   displayValidationMessage,
   searchDebounceMs,
-  searchMaxCharacters,
+  searchMinCharacters,
   isLoading,
   hasError,
   onChangeValue,
@@ -176,7 +176,7 @@ function AutocompleteDropdown({
   React.useEffect(() => {
     setError(null)
 
-    if (!isOpen || label.length < searchMaxCharacters) {
+    if (!isOpen || label.length < searchMinCharacters) {
       setIsFetchingOptions(false)
       return
     }
@@ -211,7 +211,7 @@ function AutocompleteDropdown({
       clearTimeout(timeoutId)
       abortController.abort()
     }
-  }, [isOpen, label, onSearch, searchDebounceMs, searchMaxCharacters])
+  }, [isOpen, label, onSearch, searchDebounceMs, searchMinCharacters])
 
   const isShowingLoading = isFetchingOptions || !!isLoading
   const isShowingValid = !isShowingLoading && value !== undefined
@@ -274,10 +274,10 @@ function AutocompleteDropdown({
               <a className="dropdown-item cypress-autocomplete-error ob-autocomplete__drop-down-item-error">
                 <span className="has-text-danger">{error.message}</span>
               </a>
-            ) : label.length < searchMaxCharacters ? (
+            ) : label.length < searchMinCharacters ? (
               <a className="dropdown-item cypress-max-characters ob-autocomplete__drop-down-item-max-characters">
                 <i>
-                  Enter at least {searchMaxCharacters} character(s) to search
+                  Enter at least {searchMinCharacters} character(s) to search
                 </i>
               </a>
             ) : options && options.length ? (
