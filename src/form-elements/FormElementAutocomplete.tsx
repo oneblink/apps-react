@@ -1,6 +1,5 @@
 import * as React from 'react'
-// import { generateHeaders as generateFetchHeaders } from '@oneblink/apps/dist/services/fetch'
-import { authService } from '@oneblink/apps'
+import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -137,24 +136,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
 
   const handleSearch = React.useCallback(
     async (search, abortSignal) => {
-      let headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      }
-      // Check auth service for a token if user is logged in
-      const idToken = await authService.getIdToken()
-      if (idToken) {
-        headers = {
-          ...headers,
-          Authorization: `Bearer ${idToken}`,
-        }
-      }
-
-      const userToken = authService.getUserToken()
-      if (userToken) {
-        headers['X-OneBlink-User-Token'] = userToken
-      }
-
+      const headers = await generateHeaders()
       const response = await fetch(`${searchUrl}?value=${search}`, {
         headers,
         signal: abortSignal,
