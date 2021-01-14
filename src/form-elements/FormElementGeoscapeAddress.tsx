@@ -36,12 +36,25 @@ function FormElementGeoscapeAddress({
   )
 
   const handleSearch = React.useCallback(
-    async (search, abortSignal) => {
+    async (query, abortSignal) => {
       setError(undefined)
+
+      const params: {
+        query: string
+        maxNumberOfResults?: number
+        stateTerritory?: string
+      } = {
+        query,
+        maxNumberOfResults: 10,
+      }
+
+      if (element.stateTerritoryFilter) {
+        params.stateTerritory = element.stateTerritoryFilter.join(',')
+      }
 
       const result = await formService.searchGeoscapeAddresses(
         formId,
-        search,
+        params,
         abortSignal,
       )
 
@@ -50,7 +63,7 @@ function FormElementGeoscapeAddress({
         label: suggestion.address || index.toString(),
       }))
     },
-    [formId],
+    [element.stateTerritoryFilter, formId],
   )
 
   const handleChange = React.useCallback(
