@@ -1,7 +1,8 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import AbortController from 'abort-controller'
-import { formService, authService } from '@oneblink/apps'
+import { formService } from '@oneblink/apps'
+import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
 import useIsOffline from '../hooks/useIsOffline'
 import OnLoading from './OnLoading'
@@ -337,24 +338,7 @@ async function fetchLookup(
     throw new Error('Could not find element lookup configuration')
   }
 
-  let headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  }
-  // Check auth service for a token if user is logged in
-  const idToken = await authService.getIdToken()
-  if (idToken) {
-    headers = {
-      ...headers,
-      Authorization: `Bearer ${idToken}`,
-    }
-  }
-
-  const userToken = authService.getUserToken()
-  if (userToken) {
-    headers['X-OneBlink-User-Token'] = userToken
-  }
-
+  const headers = await generateHeaders()
   console.log(
     `Attempting a ${formElementLookup.type} lookup request to:`,
     formElementLookup.url,
