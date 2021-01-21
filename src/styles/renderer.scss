@@ -54,7 +54,7 @@
         width: 100%;
 
         &.is-invisible {
-          position: absolute;
+          position: fixed;
           top: 0;
           bottom: 0;
           overflow: hidden;
@@ -230,8 +230,8 @@
       transition: box-shadow 0.2s ease, max-height 0.2s ease;
 
       // Accommodate iOS status bar
-      margin-top: constant(safe-area-inset-top); /* iOS 11.0 */
-      margin-top: env(safe-area-inset-top); /* iOS 11.2 */
+      padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
+      padding-top: env(safe-area-inset-top); /* iOS 11.2 */
 
       &.is-active {
         box-shadow: $elevation-3;
@@ -255,10 +255,6 @@
     }
 
     .steps {
-      .steps-content {
-        margin-top: 0;
-      }
-
       .steps-actions {
         z-index: 30;
         position: fixed;
