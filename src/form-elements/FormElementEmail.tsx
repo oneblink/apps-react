@@ -33,14 +33,6 @@ function FormElementEmail({
   return (
     <div className="cypress-email-element">
       <FormElementLabelContainer className="ob-email" id={id} element={element}>
-        <label
-          className={clsx('label ob-label', {
-            'is-required': element.required,
-          })}
-          htmlFor={id}
-        >
-          {element.label}
-        </label>
         <div className="field has-addons">
           <div className="control is-expanded">
             <input
