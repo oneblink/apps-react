@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `@oneblink/apps` dependency
 
+### Removed
+
+- base bulma styles
+
 ## 0.1.10 (2021-02-09)
 
 ### Fixed
