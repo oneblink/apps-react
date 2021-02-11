@@ -22,6 +22,10 @@ import 'bulma/sass/base/_all'
 import '@oneblink/apps-react/dist/styles.css'
 ```
 
+### Changed
+
+- bulma toasts and flatpickr pickers to be appended to elements inside the `<OneBlinkForm />` component instead of appended to `document.body`.
+
 ### Removed
 
 - base bulma styles

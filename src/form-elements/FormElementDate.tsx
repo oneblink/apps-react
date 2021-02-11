@@ -28,6 +28,8 @@ function FormElementDate({
   validationMessage,
   displayValidationMessage,
 }: Props) {
+  const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
+
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
@@ -66,6 +68,7 @@ function FormElementDate({
       onChange: handleChange,
     },
     flatpickrOptions,
+    htmlDivElementRef,
   )
 
   const text = React.useMemo(() => {
@@ -76,7 +79,7 @@ function FormElementDate({
   }, [value])
 
   return (
-    <div className="cypress-date-element">
+    <div className="cypress-date-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer className="ob-date" id={id} element={element}>
         <div className="field has-addons">
           <div className="control is-expanded">

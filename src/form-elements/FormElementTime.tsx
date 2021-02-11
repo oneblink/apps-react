@@ -28,6 +28,8 @@ function FormElementTime({
   validationMessage,
   displayValidationMessage,
 }: Props) {
+  const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
+
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
@@ -61,6 +63,7 @@ function FormElementTime({
       onChange: handleChange,
     },
     flatpickrOptions,
+    htmlDivElementRef,
   )
 
   const text = React.useMemo(() => {
@@ -71,7 +74,7 @@ function FormElementTime({
   }, [value])
 
   return (
-    <div className="cypress-time-element">
+    <div className="cypress-time-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer className="ob-time" id={id} element={element}>
         <div className="field has-addons">
           <div className="control is-expanded">

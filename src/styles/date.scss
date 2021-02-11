@@ -1,3 +1,7 @@
 .ob-input.flatpickr-input[disabled] {
   cursor: not-allowed;
 }
+
+.ob-form__element .flatpickr-wrapper {
+  display: block;
+}
