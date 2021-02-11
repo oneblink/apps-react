@@ -28,6 +28,8 @@ function FormElementDateTime({
   validationMessage,
   displayValidationMessage,
 }: Props) {
+  const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
+
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
@@ -67,6 +69,7 @@ function FormElementDateTime({
       onChange: handleChange,
     },
     flatpickrOptions,
+    htmlDivElementRef,
   )
 
   const text = React.useMemo(() => {
@@ -77,7 +80,7 @@ function FormElementDateTime({
   }, [value])
 
   return (
-    <div className="cypress-datetime-element">
+    <div className="cypress-datetime-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer
         className="ob-datetime"
         id={id}

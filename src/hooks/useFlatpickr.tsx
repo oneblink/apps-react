@@ -15,12 +15,17 @@ export default function useFlatpickr(
     onChange: (value: string | undefined) => void
   },
   fpOpts: FlatpickrOptions,
+  htmlElement: { current: HTMLElement | null },
 ) {
   const vpRef = React.useRef(null)
 
   React.useEffect(() => {
     // @ts-expect-error ???
-    const newVp = new Flatpickr(`[id="${id}"]`, fpOpts)
+    const newVp = new Flatpickr(`[id="${id}"]`, {
+      ...fpOpts,
+      static: true,
+      appendTo: htmlElement.current,
+    })
     vpRef.current = newVp
     return () => {
       // destroy the flatpickr instance when the dom element is removed
@@ -28,7 +33,7 @@ export default function useFlatpickr(
         newVp.destroy()
       }
     }
-  }, [fpOpts, id, vpRef])
+  }, [fpOpts, htmlElement, id, vpRef])
 
   React.useEffect(() => {
     // @ts-expect-error ???
