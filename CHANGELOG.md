@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Migration Guide
 
-This release has include breaking changes to the CSS that is exported. To avoid conflicting with CSS that has been written in the consuming application, we have removed the selectors that are exported with our CSS that are targeting HTML tags instead of classes. e.g. `p { /* styles here */ }`. To keep the same styles from the previous version, replace:
+This release has included breaking changes to the CSS that is exported. To avoid conflicting with CSS that has been written in the consuming application, we have removed the selectors that are exported with our CSS that are targeting HTML tags instead of classes. e.g. `p { /* styles here */ }`. To keep the same styles from the previous version, replace:
 
 ```js
 import '@oneblink/apps-react/dist/styles.css'
