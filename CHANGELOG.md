@@ -7,28 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Migration Guide
-
-This release has included breaking changes to the CSS that is exported. To avoid conflicting with CSS that has been written in the consuming application, we have removed the selectors that are exported with our CSS that are targeting HTML tags instead of classes. e.g. `p { /* styles here */ }`. To keep the same styles from the previous version, replace:
-
-```js
-import '@oneblink/apps-react/dist/styles.css'
-```
-
-with
-
-```js
-import 'bulma/sass/base/_all'
-import '@oneblink/apps-react/dist/styles.css'
-```
-
 ### Changed
 
 - bulma toasts and flatpickr pickers to be appended to elements inside the `<OneBlinkForm />` component instead of appended to `document.body`.
-
-### Removed
-
-- base bulma styles
 
 ## 0.1.10 (2021-02-09)
 
