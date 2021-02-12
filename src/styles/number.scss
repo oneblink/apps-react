@@ -33,7 +33,7 @@
 
   &.is-dragging {
     background-color: $primary;
-    color: $p-invert;
+    color: $primary-invert;
 
     &:after {
       border-top-color: $primary;
