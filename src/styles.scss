@@ -1,19 +1,9 @@
 //
-// Load initial variables to use with overrides
-//
-@import 'bulma/sass/utilities/initial-variables';
-@import 'bulma/sass/utilities/functions';
-
-//
 // Overrides
 //
-$mobile: $tablet - 2px;
 
 $green: #4caf50;
-$p: #4c8da7;
-$p-invert: findColorInvert($p);
-$primary: $p;
-$secondary: $grey-lighter;
+$primary: #4c8da7;
 $warning: #ff6f00;
 
 // Elevations for Box Shadows
@@ -27,45 +17,50 @@ $elevation-3: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14),
 $size-0: 3.25rem;
 $size-8: 0.5rem;
 
-// Model settings
-$modal-background-background-color: $secondary;
+//
+// Bulma Variables
+//
+@import 'bulma/sass/utilities/_all';
+
+//
+// Our Variables
+//
+$mobile: $tablet - 2px;
+$secondary: $grey-lighter;
+
+//
+// Bulma Styles
+//
+@import 'bulma/sass/base/_all';
+@import 'bulma/sass/helpers/_all';
+@import 'bulma/sass/layout/section.sass';
+@import 'bulma/sass/grid/columns.sass';
+
+$label-weight: $weight-light;
+$input-shadow: none;
+$input-focus-box-shadow-size: none;
+$slider-thumb-background: $primary;
+$slider-thumb-border: 1px solid $primary;
+@import 'bulma/sass/form/_all.sass';
+@import 'bulma/sass/elements/container.sass';
+@import 'bulma/sass/elements/other.sass';
+@import 'bulma/sass/elements/button.sass';
+
+$title-color: $black;
+$title-weight: 200;
+@import 'bulma/sass/elements/title.sass';
+@import 'bulma/sass/elements/notification.sass';
+@import 'bulma/sass/elements/content.sass';
+@import 'bulma/sass/elements/image.sass';
+
 $modal-card-head-radius: 0;
 $modal-card-foot-radius: 0;
 $modal-card-head-padding: 20px 20px 0;
 $modal-card-head-border-bottom: 0;
 $modal-card-head-background-color: $white;
-$modal-card-foot-border-top: 0;
 $modal-card-foot-background-color: $white;
-
-$slider-thumb-background: $primary;
-$slider-thumb-border: 1px solid $primary;
-
-// Titles
-$title-color: $black;
-$title-weight: 200;
-
-// Labels
-$label-weight: $weight-light;
-
-// Inputs
-$input-shadow: none;
-$input-focus-box-shadow-size: none;
-
-//
-// Bulma Styles
-//
-@import 'bulma/sass/utilities/_all';
-@import 'bulma/sass/helpers/_all';
-@import 'bulma/sass/layout/section.sass';
-@import 'bulma/sass/grid/columns.sass';
-@import 'bulma/sass/form/_all.sass';
-@import 'bulma/sass/elements/container.sass';
-@import 'bulma/sass/elements/other.sass';
-@import 'bulma/sass/elements/button.sass';
-@import 'bulma/sass/elements/title.sass';
-@import 'bulma/sass/elements/notification.sass';
-@import 'bulma/sass/elements/content.sass';
-@import 'bulma/sass/elements/image.sass';
+$modal-card-foot-border-top: 0;
+$modal-background-background-color: $secondary;
 @import 'bulma/sass/components/modal.sass';
 @import 'bulma/sass/components/card.sass';
 @import 'bulma/sass/components/dropdown.sass';
