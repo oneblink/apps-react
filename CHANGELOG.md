@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- inconsistent margin for form element error messages
+
 ## 0.1.11 (2021-02-15)
 
 ### Changed
