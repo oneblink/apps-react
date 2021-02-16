@@ -113,7 +113,15 @@ function FormElementCamera({
                   )
                 }
               }
-              const base64data = canvas.toDataURL(file.type)
+              let base64data
+              try {
+                base64data = canvas.toDataURL(file.type)
+              } catch (error) {
+                console.warn('Error converting canvas to data url')
+                setCameraError(error)
+                clearIsLoading()
+                return
+              }
               setIsDirty()
               onChange(element, base64data)
               clearIsLoading()
@@ -123,7 +131,7 @@ function FormElementCamera({
         })
       }
     },
-    [element, onChange, setIsLoading, setIsDirty, clearIsLoading, clearImage],
+    [element, onChange, setIsLoading, setIsDirty, clearIsLoading, clearImage, setCameraError],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
@@ -326,9 +334,9 @@ function FormElementCamera({
               &quot;Okay&quot; below to try again. If the problem persists,
               please contact support.
             </p>
-            {viewError && (
+            {viewError && cameraError && (
               <div className="content has-margin-top-6">
-                <blockquote>{cameraError}</blockquote>
+                <blockquote>{cameraError.toString()}</blockquote>
               </div>
             )}
           </section>

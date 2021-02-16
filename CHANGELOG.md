@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - inconsistent margin for form element error messages
+- Handled error when attempting to convert file to image in `Camera` element
 
 ## 0.1.11 (2021-02-15)
 
