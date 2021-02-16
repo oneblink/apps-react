@@ -153,7 +153,7 @@ function FormElementSignature({
         </div>
 
         {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <div role="alert">
+          <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
             </div>

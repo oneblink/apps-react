@@ -180,7 +180,7 @@ function FormElementRepeatableSet({
         {(isDirty || displayValidationMessage) &&
           !!repeatableSetValidation &&
           !!repeatableSetValidation.set && (
-            <div role="alert">
+            <div role="alert" className="has-margin-top-8">
               <div className="has-text-danger ob-error__text cypress-validation-message">
                 {repeatableSetValidation.set}
               </div>
