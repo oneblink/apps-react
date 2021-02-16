@@ -26,24 +26,12 @@ type Props = {
 
 type ChildProps = {
   element: FormTypes.FilesElement
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: FilesElementFile[] | undefined,
-  ) => unknown
-  value: unknown
-  setIsDirty: () => void
+  onRemove: (index: number) => unknown
   file: FilesElementFile
   index: number
 }
 
-const FormElementFile = ({
-  element,
-  onChange,
-  value,
-  setIsDirty,
-  file,
-  index,
-}: ChildProps) => {
+const FormElementFile = ({ element, onRemove, file, index }: ChildProps) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
   const isImageType = React.useMemo(() => {
@@ -61,18 +49,11 @@ const FormElementFile = ({
       }
     }, [hideMore, isShowingMore]),
   )
-  const handleRemove = React.useCallback(
-    (index) => {
-      const files = Array.isArray(value) ? [...value] : []
-      const updatedValues = files.filter((file, i) => i !== index)
-      onChange(element, updatedValues)
-      setIsDirty()
-    },
-    [element, value, onChange, setIsDirty],
-  )
+  const handleRemove = React.useCallback((index) => onRemove(index), [onRemove])
   const handleDownload = React.useCallback(async () => {
     await downloadFile(file.data, file.fileName)
   }, [file])
+
   return (
     <div className="column is-one-quarter" key={index}>
       <div className="ob-files__box">
@@ -181,6 +162,24 @@ function FormElementFiles({
     if (!inputRef.current) return
     inputRef.current.click()
   }, [])
+
+  const handleRemove = React.useCallback(
+    (index: number) => {
+      const files = Array.isArray(value) ? [...value] : []
+      const updatedValues = files.filter((file, i) => i !== index)
+
+      if (isMounted.current) {
+        if (inputRef.current) {
+          // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
+          inputRef.current.value = ''
+        }
+        onChange(element, updatedValues)
+        setIsDirty()
+      }
+    },
+    [value, isMounted, onChange, element, setIsDirty],
+  )
+
   const files = Array.isArray(value) ? [...value] : []
   return (
     <div className="cypress-files-element">
@@ -205,9 +204,7 @@ function FormElementFiles({
                 <MemorisedFile
                   key={index}
                   element={element}
-                  onChange={onChange}
-                  value={value}
-                  setIsDirty={setIsDirty}
+                  onRemove={handleRemove}
                   file={file}
                   index={index}
                 />

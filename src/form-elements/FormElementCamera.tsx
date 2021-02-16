@@ -51,6 +51,10 @@ function FormElementCamera({
   )
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const clearImage = React.useCallback(() => {
+    if (fileInputRef.current) {
+      // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
+      fileInputRef.current.value = ''
+    }
     onChange(element, undefined)
   }, [element, onChange])
   const fileChange = React.useCallback(
