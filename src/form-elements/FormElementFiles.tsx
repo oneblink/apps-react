@@ -135,7 +135,6 @@ function FormElementFiles({
 
   const addFile = React.useCallback(
     async (newFiles) => {
-      console.log(newFiles)
       const updatedValues = Array.isArray(value) ? [...value] : []
       for (const newFile of newFiles) {
         const base64data = await new Promise((resolve, reject) => {
