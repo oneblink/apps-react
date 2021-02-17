@@ -88,51 +88,44 @@ function FormElementCamera({
             file,
             // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
             (canvas: HTMLCanvasElement) => {
-              if (element.includeTimestampWatermark) {
-                let context
-                try {
-                  context = canvas.getContext('2d')
-                } catch (error) {
-                  console.warn('Error getting canvas context')
-                  setCameraError(error)
-                  clearIsLoading()
-                  return
-                }
-                if (context) {
-                  const now = localisationService.formatDatetime(
-                    new Date(file.lastModified),
-                  )
-                  const textHeight = 20
-                  context.font = `${textHeight}px Arial`
-                  const { width: textWidth } = context.measureText(now)
-                  const backgroundMargin = 10
-                  const backgroundPadding = backgroundMargin
-                  const backgroundWidth = backgroundPadding * 2 + textWidth
-                  const backgroundHeight = backgroundPadding * 2 + textHeight
-                  context.fillStyle = 'rgba(20, 20, 20, 0.6)'
-                  context.fillRect(
-                    canvas.width - backgroundWidth - backgroundMargin,
-                    canvas.height - backgroundHeight - backgroundMargin,
-                    backgroundWidth,
-                    backgroundHeight,
-                  )
-
-                  context.fillStyle = '#FFF'
-                  context.fillText(
-                    now,
-                    canvas.width -
-                      textWidth -
-                      backgroundPadding -
-                      backgroundMargin,
-                    canvas.height - 22,
-                  )
-                }
-              }
               let base64data
               try {
+                let context
+                if (element.includeTimestampWatermark) {
+                  context = canvas.getContext('2d')
+                  if (context) {
+                    const now = localisationService.formatDatetime(
+                      new Date(file.lastModified),
+                    )
+                    const textHeight = 20
+                    context.font = `${textHeight}px Arial`
+                    const { width: textWidth } = context.measureText(now)
+                    const backgroundMargin = 10
+                    const backgroundPadding = backgroundMargin
+                    const backgroundWidth = backgroundPadding * 2 + textWidth
+                    const backgroundHeight = backgroundPadding * 2 + textHeight
+                    context.fillStyle = 'rgba(20, 20, 20, 0.6)'
+                    context.fillRect(
+                      canvas.width - backgroundWidth - backgroundMargin,
+                      canvas.height - backgroundHeight - backgroundMargin,
+                      backgroundWidth,
+                      backgroundHeight,
+                    )
+
+                    context.fillStyle = '#FFF'
+                    context.fillText(
+                      now,
+                      canvas.width -
+                        textWidth -
+                        backgroundPadding -
+                        backgroundMargin,
+                      canvas.height - 22,
+                    )
+                  }
+                }
                 base64data = canvas.toDataURL(file.type)
               } catch (error) {
-                console.warn('Error converting canvas to data url')
+                console.warn('Error loading image')
                 setCameraError(error)
                 clearIsLoading()
                 return
