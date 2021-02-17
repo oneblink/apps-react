@@ -89,7 +89,15 @@ function FormElementCamera({
             // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
             (canvas: HTMLCanvasElement) => {
               if (element.includeTimestampWatermark) {
-                const context = canvas.getContext('2d')
+                let context
+                try {
+                  context = canvas.getContext('2d')
+                } catch (error) {
+                  console.warn('Error getting canvas context')
+                  setCameraError(error)
+                  clearIsLoading()
+                  return
+                }
                 if (context) {
                   const now = localisationService.formatDatetime(
                     new Date(file.lastModified),
