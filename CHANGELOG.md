@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.12 (2021-02-18)
+
 ### Fixed
 
 - Files not being able to be re-added to files and camera element after being removed
