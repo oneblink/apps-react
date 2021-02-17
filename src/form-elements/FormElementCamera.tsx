@@ -57,6 +57,9 @@ function FormElementCamera({
     }
     onChange(element, undefined)
   }, [element, onChange])
+  const resetImage = React.useCallback(() => {
+    onChange(element, undefined)
+  }, [element, onChange])
   const fileChange = React.useCallback(
     (changeEvent) => {
       if (
@@ -65,7 +68,7 @@ function FormElementCamera({
         changeEvent.target.files[0]
       ) {
         setIsLoading()
-        clearImage()
+        resetImage()
 
         console.log('File selected event', changeEvent)
         // Unfortunately, photos taken from a native camera can come in with an incorrect
@@ -135,7 +138,7 @@ function FormElementCamera({
         })
       }
     },
-    [element, onChange, setIsLoading, setIsDirty, clearIsLoading, clearImage, setCameraError],
+    [element, onChange, setIsLoading, setIsDirty, clearIsLoading, resetImage, setCameraError],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
