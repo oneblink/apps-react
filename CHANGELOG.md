@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+- Created OneBlinkFormBase to be used internally by OneBlinkForm and OneBlinkReadOnlyForm (new)
+
 ## 0.1.12 (2021-02-18)
 
 ### Fixed
