@@ -7,7 +7,7 @@ Component for rendering a OneBlink Form in read-only mode. This component will r
 It is also recommended to import the `css` from this library as well.
 
 ```js
-import { OneBlinkForm } from '@oneblink/apps-react'
+import { OneBlinkReadOnlyForm } from '@oneblink/apps-react'
 import '@oneblink/apps-react/dist/styles.css'
 ```
 
