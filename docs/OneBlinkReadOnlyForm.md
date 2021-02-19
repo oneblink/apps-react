@@ -2,12 +2,12 @@
 
 ## `<OneBlinkReadOnlyForm />`
 
-Component for rendering a OneBlink Form in read-only mode. This component will render the form with all inputs disabled but will **not** render the the submit, cancel and save draft buttons.
+Component for rendering a OneBlink Form in read-only mode. This component will render the form with all inputs disabled but will **not** render the submit, cancel and save draft buttons.
 
 It is also recommended to import the `css` from this library as well.
 
 ```js
-import { OneBlinkForm } from '@oneblink/apps-react'
+import { OneBlinkReadOnlyForm } from '@oneblink/apps-react'
 import '@oneblink/apps-react/dist/styles.css'
 ```
 
@@ -27,19 +27,15 @@ import '@oneblink/apps-react/dist/styles.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import {
-  OneBlinkAppsError,
-  draftService,
-  submissionService,
   FormTypes,
 } from '@oneblink/apps'
 import {
   IsOfflineContextProvider,
-  OneBlinkForm,
+  OneBlinkReadOnlyForm,
   useIsMounted,
 } from '@oneblink/apps-react'
 import '@oneblink/apps-react/dist/styles.css'
 
-const captchaSiteKey = 'ENTER_YOUR_SITE_KEY_HERE'
 const googleMapsApiKey = 'ENTER_YOUR_MAPS_API_KEY_HERE'
 const formsAppId = 1
 const form: FormTypes.Form = {
@@ -68,8 +64,7 @@ function FormContainer() {
   }, [isMounted])
 
   return (
-    <OneBlinkForm
-      captchaSiteKey={captchaSiteKey}
+    <OneBlinkReadOnlyForm
       googleMapsApiKey={googleMapsApiKey}
       initialSubmission={null}
       form={form}
