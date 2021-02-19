@@ -6,6 +6,7 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 
 - [OneBlinkForm](./OneBlinkForm.md)
 - [OneBlinkAutoSaveForm](./OneBlinkAutoSaveForm.md)
+- [OneBlinkReadOnlyForm](./OneBlinkReadOnlyForm.md)
 
 ## Hooks
 
