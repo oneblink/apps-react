@@ -9,7 +9,7 @@ import _cloneDeep from 'lodash.clonedeep'
 function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
   const newFormElements = formElements.map((element) => {
     if (
-      (element.type === 'form' || element.type === 'infoPage') &&
+      (element.type === 'form') &&
       Array.isArray(element.elements)
     ) {
       element.elements = recursivelySetReadOnly(element.elements)
