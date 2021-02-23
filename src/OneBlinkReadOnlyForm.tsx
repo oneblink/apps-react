@@ -9,12 +9,12 @@ import _cloneDeep from 'lodash.clonedeep'
 function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
   const newFormElements = formElements.map((element) => {
     if (
-      (element.type === 'form') &&
+      (element.type === 'form' || element.type === 'page' || element.type === 'repeatableSet' ) &&
       Array.isArray(element.elements)
     ) {
       element.elements = recursivelySetReadOnly(element.elements)
-    }
-    if ('readOnly' in element) {
+    } else {
+      // @ts-expect-error it won't hurt to set readOnly on elements that don't have that property
       element.readOnly = true
     }
     return element
