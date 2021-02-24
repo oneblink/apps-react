@@ -15,7 +15,9 @@ function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
       Array.isArray(element.elements)
     ) {
       element.elements = recursivelySetReadOnly(element.elements)
-    } else if (
+    }
+    
+    if (
       element.type !== 'heading' &&
       element.type !== 'page' &&
       element.type !== 'html' &&
