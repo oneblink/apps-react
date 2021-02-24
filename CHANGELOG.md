@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- [`useLoadDataState`](./docs/useLoadDataState.md) hook
 - [`<OneBlinkReadOnlyForm />`](./docs/OneBlinkReadOnlyForm.md) component
 
 ## 0.1.12 (2021-02-18)
