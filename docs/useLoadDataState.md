@@ -25,18 +25,31 @@ The return type of `useLoadDataState()` is an object with the following properti
 
 ```js
 import { useLoadDataState } from '@oneblink/apps-react'
-import fetchData from 'fetchData' // Must be a function which returns a promise of some data
+const fetchData = async () => {
+  const response = await fetch(`https://some-website.com/api?data=data`)
 
-const [state, refresh] = useLoadDataState(fetchData)
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(text)
+  }
 
-switch (state.status) {
-  case 'LOADING':
-    return <Loading />
-  case 'ERROR':
-    return <Error message={state.error} />
-  case 'SUCCESS':
-  // RENDER UI
+  return await response.json()
 }
+
+const MyComponent = () => {
+  const [state, refresh] = useLoadDataState(fetchData)
+
+  switch (state.status) {
+    case 'LOADING':
+      return <Loading />
+    case 'ERROR':
+      return <Error message={state.error} />
+    case 'SUCCESS':
+    // RENDER UI
+  }
+}
+
+export default MyComponent
 ```
 
 ## LoadDataState
