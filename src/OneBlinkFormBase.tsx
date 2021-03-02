@@ -24,6 +24,7 @@ import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
+import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import useChangeEffect from './hooks/useChangeEffect'
 
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
@@ -594,40 +595,44 @@ function OneBlinkFormBase({
                             <CaptchaSiteKeyContext.Provider
                               value={captchaSiteKey}
                             >
-                              {visiblePages.map(
-                                (page: FormTypes.PageElement) => (
-                                  <div
-                                    key={page.id}
-                                    className={clsx(
-                                      'ob-page step-content is-active cypress-page',
-                                      {
-                                        'is-invisible':
-                                          currentPage.id !== page.id,
-                                      },
-                                    )}
-                                  >
-                                    <OneBlinkFormElements
-                                      formId={definition.id}
-                                      formElementsConditionallyShown={
-                                        rootElementsConditionallyShown
-                                      }
-                                      formElementsValidation={
-                                        pagesValidation &&
-                                        pagesValidation[page.id]
-                                      }
-                                      displayValidationMessages={
-                                        hasAttemptedSubmit ||
-                                        checkDisplayPageError(page)
-                                      }
-                                      elements={page.elements}
-                                      onChange={handleChange}
-                                      onChangeElements={handleChangeElements}
-                                      onChangeModel={handleChangeModel}
-                                      formElementsCtrl={rootFormElementsCtrl}
-                                    />
-                                  </div>
-                                ),
-                              )}
+                              <FormIsReadOnlyContext.Provider
+                                value={isReadOnly}
+                              >
+                                {visiblePages.map(
+                                  (page: FormTypes.PageElement) => (
+                                    <div
+                                      key={page.id}
+                                      className={clsx(
+                                        'ob-page step-content is-active cypress-page',
+                                        {
+                                          'is-invisible':
+                                            currentPage.id !== page.id,
+                                        },
+                                      )}
+                                    >
+                                      <OneBlinkFormElements
+                                        formId={definition.id}
+                                        formElementsConditionallyShown={
+                                          rootElementsConditionallyShown
+                                        }
+                                        formElementsValidation={
+                                          pagesValidation &&
+                                          pagesValidation[page.id]
+                                        }
+                                        displayValidationMessages={
+                                          hasAttemptedSubmit ||
+                                          checkDisplayPageError(page)
+                                        }
+                                        elements={page.elements}
+                                        onChange={handleChange}
+                                        onChangeElements={handleChangeElements}
+                                        onChangeModel={handleChangeModel}
+                                        formElementsCtrl={rootFormElementsCtrl}
+                                      />
+                                    </div>
+                                  ),
+                                )}
+                              </FormIsReadOnlyContext.Provider>
                             </CaptchaSiteKeyContext.Provider>
                           </GoogleMapsApiKeyContext.Provider>
                         </ExecutedLookupProvider>
