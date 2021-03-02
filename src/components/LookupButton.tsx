@@ -2,7 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 import useLookupNotification from '../hooks/useLookupNotification'
 import { lookupValidationMessage } from '../services/form-validation'
-
+import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 type Props = {
   value: unknown | undefined
   validationMessage: string | undefined
@@ -17,7 +17,7 @@ function LookupButton({
   isInputButton,
 }: Props) {
   const { isLookup, onLookup, isDisabled } = useLookupNotification()
-
+  const formIsReadOnly = useFormIsReadOnly()
   if (!isLookup) {
     return null
   }
@@ -35,6 +35,7 @@ function LookupButton({
       )}
       onClick={onLookup}
       disabled={
+        formIsReadOnly ||
         isDisabled ||
         value === undefined ||
         (!!validationMessage && validationMessage !== lookupValidationMessage)
