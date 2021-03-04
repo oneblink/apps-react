@@ -122,7 +122,13 @@ function FormElementLocation({
               location={location}
             ></LocationIsOffline>
           )}
-          {isLoadingLocation && <OnLoading small></OnLoading>}
+          {isLoadingLocation && (
+            <figure>
+              <div className="figure-content">
+                <OnLoading small></OnLoading>
+              </div>
+            </figure>
+          )}
 
           <div className="buttons ob-buttons ob-location__buttons">
             {locationPickerIsOpen ? (
