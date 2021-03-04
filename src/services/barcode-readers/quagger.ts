@@ -34,7 +34,7 @@ export default function (
         if (result && result.codeResult) {
           resolve(result.codeResult.code)
         } else {
-          resolve()
+          resolve(undefined)
         }
       },
     )

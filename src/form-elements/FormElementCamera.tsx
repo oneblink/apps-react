@@ -80,7 +80,6 @@ function FormElementCamera({
           const options = {
             // should be set to canvas : true to activate auto fix orientation
             canvas: true,
-            // @ts-expect-error if exif data available, update orientation
             orientation: data.exif ? data.exif.get('Orientation') : 0,
           }
           console.log('Loading image onto canvas to correct orientation')
