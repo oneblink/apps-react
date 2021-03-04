@@ -33,7 +33,7 @@ export default async function downloadFile(dataURI: string, fileName: string) {
                             )
                             reject(error)
                           },
-                          success: () => resolve(),
+                          success: () => resolve(undefined),
                         },
                       )
                     }
