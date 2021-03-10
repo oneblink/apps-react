@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - location element loading styles
+- Auto lookups no longer run in read only forms
 
 ## 0.1.13 (2021-03-03)
 
