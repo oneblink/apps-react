@@ -200,6 +200,7 @@ function LookupNotificationComponent({
     executedLookup,
     formElementsConditionallyShown,
     formElementsCtrl,
+    formIsReadOnly,
     isOffline,
     mergeLookupData,
     value,
