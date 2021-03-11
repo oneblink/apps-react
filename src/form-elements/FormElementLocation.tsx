@@ -123,7 +123,7 @@ function FormElementLocation({
             ></LocationIsOffline>
           )}
           {isLoadingLocation && (
-            <figure>
+            <figure className="ob-figure">
               <div className="figure-content">
                 <OnLoading small></OnLoading>
               </div>
@@ -195,7 +195,7 @@ const LocationIsOffline = React.memo(function LocationIsOffline({
   return (
     <div>
       {isOpen ? (
-        <figure>
+        <figure className="ob-figure">
           <div className="figure-content has-text-centered">
             <h4 className="title is-4">You are currently offline</h4>
             {location ? (
@@ -212,7 +212,7 @@ const LocationIsOffline = React.memo(function LocationIsOffline({
           </div>
         </figure>
       ) : location ? (
-        <figure>
+        <figure className="ob-figure">
           <div className="figure-content has-text-centered">
             <h4 className="title is-4">You are currently offline</h4>
             <h3 className="title is-3 ob-location__latitude">Latitude</h3>
@@ -275,7 +275,7 @@ const LocationPicker = React.memo(function SummaryResult({
   }, [coords, googleMapsApiKey, zoom])
 
   return coords ? (
-    <figure>
+    <figure className="ob-figure">
       {isOpen ? (
         <LoadScript googleMapsApiKey={googleMapsApiKey || ''}>
           <GoogleMap

@@ -131,9 +131,11 @@ function OneBlinkFormBase({
   const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState<
     boolean | null
   >(null)
-  const [goToLocation, setGoToLocation, clearGoToLocation] = useNullableState<
-    Location
-  >(null)
+  const [
+    goToLocation,
+    setGoToLocation,
+    clearGoToLocation,
+  ] = useNullableState<Location>(null)
 
   const handleBlockedNavigation = React.useCallback(
     (location) => {
@@ -475,9 +477,13 @@ function OneBlinkFormBase({
       >
         <div>
           {isShowingMultiplePages && (
-            <>
+            <div
+              className={clsx('ob-steps-navigation', {
+                'is-active': isStepsHeaderActive,
+              })}
+            >
               <div
-                className={clsx('steps-header ob-steps-navigation__header', {
+                className={clsx('ob-steps-navigation__header', {
                   'is-active': isStepsHeaderActive,
                 })}
                 onClick={toggleStepsNavigation}
@@ -507,8 +513,7 @@ function OneBlinkFormBase({
               </div>
 
               <div
-                id="steps-navigation"
-                className={clsx('ob-steps-navigation', {
+                className={clsx('ob-steps-navigation__steps', {
                   'is-active': isStepsHeaderActive,
                 })}
               >
@@ -562,11 +567,13 @@ function OneBlinkFormBase({
                   )}
                 </div>
               </div>
-            </>
+            </div>
           )}
 
           <div
-            className="steps-navigation-background ob-steps-navigation__background"
+            className={clsx('ob-steps-navigation__background', {
+              'is-active': isStepsHeaderActive,
+            })}
             onClick={toggleStepsNavigation}
           />
 

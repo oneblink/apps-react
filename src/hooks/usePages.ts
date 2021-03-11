@@ -127,6 +127,7 @@ export default function usePages({
       if (activeStepElement) {
         activeStepElement.scrollIntoView({
           behavior: 'smooth',
+          block: 'center',
         })
       }
     } else {

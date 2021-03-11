@@ -5,6 +5,14 @@
   @media only screen and (max-width: $tablet) {
     padding: 0 $size-8;
   }
+
+  @media only screen and (max-width: $mobile) {
+    .modal-card-foot {
+      .ob-button {
+        min-width: unset;
+      }
+    }
+  }
 }
 
 .modal-background-faded {

@@ -1,0 +1,37 @@
+.ob-figure {
+  background-color: $white-ter;
+  text-align: center;
+  margin-bottom: 5px;
+  border-radius: $radius;
+  line-height: 1;
+  padding: 10px;
+
+  img {
+    display: inline-block;
+    margin: 0;
+    max-height: 300px;
+  }
+
+  video {
+    max-height: 300px;
+  }
+
+  .figure-content {
+    height: 300px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: auto;
+
+    .ob-location__latitude,
+    .ob-location__longitude {
+      margin-bottom: $size-6;
+
+      & + p {
+        margin-bottom: $size-6;
+      }
+    }
+  }
+}
