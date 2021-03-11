@@ -12,6 +12,7 @@ import useFormDefinition from '../hooks/useFormDefinition'
 import useInjectPages from '../hooks/useInjectPages'
 import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
 import useExecutedLookupCallback from '../hooks/useExecutedLookupCallback'
+import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import { FormTypes } from '@oneblink/types'
 
 type Props = {
@@ -53,6 +54,7 @@ function LookupNotificationComponent({
   const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
     null,
   )
+  const formIsReadOnly = useFormIsReadOnly()
 
   const mergeLookupData = React.useCallback(
     (dataLookupResult, elementLookupResult: FormTypes.FormElement[]) => {
@@ -111,6 +113,8 @@ function LookupNotificationComponent({
   )
 
   const triggerLookup = React.useCallback(async () => {
+    // No lookups for read only forms
+    if (formIsReadOnly) return
     // if the element triggering the lookup has no value..
     // ..return and do nothing
     if (value === undefined || value === null) return
@@ -196,6 +200,7 @@ function LookupNotificationComponent({
     executedLookup,
     formElementsConditionallyShown,
     formElementsCtrl,
+    formIsReadOnly,
     isOffline,
     mergeLookupData,
     value,
