@@ -64,13 +64,6 @@ export default function usePages({
           return [...currentVisitedPageIds, currentPageId]
         }
       })
-      if (window.scrollTo) {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: 'smooth',
-        })
-      }
       setCurrentPageId(pageId)
       closeStepsNavigation()
     },

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- scroll behavior when changing pages
+
 ### Removed
 
 - **[BREAKING]** `position: fixed` CSS from multiple page form navigation on mobile screen sizes

@@ -318,6 +318,15 @@ function OneBlinkFormBase({
     }
   }, [])
 
+  React.useEffect(() => {
+    if (obFormContainerHTMLElementRef.current) {
+      obFormContainerHTMLElementRef.current.scrollIntoView({
+        block: 'start',
+        behavior: 'smooth',
+      })
+    }
+  }, [currentPage])
+
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
