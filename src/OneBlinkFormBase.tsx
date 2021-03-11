@@ -232,6 +232,7 @@ function OneBlinkFormBase({
     setPageId,
     goToPreviousPage,
     goToNextPage,
+    scrollToTopOfPageHTMLElementRef,
   } = usePages({
     pages,
     pagesValidation,
@@ -317,15 +318,6 @@ function OneBlinkFormBase({
       })
     }
   }, [])
-
-  React.useEffect(() => {
-    if (obFormContainerHTMLElementRef.current) {
-      obFormContainerHTMLElementRef.current.scrollIntoView({
-        block: 'start',
-        behavior: 'smooth',
-      })
-    }
-  }, [currentPage])
 
   const handleSubmit = React.useCallback(
     (event) => {
@@ -485,6 +477,7 @@ function OneBlinkFormBase({
         onSubmit={handleSubmit}
       >
         <div>
+          <div ref={scrollToTopOfPageHTMLElementRef} />
           {isShowingMultiplePages && (
             <div
               className={clsx('ob-steps-navigation', {
