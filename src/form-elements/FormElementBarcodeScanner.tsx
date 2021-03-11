@@ -90,7 +90,7 @@ function FormElementBarcodeScanner({
         id={id}
       >
         {error && (
-          <figure>
+          <figure className="ob-figure">
             <div className="figure-content has-text-centered">
               <div>
                 <h4 className="title is-4">Whoops...</h4>
@@ -449,7 +449,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
 
   return (
     <div>
-      <figure ref={figureElementRef}>
+      <figure className="ob-figure" ref={figureElementRef}>
         <div className="figure-content has-text-centered">
           {isLoading && <OnLoading small />}
 

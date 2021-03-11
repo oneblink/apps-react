@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Removed
+
+- **[BREAKING]** `position: fixed` CSS from multiple page form navigation on mobile screen sizes
+
 ## 0.1.14 (2021-03-11)
 
 ### Fixed

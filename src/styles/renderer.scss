@@ -7,14 +7,12 @@
   z-index: 100;
 }
 
-.ob-form-container {
-  .ob-form {
-    padding-bottom: 4rem;
-  }
+.ob-steps-navigation__header {
+  display: none;
+}
 
-  .steps-header {
-    display: none;
-  }
+.ob-form-container {
+  position: relative;
 
   .steps {
     &.is-small {
@@ -92,249 +90,10 @@
       margin-bottom: 0;
     }
   }
+}
 
-  .ob-heading__text {
-    margin-top: 80px;
-  }
-
-  .ob-element:nth-of-type(1) {
-    .ob-heading__text {
-      margin-top: 0;
-    }
-  }
-
-  .ob-camera,
-  .ob-location,
-  .ob-barcode-scanner {
-    figure {
-      background-color: $white-ter;
-      text-align: center;
-      margin-bottom: 5px;
-      border-radius: $radius;
-      line-height: 1;
-      padding: 10px;
-
-      img {
-        display: inline-block;
-        margin: 0;
-        max-height: 300px;
-      }
-
-      video {
-        max-height: 300px;
-      }
-
-      .figure-content {
-        height: 300px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        margin: auto;
-
-        .ob-location__latitude,
-        .ob-location__longitude {
-          margin-bottom: $size-6;
-
-          & + p {
-            margin-bottom: $size-6;
-          }
-        }
-      }
-    }
-  }
-
-  .ob-buttons-submit {
-    margin-top: $size-1;
-  }
-
-  .ob-buttons-submit__spacer {
-    flex: 1;
-  }
-
-  @media only screen and (max-width: $tablet) {
-    .steps-header {
-      z-index: 33;
-      position: fixed;
-      top: 0;
-      right: 0;
-      left: 0;
-      display: flex;
-      align-items: center;
-      background-color: $white-ter;
-      box-shadow: $elevation-2;
-      -webkit-transition: box-shadow 0.2s ease;
-      -moz-transition: box-shadow 0.2s ease;
-      -o-transition: box-shadow 0.2s ease;
-      transition: box-shadow 0.2s ease;
-
-      // Accommodate iOS status bar
-      box-sizing: content-box;
-      padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-      padding-top: env(safe-area-inset-top); /* iOS 11.2 */
-
-      &:focus {
-        outline: none;
-      }
-
-      &.is-active {
-        box-shadow: none;
-
-        & > .dropdown.icon {
-          transform: rotate(180deg);
-        }
-      }
-
-      .steps-header-active-page {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .icon {
-          margin-right: $size-8;
-        }
-      }
-
-      .steps-header-active-page-label {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .icon {
-        padding: $size-7;
-        line-height: 1;
-        -webkit-transition: transform 0.2s linear;
-        -moz-transition: transform 0.2s linear;
-        -o-transition: transform 0.2s linear;
-        transition: transform 0.2s linear;
-      }
-    }
-
-    #steps-navigation {
-      z-index: 32;
-      position: fixed;
-      top: $size-1;
-      right: 0;
-      left: 0;
-      background-color: $white;
-      box-shadow: none;
-      max-height: 0;
-      overflow-y: auto;
-      -webkit-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-      -moz-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-      -o-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-      transition: box-shadow 0.2s ease, max-height 0.2s ease;
-
-      // Accommodate iOS status bar
-      padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-      padding-top: env(safe-area-inset-top); /* iOS 11.2 */
-
-      &.is-active {
-        box-shadow: $elevation-3;
-        max-height: 40%;
-
-        + .steps-navigation-background {
-          background-color: $black;
-          opacity: 0.2;
-          z-index: 31;
-          position: fixed;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          left: 0;
-        }
-      }
-
-      .steps {
-        padding: $size-4;
-      }
-    }
-
-    .steps {
-      .steps-actions {
-        z-index: 30;
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        display: flex;
-        display: -webkit-box;
-        justify-content: space-between;
-        -webkit-box-pack: justify;
-        align-items: center;
-        background: $white-ter;
-        box-shadow: $elevation-2;
-
-        // Accommodate iOS virtual home button
-        box-sizing: content-box;
-        padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
-        padding-bottom: env(safe-area-inset-bottom); /* iOS 11.2 */
-
-        .steps-action {
-          flex-grow: 0;
-          flex-basis: unset;
-          margin: 0;
-
-          button {
-            border-radius: 0;
-            height: $size-2;
-            padding-left: $size-5;
-            padding-right: $size-5;
-          }
-        }
-
-        .step-progress-mobile {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          flex-grow: 1;
-
-          .step-progress-mobile-dot {
-            width: 10px;
-            height: 10px;
-            background: $grey-lighter;
-            border-radius: 50%;
-            margin-right: 5px;
-
-            &:last-child {
-              margin-right: 0;
-            }
-
-            &.is-active {
-              background: $grey;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  @media only screen and (max-width: $mobile) {
-    .ob-buttons-submit {
-      .ob-button {
-        flex: unset;
-        min-width: unset;
-      }
-    }
-
-    .ob-button {
-      flex: 1;
-
-      &:nth-child(even) {
-        margin-right: 0;
-      }
-    }
-
-    .modal-card-foot {
-      .ob-button {
-        min-width: unset;
-      }
-    }
-  }
+.ob-buttons-submit__spacer {
+  flex: 1;
 }
 
 .steps-header-active-page-icon {
@@ -348,4 +107,117 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
+}
+
+@media only screen and (max-width: $mobile) {
+  .ob-form-container {
+    .ob-button {
+      flex: 1;
+
+      &:nth-child(even) {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .ob-buttons-submit {
+    .ob-button {
+      flex: unset;
+      min-width: unset;
+    }
+  }
+}
+
+@media only screen and (max-width: $tablet) {
+  .ob-steps-navigation {
+    position: relative;
+  }
+
+  .ob-steps-navigation__header {
+    z-index: 30;
+    height: $size-1;
+    display: flex;
+    align-items: center;
+    background-color: $white-ter;
+    box-shadow: $elevation-2;
+    -webkit-transition: box-shadow 0.2s ease;
+    -moz-transition: box-shadow 0.2s ease;
+    -o-transition: box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+    }
+
+    &.is-active {
+      box-shadow: none;
+
+      & > .dropdown.icon {
+        transform: rotate(180deg);
+      }
+    }
+
+    .steps-header-active-page {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .icon {
+        margin-right: $size-8;
+      }
+    }
+
+    .steps-header-active-page-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon {
+      padding: $size-7;
+      line-height: 1;
+      -webkit-transition: transform 0.2s linear;
+      -moz-transition: transform 0.2s linear;
+      -o-transition: transform 0.2s linear;
+      transition: transform 0.2s linear;
+    }
+  }
+
+  .ob-steps-navigation__steps {
+    z-index: 30;
+    position: absolute;
+    top: $size-1;
+    right: 0;
+    left: 0;
+    background-color: $white;
+    box-shadow: none;
+    max-height: 0;
+    overflow-y: auto;
+    -webkit-transition: box-shadow 0.2s ease, max-height 0.2s ease;
+    -moz-transition: box-shadow 0.2s ease, max-height 0.2s ease;
+    -o-transition: box-shadow 0.2s ease, max-height 0.2s ease;
+    transition: box-shadow 0.2s ease, max-height 0.2s ease;
+
+    &.is-active {
+      box-shadow: $elevation-3;
+      max-height: 40vh;
+    }
+
+    .steps {
+      padding: $size-4;
+    }
+  }
+
+  .ob-steps-navigation__background.is-active {
+    background-color: $black;
+    opacity: 0.2;
+    z-index: 20;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+  }
 }

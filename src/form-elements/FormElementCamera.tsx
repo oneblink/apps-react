@@ -138,7 +138,15 @@ function FormElementCamera({
         })
       }
     },
-    [element, onChange, setIsLoading, setIsDirty, clearIsLoading, resetImage, setCameraError],
+    [
+      element,
+      onChange,
+      setIsLoading,
+      setIsDirty,
+      clearIsLoading,
+      resetImage,
+      setCameraError,
+    ],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
@@ -234,7 +242,7 @@ function FormElementCamera({
       >
         <div className="control">
           {!isLoading && value !== undefined && (
-            <figure>
+            <figure className="ob-figure">
               <img
                 src={value as string}
                 className="cypress-camera-image ob-camera__img"
@@ -253,7 +261,7 @@ function FormElementCamera({
           )}
 
           {isLoading && (
-            <figure>
+            <figure className="ob-figure">
               <div className="figure-content has-text-centered cypress-camera-loading-image">
                 <OnLoading small={true}></OnLoading>
               </div>
