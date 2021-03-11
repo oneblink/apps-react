@@ -7,10 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.1.14 (2021-03-11)
+
 ### Fixed
 
 - location element loading styles
 - Auto lookups no longer run in read only forms
+
+### Dependencies
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.1.1 (from 1.13.0)
+
+- update [bulma](https://www.npmjs.com/package/bulma) to [0.9.2](https://github.com/jgthms/bulma/releases/tag/0.9.2) (from [0.9.1](https://github.com/jgthms/bulma/releases/tag/0.9.1))
+
+- update [bulma-toast](https://www.npmjs.com/package/bulma-toast) to [2.2.0](https://github.com/rfoel/bulma-toast/releases/tag/v2.2.0) (from [2.1.0](https://github.com/rfoel/bulma-toast/releases/tag/v2.1.0))
+
+- update [file-saver](https://www.npmjs.com/package/file-saver) to [2.0.5](https://github.com/eligrey/FileSaver.js/blob/master/CHANGELOG.md) (from [2.0.2](https://github.com/eligrey/FileSaver.js/releases/tag/v2.0.2))
+
+- update [flatpickr](https://www.npmjs.com/package/flatpickr) to [4.6.9](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.9) (from [4.6.6](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.6))
+
+- update [query-string](https://www.npmjs.com/package/query-string) to [6.14.1](https://github.com/sindresorhus/query-string/releases/tag/v6.14.1) (from [6.13.7](https://github.com/sindresorhus/query-string/releases/tag/v6.13.7))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.3.2](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [1.27.5](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
 
 ## 0.1.13 (2021-03-03)
 
