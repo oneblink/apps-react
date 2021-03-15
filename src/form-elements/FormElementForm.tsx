@@ -13,7 +13,6 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  parentFormName?: string
   parentFormElementsCtrl: FormElementsCtrl
 }
 
@@ -27,7 +26,6 @@ function FormElementForm({
   onChange,
   onChangeElements,
   onChangeModel,
-  parentFormName,
   parentFormElementsCtrl,
 }: Props) {
   const handleNestedChange = React.useCallback(
@@ -100,7 +98,6 @@ function FormElementForm({
       onChangeElements={handleChangeElements}
       onChangeModel={handleChangeModel}
       formElementsConditionallyShown={formElementsConditionallyShown}
-      parentFormName={parentFormName}
       formElementsCtrl={formElementsCtrl}
     />
   )

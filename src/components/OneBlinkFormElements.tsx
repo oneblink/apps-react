@@ -30,6 +30,7 @@ import FormElementCaptcha from '../form-elements/FormElementCaptcha'
 import FormElementLocation from '../form-elements/FormElementLocation'
 import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
+import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 
 type Props = {
   formId: number
@@ -47,9 +48,6 @@ type Props = {
   isEven?: boolean
   idPrefix?: string
   formElementsCtrl: FormElementsCtrl
-
-  // Nested forms
-  parentFormName?: string
 }
 
 function OneBlinkFormElements({
@@ -64,10 +62,12 @@ function OneBlinkFormElements({
   onChangeElements,
   onChangeModel,
   formElementsCtrl,
-  parentFormName,
 }: Props) {
   return (
-    <>
+    <FormSubmissionModelContextProvider
+      formElementsCtrl={formElementsCtrl}
+      formElementsConditionallyShown={formElementsConditionallyShown}
+    >
       {elements.map((element) => {
         if (element.type === 'page') {
           return null
@@ -106,12 +106,11 @@ function OneBlinkFormElements({
               onChangeElements={onChangeElements}
               onChangeModel={onChangeModel}
               formElementsCtrl={formElementsCtrl}
-              parentFormName={parentFormName}
             />
           </div>
         )
       })}
-    </>
+    </FormSubmissionModelContextProvider>
   )
 }
 
@@ -131,7 +130,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onChangeElements,
   onChangeModel,
   formElementsCtrl,
-  parentFormName,
 }: {
   formId: number
   element: FormTypes.FormElement
@@ -146,7 +144,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onChangeElements: Props['onChangeElements']
   onChangeModel: Props['onChangeModel']
   formElementsCtrl: FormElementsCtrl
-  parentFormName?: string
 }) {
   const handleConditionallyShowOption = useConditionallyShowOptionCallback(
     formElementsCtrl,
@@ -405,8 +402,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <FormElementCalculation
           element={element}
-          formElementsCtrl={formElementsCtrl}
-          parentFormName={parentFormName}
           onChange={onChange}
           value={value}
         />
@@ -430,7 +425,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
           parentFormElementsCtrl={formElementsCtrl}
-          parentFormName={parentFormName}
         />
       )
     }
@@ -535,9 +529,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             formElementsConditionallyShown &&
             formElementsConditionallyShown[element.name]
           }
-          parentFormName={
-            parentFormName ? `${parentFormName}|${element.name}` : element.name
-          }
           parentFormElementsCtrl={formElementsCtrl}
         />
       )
@@ -558,7 +549,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <FormElementSummary
           element={element}
-          formElementsCtrl={formElementsCtrl}
           onChange={onChange}
           value={value}
         />

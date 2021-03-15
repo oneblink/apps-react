@@ -18,7 +18,6 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   parentFormElementsCtrl: FormElementsCtrl
-  parentFormName?: string
 }
 
 function FormElementRepeatableSet({
@@ -31,7 +30,6 @@ function FormElementRepeatableSet({
   displayValidationMessage,
   formElementConditionallyShown,
   parentFormElementsCtrl,
-  parentFormName,
   onChange,
   onChangeElements,
   onChangeModel,
@@ -159,7 +157,6 @@ function FormElementRepeatableSet({
               }
               displayValidationMessages={displayValidationMessage}
               parentFormElementsCtrl={parentFormElementsCtrl}
-              parentFormName={parentFormName}
             />
           )
         })}
@@ -201,7 +198,6 @@ type RepeatableSetEntryProps = {
   entry: FormElementsCtrl['model']
   element: FormTypes.RepeatableSetElement
   parentFormElementsCtrl: FormElementsCtrl | undefined
-  parentFormName?: string
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
@@ -230,7 +226,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     displayValidationMessages,
     formElementsValidation,
     parentFormElementsCtrl,
-    parentFormName,
     onChange,
     onChangeElements,
     onChangeModel,
@@ -330,7 +325,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             onChangeModel={handleChangeModel}
             formElementsCtrl={formElementsCtrl}
             formElementsConditionallyShown={formElementsConditionallyShown}
-            parentFormName={parentFormName}
           />
         </div>
       </>

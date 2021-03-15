@@ -16,7 +16,6 @@ import useConditionalLogic from './hooks/useConditionalLogic'
 import usePages from './hooks/usePages'
 import useLookups from './hooks/useLookups'
 import { ConditionallyShowOptionCallbackContext } from './hooks/useConditionallyShowOptionCallback'
-import { FormSubmissionModelContext } from './hooks/useFormSubmissionModelContext'
 import { FlattenElementsContext } from './hooks/useFlattenElementsContext'
 import { FormDefinitionContext } from './hooks/useFormDefinition'
 import { InjectPagesContext } from './hooks/useInjectPages'
@@ -589,65 +588,59 @@ function OneBlinkFormBase({
                 value={handleConditionallyShowOption}
               >
                 <FlattenElementsContext.Provider value={elementsOnPages}>
-                  <FormSubmissionModelContext.Provider
-                    value={getCurrentSubmissionData}
-                  >
-                    <FormDefinitionContext.Provider value={definition}>
-                      <InjectPagesContext.Provider value={injectPagesAfter}>
-                        <ExecutedLookupProvider
-                          executedLookup={executedLookup}
-                          executeLookupFailed={executeLookupFailed}
+                  <FormDefinitionContext.Provider value={definition}>
+                    <InjectPagesContext.Provider value={injectPagesAfter}>
+                      <ExecutedLookupProvider
+                        executedLookup={executedLookup}
+                        executeLookupFailed={executeLookupFailed}
+                      >
+                        <GoogleMapsApiKeyContext.Provider
+                          value={googleMapsApiKey}
                         >
-                          <GoogleMapsApiKeyContext.Provider
-                            value={googleMapsApiKey}
+                          <CaptchaSiteKeyContext.Provider
+                            value={captchaSiteKey}
                           >
-                            <CaptchaSiteKeyContext.Provider
-                              value={captchaSiteKey}
-                            >
-                              <FormIsReadOnlyContext.Provider
-                                value={isReadOnly}
-                              >
-                                {visiblePages.map(
-                                  (page: FormTypes.PageElement) => (
-                                    <div
-                                      key={page.id}
-                                      className={clsx(
-                                        'ob-page step-content is-active cypress-page',
-                                        {
-                                          'is-invisible':
-                                            currentPage.id !== page.id,
-                                        },
-                                      )}
-                                    >
-                                      <OneBlinkFormElements
-                                        formId={definition.id}
-                                        formElementsConditionallyShown={
-                                          rootElementsConditionallyShown
-                                        }
-                                        formElementsValidation={
-                                          pagesValidation &&
-                                          pagesValidation[page.id]
-                                        }
-                                        displayValidationMessages={
-                                          hasAttemptedSubmit ||
-                                          checkDisplayPageError(page)
-                                        }
-                                        elements={page.elements}
-                                        onChange={handleChange}
-                                        onChangeElements={handleChangeElements}
-                                        onChangeModel={handleChangeModel}
-                                        formElementsCtrl={rootFormElementsCtrl}
-                                      />
-                                    </div>
-                                  ),
-                                )}
-                              </FormIsReadOnlyContext.Provider>
-                            </CaptchaSiteKeyContext.Provider>
-                          </GoogleMapsApiKeyContext.Provider>
-                        </ExecutedLookupProvider>
-                      </InjectPagesContext.Provider>
-                    </FormDefinitionContext.Provider>
-                  </FormSubmissionModelContext.Provider>
+                            <FormIsReadOnlyContext.Provider value={isReadOnly}>
+                              {visiblePages.map(
+                                (page: FormTypes.PageElement) => (
+                                  <div
+                                    key={page.id}
+                                    className={clsx(
+                                      'ob-page step-content is-active cypress-page',
+                                      {
+                                        'is-invisible':
+                                          currentPage.id !== page.id,
+                                      },
+                                    )}
+                                  >
+                                    <OneBlinkFormElements
+                                      formId={definition.id}
+                                      formElementsConditionallyShown={
+                                        rootElementsConditionallyShown
+                                      }
+                                      formElementsValidation={
+                                        pagesValidation &&
+                                        pagesValidation[page.id]
+                                      }
+                                      displayValidationMessages={
+                                        hasAttemptedSubmit ||
+                                        checkDisplayPageError(page)
+                                      }
+                                      elements={page.elements}
+                                      onChange={handleChange}
+                                      onChangeElements={handleChangeElements}
+                                      onChangeModel={handleChangeModel}
+                                      formElementsCtrl={rootFormElementsCtrl}
+                                    />
+                                  </div>
+                                ),
+                              )}
+                            </FormIsReadOnlyContext.Provider>
+                          </CaptchaSiteKeyContext.Provider>
+                        </GoogleMapsApiKeyContext.Provider>
+                      </ExecutedLookupProvider>
+                    </InjectPagesContext.Provider>
+                  </FormDefinitionContext.Provider>
                 </FlattenElementsContext.Provider>
               </ConditionallyShowOptionCallbackContext.Provider>
             </div>
