@@ -13,6 +13,7 @@ export default function usePages({
   pagesValidation: PageElementsValidation | undefined
   pageElementsConditionallyShown: PageElementsConditionallyShown
 }) {
+  const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
 
   const [
@@ -55,6 +56,8 @@ export default function usePages({
     }
   }, [currentPage, visiblePages])
 
+  const isShowingMultiplePages = visiblePages.length > 1
+
   const setPageId = React.useCallback(
     (pageId: string) => {
       setVisitedPageIds((currentVisitedPageIds) => {
@@ -66,8 +69,19 @@ export default function usePages({
       })
       setCurrentPageId(pageId)
       closeStepsNavigation()
+
+      const scrollToTopOfPageHTMLElement =
+        scrollToTopOfPageHTMLElementRef.current
+      if (isShowingMultiplePages && scrollToTopOfPageHTMLElement) {
+        window.requestAnimationFrame(() => {
+          scrollToTopOfPageHTMLElement.scrollIntoView({
+            block: 'start',
+            behavior: 'smooth',
+          })
+        })
+      }
     },
-    [closeStepsNavigation, currentPageId],
+    [closeStepsNavigation, currentPageId, isShowingMultiplePages],
   )
 
   const goToNextPage = React.useCallback(() => {
@@ -131,7 +145,6 @@ export default function usePages({
 
   const firstVisiblePage = visiblePages[0]
   const lastVisiblePage = visiblePages[visiblePages.length - 1]
-  const isShowingMultiplePages = visiblePages.length > 1
   const isLastVisiblePage =
     lastVisiblePage && lastVisiblePage.id === currentPageId
   const isFirstVisiblePage =
@@ -160,5 +173,6 @@ export default function usePages({
     setPageId,
     goToPreviousPage,
     goToNextPage,
+    scrollToTopOfPageHTMLElementRef,
   }
 }
