@@ -1,4 +1,5 @@
 import * as React from 'react'
+import ReactTooltip from 'react-tooltip'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
@@ -547,11 +548,18 @@ function OneBlinkFormBase({
                             {hasErrors ? (
                               <span
                                 className="icon tooltip has-tooltip-top cypress-page-error"
-                                data-tooltip="Page has errors"
+                                data-tip
+                                data-for={`${index}-page-error-tooltip`}
                               >
                                 <i className="material-icons has-text-danger is-size-3">
                                   warning
                                 </i>
+                                <ReactTooltip
+                                  id={`${index}-page-error-tooltip`}
+                                  effect="solid"
+                                >
+                                  Page has errors
+                                </ReactTooltip>
                               </span>
                             ) : (
                               <span>{index + 1}</span>
