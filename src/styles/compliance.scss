@@ -26,4 +26,8 @@
   .compliance-button-icon {
     margin-right: 8px;
   }
+
+  .ob-compliance-child-element:not(:last-child) {
+    margin-bottom: $size-5;
+  }
 }
