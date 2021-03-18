@@ -83,6 +83,10 @@
     margin-bottom: $size-2;
   }
 
+  .ob-compliance-child-element:not(:last-child) {
+    margin-bottom: $size-5;
+  }
+
   .field {
     width: 100%;
 

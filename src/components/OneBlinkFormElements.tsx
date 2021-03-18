@@ -28,8 +28,10 @@ import FormElementCamera from '../form-elements/FormElementCamera'
 import FormElementSummary from '../form-elements/FormElementSummary'
 import FormElementCaptcha from '../form-elements/FormElementCaptcha'
 import FormElementLocation from '../form-elements/FormElementLocation'
-import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
+import FormElementCompliance from '../form-elements/FormElementCompliance'
+import { FormTypes, GeoscapeTypes } from '@oneblink/types'
+
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 
 type Props = {
@@ -80,7 +82,6 @@ function OneBlinkFormElements({
         ) {
           return null
         }
-
         return (
           <div
             key={element.id}
@@ -609,6 +610,31 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={onChange}
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'compliance': {
+      return (
+        <LookupNotification
+          isAutoLookup
+          element={element}
+          elements={elements}
+          value={value}
+          formElementsCtrl={formElementsCtrl}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+        >
+          <FormElementCompliance
+            id={id}
+            element={element}
+            value={value}
+            onChange={onChange}
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            onConditionallyShowOption={handleConditionallyShowOption}
+            isEven={isEven}
           />
         </LookupNotification>
       )
