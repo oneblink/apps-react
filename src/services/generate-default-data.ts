@@ -14,37 +14,16 @@ export default function generateDefaultData(
       case 'checkboxes':
       case 'select':
       case 'autocomplete':
-      case 'radio': {
-        if (!el.defaultValue) {
-          break
-        }
-        // Cater for dynamic options
-        if (el.optionsType === 'DYNAMIC') {
-          m[el.name] = el.defaultValue
-          break
-        }
-        // Cater for multi-select and checkboxes
-        if ((el.type === 'select' && el.multi) || el.type === 'checkboxes') {
-          if (Array.isArray(el.defaultValue) && el.defaultValue.length) {
-            m[el.name] = el.defaultValue.reduce(
-              (optionValues: string[], optionId) => {
-                const option = (el.options || []).find(
-                  (option) => option.id === optionId,
-                )
-                if (option) {
-                  optionValues.push(option.value)
-                }
-                return optionValues
-              },
-              [],
-            )
-          }
-        } else {
-          const option = (el.options || []).find(
-            (option) => option.id === el.defaultValue,
-          )
-          if (option) {
-            m[el.name] = option.value
+      case 'radio':
+      case 'compliance': {
+        const dv = getOptionsDefaultValue(el)
+        if (dv) {
+          if (el.type === 'compliance') {
+            m[el.name] = {
+              value: dv,
+            }
+          } else {
+            m[el.name] = dv
           }
         }
         break
@@ -130,4 +109,36 @@ export default function generateDefaultData(
 
     return m
   }, Object.assign({}, preFillData))
+}
+
+const getOptionsDefaultValue = (el: FormTypes.FormElementWithOptions) => {
+  if (!el.defaultValue) {
+    return
+  }
+  // Cater for dynamic options
+  if (el.optionsType === 'DYNAMIC') {
+    return el.defaultValue
+  }
+  // Cater for multi-select and checkboxes
+  else if ((el.type === 'select' && el.multi) || el.type === 'checkboxes') {
+    if (Array.isArray(el.defaultValue) && el.defaultValue.length) {
+      return el.defaultValue.reduce((optionValues: string[], optionId) => {
+        const option = (el.options || []).find(
+          (option) => option.id === optionId,
+        )
+        if (option) {
+          optionValues.push(option.value)
+        }
+        return optionValues
+      }, [])
+    }
+  } else {
+    const option = (el.options || []).find(
+      (option) => option.id === el.defaultValue,
+    )
+    if (option) {
+      return option.value
+    }
+  }
+  return
 }
