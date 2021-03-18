@@ -14,7 +14,8 @@ export default function generateDefaultData(
       case 'checkboxes':
       case 'select':
       case 'autocomplete':
-      case 'radio': {
+      case 'radio':
+      case 'compliance': {
         if (!el.defaultValue) {
           break
         }
