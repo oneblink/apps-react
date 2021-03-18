@@ -93,7 +93,6 @@ function FormElementCompliance({
 
   const handleValueChange = React.useCallback(
     (fe: FormTypes.FormElement, v: unknown) => {
-      console.log({ v })
       onChange(fe, {
         ...typedValue,
         value: v,
@@ -195,7 +194,7 @@ function FormElementCompliance({
           {isShowingNotes && (
             <div className="ob-compliance-child-element">
               <FormElementTextarea
-                id={`${element.id}-notes`}
+                id={`${id}-notes`}
                 onChange={(fe, v) => handleNotesChange(v)}
                 displayValidationMessage={false}
                 validationMessage={undefined}
@@ -207,7 +206,7 @@ function FormElementCompliance({
           {isShowingFiles && (
             <div className="ob-compliance-child-element">
               <FormElementFiles
-                id={`${element.id}-files`}
+                id={`${id}-files`}
                 onChange={(fe, v) => handleFilesChange(v)}
                 displayValidationMessage={false}
                 validationMessage={undefined}

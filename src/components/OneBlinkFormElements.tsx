@@ -620,7 +620,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           isAutoLookup
           element={element}
           elements={elements}
-          value={value}
+          value={value ? (value as { value: unknown }).value : undefined}
           formElementsCtrl={formElementsCtrl}
           formElementsConditionallyShown={formElementsConditionallyShown}
           onChangeElements={onChangeElements}

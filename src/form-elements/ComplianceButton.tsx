@@ -20,13 +20,15 @@ const ComplianceButton = ({
     <button
       disabled={disabled}
       type="button"
-      className={clsx('button compliance-button', {
+      className={clsx('button ob-button__compliance', {
         'is-primary': isActive,
         'is-light': !isActive,
       })}
       onClick={onClick}
     >
-      <i className="material-icons is-size-5 compliance-button-icon">{icon}</i>
+      <i className="material-icons is-size-5 ob-button__compliance-icon">
+        {icon}
+      </i>
       {children}
     </button>
   )

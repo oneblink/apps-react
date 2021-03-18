@@ -1,10 +1,4 @@
 .ob-compliance {
-  .ob-compliance__container {
-    padding: $size-5;
-    margin-bottom: $size-5;
-    border-radius: $radius;
-  }
-
   &.odd > .ob-compliance__container {
     background-color: $white;
   }
@@ -12,22 +6,26 @@
   &.even > .ob-compliance__container {
     background-color: $white-bis;
   }
+}
+.ob-compliance__container {
+  padding: $size-5;
+  margin-bottom: $size-5;
+  border-radius: $radius;
+}
+.ob-buttons-compliance {
+  margin-top: $size-8;
+}
 
-  .ob-buttons-compliance {
-    margin-top: 0.5rem;
-  }
+.ob-button__compliance {
+  padding: $size-9 $size-6;
+  height: unset;
+  font-size: $small-font-size;
+}
 
-  .compliance-button {
-    padding: 4px 16px;
-    height: unset;
-    font-size: $small-font-size;
-  }
+.ob-button__compliance-icon {
+  margin-right: $size-8;
+}
 
-  .compliance-button-icon {
-    margin-right: 8px;
-  }
-
-  .ob-compliance-child-element:not(:last-child) {
-    margin-bottom: $size-5;
-  }
+.ob-compliance-child-element:not(:last-child) {
+  margin-bottom: $size-5;
 }
