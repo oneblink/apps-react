@@ -7,12 +7,10 @@ import { FormTypes } from '@oneblink/types'
 
 type Props = {
   element: FormTypes.CalculationElement
-  formElementsCtrl: FormElementsCtrl | undefined
   onChange: (
     formElement: FormTypes.FormElement,
     newValue: number | undefined,
   ) => unknown
-  parentFormName: string | undefined
   value: unknown | undefined
 }
 
@@ -20,14 +18,8 @@ const isUnenteredValue = (value: unknown | undefined) => {
   return !value && value !== 0
 }
 
-function FormElementCalculation({
-  element,
-  onChange,
-  formElementsCtrl,
-  parentFormName,
-  value,
-}: Props) {
-  const getFormSubmissionModel = useFormSubmissionModel()
+function FormElementCalculation({ element, onChange, value }: Props) {
+  const formSubmissionModel = useFormSubmissionModel()
 
   const htmlValue = React.useMemo(() => {
     let htmlTemplate
@@ -67,21 +59,7 @@ function FormElementCalculation({
       exprParser.registerProperty(
         replacement,
         (submission: FormElementsCtrl['model']) => {
-          let defaultAccumulator: FormElementsCtrl['model'] = submission
-          // ACCOUNT FOR NESTED FORM CASE
-          if (parentFormName) {
-            for (const level of parentFormName.split('|')) {
-              if (defaultAccumulator) {
-                defaultAccumulator = defaultAccumulator[
-                  level
-                ] as FormElementsCtrl['model']
-              }
-            }
-          }
-          if (!defaultAccumulator) return NaN
-          defaultAccumulator = defaultAccumulator[
-            nestedElementNames[0]
-          ] as FormElementsCtrl['model']
+          const defaultAccumulator = submission[nestedElementNames[0]]
 
           return nestedElementNames.reduce(
             (
@@ -128,13 +106,13 @@ function FormElementCalculation({
 
                 // If we are processing the entries in a repeatable set,
                 // we can sum the numbers elements in the entries
-                const currentElementName = nestedElementNames[index + 1]
+                const nextElementName = nestedElementNames[index + 1]
 
                 let isNestedRepeatableSet = false
                 const nestedElementValues = elementValue.reduce(
                   (nestedElementValues, entry) => {
                     if (entry) {
-                      const nextElementValue = entry[currentElementName]
+                      const nextElementValue = entry[nextElementName]
                       if (Array.isArray(nextElementValue)) {
                         if (nextElementValue.length) {
                           nestedElementValues.push(...nextElementValue)
@@ -149,7 +127,7 @@ function FormElementCalculation({
                   [],
                 )
 
-                // If the nested element values are all arrays, we can pass them on the the next
+                // If the nested element values are all arrays, we can pass them on to the next iteration
                 if (isNestedRepeatableSet) {
                   return nestedElementValues
                 }
@@ -178,7 +156,7 @@ function FormElementCalculation({
         },
       )
     },
-    [parentFormName],
+    [],
   )
 
   const { calculation, hasError } = React.useMemo(() => {
@@ -241,32 +219,22 @@ function FormElementCalculation({
   // MODEL LISTENER
   React.useEffect(() => {
     if (!calculation) return
-    const submission = getFormSubmissionModel(false).submission
-    const newValue = calculation.eval(submission)
-    if (value === undefined) {
-      if (Object.is(NaN, newValue)) return
+    const newValue = calculation.eval(formSubmissionModel)
+    if (value === newValue || (value === undefined && isNaN(newValue))) {
+      return
     }
-    if (value === newValue) return // VALUE DID NOT CHANGE
     if (!isNaN(newValue)) {
       onChange(element, newValue)
     } else {
       onChange(element, undefined)
     }
-  }, [
-    calculation,
-    element,
-    getFormSubmissionModel,
-    // Want to re-evaluate when the submission model changes
-    formElementsCtrl,
-    onChange,
-    value,
-  ])
+  }, [calculation, element, formSubmissionModel, onChange, value])
 
   return (
     <div className="cypress-calculation-element">
       <div className="ob-form__element ob-calculation">
         <div
-          className="cypress-calculation-result"
+          className="cypress-calculation-result ob-calculation__content ql-editor"
           dangerouslySetInnerHTML={{ __html: htmlValue }}
         ></div>
         {hasError && (

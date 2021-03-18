@@ -7,7 +7,6 @@ import { FormTypes } from '@oneblink/types'
 
 type Props = {
   element: FormTypes.SummaryElement
-  formElementsCtrl: FormElementsCtrl
   onChange: (
     formElement: FormTypes.FormElement,
     newValue: unknown | undefined,
@@ -32,13 +31,8 @@ const arraysAreEqual = (a: unknown[], b: unknown[]) => {
   }
   return true
 }
-function FormElementSummary({
-  element,
-  onChange,
-  formElementsCtrl,
-  value,
-}: Props) {
-  const getFormSubmissionModel = useFormSubmissionModel()
+function FormElementSummary({ element, onChange, value }: Props) {
+  const formSubmissionModel = useFormSubmissionModel()
   const flattenedElements = useFlattenElements()
 
   const reducer = React.useCallback(
@@ -172,10 +166,9 @@ function FormElementSummary({
 
   // MODEL LISTENER
   React.useEffect(() => {
-    const { submission } = getFormSubmissionModel(true)
     const summary = flattenedElements.reduce(
       (partialSummary, formElement) => {
-        return reducer(partialSummary, formElement, submission)
+        return reducer(partialSummary, formElement, formSubmissionModel)
       },
 
       [],
@@ -195,11 +188,10 @@ function FormElementSummary({
   }, [
     element,
     flattenedElements,
-    getFormSubmissionModel,
+    formSubmissionModel,
     onChange,
     reducer,
     value,
-    formElementsCtrl,
   ])
 
   return (
