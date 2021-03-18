@@ -9,9 +9,9 @@ export type ConditionallyShowOptionCallbackContextValue = (
 
 const defaultContext = () => true
 
-export const ConditionallyShowOptionCallbackContext = React.createContext<
-  ConditionallyShowOptionCallbackContextValue
->(defaultContext)
+export const ConditionallyShowOptionCallbackContext = React.createContext<ConditionallyShowOptionCallbackContextValue>(
+  defaultContext,
+)
 
 export default function useConditionallyShowOptionCallback(
   formElementsCtrl: FormElementsCtrl,
@@ -24,6 +24,7 @@ export default function useConditionallyShowOptionCallback(
   return React.useMemo(() => {
     if (
       (element.type !== 'select' &&
+        element.type !== 'compliance' &&
         element.type !== 'radio' &&
         element.type !== 'checkboxes' &&
         element.type !== 'autocomplete') ||
