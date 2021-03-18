@@ -16,7 +16,7 @@ $elevation-3: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14),
 
 $size-0: 3.25rem;
 $size-8: 0.5rem;
-
+$size-9: 0.25rem;
 //
 // Bulma Variables
 //
@@ -102,6 +102,7 @@ $modal-background-background-color: $secondary;
 @import './styles/icons.scss';
 @import './styles/figure.scss';
 @import './styles/renderer.scss';
+@import './styles/compliance.scss';
 
 //
 // Third Party

@@ -2,7 +2,10 @@ import * as React from 'react'
 import useContrastColor from '../hooks/useContrastColor'
 import { FormTypes } from '@oneblink/types'
 type Props = {
-  element: FormTypes.RadioButtonElement | FormTypes.CheckboxElement
+  element:
+    | FormTypes.RadioButtonElement
+    | FormTypes.CheckboxElement
+    | FormTypes.ComplianceElement
   option: FormTypes.ChoiceElementOption
   isSelected: boolean
   onClick: () => void

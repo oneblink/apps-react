@@ -1,0 +1,31 @@
+.ob-compliance {
+  &.odd > .ob-compliance__container {
+    background-color: $white;
+  }
+
+  &.even > .ob-compliance__container {
+    background-color: $white-bis;
+  }
+}
+.ob-compliance__container {
+  padding: $size-5;
+  margin-bottom: $size-5;
+  border-radius: $radius;
+}
+.ob-buttons-compliance {
+  margin-top: $size-8;
+}
+
+.ob-button__compliance {
+  padding: $size-9 $size-6;
+  height: unset;
+  font-size: $small-font-size;
+}
+
+.ob-button__compliance-icon {
+  margin-right: $size-8;
+}
+
+.ob-compliance-child-element:not(:last-child) {
+  margin-bottom: $size-5;
+}

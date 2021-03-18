@@ -7,7 +7,7 @@ import useIsMounted from '../hooks/useIsMounted'
 import downloadFile from '../services/download-file'
 import { FormTypes } from '@oneblink/types'
 
-type FilesElementFile = {
+export type FilesElementFile = {
   data: string
   fileName: string
 }
