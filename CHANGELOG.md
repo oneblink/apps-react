@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Compliance element type
+- `hint` to form elements with a label displayed
 
 ## 0.2.0 (2021-03-17)
 

@@ -1,9 +1,0 @@
-os: linux
-dist: xenial
-language: node_js
-node_js:
-  - '12'
-
-install:
-  - npm install --global npm@6.x.x
-  - npm ci

@@ -7,6 +7,15 @@
   z-index: 100;
 }
 
+.ob-label {
+  display: flex;
+  align-items: center;
+}
+
+.ob-label__hint {
+  margin-left: $size-8;
+}
+
 .ob-steps-navigation__header {
   display: none;
 }
