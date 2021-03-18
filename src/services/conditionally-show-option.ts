@@ -57,6 +57,7 @@ const conditionallyShowOptionByPredicate = (
   }
 
   if (
+    predicateElement.type !== 'compliance' &&
     predicateElement.type !== 'select' &&
     predicateElement.type !== 'autocomplete' &&
     predicateElement.type !== 'checkboxes' &&

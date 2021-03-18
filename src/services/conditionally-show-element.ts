@@ -17,13 +17,15 @@ export const handleOptionsPredicate = (
   return predicate.optionIds.some((optionId) => {
     const option = predicateElement.options.find((o) => o.id === optionId)
     if (option) {
-      if (Array.isArray(model[predicateElement.name])) {
-        //@ts-expect-error - checked above
-        return model[predicateElement.name].some((modelValue) => {
+      const value = model[predicateElement.name]
+      if (Array.isArray(value)) {
+        return value.some((modelValue) => {
           return modelValue === option.value
         })
+      } else if (predicateElement.type === 'compliance' && value) {
+        return option.value === (value as { value: unknown }).value
       } else {
-        return option.value === model[predicateElement.name]
+        return option.value === value
       }
     } else {
       return false
@@ -72,7 +74,8 @@ const handlePredicate = (
         predicateElement.type !== 'select' &&
         predicateElement.type !== 'autocomplete' &&
         predicateElement.type !== 'radio' &&
-        predicateElement.type !== 'checkboxes'
+        predicateElement.type !== 'checkboxes' &&
+        predicateElement.type !== 'compliance'
       ) {
         return false
       }

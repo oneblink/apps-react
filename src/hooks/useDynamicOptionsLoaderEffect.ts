@@ -28,6 +28,7 @@ export default function useDynamicOptionsLoaderEffect(
             if (
               formElement &&
               (formElement.type === 'select' ||
+                formElement.type === 'compliance' ||
                 formElement.type === 'autocomplete' ||
                 formElement.type === 'checkboxes' ||
                 formElement.type === 'radio')
