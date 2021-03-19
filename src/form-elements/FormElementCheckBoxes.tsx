@@ -66,6 +66,7 @@ function FormElementCheckboxes({
         className="ob-checkbox"
         id={id}
         element={element}
+        required={element.required}
       >
         <FormElementOptions options={element.options}>
           {element.buttons ? (

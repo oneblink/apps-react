@@ -108,6 +108,7 @@ function FormElementLocation({
         className="ob-location"
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="control">
           {!isOffline ? (

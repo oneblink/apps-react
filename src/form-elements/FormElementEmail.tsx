@@ -31,7 +31,12 @@ function FormElementEmail({
   const text = typeof value === 'string' ? value : ''
   return (
     <div className="cypress-email-element">
-      <FormElementLabelContainer className="ob-email" id={id} element={element}>
+      <FormElementLabelContainer
+        className="ob-email"
+        id={id}
+        element={element}
+        required={element.required}
+      >
         <div className="field has-addons">
           <div className="control is-expanded">
             <input

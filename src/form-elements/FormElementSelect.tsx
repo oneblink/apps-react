@@ -46,6 +46,7 @@ function FormElementSelect({
         className="ob-select"
         id={id}
         element={element}
+        required={element.required}
       >
         <FormElementOptions options={element.options}>
           {!element.multi ? (

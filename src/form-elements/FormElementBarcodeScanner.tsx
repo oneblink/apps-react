@@ -88,6 +88,7 @@ function FormElementBarcodeScanner({
         className="ob-barcode-scanner"
         element={element}
         id={id}
+        required={element.required}
       >
         {error && (
           <figure className="ob-figure">

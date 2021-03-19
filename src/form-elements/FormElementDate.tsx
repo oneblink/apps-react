@@ -80,7 +80,12 @@ function FormElementDate({
 
   return (
     <div className="cypress-date-element" ref={htmlDivElementRef}>
-      <FormElementLabelContainer className="ob-date" id={id} element={element}>
+      <FormElementLabelContainer
+        className="ob-date"
+        id={id}
+        element={element}
+        required={element.required}
+      >
         <div className="field has-addons">
           <div className="control is-expanded">
             <input

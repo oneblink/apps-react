@@ -85,6 +85,7 @@ function FormElementDateTime({
         className="ob-datetime"
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="field has-addons">
           <div className="control is-expanded">
