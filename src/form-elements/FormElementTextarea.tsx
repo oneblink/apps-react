@@ -40,6 +40,7 @@ function FormElementTextarea({
         className="ob-textarea"
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="control">
           <textarea

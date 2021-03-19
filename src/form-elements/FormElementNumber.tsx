@@ -57,6 +57,7 @@ function FormElementNumber({
         className="ob-number"
         id={id}
         element={element}
+        required={element.required}
       >
         {!element.isSlider ? (
           <div className="field has-addons">

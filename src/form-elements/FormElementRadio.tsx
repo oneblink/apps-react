@@ -42,7 +42,12 @@ function FormElementRadio({
 
   return (
     <div className="cypress-radio-element">
-      <FormElementLabelContainer className="ob-radio" id={id} element={element}>
+      <FormElementLabelContainer
+        className="ob-radio"
+        id={id}
+        element={element}
+        required={element.required}
+      >
         <FormElementOptions options={element.options}>
           {!element.buttons ? (
             <div>

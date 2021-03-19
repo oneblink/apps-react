@@ -33,7 +33,12 @@ function FormElementText({
     (isDirty || displayValidationMessage) && !!validationMessage
   return (
     <div className="cypress-text-element">
-      <FormElementLabelContainer className="ob-text" id={id} element={element}>
+      <FormElementLabelContainer
+        className="ob-text"
+        id={id}
+        element={element}
+        required={element.required}
+      >
         <div className="field has-addons">
           <div className="control is-expanded">
             <input

@@ -100,6 +100,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
         className="ob-autocomplete"
         element={element}
         id={id}
+        required={element.required}
       >
         <FormElementOptions options={element.options}>
           <AutocompleteDropdown
@@ -166,6 +167,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
         className="ob-autocomplete"
         element={element}
         id={id}
+        required={element.required}
       >
         <AutocompleteDropdown
           id={id}

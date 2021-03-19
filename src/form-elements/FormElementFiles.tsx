@@ -6,6 +6,7 @@ import useClickOutsideElement from '../hooks/useClickOutsideElement'
 import useIsMounted from '../hooks/useIsMounted'
 import downloadFile from '../services/download-file'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 export type FilesElementFile = {
   data: string
@@ -183,10 +184,12 @@ function FormElementFiles({
   const files = Array.isArray(value) ? [...value] : []
   return (
     <div className="cypress-files-element">
-      <div className="ob-form__element ob-files">
-        <label className="label ob-label" htmlFor={id}>
-          {element.label}
-        </label>
+      <FormElementLabelContainer
+        className="ob-files"
+        element={element}
+        id={id}
+        required={false}
+      >
         <input
           ref={inputRef}
           type="file"
@@ -232,7 +235,7 @@ function FormElementFiles({
             </div>
           </div>
         )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }

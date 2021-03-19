@@ -7,37 +7,44 @@ function FormElementLabelContainer({
   className,
   element,
   id,
+  required,
   children,
 }: {
   className: string
-  element: FormTypes.FormElementRequired
+  element: FormTypes.FormElementBase
   id: string
+  required: boolean
   children: React.ReactNode
 }) {
   return (
     <div className={clsx('ob-form__element', className)}>
-      <label
-        className={clsx('label ob-label', {
-          'is-required': element.required,
-        })}
-        htmlFor={id}
-      >
-        {element.label}
+      <div className="label ob-label__container">
+        <label
+          className={clsx('ob-label', {
+            'ob-label__required is-required': required,
+          })}
+          htmlFor={id}
+        >
+          {element.label}
+        </label>
         {element.hint && (
-          <i
-            data-tip={!!element.hint}
-            data-for={`${id}-hint`}
-            className="material-icons has-text-grey-light ob-label__hint"
-          >
-            info
-          </i>
+          <>
+            <i
+              data-tip={!!element.hint}
+              data-for={`${id}-hint`}
+              className="material-icons has-text-grey-light ob-label__hint"
+              data-effect="solid"
+              data-place="right"
+              data-delay-hide={100}
+            >
+              info
+            </i>
+            <ReactTooltip id={`${id}-hint`} clickable>
+              {element.hint}
+            </ReactTooltip>
+          </>
         )}
-      </label>
-      {element.hint && (
-        <ReactTooltip id={`${id}-hint`} effect="solid" place="right">
-          {element.hint}
-        </ReactTooltip>
-      )}
+      </div>
       {children}
     </div>
   )

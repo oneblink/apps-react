@@ -107,6 +107,7 @@ function FormElementGeoscapeAddress({
         className="ob-geoscape-address ob-autocomplete"
         element={element}
         id={id}
+        required={element.required}
       >
         <AutocompleteDropdown
           id={id}

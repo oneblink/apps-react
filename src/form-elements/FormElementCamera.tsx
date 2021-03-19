@@ -239,6 +239,7 @@ function FormElementCamera({
         className="ob-camera"
         element={element}
         id={id}
+        required={element.required}
       >
         <div className="control">
           {!isLoading && value !== undefined && (

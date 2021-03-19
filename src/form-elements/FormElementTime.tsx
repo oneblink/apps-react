@@ -75,7 +75,12 @@ function FormElementTime({
 
   return (
     <div className="cypress-time-element" ref={htmlDivElementRef}>
-      <FormElementLabelContainer className="ob-time" id={id} element={element}>
+      <FormElementLabelContainer
+        className="ob-time"
+        id={id}
+        element={element}
+        required={element.required}
+      >
         <div className="field has-addons">
           <div className="control is-expanded">
             <input

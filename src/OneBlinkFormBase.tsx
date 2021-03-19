@@ -550,13 +550,13 @@ function OneBlinkFormBase({
                                 className="icon tooltip has-tooltip-top cypress-page-error"
                                 data-tip
                                 data-for={`${index}-page-error-tooltip`}
+                                data-effect="solid"
                               >
                                 <i className="material-icons has-text-danger is-size-3">
                                   warning
                                 </i>
                                 <ReactTooltip
                                   id={`${index}-page-error-tooltip`}
-                                  effect="solid"
                                 >
                                   Page has errors
                                 </ReactTooltip>

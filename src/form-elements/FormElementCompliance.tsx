@@ -137,6 +137,7 @@ function FormElementCompliance({
         className={`ob-compliance ${!isEven ? 'even' : 'odd'}`}
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="ob-compliance__container">
           <FormElementOptions options={element.options}>

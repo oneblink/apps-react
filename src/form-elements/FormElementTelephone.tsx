@@ -35,6 +35,7 @@ function FormElementTelephone({
         className="ob-telephone"
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="field has-addons">
           <div className="control is-expanded">

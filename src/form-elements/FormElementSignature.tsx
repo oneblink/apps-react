@@ -113,6 +113,7 @@ function FormElementSignature({
         className="ob-signature"
         id={id}
         element={element}
+        required={element.required}
       >
         <div className="control">
           <div>
