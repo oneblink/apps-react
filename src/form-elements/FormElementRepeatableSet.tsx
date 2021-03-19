@@ -4,6 +4,7 @@ import generateDefaultData from '../services/generate-default-data'
 import OneBlinkFormElements from '../components/OneBlinkFormElements'
 import Modal from '../components/Modal'
 import { FormTypes } from '@oneblink/types'
+import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
   formId: number
@@ -127,13 +128,12 @@ function FormElementRepeatableSet({
       : {}
   return (
     <div className="cypress-repeatable-set-element">
-      <div
-        className={`ob-form__element ob-repeatable-set ${
-          isEven ? 'even' : 'odd'
-        }`}
+      <FormElementLabelContainer
+        className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
+        element={element}
+        id={id}
+        required={false}
       >
-        <label className="label ob-label">{element.label}</label>
-
         {entries.map((entry, index) => {
           return (
             <RepeatableSetEntry
@@ -183,7 +183,7 @@ function FormElementRepeatableSet({
               </div>
             </div>
           )}
-      </div>
+      </FormElementLabelContainer>
     </div>
   )
 }
