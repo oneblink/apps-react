@@ -178,7 +178,7 @@ function FormElementCompliance({
               isActive={isShowingNotes}
               icon="notes"
               onClick={toggleIsShowingNotes}
-              disabled={!typedValue.value}
+              disabled={element.readOnly || !typedValue.value}
             >
               Notes
             </ComplianceButton>
@@ -186,7 +186,7 @@ function FormElementCompliance({
               isActive={isShowingFiles}
               icon="perm_media"
               onClick={toggleIsShowingFiles}
-              disabled={!typedValue.value}
+              disabled={element.readOnly || !typedValue.value}
             >
               Media
             </ComplianceButton>
