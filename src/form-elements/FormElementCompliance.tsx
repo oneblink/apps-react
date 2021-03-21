@@ -39,7 +39,7 @@ const baseElement = {
   isDataLookup: false,
   isElementLookup: false,
   readOnly: false,
-  required: true,
+  required: false,
   requiresAllConditionallyShowPredicates: false,
 }
 
