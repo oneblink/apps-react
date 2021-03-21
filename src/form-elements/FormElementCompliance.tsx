@@ -28,7 +28,7 @@ interface Props {
   isEven?: boolean
 }
 
-interface Value {
+export interface Value {
   value: unknown
   notes?: string
   files?: FilesElementFile[]
