@@ -116,9 +116,11 @@ function FormElementCompliance({
   )
 
   const [isShowingNotes, toggleIsShowingNotes] = useToggleComplianceChildren(
+    !!typedValue.notes,
     handleNotesChange,
   )
   const [isShowingFiles, toggleIsShowingFiles] = useToggleComplianceChildren(
+    !!typedValue.files,
     handleFilesChange,
   )
 
