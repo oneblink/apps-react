@@ -39,7 +39,11 @@ function FormElementLabelContainer({
             >
               info
             </i>
-            <ReactTooltip id={`${id}-hint`} clickable>
+            <ReactTooltip
+              id={`${id}-hint`}
+              clickable
+              className="ob-hint-tooltip"
+            >
               {element.hint}
             </ReactTooltip>
           </>
