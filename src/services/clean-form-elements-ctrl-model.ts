@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-
+import { Value as ComplianceValue } from '../form-elements/FormElementCompliance'
 function cleanElementValue(
   element: FormTypes.FormElement,
   formElementsCtrl: FormElementsCtrl,
@@ -124,6 +124,18 @@ function cleanElementValue(
         })
       }
       break
+    }
+    case 'compliance': {
+      if (!isShowing || !formElementsCtrl.model[element.name]) {
+        return undefined
+      }
+      if (stripBinaryData) {
+        return {
+          ...(formElementsCtrl.model[element.name] as ComplianceValue),
+          files: undefined,
+        }
+      }
+      return formElementsCtrl.model[element.name]
     }
     case 'page': {
       break
