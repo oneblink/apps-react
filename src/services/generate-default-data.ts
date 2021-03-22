@@ -19,8 +19,12 @@ export default function generateDefaultData(
         const dv = getOptionsDefaultValue(el)
         if (dv) {
           if (el.type === 'compliance') {
-            m[el.name] = {
-              value: dv,
+            if (typeof dv === 'string') {
+              m[el.name] = {
+                value: dv,
+              }
+            } else {
+              m[el.name] = dv
             }
           } else {
             m[el.name] = dv
