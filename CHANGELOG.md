@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 0.2.1 (2021-03-23)
+
 ### Added
 
 - Compliance element type
 - `hint` to form elements with a label displayed
+
+### Dependencies
+
+- no longer depend upon [bulma-tooltip](https://www.npmjs.com/package/bulma-tooltip)
+
+- depend upon [react-tooltip](https://www.npmjs.com/package/react-tooltip) [4.2.15](https://github.com/wwayne/react-tooltip/blob/master/CHANGELOG.md)
 
 ## 0.2.0 (2021-03-17)
 
