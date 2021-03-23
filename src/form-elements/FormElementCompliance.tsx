@@ -38,7 +38,6 @@ const baseElement = {
   conditionallyShow: false,
   isDataLookup: false,
   isElementLookup: false,
-  readOnly: false,
   required: false,
   requiresAllConditionallyShowPredicates: false,
 }
@@ -47,6 +46,7 @@ const generateNotesElement = (
   element: FormTypes.ComplianceElement,
 ): FormTypes.TextareaElement => ({
   ...baseElement,
+  readOnly: element.readOnly,
   id: `${element.id}-notes`,
   label: 'Notes',
   name: `${element.name}_notes`,
@@ -56,6 +56,7 @@ const generateFilesElement = (
   element: FormTypes.ComplianceElement,
 ): FormTypes.FilesElement => ({
   ...baseElement,
+  readOnly: element.readOnly,
   id: `${element.id}-files`,
   label: 'Media',
   name: `${element.name}_files`,
