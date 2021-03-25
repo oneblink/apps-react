@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, ConditionTypes } from '@oneblink/types'
 
 const fnMap = {
   '>': (lhs: number, rhs: number) => lhs > rhs,
@@ -10,7 +10,7 @@ const fnMap = {
 }
 
 export const handleOptionsPredicate = (
-  predicate: FormTypes.ConditionallyShowPredicateOptions,
+  predicate: ConditionTypes.ConditionalPredicateOptions,
   model: FormElementsCtrl['model'],
   predicateElement: FormTypes.FormElementWithOptions,
 ) => {
@@ -34,7 +34,7 @@ export const handleOptionsPredicate = (
 }
 
 const handlePredicate = (
-  predicate: FormTypes.ConditionallyShowPredicate,
+  predicate: ConditionTypes.ConditionalPredicate,
   model: FormElementsCtrl['model'],
   predicateElement: FormTypes.FormElement,
 ) => {
@@ -104,7 +104,7 @@ const getPagesFormElementsCtrl = (
 
 const conditionallyShowByPredicate = (
   formElementsCtrl: FormElementsCtrl,
-  predicate: FormTypes.ConditionallyShowPredicate,
+  predicate: ConditionTypes.ConditionalPredicate,
   elementsEvaluated: string[],
 ): FormTypes.FormElement | boolean => {
   const predicateElement = formElementsCtrl.elements.find(
@@ -188,7 +188,7 @@ export default function conditionallyShowElement(
   }
 
   const predicateFunction = (
-    predicate: FormTypes.ConditionallyShowPredicate,
+    predicate: ConditionTypes.ConditionalPredicate,
   ) => {
     // Validate the predicate data, if it is invalid,
     // we will always show the field

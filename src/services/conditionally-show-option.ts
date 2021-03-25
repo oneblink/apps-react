@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, ConditionTypes } from '@oneblink/types'
 
 import conditionallyShowElement, {
   handleOptionsPredicate,
@@ -6,7 +6,7 @@ import conditionallyShowElement, {
 
 const handleAttributePredicate = (
   predicate:
-    | FormTypes.ConditionallyShowPredicate
+    | ConditionTypes.ConditionalPredicate
     | FormTypes.ChoiceElementOptionAttribute,
   model: FormElementsCtrl['model'],
   predicateElement: FormTypes.FormElementWithOptions,
@@ -32,7 +32,7 @@ const handleAttributePredicate = (
 const conditionallyShowOptionByPredicate = (
   formElementsCtrl: FormElementsCtrl,
   predicate:
-    | FormTypes.ConditionallyShowPredicateOptions
+    | ConditionTypes.ConditionalPredicateOptions
     | FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
@@ -101,7 +101,7 @@ const conditionallyShowOptionByPredicate = (
 const isAttributeFilterValid = (
   formElementsCtrl: FormElementsCtrl,
   predicate:
-    | FormTypes.ConditionallyShowPredicate
+    | ConditionTypes.ConditionalPredicate
     | FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
@@ -181,7 +181,7 @@ export default function conditionallyShowOption(
 
   const predicateFunction = (
     predicate:
-      | FormTypes.ConditionallyShowPredicateOptions
+      | ConditionTypes.ConditionalPredicateOptions
       | FormTypes.ChoiceElementOptionAttribute,
   ) => {
     // Validate the predicate data, if it is invalid,
