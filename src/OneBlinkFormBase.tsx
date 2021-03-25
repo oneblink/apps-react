@@ -308,14 +308,14 @@ function OneBlinkFormBase({
         'Setting toast notifications to be appended to HTML Element',
         obFormContainerHTMLElement,
       )
-      bulmaToast.setDoc({
-        // @ts-expect-error hack until this happens: https://github.com/rfoel/bulma-toast/issues/107
-        createElement: (...args) => document.createElement(...args),
-        body: {
-          appendChild: <T extends Node>(child: T) =>
-            obFormContainerHTMLElement.appendChild(child),
-        },
+      bulmaToast.setDefaults({
+        position: 'bottom-right',
+        opacity: 0.95,
+        appendTo: obFormContainerHTMLElement,
       })
+    }
+    return () => {
+      bulmaToast.resetDefaults()
     }
   }, [])
 
@@ -331,11 +331,9 @@ function OneBlinkFormBase({
             message: 'Please fix validation errors',
             // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
             type: 'ob-toast is-danger cypress-invalid-submit-attempt',
-            position: 'bottom-right',
             duration: 4000,
             pauseOnHover: true,
             closeOnClick: true,
-            opacity: 0.95,
           })
           return
         }

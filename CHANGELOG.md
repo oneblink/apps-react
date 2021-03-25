@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - validation class on `telephone` element not consistent with other elements
 
+### Dependencies
+
+- update [bulma-toast](https://www.npmjs.com/package/bulma-toast) to [2.3.0](https://github.com/rfoel/bulma-toast/releases/tag/v2.3.0) (from [2.2.0](https://github.com/rfoel/bulma-toast/releases/tag/v2.2.0))
+
+- update [query-string](https://www.npmjs.com/package/query-string) to [7.0.0](https://github.com/sindresorhus/query-string/releases/tag/v7.0.0) (from [6.14.1](https://github.com/sindresorhus/query-string/releases/tag/v6.14.1))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.3.3](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.3.2](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
 ## 0.2.1 (2021-03-23)
 
 ### Added

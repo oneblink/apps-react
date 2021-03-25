@@ -81,12 +81,10 @@ export default async function downloadFile(dataURI: string, fileName: string) {
       bulmaToast.toast({
         message:
           'Sorry, there was an issue downloading your file, please try again.',
-        // @ts-expect-error ???
+        // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
         type: 'ob-toast is-danger cypress-download-file-toast',
-        position: 'bottom-right',
         dismissible: true,
         closeOnClick: true,
-        opacity: 0.75,
       })
     }
   }

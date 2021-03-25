@@ -5,13 +5,11 @@ function copyToClipboard(text: string) {
   copy(text)
   bulmaToast.toast({
     message: 'Copied to clipboard',
-    // @ts-expect-error ???
+    // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
     type: 'ob-toast is-primary cypress-copy-to-clipboard-toast',
-    position: 'bottom-right',
     duration: 1500,
     pauseOnHover: true,
     closeOnClick: true,
-    opacity: 0.95,
   })
 }
 
