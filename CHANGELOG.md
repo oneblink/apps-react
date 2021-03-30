@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ### Fixed
 
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.3.3](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.3.2](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
 
-## 0.2.1 (2021-03-23)
+## [0.2.1] - 2021-03-23
 
 ### Added
 
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - depend upon [react-tooltip](https://www.npmjs.com/package/react-tooltip) [4.2.15](https://github.com/wwayne/react-tooltip/blob/master/CHANGELOG.md)
 
-## 0.2.0 (2021-03-17)
+## [0.2.0] - 2021-03-17
 
 ### Fixed
 
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - **[BREAKING]** `position: fixed` CSS from multiple page form navigation on mobile screen sizes
 
-## 0.1.14 (2021-03-11)
+## [0.1.14] - 2021-03-11
 
 ### Fixed
 
@@ -69,14 +69,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.3.2](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [1.27.5](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
 
-## 0.1.13 (2021-03-03)
+## [0.1.13] - 2021-03-03
 
 ### Added
 
 - [`useLoadDataState`](./docs/useLoadDataState.md) hook
 - [`<OneBlinkReadOnlyForm />`](./docs/OneBlinkReadOnlyForm.md) component
 
-## 0.1.12 (2021-02-18)
+## [0.1.12] - 2021-02-18
 
 ### Fixed
 
@@ -84,13 +84,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - inconsistent margin for form element error messages
 - Handled error when attempting to convert file to image in `Camera` element
 
-## 0.1.11 (2021-02-15)
+## [0.1.11] - 2021-02-15
 
 ### Changed
 
 - bulma toasts and flatpickr pickers to be appended to elements inside the `<OneBlinkForm />` component instead of appended to `document.body`.
 
-## 0.1.10 (2021-02-09)
+## [0.1.10] - 2021-02-09
 
 ### Fixed
 
@@ -98,19 +98,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - styling for invisible pages on forms
 - Email element showing label twice
 
-## 0.1.9 (2020-01-18)
+## [0.1.9] - 2020-01-18
 
 ### Added
 
 - `geoscapeAddress` form element type
 
-## 0.1.8 (2020-12-22)
+## [0.1.8] - 2020-12-22
 
 ### Added
 
 - Checkbox and radio button contrast text determination
 
-## 0.1.7 (2020-12-11)
+## [0.1.7] - 2020-12-11
 
 ### Fixed
 
@@ -121,7 +121,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - no longer depend upon [@blinkmobile/camera](https://www.npmjs.com/package/@blinkmobile/camera)
 
-## 0.1.6 (2020-12-02)
+## [0.1.6] - 2020-12-02
 
 ### Fixed
 
@@ -129,13 +129,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - element lookups on multi page forms duplicating all elements
 - styles from HTML form elements not being consistent with Forms Builder
 
-## 0.1.5 (2020-11-24)
+## [0.1.5] - 2020-11-24
 
 ### Added
 
 - sending userToken with requests
 
-## 0.1.4 (2020-11-12)
+## [0.1.4] - 2020-11-12
 
 ### Added
 
@@ -165,7 +165,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - update [signature_pad](https://www.npmjs.com/package/signature_pad) to [3.0.0-beta.4](https://github.com/szimek/signature_pad/blob/master/CHANGELOG.md) (from [3.0.0-beta.3](https://github.com/szimek/signature_pad/releases/tag/v3.0.0-beta.3))
 
-## 0.1.3 (2020-11-05)
+## [0.1.3] - 2020-11-05
 
 ### Added
 
@@ -176,13 +176,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - checkboxes button not using option colour
 - `number` element inputs not allow decimal in Safari
 
-## 0.1.2 (2020-10-30)
+## [0.1.2] - 2020-10-30
 
 ### Added
 
 - Disabled prop to forms to stop multiple submissions
 
-## 0.1.1 (2020-10-15)
+## [0.1.1] - 2020-10-15
 
 ### Added
 
@@ -199,6 +199,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - CSS not being used
 
-## 0.1.0 (2020-08-26)
+## [0.1.0] - 2020-08-26
 
 Initial release
