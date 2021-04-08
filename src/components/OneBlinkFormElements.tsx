@@ -30,7 +30,8 @@ import FormElementCaptcha from '../form-elements/FormElementCaptcha'
 import FormElementLocation from '../form-elements/FormElementLocation'
 import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
 import FormElementCompliance from '../form-elements/FormElementCompliance'
-import { FormTypes, GeoscapeTypes } from '@oneblink/types'
+import FormElementPointAddress from '../form-elements/FormElementPointAddress'
+import { FormTypes, GeoscapeTypes, PointTypes } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 
@@ -589,8 +590,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       )
     }
     case 'geoscapeAddress': {
-      // @ts-expect-error cannot convert unknown to a  typescript Record<>
-      const v: GeoscapeTypes.GeoscapeAddress | undefined = value
+      const v = value as GeoscapeTypes.GeoscapeAddress | undefined
       return (
         <LookupNotification
           isAutoLookup
@@ -635,6 +635,31 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
             isEven={isEven}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'pointAddress': {
+      const v = value as PointTypes.PointAddress | undefined
+      return (
+        <LookupNotification
+          isAutoLookup
+          element={element}
+          elements={elements}
+          value={value}
+          formElementsCtrl={formElementsCtrl}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+        >
+          <FormElementPointAddress
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
+            onChange={onChange}
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
           />
         </LookupNotification>
       )

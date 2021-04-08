@@ -280,6 +280,7 @@ const generateSchemaReducer = (
         }
         case 'compliance':
         case 'geoscapeAddress':
+        case 'pointAddress':
         case 'autocomplete':
         case 'checkboxes':
         case 'radio':
