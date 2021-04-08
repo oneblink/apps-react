@@ -77,23 +77,31 @@ export default function generateDefaultData(
         break
       }
       case 'geoscapeAddress':
-      case 'file':
-      case 'files':
+      case 'pointAddress':
       case 'camera':
-      case 'draw':
-      case 'location':
       case 'text':
       case 'barcodeScanner':
       case 'email':
       case 'telephone':
       case 'textarea': {
-        // @ts-expect-error ???
         if (el.defaultValue) {
-          // @ts-expect-error ???
           m[el.name] = el.defaultValue
         }
         break
       }
+      case 'file':
+      case 'files':
+      case 'draw':
+      case 'location': {
+        // THESE ELEMENTS SHOULD HAVE NO DEFAULT VALUE - LEAVING THIS HERE FOR SAFETY
+        // @ts-expect-error no default value
+        if (el.defaultValue) {
+          // @ts-expect-error no default value
+          m[el.name] = el.defaultValue
+        }
+        break
+      }
+
       case 'captcha':
       case 'heading':
       case 'html':
