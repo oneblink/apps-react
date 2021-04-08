@@ -40,7 +40,7 @@
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.12.13",
-    "@oneblink/apps": "^0.7.1-beta.1",
+    "@oneblink/apps": "^0.7.2-beta.1",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.1",
     "@types/color": "^3.0.1",
