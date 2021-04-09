@@ -31,7 +31,13 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 1. Checkout `master` and get the latest code
 
    ```
-   git checkout master && git pull
+   git checkout master
+   ```
+
+1. Get the latest code
+
+   ```
+   git pull
    ```
 
 1. Bump the version and create a release commit
@@ -43,13 +49,13 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 1. Push changes to the `master` branch
 
    ```
-   git push && git push --tags
+   git push
    ```
 
-1. Publish to `npm`
+1. Push new tag
 
    ```
-   npm publish --tag beta
+   git push --tags
    ```
 
 ## Production Release Process
@@ -57,7 +63,13 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 1. Checkout `master` and get the latest code
 
    ```
-   git checkout master && git pull
+   git checkout master
+   ```
+
+1. Get the latest code
+
+   ```
+   git pull
    ```
 
 1. Run CLI `npx package-diff-summary {last-tag}`
@@ -66,10 +78,16 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 
 1. Update the [Changelog](./CHANGELOG.md) by adding `## [x.x.x] - YYYY-MM-DD` under `## Unreleased`
 
+1. Stage changes
+
+   ```
+   git add -A
+   ```
+
 1. Commit changes to the `master` branch
 
    ```
-   git add -A && git commit -m "[CHANGELOG] x.x.x"
+   git commit -m "[CHANGELOG] x.x.x"
    ```
 
 1. Bump the version and create a release commit
@@ -81,11 +99,11 @@ This code base is written in [TypeScript](https://www.typescriptlang.org/) so it
 1. Push changes to the `master` branch
 
    ```
-   git push && git push --tags
+   git push
    ```
 
-1. Publish to `npm`
+1. Push new tag
 
    ```
-   npm publish
+   git push --tags
    ```
