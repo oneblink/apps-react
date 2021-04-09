@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from '@material-ui/core'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
@@ -544,21 +544,13 @@ function OneBlinkFormBase({
                             value={index + 1}
                           >
                             {hasErrors ? (
-                              <span
-                                className="icon tooltip has-tooltip-top cypress-page-error"
-                                data-tip
-                                data-for={`${index}-page-error-tooltip`}
-                                data-effect="solid"
-                              >
-                                <i className="material-icons has-text-danger is-size-3">
-                                  warning
-                                </i>
-                                <ReactTooltip
-                                  id={`${index}-page-error-tooltip`}
-                                >
-                                  Page has errors
-                                </ReactTooltip>
-                              </span>
+                              <Tooltip title="Page has errors">
+                                <span className="icon tooltip has-tooltip-top cypress-page-error">
+                                  <i className="material-icons has-text-danger is-size-3">
+                                    warning
+                                  </i>
+                                </span>
+                              </Tooltip>
                             ) : (
                               <span>{index + 1}</span>
                             )}
