@@ -49,7 +49,7 @@ type Props = {
   onChangeModel: (model: FormElementsCtrl['model']) => void
   // Props passed by repeatable sets
   isEven?: boolean
-  idPrefix?: string
+  idPrefix: string
   formElementsCtrl: FormElementsCtrl
 }
 
@@ -97,7 +97,7 @@ function OneBlinkFormElements({
               value={formElementsCtrl.model[element.name]}
               displayValidationMessage={displayValidationMessages}
               isEven={isEven}
-              id={idPrefix ? `${idPrefix}_${element.name}` : element.name}
+              id={`${idPrefix}${element.name}`}
               formElementsConditionallyShown={formElementsConditionallyShown}
               formElementValidation={
                 formElementsValidation

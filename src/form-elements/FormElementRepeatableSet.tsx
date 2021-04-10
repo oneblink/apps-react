@@ -315,7 +315,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
           <OneBlinkFormElements
             formId={formId}
-            idPrefix={`${id}_entry-${index}`}
+            idPrefix={`${id}_entry-${index}_`}
             isEven={isEven}
             formElementsValidation={formElementsValidation}
             displayValidationMessages={displayValidationMessages}

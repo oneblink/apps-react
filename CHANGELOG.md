@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Fixed
+
+- inputs in sub forms in repeatable sets having duplicate `id` properties, causing a bug with `date`, `datetime`, `time` elements not setting the value selected on the submission data
+
 ## [Unreleased]
 
 ### Added
