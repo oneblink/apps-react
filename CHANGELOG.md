@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Point Address element
 
+### Fixed
+
+- inputs in sub forms in repeatable sets having duplicate `id` properties, causing a bug with `date`, `datetime`, `time` elements not setting the value selected on the submission data
+
 ## [0.2.2] - 2021-03-31
 
 ### Fixed

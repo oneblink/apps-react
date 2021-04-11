@@ -629,6 +629,7 @@ function OneBlinkFormBase({
                                       onChangeElements={handleChangeElements}
                                       onChangeModel={handleChangeModel}
                                       formElementsCtrl={rootFormElementsCtrl}
+                                      idPrefix=""
                                     />
                                   </div>
                                 ),

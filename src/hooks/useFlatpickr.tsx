@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Flatpickr from 'flatpickr'
 import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
+import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
 
 export { FlatpickrOptions }
 
@@ -17,55 +18,50 @@ export default function useFlatpickr(
   fpOpts: FlatpickrOptions,
   htmlElement: { current: HTMLElement | null },
 ) {
-  const vpRef = React.useRef(null)
+  const vpRef = React.useRef<FlatpickrInstance | null>(null)
 
   React.useEffect(() => {
-    // @ts-expect-error ???
-    const newVp = new Flatpickr(`[id="${id}"]`, {
+    const options: FlatpickrOptions = {
       ...fpOpts,
       static: true,
-      appendTo: htmlElement.current,
-    })
+      appendTo: htmlElement.current || undefined,
+    }
+    const newVp: FlatpickrInstance = new (Flatpickr as any)(
+      `[id="${id}"]`,
+      options,
+    )
     vpRef.current = newVp
     return () => {
       // destroy the flatpickr instance when the dom element is removed
-      if (newVp && newVp.destroy) {
+      vpRef.current = null
+      if (newVp.destroy) {
         newVp.destroy()
       }
     }
   }, [fpOpts, htmlElement, id, vpRef])
 
   React.useEffect(() => {
-    // @ts-expect-error ???
     if (vpRef.current && vpRef.current.config) {
-      // @ts-expect-error ???
-      vpRef.current.set('onChange', (selectedDates) =>
-        onChange(selectedDates[0] && selectedDates[0].toISOString()),
-      )
+      vpRef.current.set('onChange', (selectedDates: Date[]) => {
+        onChange(selectedDates[0] && selectedDates[0].toISOString())
+      })
     }
   }, [onChange, vpRef])
 
   // Sync value with flatpickr when value is changed outside of component
   React.useEffect(() => {
     const vp = vpRef.current
-    // @ts-expect-error ???
+
     if (vp && vp.selectedDates) {
-      // @ts-expect-error ???
-      if (!value && vp.selectedDates[0]) {
-        // @ts-expect-error ???
-        vp.setDate(undefined, false)
-        // @ts-expect-error ???
-      } else if (value && !vp.selectedDates[0]) {
-        // @ts-expect-error ???
-        vp.setDate(value, false)
+      const selectedDate = vp.selectedDates[0]
+
+      if (!value && selectedDate) {
+        vp.clear(false)
       } else if (
-        // @ts-expect-error ???
-        vp.selectedDates[0] &&
         value &&
-        // @ts-expect-error ???
-        vp.selectedDates[0].toISOString() !== value
+        typeof value === 'string' &&
+        (!selectedDate || selectedDate.toISOString() !== value)
       ) {
-        // @ts-expect-error ???
         vp.setDate(value, false)
       }
     }
