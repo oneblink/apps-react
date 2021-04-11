@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from '@material-ui/core'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 
@@ -28,25 +28,11 @@ function FormElementLabelContainer({
           {element.label}
         </label>
         {element.hint && (
-          <>
-            <i
-              data-tip={!!element.hint}
-              data-for={`${id}-hint`}
-              className="material-icons has-text-grey-light ob-label__hint"
-              data-effect="solid"
-              data-place="right"
-              data-delay-hide={100}
-            >
+          <Tooltip title={element.hint} arrow>
+            <i className="material-icons has-text-grey-light ob-label__hint">
               info
             </i>
-            <ReactTooltip
-              id={`${id}-hint`}
-              clickable
-              className="ob-hint-tooltip"
-            >
-              {element.hint}
-            </ReactTooltip>
-          </>
+          </Tooltip>
         )}
       </div>
       {children}
