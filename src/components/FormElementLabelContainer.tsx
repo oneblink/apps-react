@@ -28,7 +28,12 @@ function FormElementLabelContainer({
           {element.label}
         </label>
         {element.hint && (
-          <Tooltip title={element.hint} arrow enterTouchDelay={0}>
+          <Tooltip
+            title={element.hint}
+            arrow
+            enterTouchDelay={0}
+            leaveTouchDelay={10000}
+          >
             <i className="material-icons has-text-grey-light ob-label__hint">
               info
             </i>
