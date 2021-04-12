@@ -234,3 +234,9 @@
 .ob-hint-tooltip {
   max-width: 400px;
 }
+
+.MuiTooltip-popper {
+  .MuiTooltip-tooltip {
+    font-size: $size-6;
+  }
+}
