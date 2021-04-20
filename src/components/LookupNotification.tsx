@@ -365,15 +365,12 @@ async function fetchLookup(
   )
 
   if (!response.ok) {
-    if (data && data.message) {
-      Sentry.captureException(new Error(data.message))
-      if (response.status === 400) {
-        throw data.message
-      }
-    }
     Sentry.captureException(
       new Error(`Received ${response.status} status code from lookup`),
     )
+    if (response.status === 400 && data && data.message) {
+      throw data.message
+    }
     throw new Error('Invalid response from lookup')
   }
 
