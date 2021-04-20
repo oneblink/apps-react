@@ -1,6 +1,6 @@
 import * as React from 'react'
 import _throttle from 'lodash.throttle'
-import { autoSaveService } from '@oneblink/apps'
+import { autoSaveService, Sentry } from '@oneblink/apps'
 
 import OnLoading from './components/OnLoading'
 import Modal from './components/Modal'
@@ -38,7 +38,10 @@ function OneBlinkAutoSaveForm({
         console.log('Auto saving...')
         autoSaveService
           .upsertAutoSaveData(form.id, autoSaveKey, model)
-          .catch((error) => console.warn('Error while auto saving', error))
+          .catch((error) => {
+            Sentry.captureException(error)
+            console.warn('Error while auto saving', error)
+          })
           .then(() => {
             setIsAutoSaving(false)
           })
@@ -51,7 +54,10 @@ function OneBlinkAutoSaveForm({
   const deleteAutoSaveData = React.useCallback(() => {
     return autoSaveService
       .deleteAutoSaveData(form.id, autoSaveKey)
-      .catch((error) => console.warn('Error removing auto save data: ', error))
+      .catch((error) => {
+        Sentry.captureException(error)
+        console.warn('Error removing auto save data: ', error)
+      })
   }, [autoSaveKey, form.id])
 
   const handleSubmit = React.useCallback(
@@ -94,6 +100,7 @@ function OneBlinkAutoSaveForm({
           })
         }
       } catch (error) {
+        Sentry.captureException(error)
         console.warn('Error loading auto save data', error)
         if (!ignore) {
           setAutoSaveState({

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService } from '@oneblink/apps'
+import { authService, Sentry } from '@oneblink/apps'
 
 import useIsMounted from './useIsMounted'
 import useBooleanState from './useBooleanState'
@@ -131,6 +131,7 @@ export default function useLogin({
         }
       }
     } catch (error) {
+      Sentry.captureException(error)
       if (isMounted.current) {
         setLoginState({
           isResettingTemporaryPassword: false,
@@ -178,6 +179,7 @@ export default function useLogin({
     try {
       await resetTemporaryPasswordCallback(newPassword)
     } catch (error) {
+      Sentry.captureException(error)
       if (isMounted.current) {
         setLoginState((current) => ({
           ...current,
@@ -258,6 +260,7 @@ export default function useLogin({
         })
       }
     } catch (error) {
+      Sentry.captureException(error)
       if (isMounted.current) {
         setForgotPasswordState({
           isSendingForgotPasswordCode: false,
@@ -315,6 +318,7 @@ export default function useLogin({
         hideForgotPassword()
       }
     } catch (error) {
+      Sentry.captureException(error)
       if (isMounted.current) {
         setForgotPasswordState((current) => ({
           ...current,
