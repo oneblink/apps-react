@@ -9,6 +9,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import { Sentry } from '@oneblink/apps'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
@@ -414,6 +415,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         if (ignore) {
           return
         }
+        Sentry.captureException(error)
         console.warn('Error while attempting to open camera', error)
         switch (error.name) {
           case 'NotSupportedError': {

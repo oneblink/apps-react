@@ -9,6 +9,7 @@ import defaultCoords from '../services/defaultCoordinates'
 import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import { Sentry } from '@oneblink/apps'
 
 type Props = {
   id: string
@@ -77,6 +78,7 @@ function FormElementLocation({
         await setCurrentLocation()
       }
     } catch (err) {
+      Sentry.captureException(err)
       console.error(err)
       setLocation(defaultCoords())
     }

@@ -8,7 +8,7 @@ import downloadFile from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
-import { localisationService } from '@oneblink/apps'
+import { localisationService, Sentry } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 
 type Props = {
@@ -124,6 +124,7 @@ function FormElementCamera({
                 }
                 base64data = canvas.toDataURL(file.type)
               } catch (error) {
+                Sentry.captureException(error)
                 console.warn('Error loading image')
                 setCameraError(error)
                 clearIsLoading()

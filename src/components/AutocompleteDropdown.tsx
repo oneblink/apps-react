@@ -2,6 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 
 import useBooleanState from '../hooks/useBooleanState'
+import { Sentry } from '@oneblink/apps'
 
 type AutocompleteOption = {
   label: string
@@ -195,6 +196,7 @@ function AutocompleteDropdown({
       } catch (error) {
         // Cancelling will throw an error.
         if (error.name !== 'AbortError') {
+          Sentry.captureException(error)
           console.warn('Error while fetching autocomplete options', error)
           newError = error
         }

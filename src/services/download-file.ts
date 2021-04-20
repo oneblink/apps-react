@@ -1,3 +1,4 @@
+import { Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 
@@ -77,6 +78,7 @@ export default async function downloadFile(dataURI: string, fileName: string) {
     }
   } catch (error) {
     if (error) {
+      Sentry.captureException(error)
       console.warn('An error occurred attempting to download file:', error)
       bulmaToast.toast({
         message:
