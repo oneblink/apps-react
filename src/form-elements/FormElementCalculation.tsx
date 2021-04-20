@@ -4,6 +4,7 @@ import escapeString from 'escape-string-regexp'
 import sanitizeHtmlStandard from '../services/sanitize-html'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
+import { Sentry } from '@oneblink/apps'
 
 type Props = {
   element: FormTypes.CalculationElement
@@ -204,6 +205,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         hasError: false,
       }
     } catch (e) {
+      Sentry.captureException(e)
       console.warn(
         'Error while setting up parsing for calculation element',
         element,

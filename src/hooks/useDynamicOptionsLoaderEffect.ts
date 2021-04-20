@@ -1,6 +1,6 @@
 import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
-import { formService } from '@oneblink/apps'
+import { formService, Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 
 export default function useDynamicOptionsLoaderEffect(
@@ -39,6 +39,7 @@ export default function useDynamicOptionsLoaderEffect(
           return clonedForm
         })
       } catch (error) {
+        Sentry.captureException(error)
         console.warn('Could not set dynamic options for form', error)
       }
     })()

@@ -13,6 +13,7 @@ import useInjectPages from '../hooks/useInjectPages'
 import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
 import useExecutedLookupCallback from '../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
+import { Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 
 type Props = {
@@ -364,11 +365,16 @@ async function fetchLookup(
   )
 
   if (!response.ok) {
-    if (response.status === 400 && data && data.message) {
-      throw data.message
-    } else {
-      throw new Error('Invalid response from lookup')
+    if (data && data.message) {
+      Sentry.captureException(new Error(data.message))
+      if (response.status === 400) {
+        throw data.message
+      }
     }
+    Sentry.captureException(
+      new Error(`Received ${response.status} status code from lookup`),
+    )
+    throw new Error('Invalid response from lookup')
   }
 
   return data

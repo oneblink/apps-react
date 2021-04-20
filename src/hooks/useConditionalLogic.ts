@@ -1,3 +1,4 @@
+import { Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
@@ -27,6 +28,7 @@ export default function useConditionalLogic({
           elementsEvaluated,
         )
       } catch (error) {
+        Sentry.captureException(error)
         console.warn(
           'Error while checking if element is conditional shown',
           error,
@@ -56,6 +58,7 @@ export default function useConditionalLogic({
           elementsEvaluated,
         )
       } catch (error) {
+        Sentry.captureException(error)
         setConditionalLogicState({
           elements: elementsEvaluated,
           message: error.message,
@@ -95,9 +98,7 @@ export default function useConditionalLogic({
     [elementsOnPages, pageFormElements, submission],
   )
 
-  const pageElementsConditionallyShown = React.useMemo<
-    PageElementsConditionallyShown
-  >(() => {
+  const pageElementsConditionallyShown = React.useMemo<PageElementsConditionallyShown>(() => {
     const getFormElementConditionallyShown = (
       elements: FormTypes.FormElement[],
       element: FormTypes.FormElement,
