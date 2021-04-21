@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- autocomplete with search url not URL encoding search parameters
+- autocomplete with search url
+  - not URL encoding search parameters
+  - not validating options returned from request
 
 ## [0.2.3] - 2021-04-15
 
