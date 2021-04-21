@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Captured exceptions for certain element failures with Sentry
 
+### Fixed
+
+- autocomplete with search url not URL encoding search parameters
+
 ## [0.2.3] - 2021-04-15
 
 ### Changed

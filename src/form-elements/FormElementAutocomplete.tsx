@@ -138,7 +138,9 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   const handleSearch = React.useCallback(
     async (search, abortSignal) => {
       const headers = await generateHeaders()
-      const response = await fetch(`${searchUrl}?value=${search}`, {
+      const url = new URL(searchUrl)
+      url.searchParams.append('value', search)
+      const response = await fetch(url.href, {
         headers,
         signal: abortSignal,
       })
