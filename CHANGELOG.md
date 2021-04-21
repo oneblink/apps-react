@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - autocomplete with search url not URL encoding search parameters
+- options sets never finishing loading
 
 ## [0.2.3] - 2021-04-15
 
