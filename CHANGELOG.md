@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- options sets with invalid options never finishing loading
 - autocomplete with search url
   - not URL encoding search parameters
   - not validating options returned from request
