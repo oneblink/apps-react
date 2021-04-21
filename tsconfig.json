@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "inlineSources": true,
-    "sourceRoot": "/"
+    "sourceRoot": "./src"
   },
   "include": ["./src"]
 }
