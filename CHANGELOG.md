@@ -9,11 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Captured exceptions for certain element failures with Sentry
+- `zoom` property to location form elements submission data
 
 ### Fixed
 
-- autocomplete with search url not URL encoding search parameters
+- orientation of images uploading to `files` form elements
+
+### Added
+
+- Captured exceptions for certain element failures with Sentry
+- required \* to `files` and `repeatableSet` form element labels
+
+### Fixed
+
+- options sets with invalid options never finishing loading
+- autocomplete with search url
+  - not URL encoding search parameters
+  - not validating options returned from request
 
 ## [0.2.3] - 2021-04-15
 

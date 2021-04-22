@@ -21,20 +21,14 @@ export default function useDynamicOptionsLoaderEffect(
         onSetForm((currentForm) => {
           const clonedForm: FormTypes.Form = _cloneDeep(currentForm)
           for (const { options, elementId } of optionsForElementId) {
-            const formElement = formService.findFormElement(
+            formService.forEachFormElementWithOptions(
               clonedForm.elements,
-              (formElement) => formElement.id === elementId,
+              (formElement) => {
+                if (formElement.id === elementId) {
+                  formElement.options = options
+                }
+              },
             )
-            if (
-              formElement &&
-              (formElement.type === 'select' ||
-                formElement.type === 'compliance' ||
-                formElement.type === 'autocomplete' ||
-                formElement.type === 'checkboxes' ||
-                formElement.type === 'radio')
-            ) {
-              formElement.options = options
-            }
           }
           return clonedForm
         })

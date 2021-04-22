@@ -7,6 +7,7 @@ import useIsMounted from '../hooks/useIsMounted'
 import downloadFile from '../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import parseFilesAsAttachments from '../services/parseFilesAsAttachments'
 
 export type FilesElementFile = {
   data: string
@@ -136,21 +137,13 @@ function FormElementFiles({
 
   const addFile = React.useCallback(
     async (newFiles) => {
-      const updatedValues = Array.isArray(value) ? [...value] : []
-      for (const newFile of newFiles) {
-        const base64data = await new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.readAsDataURL(newFile)
-          reader.onload = function () {
-            resolve(reader.result)
-          }
-          reader.onerror = function (error) {
-            reject(error)
-          }
-        })
-
-        updatedValues.push({ fileName: newFile.name, data: base64data })
+      const attachments = await parseFilesAsAttachments(newFiles)
+      if (!attachments.length) {
+        return
       }
+
+      const updatedValues = Array.isArray(value) ? [...value] : []
+      updatedValues.push(...attachments)
       if (isMounted.current) {
         onChange(element, updatedValues)
         setIsDirty()
@@ -188,7 +181,7 @@ function FormElementFiles({
         className="ob-files"
         element={element}
         id={id}
-        required={false}
+        required={!!element.minEntries}
       >
         <input
           ref={inputRef}
