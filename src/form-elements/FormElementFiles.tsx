@@ -181,7 +181,7 @@ function FormElementFiles({
         className="ob-files"
         element={element}
         id={id}
-        required={false}
+        required={!!element.minEntries}
       >
         <input
           ref={inputRef}
