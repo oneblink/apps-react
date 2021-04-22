@@ -43,7 +43,7 @@
     "@oneblink/apps": "^0.7.3-beta.8",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
-    "@types/blueimp-load-image": "^5.14.1",
+    "@types/blueimp-load-image": "^5.14.2",
     "@types/color": "^3.0.1",
     "@types/file-saver": "^2.0.1",
     "@types/filesystem": "0.0.29",

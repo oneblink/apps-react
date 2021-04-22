@@ -1,6 +1,5 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import loadImage from 'blueimp-load-image'
 import SignatureCanvas from 'react-signature-canvas'
 
 import useBooleanState from '../hooks/useBooleanState'
@@ -8,8 +7,9 @@ import downloadFile from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
-import { localisationService, Sentry } from '@oneblink/apps'
+import { localisationService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import parseFilesAsAttachments from '../services/parseFilesAsAttachments'
 
 type Props = {
   id: string
@@ -61,93 +61,69 @@ function FormElementCamera({
     onChange(element, undefined)
   }, [element, onChange])
   const fileChange = React.useCallback(
-    (changeEvent) => {
+    async (changeEvent) => {
       if (
-        changeEvent.target &&
-        changeEvent.target.files &&
-        changeEvent.target.files[0]
+        !changeEvent.target ||
+        !changeEvent.target.files ||
+        !changeEvent.target.files.length
       ) {
-        setIsLoading()
-        resetImage()
+        return
+      }
 
-        console.log('File selected event', changeEvent)
-        // Unfortunately, photos taken from a native camera can come in with an incorrect
-        // orientation. Luckily, we are not the only people in the work have this issue
-        // and someone else has already solved with this nice library.
-        // https://nsulistiyawan.github.io/2016/07/11/Fix-image-orientation-with-Javascript.html
-        const file: File = changeEvent.target.files[0]
-        loadImage.parseMetaData(file, async function (data) {
-          const options = {
-            // should be set to canvas : true to activate auto fix orientation
-            canvas: true,
-            orientation: data.exif ? data.exif.get('Orientation') : 0,
-          }
-          console.log('Loading image onto canvas to correct orientation')
-          loadImage(
-            file,
-            // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
-            (canvas: HTMLCanvasElement) => {
-              let base64data
-              try {
-                let context
-                if (element.includeTimestampWatermark) {
-                  context = canvas.getContext('2d')
-                  if (context) {
-                    const now = localisationService.formatDatetime(
-                      new Date(file.lastModified),
-                    )
-                    const textHeight = 20
-                    context.font = `${textHeight}px Arial`
-                    const { width: textWidth } = context.measureText(now)
-                    const backgroundMargin = 10
-                    const backgroundPadding = backgroundMargin
-                    const backgroundWidth = backgroundPadding * 2 + textWidth
-                    const backgroundHeight = backgroundPadding * 2 + textHeight
-                    context.fillStyle = 'rgba(20, 20, 20, 0.6)'
-                    context.fillRect(
-                      canvas.width - backgroundWidth - backgroundMargin,
-                      canvas.height - backgroundHeight - backgroundMargin,
-                      backgroundWidth,
-                      backgroundHeight,
-                    )
+      setIsLoading()
+      resetImage()
 
-                    context.fillStyle = '#FFF'
-                    context.fillText(
-                      now,
-                      canvas.width -
-                        textWidth -
-                        backgroundPadding -
-                        backgroundMargin,
-                      canvas.height - 22,
-                    )
-                  }
-                }
-                base64data = canvas.toDataURL(file.type)
-              } catch (error) {
-                Sentry.captureException(error)
-                console.warn('Error loading image')
-                setCameraError(error)
-                clearIsLoading()
-                return
-              }
-              setIsDirty()
-              onChange(element, base64data)
-              clearIsLoading()
-            },
-            options,
-          )
-        })
+      console.log('File selected event', changeEvent)
+      try {
+        const attachments = await parseFilesAsAttachments(
+          changeEvent.target.files,
+          (file: File, canvas: HTMLCanvasElement) => {
+            if (!element.includeTimestampWatermark) {
+              return
+            }
+
+            const context = canvas.getContext('2d')
+            if (context) {
+              const now = localisationService.formatDatetime(
+                new Date(file.lastModified),
+              )
+              const textHeight = 20
+              context.font = `${textHeight}px Arial`
+              const { width: textWidth } = context.measureText(now)
+              const backgroundMargin = 10
+              const backgroundPadding = backgroundMargin
+              const backgroundWidth = backgroundPadding * 2 + textWidth
+              const backgroundHeight = backgroundPadding * 2 + textHeight
+              context.fillStyle = 'rgba(20, 20, 20, 0.6)'
+              context.fillRect(
+                canvas.width - backgroundWidth - backgroundMargin,
+                canvas.height - backgroundHeight - backgroundMargin,
+                backgroundWidth,
+                backgroundHeight,
+              )
+
+              context.fillStyle = '#FFF'
+              context.fillText(
+                now,
+                canvas.width - textWidth - backgroundPadding - backgroundMargin,
+                canvas.height - 22,
+              )
+            }
+          },
+        )
+
+        if (attachments[0]) {
+          setIsDirty()
+          onChange(element, attachments[0].data)
+        }
+      } catch (error) {
+        setCameraError(error)
+        return
+      } finally {
+        clearIsLoading()
       }
     },
-    [
-      element,
-      onChange,
-      setIsLoading,
-      setIsDirty,
-      clearIsLoading,
-      resetImage,
-      setCameraError,
-    ],
+    [clearIsLoading, element, onChange, resetImage, setIsDirty, setIsLoading],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {

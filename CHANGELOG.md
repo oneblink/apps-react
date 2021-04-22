@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- orientation of images uploading to `files` form elements
+
 ### Added
 
 - Captured exceptions for certain element failures with Sentry
