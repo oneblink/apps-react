@@ -5,7 +5,7 @@ import sanitizeHtmlStandard from '../services/sanitize-html'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
-
+import { localisationService } from '@oneblink/apps'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: (
@@ -20,6 +20,7 @@ const isUnenteredValue = (value: unknown | undefined) => {
 }
 
 function FormElementCalculation({ element, onChange, value }: Props) {
+  element.displayAsCurrency = true
   const formSubmissionModel = useFormSubmissionModel()
 
   const htmlValue = React.useMemo(() => {
@@ -33,14 +34,21 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       )
       htmlTemplate = element.preCalculationDisplay
     }
-    // Add commas in number
-    const [number, decimal] = (typeof value === 'number' ? value : 0)
-      .toString()
-      .split('.')
-    const numberWithCommas = number.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    const stringValue = decimal
-      ? `${numberWithCommas}.${decimal}`
-      : numberWithCommas
+    let stringValue
+    if (element.displayAsCurrency) {
+      stringValue = localisationService.formatCurrency(
+        typeof value === 'number' ? value : 0,
+      )
+    } else {
+      // Add commas in number
+      const [number, decimal] = (typeof value === 'number' ? value : 0)
+        .toString()
+        .split('.')
+      const numberWithCommas = number.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      stringValue = decimal
+        ? `${numberWithCommas}.${decimal}`
+        : numberWithCommas
+    }
     return sanitizeHtmlStandard(
       (htmlTemplate || '').replace(/{result}/gi, stringValue),
     )
