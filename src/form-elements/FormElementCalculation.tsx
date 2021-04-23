@@ -20,7 +20,6 @@ const isUnenteredValue = (value: unknown | undefined) => {
 }
 
 function FormElementCalculation({ element, onChange, value }: Props) {
-  element.displayAsCurrency = true
   const formSubmissionModel = useFormSubmissionModel()
 
   const htmlValue = React.useMemo(() => {
