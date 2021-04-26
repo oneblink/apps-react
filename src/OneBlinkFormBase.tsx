@@ -4,11 +4,13 @@ import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
 import * as bulmaToast from 'bulma-toast'
+import { localisationService } from '@oneblink/apps'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 import useNullableState from './hooks/useNullableState'
 import useBooleanState from './hooks/useBooleanState'
 import Modal from './components/Modal'
-
+import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
 import generateDefaultData from './services/generate-default-data'
 import cleanFormElementsCtrlModel from './services/clean-form-elements-ctrl-model'
 import OneBlinkFormElements from './components/OneBlinkFormElements'
@@ -27,8 +29,6 @@ import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import useChangeEffect from './hooks/useChangeEffect'
 
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
-
 type Props = {
   form: FormTypes.Form
   disabled?: boolean
@@ -38,7 +38,6 @@ type Props = {
   captchaSiteKey?: string
   isReadOnly?: boolean
   onCancel?: () => unknown
-  onCloseConditionalLogicErrorModal: () => unknown
   onSubmit?: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
   onSaveDraft?: (
     newDraftSubmission: SubmissionTypes.NewDraftSubmission,
@@ -55,7 +54,6 @@ function OneBlinkFormBase({
   initialSubmission,
   isReadOnly = false,
   onCancel,
-  onCloseConditionalLogicErrorModal,
   onSubmit,
   onSaveDraft,
   onChange,
@@ -247,7 +245,10 @@ function OneBlinkFormBase({
   //
   // #region Dynamic Options
 
-  useDynamicOptionsLoaderEffect(definition, setDefinition)
+  const loadDynamicOptionsState = useDynamicOptionsLoaderEffect(
+    definition,
+    setDefinition,
+  )
 
   // #endregion
   //
@@ -437,21 +438,17 @@ function OneBlinkFormBase({
 
   if (conditionalLogicState) {
     return (
-      <Modal
-        isOpen
-        title="Bad Form Configuration"
-        actions={
-          <button
-            type="button"
-            className="button ob-button is-primary"
-            onClick={onCloseConditionalLogicErrorModal}
-          >
-            Okay
-          </button>
-        }
-      >
+      <>
+        <div className="has-text-centered">
+          <i className="material-icons has-text-warning icon-x-large">error</i>
+          <h3 className="title is-3">Bad Form Configuration</h3>
+          <p>{conditionalLogicState.message}</p>
+          <p className="has-text-grey">
+            {localisationService.formatDatetimeLong(new Date())}
+          </p>
+        </div>
+
         <div className="content">
-          {conditionalLogicState.message}
           <ul className="cypress-error-modal-elements-evaluated">
             {conditionalLogicState.elements.map(
               (elementName: string, index: number) => (
@@ -460,7 +457,26 @@ function OneBlinkFormBase({
             )}
           </ul>
         </div>
-      </Modal>
+      </>
+    )
+  }
+
+  if (loadDynamicOptionsState) {
+    return (
+      <>
+        <div className="has-text-centered">
+          <i className="material-icons has-text-warning icon-x-large">error</i>
+          <h3 className="title is-3">{loadDynamicOptionsState.error.title}</h3>
+          <p>{loadDynamicOptionsState.error.message}</p>
+          <p className="has-text-grey">
+            {localisationService.formatDatetimeLong(new Date())}
+          </p>
+        </div>
+
+        <OneBlinkAppsErrorOriginalMessage
+          error={loadDynamicOptionsState.error.originalError}
+        />
+      </>
     )
   }
 

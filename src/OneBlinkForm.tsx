@@ -31,7 +31,6 @@ function OneBlinkForm({
   onSaveDraft,
   onChange,
 }: Props) {
-
   return (
     <OneBlinkFormBase
       form={form}
@@ -42,7 +41,6 @@ function OneBlinkForm({
       captchaSiteKey={captchaSiteKey}
       isReadOnly={false}
       onCancel={onCancel}
-      onCloseConditionalLogicErrorModal={onCancel}
       onSubmit={onSubmit}
       onSaveDraft={onSaveDraft}
       onChange={onChange}
