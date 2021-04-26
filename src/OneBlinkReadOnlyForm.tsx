@@ -47,14 +47,12 @@ type Props = {
   form: FormTypes.Form
   initialSubmission?: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
-  onFormError: () => unknown
 }
 
 function OneBlinkFormReadOnly({
   googleMapsApiKey,
   form,
   initialSubmission,
-  onFormError,
 }: Props) {
   const definition = React.useMemo(() => {
     const clonedForm = _cloneDeep(form)
@@ -69,7 +67,6 @@ function OneBlinkFormReadOnly({
       googleMapsApiKey={googleMapsApiKey}
       initialSubmission={initialSubmission}
       isReadOnly={true}
-      onCloseConditionalLogicErrorModal={onFormError}
     />
   )
 }
