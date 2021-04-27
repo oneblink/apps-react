@@ -33,23 +33,15 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       )
       htmlTemplate = element.preCalculationDisplay
     }
-    let stringValue
-    if (element.displayAsCurrency) {
-      stringValue = localisationService.formatCurrency(
-        typeof value === 'number' ? value : 0,
-      )
-    } else {
-      // Add commas in number
-      const [number, decimal] = (typeof value === 'number' ? value : 0)
-        .toString()
-        .split('.')
-      const numberWithCommas = number.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      stringValue = decimal
-        ? `${numberWithCommas}.${decimal}`
-        : numberWithCommas
-    }
+    // let stringValue
+    const numberValue = typeof value === 'number' ? value : 0
     return sanitizeHtmlStandard(
-      (htmlTemplate || '').replace(/{result}/gi, stringValue),
+      (htmlTemplate || '').replace(
+        /{result}/gi,
+        element.displayAsCurrency
+          ? localisationService.formatCurrency(numberValue)
+          : localisationService.formatNumber(numberValue),
+      ),
     )
   }, [element, value])
 
