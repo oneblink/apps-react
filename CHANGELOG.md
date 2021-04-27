@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2021-04-27
+
 ### Added
 
 - Support for `displayAsCurrency` prop in calculation element

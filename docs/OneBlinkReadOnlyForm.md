@@ -13,22 +13,18 @@ import '@oneblink/apps-react/dist/styles.css'
 
 ### Props
 
-| Property           | Type                           | Required    | Description                                                                                                                                                                                                               |
-| ------------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `form`              | `OneBlinkForm`                 | Yes         | The OneBlink Form to render                                                                                                                                                                                               |
-| `initialSubmission` | `Object`                       | No          | The initial submission data. Without this the form will be blank                                                                                                                                                                                                |
-| `googleMapsApiKey`  | `string`                       | Conditional | A [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Required if the form contains a `location` form element.    |
-| `onFormError`          | `() => void`                   | Yes         | The function to call if an error arises in displaying the form                                                                                                    |
-
+| Property            | Type           | Required    | Description                                                                                                                                                |
+| ------------------- | -------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `form`              | `OneBlinkForm` | Yes         | The OneBlink Form to render                                                                                                                                |
+| `initialSubmission` | `Object`       | No          | The initial submission data. Without this the form will be blank                                                                                           |
+| `googleMapsApiKey`  | `string`       | Conditional | A [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Required if the form contains a `location` form element. |
 
 ### Example
 
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {
-  FormTypes,
-} from '@oneblink/apps'
+import { FormTypes } from '@oneblink/apps'
 import {
   IsOfflineContextProvider,
   OneBlinkReadOnlyForm,
@@ -68,7 +64,6 @@ function FormContainer() {
       googleMapsApiKey={googleMapsApiKey}
       initialSubmission={null}
       form={form}
-      onFormError={handleFormError}
     />
   )
 }
