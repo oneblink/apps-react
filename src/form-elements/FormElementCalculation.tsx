@@ -33,7 +33,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       )
       htmlTemplate = element.preCalculationDisplay
     }
-    // let stringValue
+
     const numberValue = typeof value === 'number' ? value : 0
     return sanitizeHtmlStandard(
       (htmlTemplate || '').replace(
