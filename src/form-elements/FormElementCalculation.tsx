@@ -5,7 +5,7 @@ import sanitizeHtmlStandard from '../services/sanitize-html'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
-
+import { localisationService } from '@oneblink/apps'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: (
@@ -33,16 +33,15 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       )
       htmlTemplate = element.preCalculationDisplay
     }
-    // Add commas in number
-    const [number, decimal] = (typeof value === 'number' ? value : 0)
-      .toString()
-      .split('.')
-    const numberWithCommas = number.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    const stringValue = decimal
-      ? `${numberWithCommas}.${decimal}`
-      : numberWithCommas
+
+    const numberValue = typeof value === 'number' ? value : 0
     return sanitizeHtmlStandard(
-      (htmlTemplate || '').replace(/{result}/gi, stringValue),
+      (htmlTemplate || '').replace(
+        /{result}/gi,
+        element.displayAsCurrency
+          ? localisationService.formatCurrency(numberValue)
+          : localisationService.formatNumber(numberValue),
+      ),
     )
   }, [element, value])
 
