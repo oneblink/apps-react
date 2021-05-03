@@ -11,14 +11,6 @@ const FormElementFileDisplay = ({ file }: Props) => {
     file,
   ])
 
-  // if (file.type === 'LOADING_FAILED') {
-  //   return (
-  //     <div className="ob-files__content-loading ob-files__content-error">
-  //       <i className="material-icons has-text-warning icon-x-large">error</i>
-  //     </div>
-  //   )
-  // }
-
   if (
     file.type === 'SAVING' ||
     file.type === 'READY' ||
