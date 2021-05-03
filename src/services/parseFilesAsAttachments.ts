@@ -78,5 +78,5 @@ export async function parseFilesAsAttachmentsLegacy(
 }
 
 export default function parseFilesAsAttachments() {
-  //
+  // TODO: Rotate blob files for new stoarge types
 }
