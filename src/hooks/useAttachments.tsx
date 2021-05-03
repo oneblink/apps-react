@@ -103,6 +103,8 @@ const useAttachments = (
             isPrivate,
           }
         })
+      //TODO: Rotate orientation of sideways camera images
+
       setAttachments((currentValue) => [...currentValue, ...attachmentsToSave])
 
       const promises = newAttachments.map(async (newAttachment) => {
