@@ -20,7 +20,6 @@ interface Props {
 
 const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
   if (!props.element.storageType || props.element.storageType === 'legacy') {
-    console.log('Using legacy files...')
     return (
       <FormElementFilesLegacy
         value={value as FilesElementFile[] | undefined}
@@ -34,7 +33,6 @@ const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
       />
     )
   }
-  console.log('Using new files...')
   return (
     <FormElementFiles
       value={value as FileConfiguration[] | undefined}

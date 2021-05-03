@@ -4,7 +4,6 @@ import useIsMounted from '../../hooks/useIsMounted'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../components/FormElementLabelContainer'
 import FormElementFile from './FormElementFile'
-import useFormDefinition from '../../hooks/useFormDefinition'
 import useAttachments, { FileConfiguration } from '../../hooks/useAttachments'
 import FormElementFilesInvalidAttachment from './FormElementFilesInvalidAttachment'
 type Props = {
@@ -27,7 +26,6 @@ function FormElementFiles({
   validationMessage,
   displayValidationMessage,
 }: Props) {
-  const form = useFormDefinition()
   const [
     { attachments, invalidAttachments },
     { addAttachments, removeAttachment, clearInvalidAttachments },
@@ -39,7 +37,7 @@ function FormElementFiles({
 
   const addFile = React.useCallback(
     async (newFiles: FileList | null) => {
-      if (!form || !newFiles) return
+      if (!newFiles) return
       // TODO: ROTATE ATTACHMENTS
 
       const newAttachments = await addAttachments(Array.from(newFiles))
@@ -50,7 +48,7 @@ function FormElementFiles({
         setIsDirty()
       }
     },
-    [form, addAttachments, value, isMounted, onChange, element, setIsDirty],
+    [addAttachments, value, isMounted, onChange, element, setIsDirty],
   )
   const handleAdd = React.useCallback(() => {
     if (!inputRef.current) return
