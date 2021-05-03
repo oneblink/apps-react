@@ -52,7 +52,6 @@ function FormElementRepeatableSet({
   const handleRemoveEntry = React.useCallback(
     (index) => {
       const newEntries = [...entries]
-      console.log(newEntries[index])
       newEntries.splice(index, 1)
       onChange(element, newEntries)
       setIsDirty()

@@ -1,10 +1,10 @@
 .ob-figure {
   background-color: $white-ter;
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: $size-7;
   border-radius: $radius;
   line-height: 1;
-  padding: 10px;
+  padding: $size-7;
 
   img {
     display: inline-block;
