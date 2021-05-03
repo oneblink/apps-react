@@ -23,6 +23,13 @@
   height: calc(50px + #{$size-3} * 2);
   display: flex;
 }
+.ob-files__content-loading {
+  padding: $size-8;
+  height: calc(50px + #{$size-3} * 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .ob-files__image {
   display: block;
@@ -40,6 +47,14 @@
   background: $grey-lighter;
   padding: $size-7;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ob-files__file-name-inner {
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -63,4 +78,30 @@
 
 .ob-files__menu-remove-hidden {
   display: none;
+}
+
+.ob-files__upload-errors-container {
+  border-color: $grey-lighter;
+  border-style: solid;
+  border-width: 1px;
+  margin-top: $size-7;
+  border-radius: $radius;
+}
+.ob-files__upload-error {
+  padding: $size-7;
+  display: flex;
+  align-items: center;
+}
+.ob-files__upload-error-icon {
+  padding-right: $size-8;
+}
+
+.ob-files__upload-errors-clear-button-container {
+  padding: $size-7;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ob-files__status-wrapper {
+  display: inherit;
 }

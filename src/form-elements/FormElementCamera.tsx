@@ -3,13 +3,13 @@ import clsx from 'clsx'
 import SignatureCanvas from 'react-signature-canvas'
 
 import useBooleanState from '../hooks/useBooleanState'
-import downloadFile from '../services/download-file'
+import { downloadFileLegacy } from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
 import { localisationService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import parseFilesAsAttachments from '../services/parseFilesAsAttachments'
+import { parseFilesAsAttachmentsLegacy } from '../services/parseFilesAsAttachments'
 
 type Props = {
   id: string
@@ -75,7 +75,7 @@ function FormElementCamera({
 
       console.log('File selected event', changeEvent)
       try {
-        const attachments = await parseFilesAsAttachments(
+        const attachments = await parseFilesAsAttachmentsLegacy(
           changeEvent.target.files,
           (file: File, canvas: HTMLCanvasElement) => {
             if (!element.includeTimestampWatermark) {
@@ -164,7 +164,7 @@ function FormElementCamera({
 
   const handleDownload = React.useCallback(async () => {
     if (typeof value === 'string') {
-      await downloadFile(value, id)
+      await downloadFileLegacy(value, id)
     }
   }, [value, id])
 

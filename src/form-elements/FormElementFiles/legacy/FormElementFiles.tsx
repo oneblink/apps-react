@@ -1,13 +1,13 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import useBooleanState from '../hooks/useBooleanState'
-import useClickOutsideElement from '../hooks/useClickOutsideElement'
-import useIsMounted from '../hooks/useIsMounted'
-import downloadFile from '../services/download-file'
+import useBooleanState from '../../../hooks/useBooleanState'
+import useClickOutsideElement from '../../../hooks/useClickOutsideElement'
+import useIsMounted from '../../../hooks/useIsMounted'
+import { downloadFileLegacy } from '../../../services/download-file'
 import { FormTypes } from '@oneblink/types'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import parseFilesAsAttachments from '../services/parseFilesAsAttachments'
+import FormElementLabelContainer from '../../../components/FormElementLabelContainer'
+import { parseFilesAsAttachmentsLegacy } from '../../../services/parseFilesAsAttachments'
 
 export type FilesElementFile = {
   data: string
@@ -17,10 +17,10 @@ export type FilesElementFile = {
 type Props = {
   id: string
   element: FormTypes.FilesElement
-  value: unknown
+  value?: FilesElementFile[]
   onChange: (
     formElement: FormTypes.FormElement,
-    newValue: FilesElementFile[] | undefined,
+    newValue: FilesElementFile[],
   ) => unknown
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -53,7 +53,7 @@ const FormElementFile = ({ element, onRemove, file, index }: ChildProps) => {
   )
   const handleRemove = React.useCallback((index) => onRemove(index), [onRemove])
   const handleDownload = React.useCallback(async () => {
-    await downloadFile(file.data, file.fileName)
+    await downloadFileLegacy(file.data, file.fileName)
   }, [file])
 
   return (
@@ -137,7 +137,7 @@ function FormElementFiles({
 
   const addFile = React.useCallback(
     async (newFiles) => {
-      const attachments = await parseFilesAsAttachments(newFiles)
+      const attachments = await parseFilesAsAttachmentsLegacy(newFiles)
       if (!attachments.length) {
         return
       }
