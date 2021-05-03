@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for `displayAsCurrency` prop in calculation element
 
+### Changed
+
+- **[BREAKING]** `draw` form element to require Done button press before the drawing is added to the submission data
+
 ## [0.2.4] - 2021-04-27
 
 ### Added

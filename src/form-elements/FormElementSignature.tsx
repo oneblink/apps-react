@@ -1,11 +1,10 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
-import * as canvasManipulation from '@blinkmobile/canvas-manipulation'
 import { FormTypes } from '@oneblink/types'
 
-import useBooleanState from '../hooks/useBooleanState'
 import scrollingService from '../services/scrolling-service'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import OnLoading from '../components/OnLoading'
 
 type Props = {
   id: string
@@ -27,37 +26,84 @@ function FormElementSignature({
   validationMessage,
   displayValidationMessage,
 }: Props) {
-  const [isDirty] = useBooleanState(false)
-  const [isDisabled, setIsDisabled, setNotDisabled] = useBooleanState(false)
-  const [canvasDimensions, setCanvasDimensions] = React.useState({})
+  const handleChange = React.useCallback(
+    (newValue: string) => {
+      onChange(element, newValue)
+    },
+    [element, onChange],
+  )
+  const handleClear = React.useCallback(() => {
+    onChange(element, undefined)
+  }, [element, onChange])
+
+  return (
+    <div className="cypress-signature-element">
+      <FormElementLabelContainer
+        className="ob-signature"
+        id={id}
+        element={element}
+        required={element.required}
+      >
+        <div className="control">
+          {typeof value === 'string' ? (
+            <SignatureDisplay
+              element={element}
+              value={value}
+              onClear={handleClear}
+            />
+          ) : (
+            <SignatureDrawing element={element} onChange={handleChange} />
+          )}
+        </div>
+
+        {displayValidationMessage && !!validationMessage && (
+          <div role="alert" className="has-margin-top-8">
+            <div className="has-text-danger ob-error__text cypress-validation-message">
+              {validationMessage}
+            </div>
+          </div>
+        )}
+      </FormElementLabelContainer>
+    </div>
+  )
+}
+
+export default React.memo(FormElementSignature)
+
+function SignatureDrawing({
+  element,
+  onChange,
+}: {
+  element: FormTypes.DrawElement
+  onChange: (newValue: string) => void
+}) {
   const canvasRef = React.useRef<SignatureCanvas>(null)
 
-  // REACTIVE DISABLING OF CANVAS
-  React.useEffect(() => {
+  const [isEmpty, setIsEmpty] = React.useState(true)
+  const [canvasDimensions, setCanvasDimensions] = React.useState({})
+
+  const handleClear = React.useCallback(() => {
+    if (canvasRef.current) {
+      console.log('Clearing signature...')
+      canvasRef.current.clear()
+    }
+    setIsEmpty(true)
+  }, [])
+
+  const handleDone = React.useCallback(() => {
     if (!canvasRef.current) return
-    if (isDisabled || element.readOnly) {
-      canvasRef.current.off()
-    } else {
-      canvasRef.current.on()
-    }
-  }, [isDisabled, canvasRef, element.readOnly])
+    onChange(canvasRef.current.getTrimmedCanvas().toDataURL())
+  }, [onChange])
 
-  // SETTING CANVAS FROM PASSED VALUE
-  React.useEffect(() => {
-    const signatureCanvas = canvasRef.current
-    if (!signatureCanvas || !value || typeof value !== 'string') return
-    console.log('Setting signature starting value...')
-    const image = new Image()
-    image.onload = () => {
-      canvasManipulation.drawImageCentered(signatureCanvas.getCanvas(), image)
-      // @ts-expect-error ???
-      signatureCanvas._sigPad._isEmpty = false
+  // HANDLING CANVAS CHANGE
+  const handleEndDraw = React.useCallback(() => {
+    if (window.cordova) {
+      scrollingService.enableScrolling()
     }
-    image.src = value
-
-    // To ensure value only gets set once (prefill data)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasRef])
+    if (isEmpty) {
+      setIsEmpty(false)
+    }
+  }, [isEmpty])
 
   // HANDLE RESIZE
   React.useEffect(() => {
@@ -82,87 +128,91 @@ function FormElementSignature({
     }
   }, [canvasRef])
 
-  // HANDLING CANVAS CHANGE
-  const handleBeginDraw = React.useCallback(() => {
-    if (window.cordova) {
-      scrollingService.disableScrolling()
-    }
-  }, [])
-
-  const handleEndDraw = React.useCallback(() => {
-    if (window.cordova) {
-      scrollingService.enableScrolling()
-    }
+  // REACTIVE DISABLING OF CANVAS
+  React.useEffect(() => {
     if (!canvasRef.current) return
-    const val = canvasRef.current.getTrimmedCanvas().toDataURL()
-    onChange(element, val)
-  }, [element, onChange, canvasRef])
-
-  // HANDLING CLEAR
-  const handleClear = React.useCallback(() => {
-    if (!canvasRef.current) return
-    console.log('Clearing signature...')
-    canvasRef.current.clear()
-    onChange(element, undefined)
-    setNotDisabled()
-  }, [element, onChange, canvasRef, setNotDisabled])
+    if (element.readOnly) {
+      canvasRef.current.off()
+    } else {
+      canvasRef.current.on()
+    }
+  }, [canvasRef, element.readOnly])
 
   return (
-    <div className="cypress-signature-element">
-      <FormElementLabelContainer
-        className="ob-signature"
-        id={id}
-        element={element}
-        required={element.required}
-      >
-        <div className="control">
-          <div>
-            <SignatureCanvas
-              ref={canvasRef}
-              canvasProps={{
-                ...canvasDimensions,
-                className:
-                  'input ob-signature__control cypress-signature-control signature-pad',
-                // @ts-expect-error ???
-                disabled: isDisabled || element.readOnly,
-              }}
-              onEnd={handleEndDraw}
-              onBegin={handleBeginDraw}
-            ></SignatureCanvas>
-          </div>
+    <>
+      <div>
+        <SignatureCanvas
+          ref={canvasRef}
+          canvasProps={{
+            ...canvasDimensions,
+            className:
+              'input ob-signature__control cypress-signature-control signature-pad',
+            // @ts-expect-error ???
+            disabled: element.readOnly,
+          }}
+          onEnd={handleEndDraw}
+          onBegin={
+            window.cordova ? scrollingService.disableScrolling : undefined
+          }
+        />
+      </div>
 
-          <div className="buttons ob-buttons">
-            <button
-              type="button"
-              className="button ob-button is-light ob-button__clear cypress-clear-signature"
-              onClick={handleClear}
-              disabled={element.readOnly}
-            >
-              Clear
-            </button>
-            {!element.readOnly && (
-              <button
-                type="button"
-                className="button ob-button ob-button__done is-primary cypress-done-signature-button"
-                onClick={setIsDisabled}
-                disabled={isDisabled}
-              >
-                Done
-              </button>
-            )}
-          </div>
-        </div>
-
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
-        )}
-      </FormElementLabelContainer>
-    </div>
+      <div className="buttons ob-buttons">
+        <button
+          type="button"
+          className="button ob-button is-light ob-button__clear cypress-clear-signature"
+          onClick={handleClear}
+          disabled={element.readOnly || isEmpty}
+        >
+          Clear
+        </button>
+        <button
+          type="button"
+          className="button ob-button ob-button__done is-primary cypress-done-signature-button"
+          onClick={handleDone}
+          disabled={element.readOnly || isEmpty}
+        >
+          Done
+        </button>
+      </div>
+    </>
   )
 }
 
-export default React.memo(FormElementSignature)
+function SignatureDisplay({
+  element,
+  value,
+  onClear,
+}: {
+  element: FormTypes.DrawElement
+  value: string
+  onClear: () => void
+}) {
+  return (
+    <>
+      <figure className="ob-figure">
+        <div className="figure-content">
+          {value ? (
+            <img
+              src={value}
+              className="cypress-signature-image ob-signature__img"
+            />
+          ) : (
+            <OnLoading small className="cypress-signature-loading-image" />
+          )}
+        </div>
+      </figure>
+
+      <div className="buttons ob-buttons">
+        <button
+          type="button"
+          className="button ob-button is-light ob-button__clear cypress-clear-signature"
+          onClick={onClear}
+          disabled={element.readOnly}
+        >
+          Clear
+        </button>
+      </div>
+    </>
+  )
+}
