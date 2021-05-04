@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { AttachmentValid } from '../../hooks/attachments/useAttachments'
-// import OnLoading from '../../components/OnLoading'
 
 interface Props {
   file: AttachmentValid
@@ -46,11 +45,6 @@ const FormElementFileDisplay = ({ file }: Props) => {
   // TODO: HANDLE SHOWING PAPER CLIP WHEN IMAGE DIDNT LOAD?
 
   // TODO: Show spinner while file is loading?
-  // return (
-  //   <div className="ob-files__content-loading">
-  //     <OnLoading />
-  //   </div>
-  // )
 }
 
 export default React.memo<Props>(FormElementFileDisplay)
