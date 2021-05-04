@@ -9,7 +9,7 @@ import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import ComplianceButton from './ComplianceButton'
-import FormElementFiles, { FilesElementFile } from './FormElementFiles'
+import FormElementFiles, { PossibleFileConfiguration } from './FormElementFiles'
 import FormElementTextarea from './FormElementTextarea'
 
 interface Props {
@@ -31,7 +31,7 @@ interface Props {
 export interface Value {
   value: unknown
   notes?: string
-  files?: FilesElementFile[]
+  files?: PossibleFileConfiguration[]
 }
 
 const baseElement = {
@@ -109,7 +109,7 @@ function FormElementCompliance({
     [element, onChange, typedValue],
   )
   const handleFilesChange = React.useCallback(
-    (v: FilesElementFile[] | undefined) => {
+    (v: PossibleFileConfiguration[] | undefined) => {
       const newFiles = v ? v : undefined
       onChange(element, { ...typedValue, files: newFiles })
     },
@@ -211,7 +211,11 @@ function FormElementCompliance({
             <div className="ob-compliance-child-element">
               <FormElementFiles
                 id={`${id}-files`}
-                onChange={(fe, v) => handleFilesChange(v)}
+                onChange={(fe, v) =>
+                  handleFilesChange(
+                    v as PossibleFileConfiguration[] | undefined,
+                  )
+                }
                 displayValidationMessage={false}
                 validationMessage={undefined}
                 value={typedValue.files}

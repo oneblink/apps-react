@@ -33,6 +33,7 @@
     "react-signature-canvas": "^1.0.3",
     "sanitize-html": "^2.3.3",
     "signature_pad": "^3.0.0-beta.4",
+    "uuid": "^8.3.2",
     "validate.js": "^0.13.1"
   },
   "devDependencies": {
@@ -40,7 +41,7 @@
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.12.13",
-    "@oneblink/apps": "^0.8.1-beta.1",
+    "@oneblink/apps": "^0.8.1-beta.3",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.2",
@@ -56,6 +57,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/react-signature-canvas": "^1.0.1",
     "@types/sanitize-html": "^1.27.1",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
     "@typescript-eslint/parser": "^4.19.0",
     "clsx": "^1.1.1",
@@ -88,7 +90,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.8.1-beta.1",
+    "@oneblink/apps": "^0.8.1-beta.3",
     "clsx": "^1.1.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",

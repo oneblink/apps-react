@@ -410,15 +410,18 @@ function OneBlinkFormBase({
   //
   // #region Submission/Definition Changes
 
-  const handleChange = React.useCallback(
-    (element: FormTypes.FormElement, value: unknown | undefined): void => {
+  const handleChange: OnChangeSubmission = React.useCallback(
+    (element, value): void => {
       if (disabled) return
       if (element.type !== 'page') {
         setFormSubmission((currentFormSubmission) => ({
           isDirty: true,
           submission: {
             ...currentFormSubmission.submission,
-            [element.name]: value,
+            [element.name]:
+              typeof value === 'function'
+                ? value(currentFormSubmission.submission[element.name])
+                : value,
           },
         }))
       }

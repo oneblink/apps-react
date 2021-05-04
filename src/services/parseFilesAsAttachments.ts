@@ -1,7 +1,7 @@
 import { Sentry } from '@oneblink/apps'
 import loadImage from 'blueimp-load-image'
 
-export default async function parseFilesAsAttachments(
+export async function parseFilesAsAttachmentsLegacy(
   files: File[],
   onAnnotateCanvas?: (file: File, canvas: HTMLCanvasElement) => void,
 ): Promise<Array<{ data: string; fileName: string; contentType: string }>> {
@@ -75,4 +75,8 @@ export default async function parseFilesAsAttachments(
   }
 
   return attachments
+}
+
+export default function parseFilesAsAttachments() {
+  // TODO: Rotate blob files for new stoarge types
 }

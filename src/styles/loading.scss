@@ -33,6 +33,13 @@
     height: 100px;
   }
 
+  &.tiny {
+    border-width: 2px;
+    width: 24px;
+    height: 24px;
+    border-right-color: $primary;
+  }
+
   button & {
     border-width: 2px;
     width: 20px;

@@ -2,10 +2,9 @@ import { Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 
-export default async function downloadFile(dataURI: string, fileName: string) {
+export default async function downloadFile(blob: Blob, fileName: string) {
   try {
     if (window.cordova) {
-      const blob = await convertDataUriToBlob(dataURI)
       await new Promise((resolve, reject) => {
         window.requestFileSystem(
           window.PERSISTENT,
@@ -74,7 +73,7 @@ export default async function downloadFile(dataURI: string, fileName: string) {
       })
       return
     } else {
-      fileSaver.saveAs(dataURI, fileName)
+      fileSaver.saveAs(blob, fileName)
     }
   } catch (error) {
     if (error) {
@@ -90,6 +89,11 @@ export default async function downloadFile(dataURI: string, fileName: string) {
       })
     }
   }
+}
+
+export async function downloadFileLegacy(dataURI: string, fileName: string) {
+  const blob = await convertDataUriToBlob(dataURI)
+  return await downloadFile(blob, fileName)
 }
 
 async function convertDataUriToBlob(dataURI: string) {

@@ -5,15 +5,17 @@ type Props = {
   className?: string
   small?: boolean
   large?: boolean
+  tiny?: boolean
 }
 
-function OnLoading({ className, small, large }: Props) {
+function OnLoading({ className, small, large, tiny }: Props) {
   return (
     <on-loading className={className}>
       <div
         className={clsx('ob-loading on-loading', {
           small: small,
           large: large,
+          tiny: tiny,
         })}
       />
     </on-loading>
