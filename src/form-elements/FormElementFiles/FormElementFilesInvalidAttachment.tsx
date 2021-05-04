@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { AttachmentSavingFailed } from '../../hooks/useAttachments'
+import { AttachmentError } from '../../hooks/attachments/useAttachments'
 
 interface Props {
-  file: AttachmentSavingFailed
+  file: AttachmentError
 }
 
 const FormElementFilesInvalidAttachment = ({ file }: Props) => {

@@ -4,20 +4,22 @@ import useBooleanState from '../../hooks/useBooleanState'
 import useClickOutsideElement from '../../hooks/useClickOutsideElement'
 import downloadFile from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
-import { ValidAttachment } from '../../hooks/useAttachments'
+import { AttachmentValid } from '../../hooks/attachments/useAttachments'
+import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
 import FormElementFileDisplay from './FormElementFileDisplay'
 import FormElementFileStatus from './FormElementFileStatus'
 
 type Props = {
   element: FormTypes.FilesElement
-  onRemove: (index: number) => unknown
-  file: ValidAttachment
-  index: number
+  onRemove: (id: string) => void
+  file: AttachmentValid
+  onChange: OnChange
 }
 
-const FormElementFile = ({ element, onRemove, file, index }: Props) => {
+const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
+  useAttachment(file, element, onChange)
 
   useClickOutsideElement(
     dropDownRef,
@@ -27,15 +29,24 @@ const FormElementFile = ({ element, onRemove, file, index }: Props) => {
       }
     }, [hideMore, isShowingMore]),
   )
-  const handleRemove = React.useCallback((index) => onRemove(index), [onRemove])
+
+  const handleRemove = React.useCallback(() => {
+    hideMore()
+    if (!file.type) {
+      return onRemove(file.id)
+    }
+    return onRemove(file._id)
+  }, [file, hideMore, onRemove])
+
   const handleDownload = React.useCallback(async () => {
-    if (file.type === 'READY') {
+    // TODO: Handle download for uploaded file type
+    if (file.type === 'SAVING' || file.type === 'NEW') {
       await downloadFile(file.data, file.fileName)
     }
   }, [file])
 
   return (
-    <div className="column is-one-quarter" key={index}>
+    <div className="column is-one-quarter">
       <div className="ob-files__box">
         <div className="ob-files__content">
           <FormElementFileDisplay file={file} />
@@ -72,10 +83,7 @@ const FormElementFile = ({ element, onRemove, file, index }: Props) => {
                 className={clsx('dropdown-item cypress-file-remove-button', {
                   'ob-files__menu-remove-hidden': element.readOnly,
                 })}
-                onClick={() => {
-                  hideMore()
-                  handleRemove(index)
-                }}
+                onClick={handleRemove}
               >
                 Remove
               </a>

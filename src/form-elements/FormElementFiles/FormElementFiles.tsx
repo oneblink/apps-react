@@ -4,16 +4,16 @@ import useIsMounted from '../../hooks/useIsMounted'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../components/FormElementLabelContainer'
 import FormElementFile from './FormElementFile'
-import useAttachments, { FileConfiguration } from '../../hooks/useAttachments'
+import useAttachments, {
+  Attachment,
+  OnChangeAttachments,
+} from '../../hooks/attachments/useAttachments'
 import FormElementFilesInvalidAttachment from './FormElementFilesInvalidAttachment'
 type Props = {
   id: string
   element: FormTypes.FilesElement
-  value?: Array<FileConfiguration>
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: FileConfiguration[],
-  ) => unknown
+  value?: Attachment[]
+  onChange: OnChangeAttachments<Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
@@ -27,28 +27,31 @@ function FormElementFiles({
   displayValidationMessage,
 }: Props) {
   const [
-    { attachments, invalidAttachments },
-    { addAttachments, removeAttachment, clearInvalidAttachments },
-  ] = useAttachments(element, Array.isArray(value) ? value : [])
+    { allAttachments, validAttachments, errorAttachments },
+    {
+      addAttachments,
+      removeAttachment,
+      changeAttachment,
+      clearInvalidAttachments,
+    },
+  ] = useAttachments(Array.isArray(value) ? value : [], element, onChange)
+
   const [isDirty, setIsDirty] = useBooleanState(false)
 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const isMounted = useIsMounted()
 
   const addFile = React.useCallback(
-    async (newFiles: FileList | null) => {
-      if (!newFiles) return
-      // TODO: ROTATE ATTACHMENTS
-
-      const newAttachments = await addAttachments(Array.from(newFiles))
-      const updatedValues = Array.isArray(value) ? [...value] : []
-      updatedValues.push(...newAttachments)
+    async (newFilesList: FileList | null) => {
+      if (!newFilesList) return
+      const newFiles = Array.from(newFilesList)
+      if (!newFiles.length) return
       if (isMounted.current) {
-        onChange(element, updatedValues)
+        addAttachments(newFiles)
         setIsDirty()
       }
     },
-    [addAttachments, value, isMounted, onChange, element, setIsDirty],
+    [addAttachments, isMounted, setIsDirty],
   )
   const handleAdd = React.useCallback(() => {
     if (!inputRef.current) return
@@ -56,18 +59,27 @@ function FormElementFiles({
   }, [])
 
   const handleRemove = React.useCallback(
-    (index: number) => {
-      const updatedValues = removeAttachment(index)
+    (id: string) => {
       if (isMounted.current) {
         if (inputRef.current) {
           // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
           inputRef.current.value = ''
         }
-        onChange(element, updatedValues)
+        removeAttachment(id)
         setIsDirty()
       }
     },
-    [removeAttachment, isMounted, onChange, element, setIsDirty],
+    [removeAttachment, isMounted, setIsDirty],
+  )
+  const handleChange = React.useCallback(
+    (id: string, attachment: Attachment) => {
+      //const updatedValues = changeAttachment(id, attachment)
+      if (isMounted.current) {
+        changeAttachment(id, attachment)
+        setIsDirty()
+      }
+    },
+    [changeAttachment, isMounted, setIsDirty],
   )
 
   return (
@@ -90,20 +102,20 @@ function FormElementFiles({
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline">
-            {attachments.map((attachment, index) => {
+            {validAttachments.map((attachment, index) => {
               return (
                 <FormElementFile
                   key={index}
                   element={element}
                   onRemove={handleRemove}
                   file={attachment}
-                  index={index}
+                  onChange={handleChange}
                 />
               )
             })}
             {!element.readOnly &&
               (!element.maxEntries ||
-                attachments.length < element.maxEntries) && (
+                allAttachments.length < element.maxEntries) && (
                 <div className="column is-one-quarter">
                   <button
                     type="button"
@@ -124,13 +136,13 @@ function FormElementFiles({
             </div>
           </div>
         )}
-        {!!invalidAttachments.length && (
+        {!!errorAttachments.length && (
           <div className="ob-files__upload-errors-container">
-            {invalidAttachments.map((invalidAttachments, i) => {
+            {errorAttachments.map((errorAttachment, i) => {
               return (
                 <FormElementFilesInvalidAttachment
                   key={i}
-                  file={invalidAttachments}
+                  file={errorAttachment}
                 />
               )
             })}

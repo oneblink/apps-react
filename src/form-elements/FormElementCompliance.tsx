@@ -211,7 +211,11 @@ function FormElementCompliance({
             <div className="ob-compliance-child-element">
               <FormElementFiles
                 id={`${id}-files`}
-                onChange={(fe, v) => handleFilesChange(v)}
+                onChange={(fe, v) =>
+                  handleFilesChange(
+                    v as PossibleFileConfiguration[] | undefined,
+                  )
+                }
                 displayValidationMessage={false}
                 validationMessage={undefined}
                 value={typedValue.files}
