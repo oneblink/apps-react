@@ -41,10 +41,7 @@ type Props = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
-  onChange: (
-    formElement: FormTypes.FormElement,
-    value: unknown | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler
   onChangeElements: (formElements: FormTypes.FormElement[]) => void
   onChangeModel: (model: FormElementsCtrl['model']) => void
   // Props passed by repeatable sets
@@ -177,7 +174,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementDate
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -199,7 +200,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementEmail
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -221,7 +226,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementText
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -243,7 +252,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementBarcodeScanner
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -265,7 +278,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementTextarea
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -287,7 +304,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementNumber
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -309,7 +330,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementTelephone
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -332,7 +357,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementAutocomplete
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
@@ -356,7 +385,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementSelect
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
@@ -380,7 +413,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementRadio
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
@@ -394,7 +431,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           element={element}
           value={value}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementSignature
+            >['onChange']
+          }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
         />
@@ -404,7 +445,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <FormElementCalculation
           element={element}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementCalculation
+            >['onChange']
+          }
           value={value}
         />
       )
@@ -417,7 +462,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           isEven={!isEven}
           element={element}
           value={value as Array<FormElementsCtrl['model']> | undefined}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementRepeatableSet
+            >['onChange']
+          }
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}
           formElementConditionallyShown={
@@ -448,7 +497,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementDateTime
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -470,7 +523,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementTime
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -492,7 +549,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementCheckBoxes
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
@@ -506,7 +567,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           element={element}
           value={value}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementFiles
+            >['onChange']
+          }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
         />
@@ -514,15 +579,15 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'infoPage':
     case 'form': {
-      // @ts-expect-error cannot convert unknown to a  typescript Record<>
-      const v: FormElementsCtrl['model'] | undefined = value
       return (
         <FormElementForm
           formId={formId}
           id={id}
           element={element}
-          value={v}
-          onChange={onChange}
+          value={value as FormElementsCtrl['model'] | undefined}
+          onChange={
+            onChange as React.ComponentProps<typeof FormElementForm>['onChange']
+          }
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}
           displayValidationMessage={displayValidationMessage}
@@ -541,7 +606,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           element={element}
           value={value}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementCamera
+            >['onChange']
+          }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
         />
@@ -551,7 +620,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <FormElementSummary
           element={element}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementSummary
+            >['onChange']
+          }
           value={value}
         />
       )
@@ -560,7 +633,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <FormElementCaptcha
           element={element}
-          onChange={onChange}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementCaptcha
+            >['onChange']
+          }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
         />
@@ -582,7 +659,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementLocation
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -607,7 +688,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             formId={formId}
             element={element}
             value={v}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementGeoscapeAddress
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />
@@ -630,7 +715,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             id={id}
             element={element}
             value={value}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementCompliance
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             onConditionallyShowOption={handleConditionallyShowOption}
@@ -657,7 +746,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             formId={formId}
             element={element}
             value={v}
-            onChange={onChange}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementPointAddress
+              >['onChange']
+            }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
           />

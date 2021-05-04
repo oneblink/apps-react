@@ -10,10 +10,7 @@ type Props = {
   id: string
   element: FormTypes.TelephoneElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

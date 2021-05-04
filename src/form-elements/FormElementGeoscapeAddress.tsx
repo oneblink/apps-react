@@ -13,10 +13,7 @@ type Props = {
   value: GeoscapeTypes.GeoscapeAddress | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: GeoscapeTypes.GeoscapeAddress | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<GeoscapeTypes.GeoscapeAddress>
 }
 
 function FormElementGeoscapeAddress({

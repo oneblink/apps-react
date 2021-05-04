@@ -16,10 +16,7 @@ interface Props {
   id: string
   element: FormTypes.ComplianceElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: Value | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<Value>
   onConditionallyShowOption: (
     choiceElementOption: FormTypes.ChoiceElementOption,
   ) => boolean
@@ -29,7 +26,7 @@ interface Props {
 }
 
 export interface Value {
-  value: unknown
+  value?: string
   notes?: string
   files?: PossibleFileConfiguration[]
 }
@@ -75,15 +72,7 @@ function FormElementCompliance({
   displayValidationMessage,
   isEven,
 }: Props) {
-  const typedValue: Value = React.useMemo(() => {
-    if (typeof value === 'object' && !!value) {
-      return value as Value
-    } else {
-      return {
-        value: undefined,
-      }
-    }
-  }, [value])
+  const typedValue = value as Value | undefined
 
   const notesElement = React.useMemo(() => generateNotesElement(element), [
     element,
@@ -92,36 +81,81 @@ function FormElementCompliance({
     element,
   ])
 
-  const handleValueChange = React.useCallback(
-    (fe: FormTypes.FormElement, v: unknown) => {
-      onChange(fe, {
-        ...typedValue,
-        value: v,
+  const handleValueChange = React.useCallback<
+    FormElementValueChangeHandler<string>
+  >(
+    (fe, v) => {
+      onChange(fe, (existingValue: Value | undefined) => {
+        let newValue = undefined
+        if (typeof v === 'function') {
+          newValue = v(existingValue ? existingValue.value : undefined)
+        } else {
+          newValue = v
+        }
+        if (!newValue) {
+          return
+        }
+        return {
+          ...existingValue,
+          value: newValue,
+        }
       })
     },
-    [onChange, typedValue],
+    [onChange],
   )
-  const handleNotesChange = React.useCallback(
-    (v: unknown) => {
-      const newNotes = !!v && typeof v === 'string' ? v : undefined
-      onChange(element, { ...typedValue, notes: newNotes })
+  const handleNotesChange = React.useCallback<
+    React.ComponentProps<typeof FormElementTextarea>['onChange']
+  >(
+    (fe, v) => {
+      onChange(element, (existingValue) => {
+        if (!existingValue) {
+          return
+        }
+        let newNotes = undefined
+        if (typeof v === 'function') {
+          newNotes = v(existingValue.notes)
+        } else {
+          newNotes = v
+        }
+        return {
+          ...existingValue,
+          notes: newNotes,
+        }
+      })
     },
-    [element, onChange, typedValue],
+    [element, onChange],
   )
-  const handleFilesChange = React.useCallback(
-    (v: PossibleFileConfiguration[] | undefined) => {
-      const newFiles = v ? v : undefined
-      onChange(element, { ...typedValue, files: newFiles })
+  const handleFilesChange = React.useCallback<
+    React.ComponentProps<typeof FormElementFiles>['onChange']
+  >(
+    (fe, v) => {
+      onChange(element, (existingValue) => {
+        if (!existingValue) {
+          return
+        }
+        let newFiles = undefined
+        if (typeof v === 'function') {
+          newFiles = v(existingValue.files)
+        } else {
+          newFiles = v
+        }
+        return {
+          ...existingValue,
+          files: newFiles && newFiles.length ? newFiles : undefined,
+        }
+      })
     },
-    [element, onChange, typedValue],
+    [element, onChange],
   )
 
   const [isShowingNotes, toggleIsShowingNotes] = useToggleComplianceChildren(
-    !!typedValue.notes,
+    element,
+    !!typedValue?.notes,
     handleNotesChange,
   )
   const [isShowingFiles, toggleIsShowingFiles] = useToggleComplianceChildren(
-    !!typedValue.files,
+    element,
+    !!typedValue?.files,
     handleFilesChange,
   )
 
@@ -129,7 +163,7 @@ function FormElementCompliance({
 
   const filteredOptions = useFormElementOptions({
     element,
-    value: typedValue.value,
+    value: typedValue?.value,
     onChange: handleValueChange,
     onFilter: onConditionallyShowOption,
   })
@@ -146,7 +180,7 @@ function FormElementCompliance({
           <FormElementOptions options={element.options}>
             <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
               {filteredOptions.map((option) => {
-                const isSelected = typedValue.value === option.value
+                const isSelected = typedValue?.value === option.value
                 return (
                   <div className="ob-button-radio-container" key={option.value}>
                     <OptionButton
@@ -182,7 +216,7 @@ function FormElementCompliance({
               isActive={isShowingNotes}
               icon="notes"
               onClick={toggleIsShowingNotes}
-              disabled={element.readOnly || !typedValue.value}
+              disabled={element.readOnly || !typedValue?.value}
             >
               Notes
             </ComplianceButton>
@@ -190,7 +224,7 @@ function FormElementCompliance({
               isActive={isShowingFiles}
               icon="perm_media"
               onClick={toggleIsShowingFiles}
-              disabled={element.readOnly || !typedValue.value}
+              disabled={element.readOnly || !typedValue?.value}
             >
               Media
             </ComplianceButton>
@@ -199,10 +233,10 @@ function FormElementCompliance({
             <div className="ob-compliance-child-element">
               <FormElementTextarea
                 id={`${id}-notes`}
-                onChange={(fe, v) => handleNotesChange(v)}
+                onChange={handleNotesChange}
                 displayValidationMessage={false}
                 validationMessage={undefined}
-                value={typedValue.notes}
+                value={typedValue?.notes}
                 element={notesElement}
               />
             </div>
@@ -211,14 +245,10 @@ function FormElementCompliance({
             <div className="ob-compliance-child-element">
               <FormElementFiles
                 id={`${id}-files`}
-                onChange={(fe, v) =>
-                  handleFilesChange(
-                    v as PossibleFileConfiguration[] | undefined,
-                  )
-                }
+                onChange={handleFilesChange}
                 displayValidationMessage={false}
                 validationMessage={undefined}
-                value={typedValue.files}
+                value={typedValue?.files}
                 element={filesElement}
               />
             </div>

@@ -17,11 +17,8 @@ export type FilesElementFile = {
 type Props = {
   id: string
   element: FormTypes.FilesElement
-  value?: FilesElementFile[]
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: FilesElementFile[],
-  ) => unknown
+  value: FilesElementFile[] | undefined
+  onChange: FormElementValueChangeHandler<FilesElementFile[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

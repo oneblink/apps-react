@@ -410,8 +410,8 @@ function OneBlinkFormBase({
   //
   // #region Submission/Definition Changes
 
-  const handleChange: OnChangeSubmission = React.useCallback(
-    (element, value): void => {
+  const handleChange = React.useCallback<FormElementValueChangeHandler>(
+    (element, value) => {
       if (disabled) return
       if (element.type !== 'page') {
         setFormSubmission((currentFormSubmission) => ({

@@ -8,10 +8,7 @@ import { Sentry } from '@oneblink/apps'
 import { localisationService } from '@oneblink/apps'
 type Props = {
   element: FormTypes.CalculationElement
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: number | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<number>
   value: unknown | undefined
 }
 

@@ -7,10 +7,7 @@ import { FormTypes } from '@oneblink/types'
 
 type Props = {
   element: FormTypes.SummaryElement
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler
   value: unknown
 }
 

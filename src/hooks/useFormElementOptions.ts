@@ -1,7 +1,7 @@
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
-export default function useFormElementOptions({
+export default function useFormElementOptions<T>({
   element,
   value,
   onChange,
@@ -9,10 +9,7 @@ export default function useFormElementOptions({
 }: {
   element: FormTypes.FormElementWithOptions
   value: unknown | undefined
-  onChange: (
-    formElement: FormTypes.FormElement,
-    value: unknown | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<T>
   onFilter: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
 }) {
   const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
@@ -33,6 +30,7 @@ export default function useFormElementOptions({
       !filteredOptions.some((option) => value === option.value)
     ) {
       onChange(element, undefined)
+      return
     }
 
     if (Array.isArray(value)) {
@@ -40,7 +38,8 @@ export default function useFormElementOptions({
         filteredOptions.some((option) => selectedValue === option.value),
       )
       if (newValue.length !== value.length) {
-        onChange(element, newValue.length ? newValue : undefined)
+        const newValueArray = newValue.length ? newValue : undefined
+        onChange(element, newValueArray as T | undefined)
       }
     }
   }, [element, filteredOptions, onChange, value])

@@ -11,10 +11,7 @@ type Props = {
   id: string
   element: FormTypes.CheckboxElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<string[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onConditionallyShowOption: (
@@ -32,26 +29,25 @@ function FormElementCheckboxes({
   onConditionallyShowOption,
 }: Props) {
   const changeValues = React.useCallback(
-    (newValue) => {
-      const hasSelectedValue = Array.isArray(value)
-        ? value.includes(newValue)
-        : false
-      let updatedValues = null
-      if (hasSelectedValue) {
-        updatedValues = Array.isArray(value) ? [...value] : []
-        updatedValues = updatedValues.filter(
-          (existingValue) => existingValue !== newValue,
-        )
-      } else {
-        updatedValues = Array.isArray(value) ? [...value] : []
-        updatedValues.push(newValue)
-      }
-      if (!updatedValues.length) {
-        updatedValues = null
-      }
-      onChange(element, updatedValues)
+    (toggledValue, hasSelectedValue) => {
+      onChange(element, (existingValue) => {
+        if (hasSelectedValue) {
+          const newValue = (existingValue || []).filter(
+            (existingValue) => existingValue !== toggledValue,
+          )
+          if (newValue.length) {
+            return newValue
+          }
+        } else {
+          const newValue = Array.isArray(existingValue)
+            ? [...existingValue]
+            : []
+          newValue.push(toggledValue)
+          return newValue
+        }
+      })
     },
-    [element, value, onChange],
+    [element, onChange],
   )
   const filteredOptions = useFormElementOptions({
     element,
@@ -81,7 +77,7 @@ function FormElementCheckboxes({
                       element={element}
                       option={option}
                       isSelected={isSelected}
-                      onClick={() => changeValues(option.value)}
+                      onClick={() => changeValues(option.value, isSelected)}
                       className={clsx(
                         'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
                         {
@@ -97,6 +93,8 @@ function FormElementCheckboxes({
           ) : (
             <div>
               {filteredOptions.map((option, index) => {
+                const isSelected =
+                  Array.isArray(value) && value.includes(option.value)
                 return (
                   <div className="control" key={index}>
                     <label
@@ -110,10 +108,8 @@ function FormElementCheckboxes({
                         className="checkbox ob-checkbox__input cypress-checkbox-control"
                         value={option.value}
                         id={`${id}_${option.value}`}
-                        checked={
-                          Array.isArray(value) && value.includes(option.value)
-                        }
-                        onChange={() => changeValues(option.value)}
+                        checked={isSelected}
+                        onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
                       />{' '}
                       {option.label}

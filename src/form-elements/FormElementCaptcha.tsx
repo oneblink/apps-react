@@ -6,10 +6,7 @@ import { FormTypes } from '@oneblink/types'
 
 type Props = {
   element: FormTypes.CaptchaElement
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: string | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

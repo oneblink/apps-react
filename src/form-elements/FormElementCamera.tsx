@@ -15,10 +15,7 @@ type Props = {
   id: string
   element: FormTypes.CameraElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

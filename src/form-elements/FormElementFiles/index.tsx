@@ -4,16 +4,13 @@ import FormElementFilesLegacy, {
   FilesElementFile,
 } from './legacy/FormElementFiles'
 import FormElementFiles from './FormElementFiles'
-import {
-  Attachment,
-  OnChangeAttachments,
-} from '../../hooks/attachments/useAttachments'
+import { Attachment } from '../../hooks/attachments/useAttachments'
 export type PossibleFileConfiguration = Attachment | FilesElementFile
 interface Props {
   id: string
   element: FormTypes.FilesElement
   value: unknown
-  onChange: OnChangeSubmission
+  onChange: FormElementValueChangeHandler
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
@@ -23,7 +20,7 @@ const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
     return (
       <FormElementFilesLegacy
         value={value as FilesElementFile[] | undefined}
-        onChange={onChange as OnChangeAttachments<FilesElementFile[]>}
+        onChange={onChange as FormElementValueChangeHandler<FilesElementFile[]>}
         {...props}
       />
     )
@@ -31,7 +28,7 @@ const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
   return (
     <FormElementFiles
       value={value as Attachment[] | undefined}
-      onChange={onChange as OnChangeAttachments<Attachment[]>}
+      onChange={onChange as FormElementValueChangeHandler<Attachment[]>}
       {...props}
     />
   )
