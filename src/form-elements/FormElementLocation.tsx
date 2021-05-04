@@ -15,10 +15,7 @@ type Props = {
   id: string
   element: FormTypes.LocationElement
   value: unknown | undefined
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<Coords>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

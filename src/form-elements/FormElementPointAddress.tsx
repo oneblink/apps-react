@@ -13,10 +13,7 @@ type Props = {
   value: PointTypes.PointAddress | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: PointTypes.PointAddress | undefined,
-  ) => void
+  onChange: FormElementValueChangeHandler<PointTypes.PointAddress>
 }
 
 type AddressType = 'all' | 'physical' | 'mailing'

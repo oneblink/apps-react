@@ -12,7 +12,7 @@ type Props = {
   isEven: boolean
   element: FormTypes.RepeatableSetElement
   value: Array<FormElementsCtrl['model']> | undefined
-  onChange: (formElement: FormTypes.FormElement, newValue: unknown[]) => unknown
+  onChange: FormElementValueChangeHandler<FormElementsCtrl['model'][]>
   onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
   onChangeModel: (model: FormElementsCtrl['model']) => unknown
   formElementConditionallyShown: FormElementConditionallyShown | undefined
@@ -42,21 +42,25 @@ function FormElementRepeatableSet({
   ])
 
   const handleAddEntry = React.useCallback(() => {
-    const newEntries = [...entries]
-    const entry = generateDefaultData(element.elements, {})
-    newEntries.push(entry)
-    onChange(element, newEntries)
+    onChange(element, (existingEntries) => {
+      const newEntries = [...(existingEntries || [])]
+      const entry = generateDefaultData(element.elements, {})
+      newEntries.push(entry)
+      return newEntries
+    })
     setIsDirty()
-  }, [element, entries, onChange, setIsDirty])
+  }, [element, onChange, setIsDirty])
 
   const handleRemoveEntry = React.useCallback(
     (index) => {
-      const newEntries = [...entries]
-      newEntries.splice(index, 1)
-      onChange(element, newEntries)
+      onChange(element, (existingEntries) => {
+        const newEntries = [...(existingEntries || [])]
+        newEntries.splice(index, 1)
+        return newEntries
+      })
       setIsDirty()
     },
-    [element, entries, onChange, setIsDirty],
+    [element, onChange, setIsDirty],
   )
 
   const handleNestedChange = React.useCallback(
@@ -64,19 +68,21 @@ function FormElementRepeatableSet({
       if (nestedElement.type === 'page') {
         return
       }
-      const newEntries = entries.map((entry, i) => {
-        if (i === index) {
-          return {
-            ...entry,
-            [nestedElement.name]: value,
+      onChange(element, (existingEntries) => {
+        const newEntries = (existingEntries || []).map((entry, i) => {
+          if (i === index) {
+            return {
+              ...entry,
+              [nestedElement.name]: value,
+            }
+          } else {
+            return entry
           }
-        } else {
-          return entry
-        }
+        })
+        return newEntries
       })
-      onChange(element, newEntries)
     },
-    [element, entries, onChange],
+    [element, onChange],
   )
 
   const handleChangeElements = React.useCallback(

@@ -12,10 +12,7 @@ type Props = {
   id: string
   element: FormTypes.RadioButtonElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<string>
   onConditionallyShowOption: (
     choiceElementOption: FormTypes.ChoiceElementOption,
   ) => boolean

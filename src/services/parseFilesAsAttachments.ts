@@ -55,8 +55,8 @@ export async function parseFilesAsAttachmentsLegacy(
           reader.onload = function () {
             resolve(reader.result as string)
           }
-          reader.onerror = function (error) {
-            reject(error)
+          reader.onerror = function () {
+            reject(new Error('Could not read file from data url'))
           }
           reader.readAsDataURL(file)
         })

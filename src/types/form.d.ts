@@ -61,10 +61,7 @@ declare type PageElementsConditionallyShown = {
   [pageElementId: string]: PageConditionallyShown
 }
 
-type OnChangeSubmissionValue = undefined | unknown
-declare type OnChangeSubmission = (
+declare type FormElementValueChangeHandler<T = unknown> = (
   element: import('@oneblink/types').FormTypes.FormElement,
-  value:
-    | OnChangeSubmissionValue
-    | ((existingValue: OnChangeSubmissionValue) => OnChangeSubmissionValue),
+  value?: T | ((existingValue?: T) => T | undefined),
 ) => void

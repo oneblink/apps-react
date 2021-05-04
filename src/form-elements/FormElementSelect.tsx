@@ -11,10 +11,7 @@ type Props = {
   id: string
   element: FormTypes.SelectElement
   value: unknown | undefined
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: unknown | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<string | string[]>
   onConditionallyShowOption: (
     choiceElementOption: FormTypes.ChoiceElementOption,
   ) => boolean

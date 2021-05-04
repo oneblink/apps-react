@@ -35,10 +35,7 @@ type AutocompleteFetchProps = _AutocompleteChangeHandlerProps & {
 
 type Props = _BaseProps &
   _AutocompleteConditionallyShowOptionProps & {
-    onChange: (
-      formElement: FormTypes.FormElement,
-      newValue: unknown | undefined,
-    ) => void
+    onChange: FormElementValueChangeHandler<string>
   }
 
 const AutocompleteFilter = React.memo(function AutocompleteFilter({

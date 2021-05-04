@@ -7,7 +7,7 @@ type Props = {
   id: string
   element: FormTypes.FormFormElement | FormTypes.InfoPageElement
   value: FormElementsCtrl['model'] | undefined
-  onChange: (formElements: FormTypes.FormElement, value: unknown) => unknown
+  onChange: FormElementValueChangeHandler<FormElementsCtrl['model']>
   onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
   onChangeModel: (model: FormElementsCtrl['model']) => unknown
   formElementValidation: FormElementValidation | undefined
@@ -32,13 +32,12 @@ function FormElementForm({
   const handleNestedChange = React.useCallback(
     (nestedElement, nestedElementValue) => {
       if (nestedElement.type === 'page') return
-      const newFormVal = {
-        ...value,
+      onChange(element, (existingValue) => ({
+        ...existingValue,
         [nestedElement.name]: nestedElementValue,
-      }
-      onChange(element, newFormVal)
+      }))
     },
-    [value, onChange, element],
+    [onChange, element],
   )
   const handleChangeElements = React.useCallback(
     (elements) => {

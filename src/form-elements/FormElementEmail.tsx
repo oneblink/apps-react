@@ -10,10 +10,7 @@ type Props = {
   id: string
   element: FormTypes.EmailElement
   value: unknown
-  onChange: (
-    formElement: FormTypes.FormElement,
-    newValue: string | undefined,
-  ) => unknown
+  onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
