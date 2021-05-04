@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { AttachmentError } from '../../hooks/attachments/useAttachments'
+import { AttachmentError } from '../../types/attachments'
 
 interface Props {
   file: AttachmentError
@@ -11,7 +11,7 @@ const FormElementFilesInvalidAttachment = ({ file }: Props) => {
       <i className="material-icons has-text-warning icon-small ob-files__upload-error-icon">
         error
       </i>
-      <span>An error occured uploading the file {`"${file.fileName}"`}.</span>
+      <span>An error occurred uploading the file {`"${file.fileName}"`}.</span>
     </div>
   )
 }

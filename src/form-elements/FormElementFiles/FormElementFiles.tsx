@@ -4,16 +4,14 @@ import useIsMounted from '../../hooks/useIsMounted'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../components/FormElementLabelContainer'
 import FormElementFile from './FormElementFile'
-import useAttachments, {
-  Attachment,
-  OnChangeAttachments,
-} from '../../hooks/attachments/useAttachments'
+import useAttachments from '../../hooks/attachments/useAttachments'
 import FormElementFilesInvalidAttachment from './FormElementFilesInvalidAttachment'
+import { Attachment } from '../../types/attachments'
 type Props = {
   id: string
   element: FormTypes.FilesElement
   value?: Attachment[]
-  onChange: OnChangeAttachments<Attachment[]>
+  onChange: FormElementValueChangeHandler<Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }

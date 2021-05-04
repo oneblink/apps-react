@@ -1,16 +1,21 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
 import { FormTypes } from '@oneblink/types'
+import { Tooltip } from '@material-ui/core'
 
 import scrollingService from '../services/scrolling-service'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import OnLoading from '../components/OnLoading'
+import useAttachment from '../hooks/attachments/useAttachment'
+import { FormElementBinaryStorageValue } from '../types/attachments'
+import { prepareNewAttachment } from '../services/attachments'
+import useIsOffline from '../hooks/useIsOffline'
 
 type Props = {
   id: string
   element: FormTypes.DrawElement
-  value: unknown
-  onChange: FormElementValueChangeHandler<string>
+  value: FormElementBinaryStorageValue
+  onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
@@ -23,16 +28,6 @@ function FormElementSignature({
   validationMessage,
   displayValidationMessage,
 }: Props) {
-  const handleChange = React.useCallback(
-    (newValue: string) => {
-      onChange(element, newValue)
-    },
-    [element, onChange],
-  )
-  const handleClear = React.useCallback(() => {
-    onChange(element, undefined)
-  }, [element, onChange])
-
   return (
     <div className="cypress-signature-element">
       <FormElementLabelContainer
@@ -42,14 +37,14 @@ function FormElementSignature({
         required={element.required}
       >
         <div className="control">
-          {typeof value === 'string' ? (
+          {value ? (
             <SignatureDisplay
               element={element}
               value={value}
-              onClear={handleClear}
+              onChange={onChange}
             />
           ) : (
-            <SignatureDrawing element={element} onChange={handleChange} />
+            <SignatureDrawing element={element} onChange={onChange} />
           )}
         </div>
 
@@ -67,12 +62,12 @@ function FormElementSignature({
 
 export default React.memo(FormElementSignature)
 
-function SignatureDrawing({
+const SignatureDrawing = React.memo(function SignatureDrawing({
   element,
   onChange,
 }: {
-  element: FormTypes.DrawElement
-  onChange: (newValue: string) => void
+  element: Props['element']
+  onChange: Props['onChange']
 }) {
   const canvasRef = React.useRef<SignatureCanvas>(null)
 
@@ -87,10 +82,20 @@ function SignatureDrawing({
     setIsEmpty(true)
   }, [])
 
-  const handleDone = React.useCallback(() => {
+  const handleDone = React.useCallback(async () => {
     if (!canvasRef.current) return
-    onChange(canvasRef.current.getTrimmedCanvas().toDataURL())
-  }, [onChange])
+    const value = canvasRef.current.getTrimmedCanvas().toDataURL()
+
+    if (!element.storageType || element.storageType === 'legacy') {
+      onChange(element, value)
+      return
+    }
+
+    // Convert base64 data uri to blob and send it on its way
+    const response = await fetch(value)
+    const blob = await response.blob()
+    onChange(element, prepareNewAttachment(blob, 'signature.png', element))
+  }, [element, onChange])
 
   // HANDLING CANVAS CHANGE
   const handleEndDraw = React.useCallback(() => {
@@ -174,29 +179,33 @@ function SignatureDrawing({
       </div>
     </>
   )
-}
+})
 
-function SignatureDisplay({
+const SignatureDisplay = React.memo(function SignatureDisplay({
   element,
   value,
-  onClear,
+  onChange,
 }: {
-  element: FormTypes.DrawElement
-  value: string
-  onClear: () => void
+  element: Props['element']
+  value: Props['value']
+  onChange: Props['onChange']
 }) {
+  const result = useAttachment(
+    value,
+    element,
+    React.useCallback(
+      (id, attachment) => {
+        onChange(element, attachment)
+      },
+      [element, onChange],
+    ),
+  )
+
   return (
     <>
       <figure className="ob-figure">
         <div className="figure-content">
-          {value ? (
-            <img
-              src={value}
-              className="cypress-signature-image ob-signature__img"
-            />
-          ) : (
-            <OnLoading small className="cypress-signature-loading-image" />
-          )}
+          <DisplayImage {...result} />
         </div>
       </figure>
 
@@ -204,7 +213,7 @@ function SignatureDisplay({
         <button
           type="button"
           className="button ob-button is-light ob-button__clear cypress-clear-signature"
-          onClick={onClear}
+          onClick={() => onChange(element, undefined)}
           disabled={element.readOnly}
         >
           Clear
@@ -212,4 +221,69 @@ function SignatureDisplay({
       </div>
     </>
   )
-}
+})
+
+const DisplayImage = React.memo(function DisplayImage({
+  uploadErrorMessage,
+  isUploading,
+  imageUrl,
+  loadImageUrlError,
+}: ReturnType<typeof useAttachment>) {
+  const isOffline = useIsOffline()
+
+  if (uploadErrorMessage) {
+    return (
+      <>
+        <h3 className="title is-3">Upload Failed</h3>
+        <p>{uploadErrorMessage}</p>
+      </>
+    )
+  }
+
+  if (loadImageUrlError) {
+    return (
+      <>
+        <h3 className="title is-3">Preview Failed</h3>
+        <p>{loadImageUrlError.message}</p>
+      </>
+    )
+  }
+
+  if (imageUrl) {
+    return (
+      <>
+        {isUploading && (
+          <Tooltip
+            title={
+              isOffline
+                ? 'Upload will start when you connect to the internet'
+                : 'Uploading'
+            }
+          >
+            <div className="ob-signature__uploading cypress-signature-uploading">
+              {isOffline ? (
+                <i className="material-icons has-text-warning">wifi_off</i>
+              ) : (
+                <OnLoading tiny />
+              )}
+            </div>
+          </Tooltip>
+        )}
+        <img
+          src={imageUrl}
+          className="cypress-signature-image ob-signature__img"
+        />
+      </>
+    )
+  }
+
+  if (imageUrl === undefined) {
+    return <OnLoading className="cypress-signature-loading-image" />
+  }
+
+  if (isOffline) {
+    return <p>Preview cannot be loaded will offline</p>
+  }
+
+  return <p>Preview could not be loaded</p>
+})

@@ -4,7 +4,7 @@ import FormElementFilesLegacy, {
   FilesElementFile,
 } from './legacy/FormElementFiles'
 import FormElementFiles from './FormElementFiles'
-import { Attachment } from '../../hooks/attachments/useAttachments'
+import { Attachment } from '../../types/attachments'
 export type PossibleFileConfiguration = Attachment | FilesElementFile
 interface Props {
   id: string
