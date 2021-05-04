@@ -22,7 +22,6 @@ const FormElementFileStatus = ({ file }: Props) => {
       </Tooltip>
     )
   }
-  // TODO: Display something for image that failed to load?
 
   return (
     <Tooltip title={tooltip}>

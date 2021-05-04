@@ -19,7 +19,11 @@ type Props = {
 const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
-  useAttachment(file, element, onChange)
+  const { isLoadingAttachmentBlob, attachmentBlob } = useAttachment(
+    file,
+    element,
+    onChange,
+  )
 
   useClickOutsideElement(
     dropDownRef,
@@ -49,7 +53,11 @@ const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
     <div className="column is-one-quarter">
       <div className="ob-files__box">
         <div className="ob-files__content">
-          <FormElementFileDisplay file={file} />
+          <FormElementFileDisplay
+            attachment={file}
+            attachmentBlob={attachmentBlob}
+            isLoadingAttachmentBlob={isLoadingAttachmentBlob}
+          />
         </div>
         <div
           className={clsx('dropdown is-right ob-files__menu', {

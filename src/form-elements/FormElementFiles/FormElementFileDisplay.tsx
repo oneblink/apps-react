@@ -1,26 +1,32 @@
 import * as React from 'react'
 import { AttachmentValid } from '../../hooks/attachments/useAttachments'
-
+import OnLoading from '../../components/OnLoading'
+import { Tooltip } from '@material-ui/core'
 interface Props {
-  file: AttachmentValid
+  attachment: AttachmentValid
+  attachmentBlob: Blob | undefined
+  isLoadingAttachmentBlob: boolean
 }
 
-const FormElementFileDisplay = ({ file }: Props) => {
+const FormElementFileDisplay = ({
+  attachment,
+  attachmentBlob,
+  isLoadingAttachmentBlob,
+}: Props) => {
   const isImageType = React.useMemo(() => {
-    if (!file.type) {
-      return file.contentType.includes('image/')
+    if (!attachment.type) {
+      return attachment.contentType.includes('image/')
     }
-    return file.data.type.includes('image/')
-  }, [file])
+    return attachment.data.type.includes('image/')
+  }, [attachment])
   const imageUrl = React.useMemo(() => {
-    if (file.type === 'NEW' || file.type === 'SAVING') {
-      return URL.createObjectURL(file.data)
+    if (attachment.type === 'NEW' || attachment.type === 'SAVING') {
+      return URL.createObjectURL(attachment.data)
     }
-    if (!file.type) {
-      // TODO: Load image
-      return
+    if (!attachment.type && attachmentBlob) {
+      return URL.createObjectURL(attachmentBlob)
     }
-  }, [file])
+  }, [attachment, attachmentBlob])
 
   if (!isImageType) {
     return (
@@ -31,20 +37,42 @@ const FormElementFileDisplay = ({ file }: Props) => {
       </div>
     )
   }
-  // IS IMAGE
-  if (file.type === 'SAVING' || file.type === 'NEW') {
+  // >>> IS IMAGE
+
+  if (attachment.type === 'SAVING' || attachment.type === 'NEW') {
     return (
       <div className="ob-files__content-image">
         <img className="ob-files__image" src={imageUrl} />
       </div>
     )
   }
-  // TODO: Display image once loaded again?
-  return <div className="ob-files__content-loading">Loaded!</div>
 
-  // TODO: HANDLE SHOWING PAPER CLIP WHEN IMAGE DIDNT LOAD?
+  if (isLoadingAttachmentBlob) {
+    return (
+      <div className="ob-files__content-loading">
+        <OnLoading tiny />
+      </div>
+    )
+  }
 
-  // TODO: Show spinner while file is loading?
+  if (imageUrl) {
+    return (
+      <div className="ob-files__content-image">
+        <img className="ob-files__image" src={imageUrl} />
+      </div>
+    )
+  }
+
+  // Show paperclip if image failed to load
+  return (
+    <Tooltip title="Preview Unavailable">
+      <div className="ob-files__content-file has-text-centered">
+        <i className="material-icons icon-large ob-files__attach-icon has-text-grey">
+          attach_file
+        </i>
+      </div>
+    </Tooltip>
+  )
 }
 
 export default React.memo<Props>(FormElementFileDisplay)
