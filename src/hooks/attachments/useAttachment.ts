@@ -44,7 +44,6 @@ const useAttachment = (
             isPrivate,
           },
         })
-        throw new Error('An error occured')
         console.log('Successfully Uploaded attachment!', newAttachment.fileName)
 
         // UPDATE ATTACHMENT
