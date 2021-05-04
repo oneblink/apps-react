@@ -83,25 +83,16 @@ export default function generateDefaultData(
       case 'barcodeScanner':
       case 'email':
       case 'telephone':
-      case 'textarea': {
-        if (el.defaultValue) {
-          m[el.name] = el.defaultValue
-        }
-        break
-      }
+      case 'textarea':
       case 'file':
       case 'files':
       case 'draw':
       case 'location': {
-        // THESE ELEMENTS SHOULD HAVE NO DEFAULT VALUE - LEAVING THIS HERE FOR SAFETY
-        // @ts-expect-error no default value
         if (el.defaultValue) {
-          // @ts-expect-error no default value
           m[el.name] = el.defaultValue
         }
         break
       }
-
       case 'captcha':
       case 'heading':
       case 'html':
