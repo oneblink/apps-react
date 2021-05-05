@@ -113,7 +113,9 @@ const FormElementFile = ({ element, onRemove, file, index }: ChildProps) => {
           </div>
         </div>
 
-        <div className="ob-files__file-name is-size-6">{file.fileName}</div>
+        <div className="ob-files__file-name is-size-6">
+          <span className="ob-files__file-name-inner">{file.fileName}</span>
+        </div>
       </div>
     </div>
   )
