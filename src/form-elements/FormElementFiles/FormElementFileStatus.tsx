@@ -1,29 +1,26 @@
 import * as React from 'react'
-import OnLoading from '../../components/OnLoading'
 import { Tooltip } from '@material-ui/core'
-import { AttachmentValid } from '../../types/attachments'
-interface Props {
-  file: AttachmentValid
-}
-const FormElementFileStatus = ({ file }: Props) => {
+import useAttachment from '../../hooks/attachments/useAttachment'
+import UploadingAttachment from '../../components/attachments/UploadingAttachment'
+
+const FormElementFileStatus = ({
+  isUploading,
+  loadImageUrlError,
+  isLoadingImageUrl,
+  imageUrl,
+}: ReturnType<typeof useAttachment>) => {
   const tooltip = React.useMemo(() => {
-    if (file.type === 'SAVING') {
-      return 'Saving file...'
+    if (isLoadingImageUrl && !imageUrl) {
+      return 'Attempting to load file preview. File is synced with submission.'
     }
+    if (loadImageUrlError && !imageUrl) {
+      return 'File preview not available, however file is synced with submission.'
+    }
+
     return 'Synced with submission.'
-  }, [file.type])
+  }, [imageUrl, isLoadingImageUrl, loadImageUrlError])
 
-  if (file.type === 'SAVING') {
-    return (
-      <Tooltip title={tooltip}>
-        <span className="ob-files__status-wrapper">
-          <OnLoading tiny />
-        </span>
-      </Tooltip>
-    )
-  }
-  // TODO: Display something for image that failed to load?
-
+  if (isUploading) return <UploadingAttachment />
   return (
     <Tooltip title={tooltip}>
       <span className="ob-files__status-wrapper">
@@ -33,4 +30,6 @@ const FormElementFileStatus = ({ file }: Props) => {
   )
 }
 
-export default React.memo<Props>(FormElementFileStatus)
+export default React.memo<ReturnType<typeof useAttachment>>(
+  FormElementFileStatus,
+)

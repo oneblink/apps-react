@@ -1,50 +1,26 @@
 import * as React from 'react'
-import { AttachmentValid } from '../../types/attachments'
+import useAttachment from '../../hooks/attachments/useAttachment'
 
-interface Props {
-  file: AttachmentValid
-}
-
-const FormElementFileDisplay = ({ file }: Props) => {
-  const isImageType = React.useMemo(() => {
-    if (!file.type) {
-      return file.contentType.includes('image/')
-    }
-    return file.data.type.includes('image/')
-  }, [file])
-  const imageUrl = React.useMemo(() => {
-    if (file.type === 'NEW' || file.type === 'SAVING') {
-      return URL.createObjectURL(file.data)
-    }
-    if (!file.type) {
-      // TODO: Load image
-      return
-    }
-  }, [file])
-
-  if (!isImageType) {
-    return (
-      <div className="ob-files__content-file has-text-centered">
-        <i className="material-icons icon-large ob-files__attach-icon has-text-grey">
-          attach_file
-        </i>
-      </div>
-    )
-  }
-  // IS IMAGE
-  if (file.type === 'SAVING' || file.type === 'NEW') {
+const FormElementFileDisplay = ({
+  imageUrl,
+}: ReturnType<typeof useAttachment>) => {
+  if (imageUrl) {
     return (
       <div className="ob-files__content-image">
         <img className="ob-files__image" src={imageUrl} />
       </div>
     )
   }
-  // TODO: Display image once loaded again?
-  return <div className="ob-files__content-loading">Loaded!</div>
 
-  // TODO: HANDLE SHOWING PAPER CLIP WHEN IMAGE DIDNT LOAD?
-
-  // TODO: Show spinner while file is loading?
+  return (
+    <div className="ob-files__content-file has-text-centered">
+      <i className="material-icons icon-large ob-files__attach-icon has-text-grey">
+        attach_file
+      </i>
+    </div>
+  )
 }
 
-export default React.memo<Props>(FormElementFileDisplay)
+export default React.memo<ReturnType<typeof useAttachment>>(
+  FormElementFileDisplay,
+)

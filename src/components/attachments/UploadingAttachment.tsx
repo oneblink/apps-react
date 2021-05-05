@@ -5,6 +5,7 @@ import OnLoading from '../OnLoading'
 
 function UploadingAttachment() {
   const isOffline = useIsOffline()
+
   return (
     <Tooltip
       title={

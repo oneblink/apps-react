@@ -72,6 +72,7 @@ export default function useAttachment(
     [isPrivate, onChange],
   )
 
+  // TRIGGER UPLOAD
   React.useEffect(() => {
     if (isOffline) {
       return
