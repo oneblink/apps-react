@@ -1,34 +1,27 @@
 import * as React from 'react'
-import clsx from 'clsx'
-import SignatureCanvas from 'react-signature-canvas'
 
 import useBooleanState from '../hooks/useBooleanState'
 import { downloadFileLegacy } from '../services/download-file'
 import OnLoading from '../components/OnLoading'
-import scrollingService from '../services/scrolling-service'
 import { FormTypes } from '@oneblink/types'
 import { localisationService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { parseFilesAsAttachmentsLegacy } from '../services/parseFilesAsAttachments'
+import { FormElementBinaryStorageValue } from '../types/attachments'
+import useAttachment from '../hooks/attachments/useAttachment'
+import AnnotationModal from '../components/AnnotationModal'
+import useIsOffline from '../hooks/useIsOffline'
+import UploadingAttachment from '../components/attachments/UploadingAttachment'
+import Modal from '../components/Modal'
+import { prepareNewAttachment } from '../services/attachments'
 
 type Props = {
   id: string
   element: FormTypes.CameraElement
-  value: unknown
-  onChange: FormElementValueChangeHandler<string>
+  value: FormElementBinaryStorageValue
+  onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
-
-declare global {
-  interface Navigator {
-    camera: any
-  }
-}
-declare global {
-  interface Window {
-    Camera: any
-  }
 }
 
 function FormElementCamera({
@@ -39,24 +32,37 @@ function FormElementCamera({
   validationMessage,
   displayValidationMessage,
 }: Props) {
-  const [isLoading, setIsLoading, clearIsLoading] = useBooleanState(false)
-  const [viewError, , , toggleError] = useBooleanState(false)
-  const [cameraError, setCameraError] = React.useState<Error | null>(null)
+  const [{ cameraError, isLoading }, setState] = React.useState<{
+    isLoading: boolean
+    cameraError?: Error
+  }>({
+    isLoading: false,
+  })
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [isAnnotating, setIsAnnotating, clearIsAnnotating] = useBooleanState(
     false,
   )
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  const setBase64DataUri = React.useCallback(
+    async (dataUri) => {
+      if (!element.storageType || element.storageType === 'legacy') {
+        onChange(element, dataUri)
+        return
+      }
+
+      // Convert base64 data uri to blob and send it on its way
+      const response = await fetch(dataUri)
+      const blob = await response.blob()
+      onChange(element, prepareNewAttachment(blob, 'photo.png', element))
+    },
+    [element, onChange],
+  )
+
   const clearImage = React.useCallback(() => {
-    if (fileInputRef.current) {
-      // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
-      fileInputRef.current.value = ''
-    }
     onChange(element, undefined)
   }, [element, onChange])
-  const resetImage = React.useCallback(() => {
-    onChange(element, undefined)
-  }, [element, onChange])
+
   const fileChange = React.useCallback(
     async (changeEvent) => {
       if (
@@ -67,8 +73,9 @@ function FormElementCamera({
         return
       }
 
-      setIsLoading()
-      resetImage()
+      setState({
+        isLoading: true,
+      })
 
       console.log('File selected event', changeEvent)
       try {
@@ -111,32 +118,49 @@ function FormElementCamera({
 
         if (attachments[0]) {
           setIsDirty()
-          onChange(element, attachments[0].data)
+          await setBase64DataUri(attachments[0].data)
         }
+        setState({
+          isLoading: false,
+        })
       } catch (error) {
-        setCameraError(error)
-        return
-      } finally {
-        clearIsLoading()
+        setState({
+          isLoading: false,
+          cameraError: error,
+        })
       }
     },
-    [clearIsLoading, element, onChange, resetImage, setIsDirty, setIsLoading],
+    [element.includeTimestampWatermark, setBase64DataUri, setIsDirty],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
-      setIsLoading()
+      setState({
+        isLoading: true,
+      })
       navigator.camera.getPicture(
         (base64Data: string) => {
-          onChange(element, `data:image/jpeg;base64,${base64Data}`)
-          clearIsLoading()
+          setBase64DataUri(`data:image/jpeg;base64,${base64Data}`)
+            .then(() => {
+              setState({
+                isLoading: false,
+              })
+            })
+            .catch((error) => {
+              setState({
+                cameraError: error,
+                isLoading: false,
+              })
+            })
         },
         (error: Error) => {
           console.warn(
             'An error occurred while attempting to take a photo',
             error,
           )
-          setCameraError(error)
-          clearIsLoading()
+          setState({
+            isLoading: false,
+            cameraError: error,
+          })
         },
         {
           quality: 100,
@@ -151,13 +175,32 @@ function FormElementCamera({
         },
       )
     } else if (fileInputRef.current) {
+      // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNIZED
+      fileInputRef.current.value = ''
       fileInputRef.current.click()
     } else {
       console.error(
         'Could not find "input" element in Camera component template',
       )
     }
-  }, [setIsLoading, clearIsLoading, setCameraError, onChange, element])
+  }, [setBase64DataUri])
+
+  const {
+    isUploading,
+    uploadErrorMessage,
+    isLoadingImageUrl,
+    imageUrl,
+    loadImageUrlError,
+  } = useAttachment(
+    value,
+    element,
+    React.useCallback(
+      (id, attachment) => {
+        onChange(element, attachment)
+      },
+      [element, onChange],
+    ),
+  )
 
   const handleDownload = React.useCallback(async () => {
     if (typeof value === 'string') {
@@ -165,18 +208,17 @@ function FormElementCamera({
     }
   }, [value, id])
 
-  const clearCameraError = React.useCallback(() => setCameraError(null), [
-    setCameraError,
-  ])
-
   const handleSaveAnnotation = React.useCallback(
-    (annotation) => {
+    (annotationDataUri: string) => {
       clearIsAnnotating()
-      setIsLoading()
 
-      if (typeof value !== 'string') {
+      if (typeof imageUrl !== 'string') {
         return
       }
+
+      setState({
+        isLoading: true,
+      })
 
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
@@ -195,16 +237,32 @@ function FormElementCamera({
         annotationImage.onload = function () {
           ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
 
-          const base64Data = canvas.toDataURL()
-
-          onChange(element, base64Data)
-          clearIsLoading()
+          try {
+            const base64Data = canvas.toDataURL()
+            setBase64DataUri(base64Data)
+              .then(() => {
+                setState({
+                  isLoading: false,
+                })
+              })
+              .catch((error) => {
+                setState({
+                  cameraError: error,
+                  isLoading: false,
+                })
+              })
+          } catch (error) {
+            setState({
+              cameraError: error,
+              isLoading: false,
+            })
+          }
         }
-        annotationImage.src = annotation
+        annotationImage.src = annotationDataUri
       }
-      image.src = value
+      image.src = imageUrl
     },
-    [clearIsAnnotating, clearIsLoading, element, onChange, setIsLoading, value],
+    [clearIsAnnotating, imageUrl, setBase64DataUri],
   )
 
   return (
@@ -216,30 +274,18 @@ function FormElementCamera({
         required={element.required}
       >
         <div className="control">
-          {!isLoading && value !== undefined && (
+          {(value || isLoading) && (
             <figure className="ob-figure">
-              <img
-                src={value as string}
-                className="cypress-camera-image ob-camera__img"
-              ></img>
-              <button
-                type="button"
-                className="button is-primary ob-camera__annotate-button cypress-annotate-button"
-                onClick={setIsAnnotating}
-                disabled={element.readOnly}
-              >
-                <span className="icon">
-                  <i className="material-icons">brush</i>
-                </span>
-              </button>
-            </figure>
-          )}
-
-          {isLoading && (
-            <figure className="ob-figure">
-              <div className="figure-content has-text-centered cypress-camera-loading-image">
-                <OnLoading small={true}></OnLoading>
-              </div>
+              <DisplayImage
+                isUploading={isUploading}
+                uploadErrorMessage={uploadErrorMessage}
+                isLoadingImageUrl={isLoadingImageUrl}
+                imageUrl={imageUrl}
+                loadImageUrlError={loadImageUrlError}
+                isLoading={isLoading}
+                element={element}
+                onAnnotate={setIsAnnotating}
+              />
             </figure>
           )}
 
@@ -298,222 +344,114 @@ function FormElementCamera({
         )}
       </FormElementLabelContainer>
 
-      {isAnnotating && (
-        <CameraAnnotation
-          imageSrc={value}
+      {isAnnotating && imageUrl && (
+        <AnnotationModal
+          imageSrc={imageUrl}
           onClose={clearIsAnnotating}
           onSave={handleSaveAnnotation}
         />
       )}
 
-      <div
-        className={clsx('modal cypress-error-modal ob-modal', {
-          'is-active': cameraError,
-        })}
-      >
-        <div className="modal-background-faded"></div>
-        <div className="modal-card">
-          <header className="modal-card-head ob-modal__head">
-            <p className="modal-card-title cypress-error-title">
-              &apos;Whoops...&apos;
-            </p>
-          </header>
-          <section className="modal-card-body ob-modal__body">
-            <p>
-              An error occurred while attempting to take a photo. Please click
-              &quot;Okay&quot; below to try again. If the problem persists,
-              please contact support.
-            </p>
-            {viewError && cameraError && (
-              <div className="content has-margin-top-6">
-                <blockquote>{cameraError.toString()}</blockquote>
-              </div>
-            )}
-          </section>
-          <footer className="modal-card-foot">
-            <button
-              type="button"
-              className="button ob-button is-light cypress-view-error-button"
-              onClick={toggleError}
-            >
-              View Details
-            </button>
+      {cameraError && (
+        <Modal
+          isOpen
+          title="Whoops..."
+          className="cypress-error-modal"
+          titleClassName="cypress-error-title"
+          actions={
             <button
               type="button"
               className="button ob-button is-primary cypress-close-error-button"
-              onClick={clearCameraError}
+              onClick={() => setState({ isLoading: false })}
             >
               Okay
             </button>
-          </footer>
-        </div>
-      </div>
+          }
+        >
+          <p>
+            An error occurred while attempting to take a photo. Please click{' '}
+            <b>Okay</b> below to try again. If the problem persists, please
+            contact support.
+          </p>
+
+          <div className="content has-margin-top-6">
+            <blockquote>{cameraError.toString()}</blockquote>
+          </div>
+        </Modal>
+      )}
     </>
   )
 }
 
 export default React.memo(FormElementCamera)
 
-const annotationButtonColours = [
-  '#000000',
-  '#ffffff',
-  '#f44336',
-  '#e91e63',
-  '#9c27b0',
-  '#673ab7',
-  '#3f51b5',
-  '#2196f3',
-  '#03a9f4',
-  '#00bcd4',
-  '#009688',
-  '#4caf50',
-  '#8bc34a',
-  '#cddc39',
-  '#ffee58',
-  '#ffca28',
-  '#ffa726',
-  '#ff5722',
-]
-
-const CameraAnnotation = React.memo(function CameraAnnotation({
-  imageSrc,
-  onClose,
-  onSave,
-}: {
-  imageSrc: unknown
-  onClose: () => void
-  onSave: (newValue: string) => void
+const DisplayImage = React.memo(function DisplayImage({
+  uploadErrorMessage,
+  isUploading,
+  isLoadingImageUrl,
+  imageUrl,
+  loadImageUrlError,
+  isLoading,
+  element,
+  onAnnotate,
+}: ReturnType<typeof useAttachment> & {
+  element: FormTypes.CameraElement
+  isLoading: boolean
+  onAnnotate: () => void
 }) {
-  const annotationContentElementRef = React.useRef<HTMLDivElement>(null)
-  const bmSignaturePadRef = React.useRef<HTMLDivElement>(null)
-  const signatureCanvasRef = React.useRef<SignatureCanvas>(null)
+  const isOffline = useIsOffline()
 
-  const [isDirty, setDirty] = useBooleanState(false)
-  const [penColour, setPenColour] = React.useState(annotationButtonColours[0])
-
-  const handleCancelAnnotation = React.useCallback(() => {
-    if (signatureCanvasRef.current) {
-      console.log('Clearing annotation...')
-      signatureCanvasRef.current.clear()
-    }
-    onClose()
-  }, [onClose])
-
-  const handleSaveAnnotation = React.useCallback(() => {
-    if (signatureCanvasRef.current) {
-      onSave(signatureCanvasRef.current.toDataURL())
-    }
-  }, [onSave])
-
-  // SETTING CANVAS FROM PASSED VALUE
-  React.useEffect(() => {
-    const annotationContentElement = annotationContentElementRef.current
-    const bmSignaturePadElement = bmSignaturePadRef.current
-    const signatureCanvas = signatureCanvasRef.current
-
-    if (
-      !annotationContentElement ||
-      !bmSignaturePadElement ||
-      !signatureCanvas ||
-      typeof imageSrc !== 'string'
-    ) {
-      return
-    }
-    const canvasElement = signatureCanvas.getCanvas()
-
-    // Disable scrolling to allow for smooth drawing
-    scrollingService.disableScrolling()
-
-    const maxWidth = annotationContentElement.clientWidth
-    const maxHeight = annotationContentElement.clientHeight
-
-    const i = new Image()
-    i.onload = function () {
-      const imageWidth = i.width
-      const imageHeight = i.height
-      let canvasWidth = imageWidth
-      let canvasHeight = imageHeight
-
-      if (imageWidth > maxWidth || imageHeight > maxHeight) {
-        const widthRatio = maxWidth / imageWidth
-        const heightRatio = maxHeight / imageHeight
-        const ratio = Math.min(widthRatio, heightRatio)
-
-        canvasWidth = ratio * imageWidth
-        canvasHeight = ratio * imageHeight
-      }
-
-      bmSignaturePadElement.style.width = `${canvasWidth}px`
-      bmSignaturePadElement.style.height = `${canvasHeight}px`
-      bmSignaturePadElement.style.backgroundSize = 'cover'
-      bmSignaturePadElement.style.backgroundImage = `url(${imageSrc})`
-      canvasElement.width = canvasWidth
-      canvasElement.height = canvasHeight
-    }
-    i.src = imageSrc
-
-    return () => {
-      scrollingService.enableScrolling()
-    }
-  }, [imageSrc])
-
-  return (
-    <div className="modal is-active">
-      <div className="modal-background-faded"></div>
-      <div className="ob-annotation">
-        <div className="ob-annotation__buttons ob-annotation__buttons-colours">
-          {annotationButtonColours.map((colour, index) => {
-            return (
-              <button
-                key={index}
-                type="button"
-                className={clsx(
-                  'button ob-annotation__button ob-annotation__button-colour cypress-annotation-colour-button',
-                  {
-                    'is-selected': penColour === colour,
-                  },
-                )}
-                onClick={() => setPenColour(colour)}
-                style={{ backgroundColor: colour }}
-              />
-            )
-          })}
-        </div>
-        <div
-          ref={annotationContentElementRef}
-          className="ob-annotation__content"
-        >
-          <div
-            ref={bmSignaturePadRef}
-            className="ob-annotation__signature-pad cypress-annotation-signature-pad"
-          >
-            <SignatureCanvas
-              ref={signatureCanvasRef}
-              clearOnResize={false}
-              // @ts-expect-error ???
-              onEnd={setDirty}
-              penColor={penColour}
-            />
-          </div>
-        </div>
-        <div className="ob-annotation__buttons ob-annotation__buttons-actions">
-          <button
-            type="button"
-            className="button is-light ob-button ob-annotation__button ob-annotation__button-action cypress-annotation-cancel-button"
-            onClick={handleCancelAnnotation}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="button is-primary ob-button ob-annotation__button ob-annotation__button-action cypress-annotation-save-button"
-            disabled={!isDirty}
-            onClick={handleSaveAnnotation}
-          >
-            Save
-          </button>
-        </div>
+  if (uploadErrorMessage) {
+    return (
+      <div className="figure-content">
+        <h3 className="title is-3">Upload Failed</h3>
+        <p>
+          Your photo failed to upload, please press the <b>Clear</b> button and
+          try again.
+        </p>
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (loadImageUrlError) {
+    return (
+      <div className="figure-content">
+        <h3 className="title is-3">Preview Failed</h3>
+        <p>{loadImageUrlError.message}</p>
+      </div>
+    )
+  }
+
+  if (isLoadingImageUrl || isLoading) {
+    return (
+      <div className="figure-content has-text-centered cypress-camera-loading-image">
+        <OnLoading small />
+      </div>
+    )
+  }
+
+  if (imageUrl) {
+    return (
+      <>
+        {isUploading && <UploadingAttachment />}
+        <img src={imageUrl} className="cypress-camera-image ob-camera__img" />
+        <button
+          type="button"
+          className="button is-primary ob-camera__annotate-button cypress-annotate-button"
+          onClick={onAnnotate}
+          disabled={element.readOnly}
+        >
+          <span className="icon">
+            <i className="material-icons">brush</i>
+          </span>
+        </button>
+      </>
+    )
+  }
+
+  if (isOffline) {
+    return <p>Preview cannot be loaded while offline</p>
+  }
+
+  return <p>Preview could not be loaded</p>
 })
