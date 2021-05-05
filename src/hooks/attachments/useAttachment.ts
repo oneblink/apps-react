@@ -222,10 +222,21 @@ export default function useAttachment(
     }
   }, [value])
 
+  const canDownload = React.useMemo(() => {
+    return (
+      !!value &&
+      (typeof value === 'string' ||
+        value.type === 'NEW' ||
+        value.type === 'SAVING' ||
+        !!imageUrlState.imageUrl)
+    )
+  }, [imageUrlState.imageUrl, value])
+
   return {
     isUploading,
     uploadErrorMessage,
     isLoadingImageUrl: imageUrlState.imageUrl === undefined,
     ...imageUrlState,
+    canDownload,
   }
 }

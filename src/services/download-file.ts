@@ -1,8 +1,8 @@
-import { Sentry } from '@oneblink/apps'
+import { authService, Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
-
-export default async function downloadFile(blob: Blob, fileName: string) {
+import { AttachmentValid } from '../types/attachments'
+async function downloadFile(blob: Blob, fileName: string) {
   try {
     if (window.cordova) {
       await new Promise((resolve, reject) => {
@@ -89,6 +89,34 @@ export default async function downloadFile(blob: Blob, fileName: string) {
       })
     }
   }
+}
+
+export default async function downloadAttachment(attachment: AttachmentValid) {
+  //
+  if (attachment.type) {
+    return await downloadFile(attachment.data, attachment.fileName)
+  }
+  let idToken
+  if (attachment.isPrivate) {
+    idToken = await authService.getIdToken()
+  }
+  const response = await fetch(
+    attachment.url,
+    idToken
+      ? {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      : undefined,
+  )
+  if (!response.ok) {
+    throw new Error(
+      `Unable to download file. HTTP Status Code: ${response.status}`,
+    )
+  }
+  const blob = await response.blob()
+  return await downloadFile(blob, attachment.fileName)
 }
 
 export async function downloadFileLegacy(dataURI: string, fileName: string) {
