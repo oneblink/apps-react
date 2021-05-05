@@ -23,13 +23,6 @@
   height: calc(50px + #{$size-3} * 2);
   display: flex;
 }
-.ob-files__content-loading {
-  padding: $size-8;
-  height: calc(50px + #{$size-3} * 2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .ob-files__image {
   display: block;

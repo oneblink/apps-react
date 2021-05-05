@@ -3,15 +3,8 @@ import { Tooltip } from '@material-ui/core'
 import useIsOffline from '../../hooks/useIsOffline'
 import OnLoading from '../OnLoading'
 
-interface Props {
-  children?: React.ReactNode
-}
-function UploadingAttachment({ children }: Props) {
+function UploadingAttachment() {
   const isOffline = useIsOffline()
-  const loader: React.ReactNode = React.useMemo(() => {
-    if (children) return children
-    return <OnLoading tiny />
-  }, [children])
 
   return (
     <Tooltip
@@ -25,11 +18,11 @@ function UploadingAttachment({ children }: Props) {
         {isOffline ? (
           <i className="material-icons has-text-warning">wifi_off</i>
         ) : (
-          loader
+          <OnLoading tiny />
         )}
       </div>
     </Tooltip>
   )
 }
 
-export default React.memo<Props>(UploadingAttachment)
+export default React.memo(UploadingAttachment)
