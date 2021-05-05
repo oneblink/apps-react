@@ -1,59 +1,35 @@
 import * as React from 'react'
+import { authService, Sentry, submissionService } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
+import useFormDefinition from '../useFormDefinition'
+import useIsOffline from '../useIsOffline'
 import {
   Attachment,
-  StorageElement,
   AttachmentNew,
-  AttachmentConfiguration,
-} from './useAttachments'
-import { submissionService, authService } from '@oneblink/apps'
-import useFormDefinition from '../useFormDefinition'
-import { useBooleanState } from '../..'
+  FormElementBinaryStorageValue,
+} from '../../types/attachments'
+import useIsMounted from '../useIsMounted'
+import { checkIfContentTypeIsImage } from '../../services/attachments'
 
 export type OnChange = (id: string, attachment: Attachment) => void
 
-const getId = (attachment: Attachment): string => {
-  if (!attachment.type) {
-    return attachment.id
-  }
-  return attachment._id
-}
-
-const fetchFile = async (attachment: AttachmentConfiguration) => {
-  const response = await fetch(
-    attachment.url,
-    attachment.isPrivate
-      ? {
-          headers: {
-            Authorization: `Bearer ${await authService.getIdToken()}`,
-          },
-        }
-      : undefined,
-  )
-  if (!response.ok) {
-    throw new Error(
-      `Unable to download file. HTTP Status Code: ${response.status}`,
-    )
-  }
-  return await response.blob()
-}
-
-const useAttachment = (
-  attachment: Attachment,
-  element: StorageElement,
+export default function useAttachment(
+  value: FormElementBinaryStorageValue,
+  element: FormTypes.FormElementBinaryStorage,
   onChange: OnChange,
-) => {
+) {
   const isPrivate = element.storageType === 'private'
   const form = useFormDefinition()
+  const isOffline = useIsOffline()
+  const isMounted = useIsMounted()
 
-  const [isLoadingAttachmentBlob, startLoading, stopLoading] = useBooleanState(
-    false,
-  )
-  const [attachmentBlob, setAttachmentBlob] = React.useState<Blob>()
+  const [imageUrlState, setImageUrlState] = React.useState<{
+    imageUrl?: string | null
+    loadImageUrlError?: Error
+  }>({})
 
   const uploadAttachment = React.useCallback(
-    async (newAttachment: AttachmentNew) => {
-      if (!form) return
-      const id = getId(newAttachment)
+    async (formId: number, newAttachment: AttachmentNew) => {
       try {
         console.log(
           'Attempting to upload attachment...',
@@ -61,13 +37,13 @@ const useAttachment = (
         )
 
         // UPDATE TO SAVING
-        onChange(id, {
+        onChange(newAttachment._id, {
           ...newAttachment,
           type: 'SAVING',
         })
 
         const upload = await submissionService.uploadAttachment({
-          formId: form.id,
+          formId,
           file: {
             name: newAttachment.fileName,
             type: newAttachment.data.type,
@@ -78,53 +54,178 @@ const useAttachment = (
         console.log('Successfully Uploaded attachment!', newAttachment.fileName)
 
         // UPDATE ATTACHMENT
-        onChange(id, upload)
+        onChange(newAttachment._id, upload)
       } catch (error) {
-        console.log('Failed to upload attachment...', {
-          name: newAttachment.fileName,
+        console.warn(
+          'Failed to upload attachment...',
+          newAttachment.fileName,
           error,
-        })
-        onChange(id, {
+        )
+        Sentry.captureException(error)
+        onChange(newAttachment._id, {
           ...newAttachment,
           type: 'ERROR',
+          errorMessage: error.message,
         })
       }
     },
-    [form, isPrivate, onChange],
-  )
-
-  const fetchAttachment = React.useCallback(
-    async (attachment: AttachmentConfiguration) => {
-      startLoading()
-      try {
-        const file = await fetchFile(attachment)
-        setAttachmentBlob(file)
-      } catch (err) {
-        console.log('Error loading file:', err)
-      }
-      stopLoading()
-    },
-    [startLoading, stopLoading],
+    [isPrivate, onChange],
   )
 
   // TRIGGER UPLOAD
   React.useEffect(() => {
-    if (attachment.type === 'NEW') {
-      uploadAttachment(attachment)
+    if (isOffline) {
+      return
     }
-  }, [attachment, uploadAttachment])
+
+    const formId = form?.id
+    if (!formId) {
+      return
+    }
+
+    if (!value || typeof value !== 'object' || value.type !== 'NEW') {
+      return
+    }
+
+    uploadAttachment(formId, value as AttachmentNew)
+  }, [form?.id, isOffline, uploadAttachment, value])
 
   // TRIGGER DOWNLOAD
   React.useEffect(() => {
-    if (!attachment.type && attachment.contentType.includes('image/')) {
-      fetchAttachment(attachment)
+    if (!value) {
+      return
     }
-  }, [attachment, attachment.type, fetchAttachment])
+
+    // If the value is string we will assume a base64 data uri
+    if (typeof value === 'string') {
+      setImageUrlState({
+        imageUrl: value,
+      })
+      return
+    }
+
+    if (value.type) {
+      if (!checkIfContentTypeIsImage(value.data.type)) {
+        // Not an image which we will represent as null
+        setImageUrlState({
+          imageUrl: null,
+        })
+        return
+      }
+
+      const imageUrl = URL.createObjectURL(value.data)
+      console.log('Created object url from blob for image', imageUrl)
+      setImageUrlState({
+        imageUrl,
+      })
+
+      return () => {
+        URL.revokeObjectURL(imageUrl)
+      }
+    }
+
+    if (!checkIfContentTypeIsImage(value.contentType)) {
+      // Not an image which we will represent as null
+      setImageUrlState({
+        imageUrl: null,
+      })
+      return
+    }
+
+    // If the file is a public url we can finish here and just use that
+    if (!value.isPrivate) {
+      setImageUrlState({
+        imageUrl: value.url,
+      })
+      return
+    }
+
+    const privateImageUrl = value.url
+    let imageUrl: string | undefined = undefined
+
+    const effect = async () => {
+      try {
+        if (isOffline) {
+          setImageUrlState((currentState) => ({
+            imageUrl: currentState.imageUrl || null,
+          }))
+          return
+        }
+
+        const idToken = await authService.getIdToken()
+        // If there is no token to pass to get private image
+        // we can finish here as the user will not be able to
+        // to get the image until they have logged in. Luckily,
+        // the imageUrl should already be set as the blob url
+        // from when they uploaded it.
+        if (!idToken) {
+          setImageUrlState((currentState) => ({
+            imageUrl: currentState.imageUrl || null,
+          }))
+          return
+        }
+
+        const response = await fetch(privateImageUrl, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        if (!response.ok) {
+          throw new Error(
+            `Unable to download file. HTTP Status Code: ${response.status}`,
+          )
+        }
+        const blob = await response.blob()
+
+        if (!isMounted.current) {
+          return
+        }
+
+        imageUrl = URL.createObjectURL(blob)
+        console.log('Created object url from blob for image', imageUrl)
+        setImageUrlState({
+          imageUrl,
+        })
+      } catch (loadImageUrlError) {
+        console.log('Error loading file:', loadImageUrlError)
+        if (isMounted.current) {
+          setImageUrlState({ loadImageUrlError })
+        }
+      }
+    }
+    effect()
+
+    return () => {
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl)
+      }
+    }
+  }, [isMounted, isOffline, value])
+
+  const isUploading = React.useMemo(() => {
+    return !!(
+      value &&
+      typeof value !== 'string' &&
+      value.type &&
+      (value.type === 'SAVING' || value.type === 'NEW')
+    )
+  }, [value])
+
+  const uploadErrorMessage = React.useMemo(() => {
+    if (
+      value &&
+      typeof value !== 'string' &&
+      value.type &&
+      value.type === 'ERROR'
+    ) {
+      return value.errorMessage
+    }
+  }, [value])
 
   return {
-    isLoadingAttachmentBlob,
-    attachmentBlob,
+    isUploading,
+    uploadErrorMessage,
+    isLoadingImageUrl: imageUrlState.imageUrl === undefined,
+    ...imageUrlState,
   }
 }
-
-export default useAttachment

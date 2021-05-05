@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { AttachmentValid } from '../../hooks/attachments/useAttachments'
 import OnLoading from '../../components/OnLoading'
 import { Tooltip } from '@material-ui/core'
+import { AttachmentValid } from '../../types/attachments'
 interface Props {
   file: AttachmentValid
 }

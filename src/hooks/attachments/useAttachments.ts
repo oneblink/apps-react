@@ -1,50 +1,12 @@
-import * as React from 'react'
-import { submissionService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
-import { v4 as uuid } from 'uuid'
-
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-
-export type AttachmentConfiguration = UnwrapPromise<
-  ReturnType<typeof submissionService.uploadAttachment>
-> & {
-  type?: undefined
-}
-
-interface AttachmentSavingBase {
-  _id: string
-  data: Blob
-  fileName: string
-  isPrivate: boolean
-}
-
-export type AttachmentNew = AttachmentSavingBase & {
-  type: 'NEW'
-}
-type AttachmentSaving = AttachmentSavingBase & {
-  type: 'SAVING'
-}
-export type AttachmentError = AttachmentSavingBase & {
-  type: 'ERROR'
-}
-
-export type AttachmentValid =
-  | AttachmentConfiguration
-  | AttachmentNew
-  | AttachmentSaving
-
-export type Attachment = AttachmentValid | AttachmentError
-
-export type OnChangeAttachments<T> = (
-  formElement: FormTypes.FormElement,
-  newValue: undefined | T | ((currentValue: undefined | T) => undefined | T),
-) => void
-
-export type StorageElement =
-  | FormTypes.FilesElement
-  | FormTypes.DrawElement
-  | FormTypes.CameraElement
-  | FormTypes.ComplianceElement
+import * as React from 'react'
+import { prepareNewAttachment } from '../../services/attachments'
+import {
+  Attachment,
+  AttachmentError,
+  AttachmentNew,
+  AttachmentValid,
+} from '../../types/attachments'
 
 type State = {
   validAttachments: AttachmentValid[]
@@ -60,11 +22,9 @@ type Actions = {
 
 const useAttachments = (
   allAttachments: Attachment[],
-  element: StorageElement,
-  onChange: OnChangeAttachments<Attachment[]>,
+  element: FormTypes.FilesElement,
+  onChange: FormElementValueChangeHandler<Attachment[]>,
 ): [State, Actions] => {
-  const isPrivate = element.storageType === 'private'
-
   const validAttachments = React.useMemo(() => {
     return allAttachments.filter((att) => {
       return att.type !== 'ERROR'
@@ -82,13 +42,7 @@ const useAttachments = (
       if (!files.length) return
       // TODO: Rotate orientation of sideways camera images
       const newAttachments: AttachmentNew[] = files.map((file) => {
-        return {
-          _id: uuid(),
-          data: file,
-          fileName: file.name,
-          isPrivate,
-          type: 'NEW',
-        }
+        return prepareNewAttachment(file, file.name, element)
       })
 
       onChange(element, (currentAttachments) => {
@@ -96,7 +50,7 @@ const useAttachments = (
         return [...currentAttachments, ...newAttachments]
       })
     },
-    [element, isPrivate, onChange],
+    [element, onChange],
   )
 
   const removeAttachment = React.useCallback(

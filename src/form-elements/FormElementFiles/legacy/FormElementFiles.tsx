@@ -8,6 +8,7 @@ import { downloadFileLegacy } from '../../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../../components/FormElementLabelContainer'
 import { parseFilesAsAttachmentsLegacy } from '../../../services/parseFilesAsAttachments'
+import { checkIfContentTypeIsImage } from '../../../services/attachments'
 
 export type FilesElementFile = {
   data: string
@@ -38,7 +39,7 @@ const FormElementFile = ({ element, onRemove, file, index }: ChildProps) => {
     if (!matches) {
       return false
     }
-    return matches[1].indexOf('image/') === 0
+    return checkIfContentTypeIsImage(matches[1])
   }, [file])
   useClickOutsideElement(
     dropDownRef,

@@ -1,32 +1,35 @@
 import * as React from 'react'
-import { AttachmentValid } from '../../hooks/attachments/useAttachments'
+import { AttachmentValid } from '../../types/attachments'
 import OnLoading from '../../components/OnLoading'
 import { Tooltip } from '@material-ui/core'
-interface Props {
+import { checkIfContentTypeIsImage } from '../../services/attachments'
+import useAttachment from '../../hooks/attachments/useAttachment'
+import UploadingAttachment from '../../components/attachments/UploadingAttachment'
+type Props = {
   attachment: AttachmentValid
-  attachmentBlob: Blob | undefined
-  isLoadingAttachmentBlob: boolean
-}
+} & ReturnType<typeof useAttachment>
 
 const FormElementFileDisplay = ({
   attachment,
-  attachmentBlob,
-  isLoadingAttachmentBlob,
+  imageUrl,
+  isLoadingImageUrl,
+  loadImageUrlError,
+  isUploading,
 }: Props) => {
   const isImageType = React.useMemo(() => {
     if (!attachment.type) {
-      return attachment.contentType.includes('image/')
+      return checkIfContentTypeIsImage(attachment.contentType)
     }
-    return attachment.data.type.includes('image/')
+    return checkIfContentTypeIsImage(attachment.data.type)
   }, [attachment])
-  const imageUrl = React.useMemo(() => {
-    if (attachment.type === 'NEW' || attachment.type === 'SAVING') {
-      return URL.createObjectURL(attachment.data)
-    }
-    if (!attachment.type && attachmentBlob) {
-      return URL.createObjectURL(attachmentBlob)
-    }
-  }, [attachment, attachmentBlob])
+
+  const loader = React.useMemo(() => {
+    return (
+      <div className="ob-files__content-loading">
+        <OnLoading tiny />
+      </div>
+    )
+  }, [])
 
   if (!isImageType) {
     return (
@@ -39,20 +42,12 @@ const FormElementFileDisplay = ({
   }
   // >>> IS IMAGE
 
-  if (attachment.type === 'SAVING' || attachment.type === 'NEW') {
-    return (
-      <div className="ob-files__content-image">
-        <img className="ob-files__image" src={imageUrl} />
-      </div>
-    )
+  if (isUploading) {
+    return <UploadingAttachment>{loader}</UploadingAttachment>
   }
 
-  if (isLoadingAttachmentBlob) {
-    return (
-      <div className="ob-files__content-loading">
-        <OnLoading tiny />
-      </div>
-    )
+  if (isLoadingImageUrl) {
+    return loader
   }
 
   if (imageUrl) {
