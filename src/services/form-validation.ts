@@ -2,6 +2,7 @@ import validate from 'validate.js'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
+import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -469,7 +470,7 @@ const generateSchemaReducer = (
             tooShort: 'Please upload at least %{count} file(s)',
           },
           type: {
-            type: (files: FormTypes.FilesElement) => {
+            type: (files: PossibleFileConfiguration[] | undefined) => {
               let validTypes = true
               if (Array.isArray(files)) {
                 files.forEach((newFile) => {

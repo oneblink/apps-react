@@ -606,7 +606,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <FormElementCamera
           id={id}
           element={element}
-          value={value}
+          value={value as FormElementBinaryStorageValue}
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementCamera

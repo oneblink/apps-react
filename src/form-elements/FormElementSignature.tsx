@@ -277,11 +277,11 @@ const DisplayImage = React.memo(function DisplayImage({
   }
 
   if (isLoadingImageUrl) {
-    return <OnLoading className="cypress-signature-loading-image" />
+    return <OnLoading small className="cypress-signature-loading-image" />
   }
 
   if (isOffline) {
-    return <p>Preview cannot be loaded will offline</p>
+    return <p>Preview cannot be loaded while offline</p>
   }
 
   return <p>Preview could not be loaded</p>
