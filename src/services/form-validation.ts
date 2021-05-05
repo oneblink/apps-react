@@ -13,14 +13,22 @@ validate.extend(validate.validators.datetime, {
     return new Date(value).valueOf()
   },
   // Input is a unix timestamp
-  format: function (value: string, options: any) {
+  format: function (
+    value: string,
+    options: { format: (date: Date) => string },
+  ) {
     const dateValue = new Date(value)
     return options.format(dateValue)
   },
 })
 
-// @ts-expect-error Extend validator for repeatable sets
-validate.validators.entries = function (value, { setSchema, entrySchema }) {
+validate.validators.entries = function (
+  value: unknown,
+  {
+    setSchema,
+    entrySchema,
+  }: { setSchema: ValidateJSSchema; entrySchema: ValidateJSSchema },
+) {
   const entries = Array.isArray(value) ? value : []
 
   const entryErrors = entries.reduce((errorsByIndex, entry, index) => {
@@ -44,10 +52,12 @@ validate.validators.entries = function (value, { setSchema, entrySchema }) {
   }
 }
 
-// @ts-expect-error Extend validator for form elements
-validate.validators.nestedElements = function (value, elementsObject) {
+validate.validators.nestedElements = function (
+  value: FormElementsCtrl['model'] | undefined,
+  schema: ValidateJSSchema,
+) {
   if (!value || typeof value !== 'object') return
-  const errors = validateSingleMessageError(value, elementsObject)
+  const errors = validateSingleMessageError(value, schema)
   if (!errors) {
     return
   }
@@ -95,7 +105,7 @@ export function generateSchemasByPages(
   elementIdsWithLookupsExecuted: string[],
 ): ValidateJSSchemaByPageId {
   return pages.reduce(
-    (partialSchemaByPageId: { [property: string]: any }, pageElement) => {
+    (partialSchemaByPageId: ValidateJSSchemaByPageId, pageElement) => {
       partialSchemaByPageId[pageElement.id] = generateSchemaReducer(
         pageElement.elements,
         elementIdsWithLookupsExecuted,
@@ -112,7 +122,7 @@ export const validatePages = (
   pageElementsConditionallyShown: PageElementsConditionallyShown,
 ): PageElementsValidation | undefined => {
   const pagesValidation = Object.keys(schemaByPageId).reduce(
-    (partialMessagesByPageId: { [property: string]: any }, pageId) => {
+    (partialMessagesByPageId: PageElementsValidation, pageId) => {
       const schema = schemaByPageId[pageId]
       const pageElementConditionallyShown =
         pageElementsConditionallyShown[pageId]
@@ -231,293 +241,283 @@ const escapeElementName = (elementName: string) => {
 const generateSchemaReducer = (
   formElements: FormTypes.FormElement[],
   elementIdsWithLookupsExecuted: string[],
-) => {
-  return formElements.reduce(
-    (partialSchema: { [property: string]: any }, formElement) => {
-      switch (formElement.type) {
-        case 'summary':
-        case 'calculation':
-        case 'image':
-        case 'html':
-        case 'infoPage':
-        case 'heading':
-        case 'page': {
-          break
-        }
-        case 'draw': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'A signature is required'),
-          }
-          break
-        }
-        case 'camera': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'A photo is required'),
-          }
-          break
-        }
-        case 'captcha': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              true,
-              'Please complete the CAPTCHA successfully',
-            ),
-          }
-          break
-        }
-        case 'location': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              formElement.required,
-              'Please select a location',
-            ),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'compliance':
-        case 'geoscapeAddress':
-        case 'pointAddress':
-        case 'autocomplete':
-        case 'checkboxes':
-        case 'radio':
-        case 'select': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'Required'),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'barcodeScanner': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              formElement.required,
-              'Please scan a barcode or enter a value',
-            ),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'text':
-        case 'textarea': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'Please enter a value'),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-            length: {
-              minimum: formElement.minLength,
-              tooShort:
-                'Please enter a value with at least %{count} character(s)',
-              maximum: formElement.maxLength,
-              tooLong:
-                'Please enter a value with %{count} character(s) or less',
-            },
-          }
-          break
-        }
-        case 'telephone': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              formElement.required,
-              'Please enter a phone number',
-            ),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'email': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              formElement.required,
-              'Please enter an email address',
-            ),
-            email: {
-              message: 'Please enter a valid email for this field',
-            },
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'time': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'Please select a time'),
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'date': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(formElement.required, 'Please select a date'),
-            datetime: {
-              format: (v: Date) => localisationService.formatDate(v),
-              earliest: formElement.fromDate,
-              latest: formElement.toDate,
-              notValid: 'Please select a valid date',
-              tooEarly: 'Date cannot be before %{date}',
-              tooLate: 'Date cannot be after %{date}',
-            },
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'datetime': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              formElement.required,
-              'Please select a date and time',
-            ),
-            datetime: {
-              format: (v: Date) => localisationService.formatDatetime(v),
-              earliest: formElement.fromDate,
-              latest: formElement.toDate,
-              notValid: 'Please select a valid date and time',
-              tooEarly: 'Date and time cannot be before %{date}',
-              tooLate: 'Date and time cannot be after %{date}',
-            },
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'number': {
-          let minErrorMessage =
-            'Please enter a number greater than or equal to %{count}'
-          let maxErrorMessage =
-            'Please enter a number less than or equal to %{count}'
-          if (
-            typeof formElement.minNumber === 'number' &&
-            typeof formElement.maxNumber === 'number'
-          ) {
-            minErrorMessage = maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
-          }
-
-          partialSchema[escapeElementName(formElement.name)] = {
-            type: 'number',
-            presence: presence(formElement.required, 'Please enter a number'),
-            numericality: {
-              greaterThanOrEqualTo: formElement.minNumber,
-              notGreaterThanOrEqualTo: minErrorMessage,
-              lessThanOrEqualTo: formElement.maxNumber,
-              notLessThanOrEqualTo: maxErrorMessage,
-              onlyInteger: formElement.isInteger,
-              notInteger: 'Please enter a whole number',
-            },
-            lookups: {
-              formElement,
-              elementIdsWithLookupsExecuted,
-            },
-          }
-          break
-        }
-        case 'files': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            presence: presence(
-              !!formElement.minEntries,
-              `Please upload at least ${formElement.minEntries || 1} file(s)`,
-            ),
-            length: {
-              minimum: formElement.minEntries,
-              maximum: formElement.maxEntries,
-              tooLong: 'Cannot upload more than %{count} file(s)',
-              tooShort: 'Please upload at least %{count} file(s)',
-            },
-            type: {
-              type: (files: FormTypes.FilesElement) => {
-                let validTypes = true
-                if (Array.isArray(files)) {
-                  files.forEach((newFile) => {
-                    const extension = newFile.fileName.split('.').pop()
-                    if (formElement.restrictedFileTypes) {
-                      const restrictedTo = formElement.restrictedFileTypes
-                      validTypes = restrictedTo.some(
-                        (fileType) => fileType === extension,
-                      )
-                    }
-                  })
-                }
-                return validTypes
-              },
-              message: `Only the following file types are accepted: ${(
-                formElement.restrictedFileTypes || []
-              ).join(', ')}`,
-            },
-          }
-          break
-        }
-        case 'repeatableSet': {
-          partialSchema[escapeElementName(formElement.name)] = {
-            entries: {
-              setSchema: {
-                presence: presence(
-                  !!formElement.minSetEntries,
-                  `Must have at least ${
-                    formElement.minSetEntries || 1
-                  } entry/entries`,
-                ),
-                length: {
-                  minimum: formElement.minSetEntries,
-                  maximum: formElement.maxSetEntries,
-                  tooLong: 'Cannot have more than %{count} entry/entries',
-                  tooShort: 'Must have at least %{count} entry/entries',
-                },
-              },
-              entrySchema: generateSchemaReducer(
-                formElement.elements,
-                elementIdsWithLookupsExecuted,
-              ),
-            },
-          }
-          break
-        }
-        case 'form': {
-          if (formElement.elements) {
-            partialSchema[escapeElementName(formElement.name)] = {
-              nestedElements: generateSchemaReducer(
-                formElement.elements,
-                elementIdsWithLookupsExecuted,
-              ),
-            }
-          }
-          break
-        }
-        default: {
-          console.info('Unsupported form element with validation', formElement)
-        }
+): ValidateJSSchema => {
+  return formElements.reduce((partialSchema: ValidateJSSchema, formElement) => {
+    switch (formElement.type) {
+      case 'summary':
+      case 'calculation':
+      case 'image':
+      case 'html':
+      case 'infoPage':
+      case 'heading':
+      case 'page': {
+        break
       }
-      return partialSchema
-    },
-    {},
-  )
+      case 'draw': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'A signature is required'),
+        }
+        break
+      }
+      case 'camera': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'A photo is required'),
+        }
+        break
+      }
+      case 'captcha': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(true, 'Please complete the CAPTCHA successfully'),
+        }
+        break
+      }
+      case 'location': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Please select a location'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'compliance':
+      case 'geoscapeAddress':
+      case 'pointAddress':
+      case 'autocomplete':
+      case 'checkboxes':
+      case 'radio':
+      case 'select': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Required'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'barcodeScanner': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            formElement.required,
+            'Please scan a barcode or enter a value',
+          ),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'text':
+      case 'textarea': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Please enter a value'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+          length: {
+            minimum: formElement.minLength,
+            tooShort:
+              'Please enter a value with at least %{count} character(s)',
+            maximum: formElement.maxLength,
+            tooLong: 'Please enter a value with %{count} character(s) or less',
+          },
+        }
+        break
+      }
+      case 'telephone': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            formElement.required,
+            'Please enter a phone number',
+          ),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'email': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            formElement.required,
+            'Please enter an email address',
+          ),
+          email: {
+            message: 'Please enter a valid email for this field',
+          },
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'time': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Please select a time'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'date': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Please select a date'),
+          datetime: {
+            format: (v: Date) => localisationService.formatDate(v),
+            earliest: formElement.fromDate,
+            latest: formElement.toDate,
+            notValid: 'Please select a valid date',
+            tooEarly: 'Date cannot be before %{date}',
+            tooLate: 'Date cannot be after %{date}',
+          },
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'datetime': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            formElement.required,
+            'Please select a date and time',
+          ),
+          datetime: {
+            format: (v: Date) => localisationService.formatDatetime(v),
+            earliest: formElement.fromDate,
+            latest: formElement.toDate,
+            notValid: 'Please select a valid date and time',
+            tooEarly: 'Date and time cannot be before %{date}',
+            tooLate: 'Date and time cannot be after %{date}',
+          },
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'number': {
+        let minErrorMessage =
+          'Please enter a number greater than or equal to %{count}'
+        let maxErrorMessage =
+          'Please enter a number less than or equal to %{count}'
+        if (
+          typeof formElement.minNumber === 'number' &&
+          typeof formElement.maxNumber === 'number'
+        ) {
+          minErrorMessage = maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
+        }
+
+        partialSchema[escapeElementName(formElement.name)] = {
+          type: 'number',
+          presence: presence(formElement.required, 'Please enter a number'),
+          numericality: {
+            greaterThanOrEqualTo: formElement.minNumber,
+            notGreaterThanOrEqualTo: minErrorMessage,
+            lessThanOrEqualTo: formElement.maxNumber,
+            notLessThanOrEqualTo: maxErrorMessage,
+            onlyInteger: formElement.isInteger,
+            notInteger: 'Please enter a whole number',
+          },
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'files': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            !!formElement.minEntries,
+            `Please upload at least ${formElement.minEntries || 1} file(s)`,
+          ),
+          length: {
+            minimum: formElement.minEntries,
+            maximum: formElement.maxEntries,
+            tooLong: 'Cannot upload more than %{count} file(s)',
+            tooShort: 'Please upload at least %{count} file(s)',
+          },
+          type: {
+            type: (files: FormTypes.FilesElement) => {
+              let validTypes = true
+              if (Array.isArray(files)) {
+                files.forEach((newFile) => {
+                  const extension = newFile.fileName.split('.').pop()
+                  if (formElement.restrictedFileTypes) {
+                    const restrictedTo = formElement.restrictedFileTypes
+                    validTypes = restrictedTo.some(
+                      (fileType) => fileType === extension,
+                    )
+                  }
+                })
+              }
+              return validTypes
+            },
+            message: `Only the following file types are accepted: ${(
+              formElement.restrictedFileTypes || []
+            ).join(', ')}`,
+          },
+        }
+        break
+      }
+      case 'repeatableSet': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          entries: {
+            setSchema: {
+              presence: presence(
+                !!formElement.minSetEntries,
+                `Must have at least ${
+                  formElement.minSetEntries || 1
+                } entry/entries`,
+              ),
+              length: {
+                minimum: formElement.minSetEntries,
+                maximum: formElement.maxSetEntries,
+                tooLong: 'Cannot have more than %{count} entry/entries',
+                tooShort: 'Must have at least %{count} entry/entries',
+              },
+            },
+            entrySchema: generateSchemaReducer(
+              formElement.elements,
+              elementIdsWithLookupsExecuted,
+            ),
+          },
+        }
+        break
+      }
+      case 'form': {
+        if (formElement.elements) {
+          partialSchema[escapeElementName(formElement.name)] = {
+            nestedElements: generateSchemaReducer(
+              formElement.elements,
+              elementIdsWithLookupsExecuted,
+            ),
+          }
+        }
+        break
+      }
+      default: {
+        console.info('Unsupported form element with validation', formElement)
+      }
+    }
+    return partialSchema
+  }, {})
 }
 
 const validateSingleMessageError = (
   submission: FormElementsCtrl['model'],
-  schema: any,
+  schema: ValidateJSSchema,
 ): FormElementsValidation | undefined => {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
