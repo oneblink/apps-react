@@ -51,7 +51,7 @@ export default function useAttachment(
             isPrivate,
           },
         })
-        console.log('Successfully Uploaded attachment!', newAttachment.fileName)
+        console.log('Successfully Uploaded attachment!', upload)
 
         // UPDATE ATTACHMENT
         onChange(newAttachment._id, upload)

@@ -28,6 +28,7 @@ import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import useChangeEffect from './hooks/useChangeEffect'
+import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 
 type Props = {
   form: FormTypes.Form
@@ -340,6 +341,24 @@ function OneBlinkFormBase({
         }
 
         const submissionData = getCurrentSubmissionData(false)
+
+        // Prevent submission until all attachment uploads are finished
+        // Unless the user is offline, in which case, the uploads will
+        // be taken care of by a pending queue...hopefully.
+        if (
+          checkIfAttachmentsAreUploading(definition, submissionData.submission)
+        ) {
+          bulmaToast.toast({
+            message:
+              'Attachments are still uploading, please wait for them to finish before trying again.',
+            // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+            type: 'ob-toast is-primary cypress-still-uploading-toast',
+            duration: 4000,
+            pauseOnHover: true,
+            closeOnClick: true,
+          })
+          return
+        }
 
         allowNavigation()
 

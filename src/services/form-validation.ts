@@ -1,6 +1,7 @@
 import validate from 'validate.js'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
+import { FormElementBinaryStorageValue } from '../types/attachments'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -64,6 +65,19 @@ validate.validators.nestedElements = function (
   return {
     type: 'nestedForm',
     nested: errors,
+  }
+}
+
+validate.validators.attachment = function (
+  value: FormElementBinaryStorageValue,
+) {
+  if (
+    value &&
+    typeof value === 'object' &&
+    value.type &&
+    value.type === 'ERROR'
+  ) {
+    return value.errorMessage
   }
 }
 
@@ -255,12 +269,18 @@ const generateSchemaReducer = (
       }
       case 'draw': {
         partialSchema[escapeElementName(formElement.name)] = {
+          attachment:
+            formElement.storageType === 'private' ||
+            formElement.storageType === 'public',
           presence: presence(formElement.required, 'A signature is required'),
         }
         break
       }
       case 'camera': {
         partialSchema[escapeElementName(formElement.name)] = {
+          attachment:
+            formElement.storageType === 'private' ||
+            formElement.storageType === 'public',
           presence: presence(formElement.required, 'A photo is required'),
         }
         break
