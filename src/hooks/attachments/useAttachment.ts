@@ -228,9 +228,9 @@ export default function useAttachment(
       (typeof value === 'string' ||
         value.type === 'NEW' ||
         value.type === 'SAVING' ||
-        !!imageUrlState.imageUrl)
+        !value.type)
     )
-  }, [imageUrlState.imageUrl, value])
+  }, [value])
 
   return {
     isUploading,
