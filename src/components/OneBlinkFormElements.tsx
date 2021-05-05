@@ -34,6 +34,7 @@ import FormElementPointAddress from '../form-elements/FormElementPointAddress'
 import { FormTypes, GeoscapeTypes, PointTypes } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
+import { FormElementBinaryStorageValue } from '../types/attachments'
 
 type Props = {
   formId: number
@@ -430,7 +431,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         <FormElementSignature
           id={id}
           element={element}
-          value={value}
+          value={value as FormElementBinaryStorageValue}
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementSignature

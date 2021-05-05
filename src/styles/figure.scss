@@ -1,4 +1,5 @@
 .ob-figure {
+  position: relative;
   background-color: $white-ter;
   text-align: center;
   margin-bottom: $size-7;
@@ -34,4 +35,10 @@
       }
     }
   }
+}
+
+.ob-figure__status {
+  position: absolute;
+  bottom: $size-7;
+  right: $size-7;
 }

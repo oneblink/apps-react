@@ -4,10 +4,10 @@ import useBooleanState from '../../hooks/useBooleanState'
 import useClickOutsideElement from '../../hooks/useClickOutsideElement'
 import downloadFile from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
-import { AttachmentValid } from '../../hooks/attachments/useAttachments'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
 import FormElementFileDisplay from './FormElementFileDisplay'
 import FormElementFileStatus from './FormElementFileStatus'
+import { AttachmentValid } from '../../types/attachments'
 
 type Props = {
   element: FormTypes.FilesElement

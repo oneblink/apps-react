@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { AttachmentValid } from '../../hooks/attachments/useAttachments'
+import { AttachmentValid } from '../../types/attachments'
 
 interface Props {
   file: AttachmentValid
