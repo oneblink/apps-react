@@ -224,6 +224,7 @@ export default function useAttachment(
   return {
     isUploading,
     uploadErrorMessage,
+    isLoadingImageUrl: imageUrlState.imageUrl === undefined,
     ...imageUrlState,
   }
 }

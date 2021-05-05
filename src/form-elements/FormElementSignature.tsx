@@ -1,7 +1,6 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
 import { FormTypes } from '@oneblink/types'
-import { Tooltip } from '@material-ui/core'
 
 import scrollingService from '../services/scrolling-service'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
@@ -10,6 +9,7 @@ import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import useIsOffline from '../hooks/useIsOffline'
+import UploadingAttachment from '../components/attachments/UploadingAttachment'
 
 type Props = {
   id: string
@@ -226,6 +226,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
 const DisplayImage = React.memo(function DisplayImage({
   uploadErrorMessage,
   isUploading,
+  isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
 }: ReturnType<typeof useAttachment>) {
@@ -252,23 +253,7 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        {isUploading && (
-          <Tooltip
-            title={
-              isOffline
-                ? 'Upload will start when you connect to the internet'
-                : 'Uploading'
-            }
-          >
-            <div className="ob-signature__uploading cypress-signature-uploading">
-              {isOffline ? (
-                <i className="material-icons has-text-warning">wifi_off</i>
-              ) : (
-                <OnLoading tiny />
-              )}
-            </div>
-          </Tooltip>
-        )}
+        {isUploading && <UploadingAttachment />}
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
@@ -277,7 +262,7 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (imageUrl === undefined) {
+  if (isLoadingImageUrl) {
     return <OnLoading className="cypress-signature-loading-image" />
   }
 
