@@ -10,6 +10,7 @@ import { FormElementBinaryStorageValue } from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import useIsOffline from '../hooks/useIsOffline'
 import UploadingAttachment from '../components/attachments/UploadingAttachment'
+import useBooleanState from '../hooks/useBooleanState'
 
 type Props = {
   id: string
@@ -28,6 +29,16 @@ function FormElementSignature({
   validationMessage,
   displayValidationMessage,
 }: Props) {
+  const [isDirty, setIsDirty] = useBooleanState(false)
+
+  const handleChange = React.useCallback(
+    (formElement, newValue) => {
+      setIsDirty()
+      onChange(formElement, newValue)
+    },
+    [onChange, setIsDirty],
+  )
+
   return (
     <div className="cypress-signature-element">
       <FormElementLabelContainer
@@ -41,14 +52,14 @@ function FormElementSignature({
             <SignatureDisplay
               element={element}
               value={value}
-              onChange={onChange}
+              onChange={handleChange}
             />
           ) : (
-            <SignatureDrawing element={element} onChange={onChange} />
+            <SignatureDrawing element={element} onChange={handleChange} />
           )}
         </div>
 
-        {displayValidationMessage && !!validationMessage && (
+        {(isDirty || displayValidationMessage) && !!validationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
@@ -236,7 +247,10 @@ const DisplayImage = React.memo(function DisplayImage({
     return (
       <>
         <h3 className="title is-3">Upload Failed</h3>
-        <p>{uploadErrorMessage}</p>
+        <p>
+          Your signature failed to upload, please press the <b>Clear</b> button
+          and try again.
+        </p>
       </>
     )
   }
