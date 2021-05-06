@@ -2,7 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 import useBooleanState from '../../hooks/useBooleanState'
 import useClickOutsideElement from '../../hooks/useClickOutsideElement'
-import downloadFile from '../../services/download-file'
+import downloadAttachment from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
 import FormElementFileDisplay from './FormElementFileDisplay'
@@ -39,10 +39,7 @@ const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
   }, [file, hideMore, onRemove])
 
   const handleDownload = React.useCallback(async () => {
-    // TODO: Handle download for uploaded file type
-    if (file.type === 'SAVING' || file.type === 'NEW') {
-      await downloadFile(file.data, file.fileName)
-    }
+    await downloadAttachment(file)
   }, [file])
 
   return (
@@ -70,15 +67,17 @@ const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
           </div>
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              <a
-                className="dropdown-item cypress-file-download-button"
-                onClick={() => {
-                  hideMore()
-                  handleDownload()
-                }}
-              >
-                Download
-              </a>
+              {attachmentResult.canDownload && (
+                <a
+                  className="dropdown-item cypress-file-download-button"
+                  onClick={() => {
+                    hideMore()
+                    handleDownload()
+                  }}
+                >
+                  Download
+                </a>
+              )}
               <a
                 className={clsx('dropdown-item cypress-file-remove-button', {
                   'ob-files__menu-remove-hidden': element.readOnly,
