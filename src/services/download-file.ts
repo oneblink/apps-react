@@ -76,6 +76,35 @@ async function downloadFile(data: Blob | string, fileName: string) {
   }
 }
 
+async function convertDataUriToBlob(dataURI: string) {
+  const response = await fetch(dataURI)
+  const blob = await response.blob()
+  return blob
+}
+
+const handleError = (error?: Error) => {
+  if (error) {
+    Sentry.captureException(error)
+    console.warn('An error occurred attempting to download file:', error)
+    bulmaToast.toast({
+      message:
+        'Sorry, there was an issue downloading your file, please try again.',
+      // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+      type: 'ob-toast is-danger cypress-download-file-toast',
+      dismissible: true,
+      closeOnClick: true,
+    })
+  }
+}
+
+export async function downloadFileLegacy(dataURI: string, fileName: string) {
+  try {
+    return await downloadFile(dataURI, fileName)
+  } catch (error) {
+    handleError(error)
+  }
+}
+
 export default async function downloadAttachment(attachment: AttachmentValid) {
   try {
     if (attachment.type) {
@@ -98,42 +127,6 @@ export default async function downloadAttachment(attachment: AttachmentValid) {
     const blob = await response.blob()
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
-    if (error) {
-      Sentry.captureException(error)
-      console.warn('An error occurred attempting to download file:', error)
-      bulmaToast.toast({
-        message:
-          'Sorry, there was an issue downloading your file, please try again.',
-        // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-        type: 'ob-toast is-danger cypress-download-file-toast',
-        dismissible: true,
-        closeOnClick: true,
-      })
-    }
+    handleError(error)
   }
-}
-
-export async function downloadFileLegacy(dataURI: string, fileName: string) {
-  try {
-    return await downloadFile(dataURI, fileName)
-  } catch (error) {
-    if (error) {
-      Sentry.captureException(error)
-      console.warn('An error occurred attempting to download file:', error)
-      bulmaToast.toast({
-        message:
-          'Sorry, there was an issue downloading your file, please try again.',
-        // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-        type: 'ob-toast is-danger cypress-download-file-toast',
-        dismissible: true,
-        closeOnClick: true,
-      })
-    }
-  }
-}
-
-async function convertDataUriToBlob(dataURI: string) {
-  const response = await fetch(dataURI)
-  const blob = await response.blob()
-  return blob
 }

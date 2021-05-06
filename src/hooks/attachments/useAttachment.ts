@@ -10,6 +10,7 @@ import {
 } from '../../types/attachments'
 import useIsMounted from '../useIsMounted'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
+import useAuth from '../../hooks/useAuth'
 
 export type OnChange = (id: string, attachment: Attachment) => void
 
@@ -22,6 +23,7 @@ export default function useAttachment(
   const form = useFormDefinition()
   const isOffline = useIsOffline()
   const isMounted = useIsMounted()
+  const { isLoggedIn } = useAuth()
 
   const [imageUrlState, setImageUrlState] = React.useState<{
     imageUrl?: string | null
@@ -224,15 +226,12 @@ export default function useAttachment(
 
   const canDownload = React.useMemo(() => {
     const isDownloadableAttachment = (attachment: Attachment) =>
-      (attachment.type === 'NEW' ||
-        attachment.type === 'SAVING' ||
-        !attachment.type) &&
-      (!attachment.isPrivate || authService.isLoggedIn())
+      !attachment.isPrivate || isLoggedIn
 
     return (
       !!value && (typeof value === 'string' || isDownloadableAttachment(value))
     )
-  }, [value])
+  }, [isLoggedIn, value])
 
   return {
     isUploading,
