@@ -14,7 +14,7 @@ function UploadingAttachment() {
           : 'Uploading'
       }
     >
-      <div className="ob-figure__status cypress-attachment-uploading">
+      <div className="cypress-attachment-uploading">
         {isOffline ? (
           <i className="material-icons has-text-warning">wifi_off</i>
         ) : (

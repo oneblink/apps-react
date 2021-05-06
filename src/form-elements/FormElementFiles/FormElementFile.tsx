@@ -6,7 +6,7 @@ import downloadAttachment from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
 import FormElementFileDisplay from './FormElementFileDisplay'
-import FormElementFileStatus from './FormElementFileStatus'
+import FormElementFileStatus from '../../components/attachments/AttachmentStatus'
 import { AttachmentValid } from '../../types/attachments'
 
 type Props = {
