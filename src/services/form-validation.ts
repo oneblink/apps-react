@@ -72,12 +72,7 @@ validate.validators.nestedElements = function (
 validate.validators.attachment = function (
   value: FormElementBinaryStorageValue,
 ) {
-  if (
-    value &&
-    typeof value === 'object' &&
-    value.type &&
-    value.type === 'ERROR'
-  ) {
+  if (value && typeof value === 'object' && value.type === 'ERROR') {
     return value.errorMessage
   }
 }

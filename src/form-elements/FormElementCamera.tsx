@@ -1,7 +1,9 @@
 import * as React from 'react'
 
 import useBooleanState from '../hooks/useBooleanState'
-import { downloadFileLegacy } from '../services/download-file'
+import downloadAttachment, {
+  downloadFileLegacy,
+} from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import { FormTypes } from '@oneblink/types'
 import { localisationService } from '@oneblink/apps'
@@ -191,6 +193,7 @@ function FormElementCamera({
     isLoadingImageUrl,
     imageUrl,
     loadImageUrlError,
+    canDownload,
   } = useAttachment(
     value,
     element,
@@ -205,6 +208,8 @@ function FormElementCamera({
   const handleDownload = React.useCallback(async () => {
     if (typeof value === 'string') {
       await downloadFileLegacy(value, id)
+    } else if (value && value.type !== 'ERROR') {
+      await downloadAttachment(value)
     }
   }, [value, id])
 
@@ -285,6 +290,7 @@ function FormElementCamera({
                 isLoading={isLoading}
                 element={element}
                 onAnnotate={setIsAnnotating}
+                canDownload={canDownload}
               />
             </figure>
           )}
@@ -312,16 +318,18 @@ function FormElementCamera({
                 >
                   Clear
                 </button>
-                <button
-                  type="button"
-                  className="button ob-button ob-button__download is-primary cypress-download-file-button"
-                  onClick={handleDownload}
-                >
-                  <span className="icon">
-                    <i className="material-icons">cloud_download</i>
-                  </span>
-                  <span>&nbsp;Download</span>
-                </button>
+                {canDownload && (
+                  <button
+                    type="button"
+                    className="button ob-button ob-button__download is-primary cypress-download-file-button"
+                    onClick={handleDownload}
+                  >
+                    <span className="icon">
+                      <i className="material-icons">cloud_download</i>
+                    </span>
+                    <span>&nbsp;Download</span>
+                  </button>
+                )}
               </>
             ) : (
               <button
