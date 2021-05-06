@@ -2,8 +2,10 @@ import { authService, Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 import { AttachmentValid } from '../types/attachments'
-async function downloadFile(blob: Blob, fileName: string) {
+async function downloadFile(data: Blob | string, fileName: string) {
   if (window.cordova) {
+    const file =
+      typeof data === 'string' ? await convertDataUriToBlob(data) : data
     await new Promise((resolve, reject) => {
       window.requestFileSystem(
         window.PERSISTENT,
@@ -24,7 +26,7 @@ async function downloadFile(blob: Blob, fileName: string) {
                     window.cordova.plugins.fileOpener2.open(
                       // @ts-expect-error ???
                       fileEntry.nativeURL,
-                      blob.type,
+                      file.type,
                       {
                         error: (error: Error) => {
                           console.log(
@@ -44,7 +46,7 @@ async function downloadFile(blob: Blob, fileName: string) {
                     reject(error)
                   }
 
-                  fileWriter.write(blob)
+                  fileWriter.write(file)
                 },
                 (error) => {
                   console.log(
@@ -70,7 +72,7 @@ async function downloadFile(blob: Blob, fileName: string) {
     })
     return
   } else {
-    fileSaver.saveAs(blob, fileName)
+    fileSaver.saveAs(data, fileName)
   }
 }
 
@@ -79,20 +81,15 @@ export default async function downloadAttachment(attachment: AttachmentValid) {
     if (attachment.type) {
       return await downloadFile(attachment.data, attachment.fileName)
     }
-    let idToken
-    if (attachment.isPrivate) {
-      idToken = await authService.getIdToken()
+    if (!attachment.isPrivate) {
+      return await downloadFile(attachment.url, attachment.fileName)
     }
-    const response = await fetch(
-      attachment.url,
-      idToken
-        ? {
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        : undefined,
-    )
+    const idToken = await authService.getIdToken()
+    const response = await fetch(attachment.url, {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    })
     if (!response.ok) {
       throw new Error(
         `Unable to download file. HTTP Status Code: ${response.status}`,
@@ -118,8 +115,7 @@ export default async function downloadAttachment(attachment: AttachmentValid) {
 
 export async function downloadFileLegacy(dataURI: string, fileName: string) {
   try {
-    const blob = await convertDataUriToBlob(dataURI)
-    return await downloadFile(blob, fileName)
+    return await downloadFile(dataURI, fileName)
   } catch (error) {
     if (error) {
       Sentry.captureException(error)

@@ -223,12 +223,14 @@ export default function useAttachment(
   }, [value])
 
   const canDownload = React.useMemo(() => {
+    const isDownloadableAttachment = (attachment: Attachment) =>
+      (attachment.type === 'NEW' ||
+        attachment.type === 'SAVING' ||
+        !attachment.type) &&
+      (!attachment.isPrivate || authService.isLoggedIn())
+
     return (
-      !!value &&
-      (typeof value === 'string' ||
-        value.type === 'NEW' ||
-        value.type === 'SAVING' ||
-        !value.type)
+      !!value && (typeof value === 'string' || isDownloadableAttachment(value))
     )
   }, [value])
 
