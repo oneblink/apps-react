@@ -61,6 +61,7 @@ const generateFilesElement = (
   maxEntries: undefined,
   minEntries: undefined,
   restrictFileTypes: false,
+  storageType: element.storageType,
 })
 function FormElementCompliance({
   id,
