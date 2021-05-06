@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Tooltip } from '@material-ui/core'
 import useAttachment from '../../hooks/attachments/useAttachment'
-import UploadingAttachment from '../../components/attachments/UploadingAttachment'
+import UploadingAttachment from './UploadingAttachment'
 
-const FormElementFileStatus = ({
+const AttachmentStatus = ({
   isUploading,
   loadImageUrlError,
   isLoadingImageUrl,
@@ -23,13 +23,11 @@ const FormElementFileStatus = ({
   if (isUploading) return <UploadingAttachment />
   return (
     <Tooltip title={tooltip}>
-      <span className="ob-files__status-wrapper">
+      <span className="attachment__status-wrapper">
         <i className="material-icons has-text-success">check_circle</i>
       </span>
     </Tooltip>
   )
 }
 
-export default React.memo<ReturnType<typeof useAttachment>>(
-  FormElementFileStatus,
-)
+export default React.memo<ReturnType<typeof useAttachment>>(AttachmentStatus)

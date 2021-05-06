@@ -9,7 +9,7 @@ import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import useIsOffline from '../hooks/useIsOffline'
-import UploadingAttachment from '../components/attachments/UploadingAttachment'
+import AttachmentStatus from '../components/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
 
 type Props = {
@@ -240,6 +240,7 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
+  canDownload,
 }: ReturnType<typeof useAttachment>) {
   const isOffline = useIsOffline()
 
@@ -267,7 +268,16 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        {isUploading && <UploadingAttachment />}
+        <span className="ob-figure__status">
+          <AttachmentStatus
+            canDownload={canDownload}
+            isLoadingImageUrl={isLoadingImageUrl}
+            loadImageUrlError={loadImageUrlError}
+            isUploading={isUploading}
+            uploadErrorMessage={uploadErrorMessage}
+            imageUrl={imageUrl}
+          />
+        </span>
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"

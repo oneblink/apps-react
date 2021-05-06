@@ -13,9 +13,9 @@ import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
 import AnnotationModal from '../components/AnnotationModal'
 import useIsOffline from '../hooks/useIsOffline'
-import UploadingAttachment from '../components/attachments/UploadingAttachment'
 import Modal from '../components/Modal'
 import { prepareNewAttachment } from '../services/attachments'
+import AttachmentStatus from '../components/attachments/AttachmentStatus'
 
 type Props = {
   id: string
@@ -402,6 +402,7 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoading,
   element,
   onAnnotate,
+  canDownload,
 }: ReturnType<typeof useAttachment> & {
   element: FormTypes.CameraElement
   isLoading: boolean
@@ -441,7 +442,16 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        {isUploading && <UploadingAttachment />}
+        <span className="ob-figure__status">
+          <AttachmentStatus
+            canDownload={canDownload}
+            isLoadingImageUrl={isLoadingImageUrl}
+            loadImageUrlError={loadImageUrlError}
+            isUploading={isUploading}
+            uploadErrorMessage={uploadErrorMessage}
+            imageUrl={imageUrl}
+          />
+        </span>
         <img src={imageUrl} className="cypress-camera-image ob-camera__img" />
         <button
           type="button"
