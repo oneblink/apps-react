@@ -70,34 +70,38 @@ validate.validators.nestedElements = function (
   }
 }
 
-function validateAttachment(value: FormElementBinaryStorageValue) {
+function getInvalidAttachment(value: FormElementBinaryStorageValue) {
   if (
     value &&
     typeof value === 'object' &&
     value.type &&
     value.type === 'ERROR'
   ) {
-    return value.errorMessage
+    return value
   }
 }
 function validateAttachments(
   value: FormElementBinaryStorageValue[] | undefined,
 ) {
-  const invalidAttachmentErrors = value?.reduce(
-    (invalidAttachments: string[], att) => {
-      const errorMessage = validateAttachment(att)
-      if (errorMessage) {
-        invalidAttachments.push(errorMessage)
+  const invalidAttachmentNames = value?.reduce(
+    (invalidAttachmentNames: string[], att) => {
+      const attachmentName = getInvalidAttachment(att)?.fileName
+      if (attachmentName) {
+        invalidAttachmentNames.push(attachmentName)
       }
-      return invalidAttachments
+      return invalidAttachmentNames
     },
     [],
   )
-  if (invalidAttachmentErrors?.length) {
-    return `${invalidAttachmentErrors.join(', ')} could not be uploaded.`
+  if (invalidAttachmentNames?.length) {
+    return `${invalidAttachmentNames.join(', ')} could not be uploaded.`
   }
 }
-validate.validators.attachment = validateAttachment
+validate.validators.attachment = function (
+  value: FormElementBinaryStorageValue,
+) {
+  return getInvalidAttachment(value)?.errorMessage
+}
 validate.validators.attachments = function (
   value:
     | FormElementBinaryStorageValue[]
