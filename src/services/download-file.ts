@@ -1,11 +1,12 @@
-import { authService, Sentry } from '@oneblink/apps'
+import { Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 import { AttachmentValid } from '../types/attachments'
+import { urlToBlobAsync } from './blob-utils'
+
 async function downloadFile(data: Blob | string, fileName: string) {
   if (window.cordova) {
-    const file =
-      typeof data === 'string' ? await convertDataUriToBlob(data) : data
+    const file = typeof data === 'string' ? await urlToBlobAsync(data) : data
     await new Promise((resolve, reject) => {
       window.requestFileSystem(
         window.PERSISTENT,
@@ -76,12 +77,6 @@ async function downloadFile(data: Blob | string, fileName: string) {
   }
 }
 
-async function convertDataUriToBlob(dataURI: string) {
-  const response = await fetch(dataURI)
-  const blob = await response.blob()
-  return blob
-}
-
 const handleError = (error?: Error) => {
   if (error) {
     Sentry.captureException(error)
@@ -113,18 +108,7 @@ export default async function downloadAttachment(attachment: AttachmentValid) {
     if (!attachment.isPrivate) {
       return await downloadFile(attachment.url, attachment.fileName)
     }
-    const idToken = await authService.getIdToken()
-    const response = await fetch(attachment.url, {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    })
-    if (!response.ok) {
-      throw new Error(
-        `Unable to download file. HTTP Status Code: ${response.status}`,
-      )
-    }
-    const blob = await response.blob()
+    const blob = await urlToBlobAsync(attachment.url, attachment.isPrivate)
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
     handleError(error)

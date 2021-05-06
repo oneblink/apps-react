@@ -11,6 +11,7 @@ import {
 import useIsMounted from '../useIsMounted'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
+import { urlToBlobAsync } from '../../services/blob-utils'
 
 export type OnChange = (id: string, attachment: Attachment) => void
 
@@ -166,18 +167,7 @@ export default function useAttachment(
           }))
           return
         }
-
-        const response = await fetch(privateImageUrl, {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        })
-        if (!response.ok) {
-          throw new Error(
-            `Unable to download file. HTTP Status Code: ${response.status}`,
-          )
-        }
-        const blob = await response.blob()
+        const blob = await urlToBlobAsync(privateImageUrl, true)
 
         if (!isMounted.current) {
           return

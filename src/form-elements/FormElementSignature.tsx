@@ -11,6 +11,7 @@ import { prepareNewAttachment } from '../services/attachments'
 import useIsOffline from '../hooks/useIsOffline'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
+import { urlToBlobAsync } from '../services/blob-utils'
 
 type Props = {
   id: string
@@ -103,8 +104,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
     }
 
     // Convert base64 data uri to blob and send it on its way
-    const response = await fetch(value)
-    const blob = await response.blob()
+    const blob = await urlToBlobAsync(value)
     onChange(element, prepareNewAttachment(blob, 'signature.png', element))
   }, [element, onChange])
 
