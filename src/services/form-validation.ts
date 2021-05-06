@@ -3,6 +3,7 @@ import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
+import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -69,9 +70,7 @@ validate.validators.nestedElements = function (
   }
 }
 
-validate.validators.attachment = function (
-  value: FormElementBinaryStorageValue,
-) {
+function validateAttachment(value: FormElementBinaryStorageValue) {
   if (
     value &&
     typeof value === 'object' &&
@@ -80,6 +79,38 @@ validate.validators.attachment = function (
   ) {
     return value.errorMessage
   }
+}
+function validateAttachments(
+  value: FormElementBinaryStorageValue[] | undefined,
+) {
+  const invalidAttachmentErrors = value?.reduce(
+    (invalidAttachments: string[], att) => {
+      const errorMessage = validateAttachment(att)
+      if (errorMessage) {
+        invalidAttachments.push(errorMessage)
+      }
+      return invalidAttachments
+    },
+    [],
+  )
+  if (invalidAttachmentErrors?.length) {
+    return `${invalidAttachmentErrors.join(', ')} could not be uploaded.`
+  }
+}
+validate.validators.attachment = validateAttachment
+validate.validators.attachments = function (
+  value:
+    | FormElementBinaryStorageValue[]
+    | FormElementComplianceValue
+    | undefined,
+) {
+  if (Array.isArray(value)) {
+    return validateAttachments(value)
+  }
+  return validateAttachments(
+    value?.files as FormElementBinaryStorageValue[] | undefined,
+  )
+  return
 }
 
 // Extend validator for lookups
@@ -302,7 +333,19 @@ const generateSchemaReducer = (
         }
         break
       }
-      case 'compliance':
+      case 'compliance': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Required'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+          attachments:
+            formElement.storageType === 'private' ||
+            formElement.storageType === 'public',
+        }
+        break
+      }
       case 'geoscapeAddress':
       case 'pointAddress':
       case 'autocomplete':
@@ -489,6 +532,9 @@ const generateSchemaReducer = (
               formElement.restrictedFileTypes || []
             ).join(', ')}`,
           },
+          attachments:
+            formElement.storageType === 'private' ||
+            formElement.storageType === 'public',
         }
         break
       }
