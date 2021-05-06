@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService, Sentry, submissionService } from '@oneblink/apps'
+import { Sentry, submissionService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
@@ -24,7 +24,9 @@ export default function useAttachment(
   const form = useFormDefinition()
   const isOffline = useIsOffline()
   const isMounted = useIsMounted()
-  const { isLoggedIn } = useAuth()
+  const { isLoggedIn, isUsingFormsKey } = useAuth()
+
+  const isAuthenticated = isLoggedIn || isUsingFormsKey
 
   const [imageUrlState, setImageUrlState] = React.useState<{
     imageUrl?: string | null
@@ -143,8 +145,17 @@ export default function useAttachment(
       return
     }
 
+    // If user is not logged in, we can't download private images.
+    // Luckily, the imageUrl should already be set as the blob
+    // url from when they uploaded it.
+    if (!isAuthenticated) {
+      setImageUrlState((currentState) => ({
+        imageUrl: currentState.imageUrl || null,
+      }))
+      return
+    }
+
     const privateImageUrl = value.url
-    let imageUrl: string | undefined = undefined
 
     const effect = async () => {
       try {
@@ -155,29 +166,24 @@ export default function useAttachment(
           return
         }
 
-        const idToken = await authService.getIdToken()
-        // If there is no token to pass to get private image
-        // we can finish here as the user will not be able to
-        // to get the image until they have logged in. Luckily,
-        // the imageUrl should already be set as the blob url
-        // from when they uploaded it.
-        if (!idToken) {
-          setImageUrlState((currentState) => ({
-            imageUrl: currentState.imageUrl || null,
-          }))
-          return
-        }
         const blob = await urlToBlobAsync(privateImageUrl, true)
 
         if (!isMounted.current) {
           return
         }
 
-        imageUrl = URL.createObjectURL(blob)
-        console.log('Created object url from blob for image', imageUrl)
+        const imageUrl = URL.createObjectURL(blob)
+        console.log(
+          'Created object url from private attachment for image',
+          imageUrl,
+        )
         setImageUrlState({
           imageUrl,
         })
+
+        return () => {
+          URL.revokeObjectURL(imageUrl)
+        }
       } catch (loadImageUrlError) {
         console.log('Error loading file:', loadImageUrlError)
         if (isMounted.current) {
@@ -186,13 +192,7 @@ export default function useAttachment(
       }
     }
     effect()
-
-    return () => {
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl)
-      }
-    }
-  }, [isMounted, isOffline, value])
+  }, [isAuthenticated, isMounted, isOffline, value])
 
   const isUploading = React.useMemo(() => {
     return !!(
@@ -216,12 +216,12 @@ export default function useAttachment(
 
   const canDownload = React.useMemo(() => {
     const isDownloadableAttachment = (attachment: Attachment) =>
-      !attachment.isPrivate || isLoggedIn
+      !attachment.isPrivate || isAuthenticated
 
     return (
       !!value && (typeof value === 'string' || isDownloadableAttachment(value))
     )
-  }, [isLoggedIn, value])
+  }, [isAuthenticated, value])
 
   return {
     isUploading,
