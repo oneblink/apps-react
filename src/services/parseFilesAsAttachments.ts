@@ -1,5 +1,36 @@
 import { Sentry } from '@oneblink/apps'
 import loadImage from 'blueimp-load-image'
+import { AttachmentNew } from '../types/attachments'
+
+async function correctFileOrientationAsCanvas(
+  file: File | Blob,
+): Promise<HTMLCanvasElement> {
+  // @ts-expect-error For some reason, the types do not include this function returning a promise
+  const imageMetaData: loadImage.MetaData = await loadImage.parseMetaData(file)
+
+  console.log(
+    'Loading image onto canvas to correct orientation using image meta data',
+    imageMetaData,
+  )
+  const orientation = imageMetaData.exif?.get('Orientation')
+  const loadImageResult = await loadImage(file, {
+    canvas: true,
+    orientation: typeof orientation === 'number' ? orientation : 0,
+  })
+  // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
+  const canvas: HTMLCanvasElement = loadImageResult.image
+  return canvas
+}
+
+async function convertCanvasToBlob(canvas: HTMLCanvasElement) {
+  const blob: Blob = await new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob)
+      reject(new Error('Failed to convert canvas back to blob.'))
+    })
+  })
+  return blob
+}
 
 export async function parseFilesAsAttachmentsLegacy(
   files: File[],
@@ -19,23 +50,8 @@ export async function parseFilesAsAttachmentsLegacy(
         // and someone else has already solved with this nice library.
         console.log('Attempting to parse File as image attachment', file)
 
-        // @ts-expect-error For some reason, the types do not include this function returning a promise
-        const imageMetaData: loadImage.MetaData = await loadImage.parseMetaData(
-          file,
-        )
+        const canvas = await correctFileOrientationAsCanvas(file)
 
-        console.log(
-          'Loading image onto canvas to correct orientation using image meta data',
-          imageMetaData,
-        )
-        const orientation = imageMetaData.exif?.get('Orientation')
-        const loadImageResult = await loadImage(file, {
-          canvas: true,
-          orientation: typeof orientation === 'number' ? orientation : 0,
-        })
-
-        // @ts-expect-error this it always be a HTMLCanvasElement because we passed `canvas: true` above
-        const canvas: HTMLCanvasElement = loadImageResult.image
         if (onAnnotateCanvas) {
           onAnnotateCanvas(file, canvas)
         }
@@ -77,6 +93,18 @@ export async function parseFilesAsAttachmentsLegacy(
   return attachments
 }
 
-export default function parseFilesAsAttachments() {
-  // TODO: Rotate blob files for new stoarge types
+export async function correctNewAttachmentOrientation(
+  attachment: AttachmentNew,
+): Promise<AttachmentNew> {
+  try {
+    const canvas = await correctFileOrientationAsCanvas(attachment.data)
+    const blob = await convertCanvasToBlob(canvas)
+    return {
+      ...attachment,
+      data: blob,
+    }
+  } catch (err) {
+    console.warn('Failed to rotate the orientation of a file:', err)
+    return attachment
+  }
 }

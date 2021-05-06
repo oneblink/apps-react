@@ -1,13 +1,16 @@
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-import { prepareNewAttachment } from '../../services/attachments'
+import {
+  prepareNewAttachment,
+  checkIfContentTypeIsImage,
+} from '../../services/attachments'
 import {
   Attachment,
   AttachmentError,
   AttachmentNew,
   AttachmentValid,
 } from '../../types/attachments'
-
+import { correctNewAttachmentOrientation } from '../../services/parseFilesAsAttachments'
 type State = {
   validAttachments: AttachmentValid[]
   errorAttachments: AttachmentError[]
@@ -38,12 +41,23 @@ const useAttachments = (
   }, [allAttachments])
 
   const addAttachments = React.useCallback(
-    (files: File[]): void => {
+    async (files: File[]): Promise<void> => {
       if (!files.length) return
-      // TODO: Rotate orientation of sideways camera images
-      const newAttachments: AttachmentNew[] = files.map((file) => {
-        return prepareNewAttachment(file, file.name, element)
-      })
+      const newAttachments: AttachmentNew[] = await Promise.all(
+        files.map(async (file) => {
+          const preparedAttachment = prepareNewAttachment(
+            file,
+            file.name,
+            element,
+          )
+          const isImage = checkIfContentTypeIsImage(file.type)
+          if (!isImage) return preparedAttachment
+          const attachment = await correctNewAttachmentOrientation(
+            preparedAttachment,
+          )
+          return attachment
+        }),
+      )
 
       onChange(element, (currentAttachments) => {
         if (!currentAttachments) return newAttachments
