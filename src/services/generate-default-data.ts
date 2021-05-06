@@ -1,12 +1,83 @@
 import { FormTypes } from '@oneblink/types'
+import { prepareNewAttachment } from './attachments'
+import { dataUriToBlobSync } from './blob-utils'
+
+function parseFiles(
+  element: FormTypes.FormElementBinaryStorage,
+  files: unknown,
+): unknown[] | undefined {
+  if (Array.isArray(files)) {
+    return files?.map((file) => {
+      if (
+        file &&
+        typeof file === 'object' &&
+        typeof file.fileName === 'string' &&
+        typeof file.data === 'string'
+      ) {
+        const blob = dataUriToBlobSync(file.data)
+        return prepareNewAttachment(blob, file.fileName, element)
+      }
+      return file
+    })
+  }
+}
+
+function parsePreFillData(
+  element: FormTypes.FormElement,
+  value: unknown,
+): unknown | undefined {
+  switch (element.type) {
+    // If a form element is pre-filled and the storage type is not "legacy"
+    // but the pre-fill data is in the format for the “legacy” storage type
+    // (base64), the data should be uploaded to S3 and set in the submission
+    // data. The base64 data should not be uploaded with the submission.
+    // This is to cater for instances of pre-fill data being created before
+    // a form element is updated to “public” or “private”.
+    case 'camera':
+    case 'draw': {
+      if (
+        (element.storageType === 'private' ||
+          element.storageType === 'public') &&
+        typeof value === 'string'
+      ) {
+        const blob = dataUriToBlobSync(value)
+        return prepareNewAttachment(blob, 'file', element)
+      }
+      break
+    }
+    case 'files': {
+      if (
+        element.storageType === 'private' ||
+        element.storageType === 'public'
+      ) {
+        return parseFiles(element, value)
+      }
+      break
+    }
+    case 'compliance': {
+      if (
+        (element.storageType === 'private' ||
+          element.storageType === 'public') &&
+        value &&
+        typeof value === 'object'
+      ) {
+        const files = (value as Record<string, unknown>)?.files
+        return parseFiles(element, files)
+      }
+      break
+    }
+  }
+
+  return value
+}
 
 export default function generateDefaultData(
   elements: FormTypes.FormElement[],
   preFillData: FormElementsCtrl['model'],
-): { [property: string]: unknown } {
+): FormElementsCtrl['model'] {
   return elements.reduce((m, el: FormTypes.FormElement) => {
-    if (el.type !== 'page' && preFillData[el.name]) {
-      m[el.name] = preFillData[el.name]
+    if (el.type !== 'page' && preFillData[el.name] !== undefined) {
+      m[el.name] = parsePreFillData(el, preFillData[el.name])
       return m
     }
 

@@ -16,6 +16,7 @@ import useIsOffline from '../hooks/useIsOffline'
 import Modal from '../components/Modal'
 import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
+import { urlToBlobAsync } from '../services/blob-utils'
 
 type Props = {
   id: string
@@ -47,16 +48,15 @@ function FormElementCamera({
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const setBase64DataUri = React.useCallback(
-    async (dataUri) => {
+    async (dataUri: string, fileName: string) => {
       if (!element.storageType || element.storageType === 'legacy') {
         onChange(element, dataUri)
         return
       }
 
       // Convert base64 data uri to blob and send it on its way
-      const response = await fetch(dataUri)
-      const blob = await response.blob()
-      onChange(element, prepareNewAttachment(blob, 'photo.png', element))
+      const blob = await urlToBlobAsync(dataUri)
+      onChange(element, prepareNewAttachment(blob, fileName, element))
     },
     [element, onChange],
   )
@@ -118,9 +118,10 @@ function FormElementCamera({
           },
         )
 
-        if (attachments[0]) {
+        const attachment = attachments[0]
+        if (attachment) {
           setIsDirty()
-          await setBase64DataUri(attachments[0].data)
+          await setBase64DataUri(attachment.data, attachment.fileName)
         }
         setState({
           isLoading: false,
@@ -141,7 +142,7 @@ function FormElementCamera({
       })
       navigator.camera.getPicture(
         (base64Data: string) => {
-          setBase64DataUri(`data:image/jpeg;base64,${base64Data}`)
+          setBase64DataUri(`data:image/jpeg;base64,${base64Data}`, 'photo.jpeg')
             .then(() => {
               setState({
                 isLoading: false,
@@ -244,7 +245,7 @@ function FormElementCamera({
 
           try {
             const base64Data = canvas.toDataURL()
-            setBase64DataUri(base64Data)
+            setBase64DataUri(base64Data, 'photo.png')
               .then(() => {
                 setState({
                   isLoading: false,
