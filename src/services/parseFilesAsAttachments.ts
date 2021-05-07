@@ -126,6 +126,7 @@ export async function correctNewAttachmentOrientation(
     }
   } catch (err) {
     console.warn('Failed to rotate the orientation of a file:', err)
+    Sentry.captureException(err)
     return attachment
   }
 }
