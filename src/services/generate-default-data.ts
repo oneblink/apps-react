@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-import { prepareNewAttachment } from './attachments'
+import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 
 function parseFiles(
@@ -35,29 +35,21 @@ function parsePreFillData(
     // a form element is updated to “public” or “private”.
     case 'camera':
     case 'draw': {
-      if (
-        (element.storageType === 'private' ||
-          element.storageType === 'public') &&
-        typeof value === 'string'
-      ) {
+      if (!checkIsUsingLegacyStorage(element) && typeof value === 'string') {
         const blob = dataUriToBlobSync(value)
         return prepareNewAttachment(blob, 'file', element)
       }
       break
     }
     case 'files': {
-      if (
-        element.storageType === 'private' ||
-        element.storageType === 'public'
-      ) {
+      if (!checkIsUsingLegacyStorage(element)) {
         return parseFiles(element, value)
       }
       break
     }
     case 'compliance': {
       if (
-        (element.storageType === 'private' ||
-          element.storageType === 'public') &&
+        !checkIsUsingLegacyStorage(element) &&
         value &&
         typeof value === 'object'
       ) {

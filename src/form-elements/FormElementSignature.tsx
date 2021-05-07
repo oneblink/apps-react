@@ -7,7 +7,10 @@ import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import OnLoading from '../components/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
-import { prepareNewAttachment } from '../services/attachments'
+import {
+  checkIsUsingLegacyStorage,
+  prepareNewAttachment,
+} from '../services/attachments'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
 import { urlToBlobAsync } from '../services/blob-utils'
@@ -98,7 +101,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
     if (!canvasRef.current) return
     const value = canvasRef.current.getTrimmedCanvas().toDataURL()
 
-    if (!element.storageType || element.storageType === 'legacy') {
+    if (checkIsUsingLegacyStorage(element)) {
       onChange(element, value)
       return
     }

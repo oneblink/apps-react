@@ -6,16 +6,23 @@ import downloadAttachment, {
 } from '../services/download-file'
 import OnLoading from '../components/OnLoading'
 import { FormTypes } from '@oneblink/types'
-import { localisationService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import { parseFilesAsAttachmentsLegacy } from '../services/parseFilesAsAttachments'
+import drawTimestampOnCanvas from '../services/drawTimestampOnCanvas'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
 import AnnotationModal from '../components/AnnotationModal'
 import Modal from '../components/Modal'
-import { prepareNewAttachment } from '../services/attachments'
+import {
+  checkIsUsingLegacyStorage,
+  prepareNewAttachment,
+  correctFileOrientation,
+} from '../services/attachments'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
-import { urlToBlobAsync } from '../services/blob-utils'
+import {
+  blobToCanvas,
+  canvasToBlob,
+  urlToBlobAsync,
+} from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
 
 type Props = {
@@ -49,7 +56,7 @@ function FormElementCamera({
 
   const setBase64DataUri = React.useCallback(
     async (dataUri: string, fileName: string) => {
-      if (!element.storageType || element.storageType === 'legacy') {
+      if (checkIsUsingLegacyStorage(element)) {
         onChange(element, dataUri)
         return
       }
@@ -67,11 +74,12 @@ function FormElementCamera({
 
   const fileChange = React.useCallback(
     async (changeEvent) => {
-      if (
-        !changeEvent.target ||
-        !changeEvent.target.files ||
-        !changeEvent.target.files.length
-      ) {
+      if (!changeEvent.target || !changeEvent.target.files) {
+        return
+      }
+
+      const file = changeEvent.target.files[0]
+      if (!file) {
         return
       }
 
@@ -79,50 +87,31 @@ function FormElementCamera({
         isLoading: true,
       })
 
-      console.log('File selected event', changeEvent)
+      console.log('File selected event', file)
       try {
-        const attachments = await parseFilesAsAttachmentsLegacy(
-          changeEvent.target.files,
-          (file: File, canvas: HTMLCanvasElement) => {
-            if (!element.includeTimestampWatermark) {
-              return
-            }
-
-            const context = canvas.getContext('2d')
-            if (context) {
-              const now = localisationService.formatDatetime(
-                new Date(file.lastModified),
-              )
-              const textHeight = 20
-              context.font = `${textHeight}px Arial`
-              const { width: textWidth } = context.measureText(now)
-              const backgroundMargin = 10
-              const backgroundPadding = backgroundMargin
-              const backgroundWidth = backgroundPadding * 2 + textWidth
-              const backgroundHeight = backgroundPadding * 2 + textHeight
-              context.fillStyle = 'rgba(20, 20, 20, 0.6)'
-              context.fillRect(
-                canvas.width - backgroundWidth - backgroundMargin,
-                canvas.height - backgroundHeight - backgroundMargin,
-                backgroundWidth,
-                backgroundHeight,
-              )
-
-              context.fillStyle = '#FFF'
-              context.fillText(
-                now,
-                canvas.width - textWidth - backgroundPadding - backgroundMargin,
-                canvas.height - 22,
-              )
-            }
-          },
+        const result = await correctFileOrientation(
+          file,
+          element.includeTimestampWatermark ? drawTimestampOnCanvas : undefined,
         )
 
-        const attachment = attachments[0]
-        if (attachment) {
-          setIsDirty()
-          await setBase64DataUri(attachment.data, attachment.fileName)
+        const isUsingLegacyStorage = checkIsUsingLegacyStorage(element)
+        if (result instanceof Blob) {
+          if (isUsingLegacyStorage) {
+            const canvas = await blobToCanvas(result)
+            onChange(element, canvas.toDataURL())
+          } else {
+            onChange(element, prepareNewAttachment(result, file.name, element))
+          }
+        } else {
+          if (isUsingLegacyStorage) {
+            onChange(element, result.toDataURL())
+          } else {
+            const blob = await canvasToBlob(result)
+            onChange(element, prepareNewAttachment(blob, file.name, element))
+          }
         }
+
+        setIsDirty()
         setState({
           isLoading: false,
         })
@@ -133,7 +122,7 @@ function FormElementCamera({
         })
       }
     },
-    [element.includeTimestampWatermark, setBase64DataUri, setIsDirty],
+    [element, onChange, setIsDirty],
   )
   const openCamera = React.useCallback(() => {
     if (window.cordova && navigator.camera && navigator.camera.getPicture) {
