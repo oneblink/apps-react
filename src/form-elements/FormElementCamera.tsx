@@ -12,11 +12,11 @@ import { parseFilesAsAttachmentsLegacy } from '../services/parseFilesAsAttachmen
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
 import AnnotationModal from '../components/AnnotationModal'
-import useIsOffline from '../hooks/useIsOffline'
 import Modal from '../components/Modal'
 import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
 import { urlToBlobAsync } from '../services/blob-utils'
+import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
 
 type Props = {
   id: string
@@ -409,8 +409,6 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoading: boolean
   onAnnotate: () => void
 }) {
-  const isOffline = useIsOffline()
-
   if (uploadErrorMessage) {
     return (
       <div className="figure-content">
@@ -468,9 +466,9 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (isOffline) {
-    return <p>Preview cannot be loaded while offline</p>
-  }
-
-  return <p>Preview could not be loaded</p>
+  return (
+    <div className="figure-content">
+      <ImagePreviewUnavailable />
+    </div>
+  )
 })
