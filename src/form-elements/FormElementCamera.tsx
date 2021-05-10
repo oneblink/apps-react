@@ -255,6 +255,7 @@ function FormElementCamera({
         }
         annotationImage.src = annotationDataUri
       }
+      image.setAttribute('crossorigin', 'anonymous')
       image.src = imageUrl
     },
     [clearIsAnnotating, imageUrl, setBase64DataUri],
@@ -440,7 +441,11 @@ const DisplayImage = React.memo(function DisplayImage({
             imageUrl={imageUrl}
           />
         </span>
-        <img src={imageUrl} className="cypress-camera-image ob-camera__img" />
+        <img
+          src={imageUrl}
+          className="cypress-camera-image ob-camera__img"
+          crossOrigin="anonymous"
+        />
         <button
           type="button"
           className="button is-primary ob-camera__annotate-button cypress-annotate-button"
