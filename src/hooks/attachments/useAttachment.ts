@@ -48,6 +48,7 @@ export default function useAttachment(
     const newAttachment = value as AttachmentNew
 
     let ignore = false
+    const abortController = new AbortController()
 
     const effect = async () => {
       try {
@@ -55,15 +56,16 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = await submissionService.uploadAttachment({
-          formId,
-          file: {
-            name: newAttachment.fileName,
-            type: newAttachment.data.type,
+        const upload = await submissionService.uploadAttachment(
+          {
+            formId,
+            fileName: newAttachment.fileName,
+            contentType: newAttachment.data.type,
             data: newAttachment.data,
             isPrivate,
           },
-        })
+          abortController.signal,
+        )
         if (ignore) {
           return
         }
@@ -94,6 +96,7 @@ export default function useAttachment(
 
     return () => {
       ignore = true
+      abortController.abort()
     }
   }, [form?.id, isOffline, isPrivate, onChange, value])
 
