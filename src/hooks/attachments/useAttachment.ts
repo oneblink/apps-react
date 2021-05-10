@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Sentry, submissionService } from '@oneblink/apps'
+import { submissionService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
@@ -8,7 +8,6 @@ import {
   AttachmentNew,
   FormElementBinaryStorageValue,
 } from '../../types/attachments'
-import useIsMounted from '../useIsMounted'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
@@ -23,7 +22,6 @@ export default function useAttachment(
   const isPrivate = element.storageType === 'private'
   const form = useFormDefinition()
   const isOffline = useIsOffline()
-  const isMounted = useIsMounted()
   const { isLoggedIn, isUsingFormsKey } = useAuth()
 
   const isAuthenticated = isLoggedIn || isUsingFormsKey
@@ -33,67 +31,74 @@ export default function useAttachment(
     loadImageUrlError?: Error
   }>({})
 
-  const uploadAttachment = React.useCallback(
-    async (formId: number, newAttachment: AttachmentNew) => {
+  // TRIGGER UPLOAD
+  React.useEffect(() => {
+    const formId = form?.id
+
+    if (
+      isOffline ||
+      !formId ||
+      !value ||
+      typeof value !== 'object' ||
+      value.type !== 'NEW'
+    ) {
+      return
+    }
+
+    const newAttachment = value as AttachmentNew
+
+    let ignore = false
+    const abortController = new AbortController()
+
+    const effect = async () => {
       try {
         console.log(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-
-        // UPDATE TO SAVING
-        onChange(newAttachment._id, {
-          ...newAttachment,
-          type: 'SAVING',
-        })
-
-        const upload = await submissionService.uploadAttachment({
-          formId,
-          file: {
-            name: newAttachment.fileName,
-            type: newAttachment.data.type,
+        const upload = await submissionService.uploadAttachment(
+          {
+            formId,
+            fileName: newAttachment.fileName,
+            contentType: newAttachment.data.type,
             data: newAttachment.data,
             isPrivate,
           },
-        })
+          abortController.signal,
+        )
+        if (ignore) {
+          return
+        }
+
         console.log('Successfully Uploaded attachment!', upload)
 
         // UPDATE ATTACHMENT
         onChange(newAttachment._id, upload)
       } catch (error) {
+        if (ignore) {
+          return
+        }
+
         console.warn(
           'Failed to upload attachment...',
           newAttachment.fileName,
           error,
         )
-        Sentry.captureException(error)
         onChange(newAttachment._id, {
           ...newAttachment,
           type: 'ERROR',
           errorMessage: error.message,
         })
       }
-    },
-    [isPrivate, onChange],
-  )
-
-  // TRIGGER UPLOAD
-  React.useEffect(() => {
-    if (isOffline) {
-      return
     }
 
-    const formId = form?.id
-    if (!formId) {
-      return
-    }
+    effect()
 
-    if (!value || typeof value !== 'object' || value.type !== 'NEW') {
-      return
+    return () => {
+      ignore = true
+      abortController.abort()
     }
-
-    uploadAttachment(formId, value as AttachmentNew)
-  }, [form?.id, isOffline, uploadAttachment, value])
+  }, [form?.id, isOffline, isPrivate, onChange, value])
 
   // TRIGGER DOWNLOAD
   React.useEffect(() => {
@@ -144,28 +149,26 @@ export default function useAttachment(
 
     // If user is not logged in, we can't download private images.
     // Luckily, the imageUrl should already be set as the blob
-    // url from when they uploaded it.
-    if (!isAuthenticated) {
+    // url from when they uploaded it. Same applies if they are offline.
+    if (!isAuthenticated || isOffline) {
       setImageUrlState((currentState) => ({
         imageUrl: currentState.imageUrl || null,
       }))
       return
     }
 
+    let ignore = false
+    const abortController = new AbortController()
     const privateImageUrl = value.url
 
     const effect = async () => {
       try {
-        if (isOffline) {
-          setImageUrlState((currentState) => ({
-            imageUrl: currentState.imageUrl || null,
-          }))
-          return
-        }
-
-        const blob = await urlToBlobAsync(privateImageUrl, true)
-
-        if (!isMounted.current) {
+        const blob = await urlToBlobAsync(
+          privateImageUrl,
+          true,
+          abortController.signal,
+        )
+        if (ignore) {
           return
         }
 
@@ -177,15 +180,23 @@ export default function useAttachment(
         setImageUrlState({
           imageUrl,
         })
-      } catch (loadImageUrlError) {
-        console.log('Error loading file:', loadImageUrlError)
-        if (isMounted.current) {
-          setImageUrlState({ loadImageUrlError })
+      } catch (error) {
+        if (ignore) {
+          return
         }
+        console.warn('Error loading file:', error)
+        setImageUrlState({
+          loadImageUrlError: error,
+        })
       }
     }
     effect()
-  }, [isAuthenticated, isMounted, isOffline, value])
+
+    return () => {
+      ignore = true
+      abortController.abort()
+    }
+  }, [isAuthenticated, isOffline, value])
 
   React.useEffect(() => {
     return () => {
@@ -202,7 +213,7 @@ export default function useAttachment(
       value &&
       typeof value !== 'string' &&
       value.type &&
-      (value.type === 'SAVING' || value.type === 'NEW')
+      value.type === 'NEW'
     )
   }, [value])
 

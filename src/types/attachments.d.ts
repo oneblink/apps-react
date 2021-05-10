@@ -6,20 +6,17 @@ export type AttachmentSaved = UnwrapPromise<
   type?: undefined
 }
 
-interface AttachmentSavingBase {
+interface AttachmentBase {
   _id: string
   data: Blob
   fileName: string
   isPrivate: boolean
 }
 
-export type AttachmentNew = AttachmentSavingBase & {
+export type AttachmentNew = AttachmentBase & {
   type: 'NEW'
 }
-type AttachmentSaving = AttachmentSavingBase & {
-  type: 'SAVING'
-}
-export type AttachmentError = AttachmentSavingBase & {
+export type AttachmentError = AttachmentBase & {
   type: 'ERROR'
   errorMessage: string
 }
