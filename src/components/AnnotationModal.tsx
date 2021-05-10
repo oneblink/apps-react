@@ -61,7 +61,6 @@ function AnnotationModal({
     const annotationContentElement = annotationContentElementRef.current
     const bmSignaturePadElement = bmSignaturePadRef.current
     const signatureCanvas = signatureCanvasRef.current
-
     if (
       !annotationContentElement ||
       !bmSignaturePadElement ||
