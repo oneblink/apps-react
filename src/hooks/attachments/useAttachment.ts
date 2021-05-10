@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Sentry, submissionService } from '@oneblink/apps'
+import { submissionService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
@@ -82,7 +82,6 @@ export default function useAttachment(
           newAttachment.fileName,
           error,
         )
-        Sentry.captureException(error)
         onChange(newAttachment._id, {
           ...newAttachment,
           type: 'ERROR',
@@ -179,11 +178,10 @@ export default function useAttachment(
           imageUrl,
         })
       } catch (error) {
-        // Cancelling will throw an error.
-        if (ignore || error.name === 'AbortError') {
+        if (ignore) {
           return
         }
-        console.log('Error loading file:', error)
+        console.warn('Error loading file:', error)
         setImageUrlState({
           loadImageUrlError: error,
         })
