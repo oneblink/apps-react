@@ -11,7 +11,7 @@ type AuthContextValue = {
 const AuthContext = React.createContext<AuthContextValue>({
   isLoggedIn: false,
   userProfile: null,
-  userFriendlyName: null,
+  userFriendlyName: undefined,
   isUsingFormsKey: false,
 })
 
