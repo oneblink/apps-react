@@ -31,14 +31,18 @@ export function dataUriToBlobSync(dataUri: string) {
 
 async function generateRequestInit(
   isPrivate?: boolean,
+  abortSignal?: AbortSignal,
 ): Promise<RequestInit | undefined> {
   if (!isPrivate) {
-    return
+    return {
+      signal: abortSignal,
+    }
   }
 
   const idToken = await authService.getIdToken()
   if (idToken) {
     return {
+      signal: abortSignal,
       headers: {
         Authorization: `Bearer ${idToken}`,
       },
@@ -46,8 +50,12 @@ async function generateRequestInit(
   }
 }
 
-export async function urlToBlobAsync(url: string, isPrivate?: boolean) {
-  const requestInit = await generateRequestInit(isPrivate)
+export async function urlToBlobAsync(
+  url: string,
+  isPrivate?: boolean,
+  abortSignal?: AbortSignal,
+) {
+  const requestInit = await generateRequestInit(isPrivate, abortSignal)
   const response = await fetch(url, requestInit)
   if (!response.ok) {
     throw new Error(
