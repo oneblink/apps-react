@@ -73,7 +73,10 @@ function FormElementRepeatableSet({
           if (i === index) {
             return {
               ...entry,
-              [nestedElement.name]: value,
+              [nestedElement.name]:
+                typeof value === 'function'
+                  ? value(entry[nestedElement.name])
+                  : value,
             }
           } else {
             return entry

@@ -34,7 +34,12 @@ function FormElementForm({
       if (nestedElement.type === 'page') return
       onChange(element, (existingValue) => ({
         ...existingValue,
-        [nestedElement.name]: nestedElementValue,
+        [nestedElement.name]:
+          typeof nestedElementValue === 'function'
+            ? nestedElementValue(
+                existingValue ? existingValue[nestedElement.name] : undefined,
+              )
+            : nestedElementValue,
       }))
     },
     [onChange, element],
