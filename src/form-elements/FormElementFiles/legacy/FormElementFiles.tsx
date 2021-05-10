@@ -7,8 +7,10 @@ import useIsMounted from '../../../hooks/useIsMounted'
 import { downloadFileLegacy } from '../../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../../components/FormElementLabelContainer'
-import { parseFilesAsAttachmentsLegacy } from '../../../services/parseFilesAsAttachments'
-import { checkIfContentTypeIsImage } from '../../../services/attachments'
+import {
+  checkIfContentTypeIsImage,
+  parseFilesAsAttachmentsLegacy,
+} from '../../../services/attachments'
 
 export type FilesElementFile = {
   data: string

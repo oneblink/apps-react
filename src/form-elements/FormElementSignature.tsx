@@ -7,11 +7,14 @@ import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import OnLoading from '../components/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
-import { prepareNewAttachment } from '../services/attachments'
-import useIsOffline from '../hooks/useIsOffline'
+import {
+  checkIsUsingLegacyStorage,
+  prepareNewAttachment,
+} from '../services/attachments'
 import AttachmentStatus from '../components/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
 import { urlToBlobAsync } from '../services/blob-utils'
+import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
 
 type Props = {
   id: string
@@ -98,7 +101,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
     if (!canvasRef.current) return
     const value = canvasRef.current.getTrimmedCanvas().toDataURL()
 
-    if (!element.storageType || element.storageType === 'legacy') {
+    if (checkIsUsingLegacyStorage(element)) {
       onChange(element, value)
       return
     }
@@ -242,8 +245,6 @@ const DisplayImage = React.memo(function DisplayImage({
   loadImageUrlError,
   canDownload,
 }: ReturnType<typeof useAttachment>) {
-  const isOffline = useIsOffline()
-
   if (uploadErrorMessage) {
     return (
       <>
@@ -263,6 +264,10 @@ const DisplayImage = React.memo(function DisplayImage({
         <p>{loadImageUrlError.message}</p>
       </>
     )
+  }
+
+  if (isLoadingImageUrl) {
+    return <OnLoading small className="cypress-signature-loading-image" />
   }
 
   if (imageUrl) {
@@ -286,13 +291,5 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (isLoadingImageUrl) {
-    return <OnLoading small className="cypress-signature-loading-image" />
-  }
-
-  if (isOffline) {
-    return <p>Preview cannot be loaded while offline</p>
-  }
-
-  return <p>Preview could not be loaded</p>
+  return <ImagePreviewUnavailable />
 })

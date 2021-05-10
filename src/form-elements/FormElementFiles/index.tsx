@@ -5,6 +5,7 @@ import FormElementFilesLegacy, {
 } from './legacy/FormElementFiles'
 import FormElementFiles from './FormElementFiles'
 import { Attachment } from '../../types/attachments'
+import { checkIsUsingLegacyStorage } from '../../services/attachments'
 export type PossibleFileConfiguration = Attachment | FilesElementFile
 interface Props {
   id: string
@@ -16,7 +17,7 @@ interface Props {
 }
 
 const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
-  if (!props.element.storageType || props.element.storageType === 'legacy') {
+  if (checkIsUsingLegacyStorage(props.element)) {
     return (
       <FormElementFilesLegacy
         value={value as FilesElementFile[] | undefined}

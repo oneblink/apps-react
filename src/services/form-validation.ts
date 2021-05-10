@@ -4,6 +4,7 @@ import { FormTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
+import { checkIsUsingLegacyStorage } from './attachments'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -305,18 +306,14 @@ const generateSchemaReducer = (
       }
       case 'draw': {
         partialSchema[escapeElementName(formElement.name)] = {
-          attachment:
-            formElement.storageType === 'private' ||
-            formElement.storageType === 'public',
+          attachment: !checkIsUsingLegacyStorage(formElement),
           presence: presence(formElement.required, 'A signature is required'),
         }
         break
       }
       case 'camera': {
         partialSchema[escapeElementName(formElement.name)] = {
-          attachment:
-            formElement.storageType === 'private' ||
-            formElement.storageType === 'public',
+          attachment: !checkIsUsingLegacyStorage(formElement),
           presence: presence(formElement.required, 'A photo is required'),
         }
         break
@@ -344,9 +341,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          attachments:
-            formElement.storageType === 'private' ||
-            formElement.storageType === 'public',
+          attachments: !checkIsUsingLegacyStorage(formElement),
         }
         break
       }
@@ -536,9 +531,7 @@ const generateSchemaReducer = (
               formElement.restrictedFileTypes || []
             ).join(', ')}`,
           },
-          attachments:
-            formElement.storageType === 'private' ||
-            formElement.storageType === 'public',
+          attachments: !checkIsUsingLegacyStorage(formElement),
         }
         break
       }

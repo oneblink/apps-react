@@ -1,6 +1,7 @@
 import { FormTypes } from '@oneblink/types'
 import { Attachment } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
+import { checkIsUsingLegacyStorage } from './attachments'
 
 function checkIfAttachmentsAreUploadingForFormElements(
   formElements: FormTypes.FormElement[],
@@ -43,7 +44,7 @@ function checkIfAttachmentsAreUploadingForFormElements(
       case 'draw':
       case 'compliance':
       case 'files': {
-        if (!formElement.storageType || formElement.storageType === 'legacy') {
+        if (checkIsUsingLegacyStorage(formElement)) {
           break
         }
 

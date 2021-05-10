@@ -2,7 +2,7 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 import {
   prepareNewAttachment,
-  checkIfContentTypeIsImage,
+  correctFileOrientation,
 } from '../../services/attachments'
 import {
   Attachment,
@@ -10,7 +10,7 @@ import {
   AttachmentNew,
   AttachmentValid,
 } from '../../types/attachments'
-import { correctNewAttachmentOrientation } from '../../services/parseFilesAsAttachments'
+import { canvasToBlob } from '../../services/blob-utils'
 type State = {
   validAttachments: AttachmentValid[]
   errorAttachments: AttachmentError[]
@@ -45,17 +45,13 @@ const useAttachments = (
       if (!files.length) return
       const newAttachments: AttachmentNew[] = await Promise.all(
         files.map(async (file) => {
-          const preparedAttachment = prepareNewAttachment(
-            file,
-            file.name,
-            element,
-          )
-          const isImage = checkIfContentTypeIsImage(file.type)
-          if (!isImage) return preparedAttachment
-          const attachment = await correctNewAttachmentOrientation(
-            preparedAttachment,
-          )
-          return attachment
+          const result = await correctFileOrientation(file)
+          if (result instanceof Blob) {
+            return prepareNewAttachment(result, file.name, element)
+          }
+
+          const blob = await canvasToBlob(result)
+          return prepareNewAttachment(blob, file.name, element)
         }),
       )
 
