@@ -33,16 +33,15 @@ export default function useAttachment(
 
   // TRIGGER UPLOAD
   React.useEffect(() => {
-    if (isOffline) {
-      return
-    }
-
     const formId = form?.id
-    if (!formId) {
-      return
-    }
 
-    if (!value || typeof value !== 'object' || value.type !== 'NEW') {
+    if (
+      isOffline ||
+      !formId ||
+      !value ||
+      typeof value !== 'object' ||
+      value.type !== 'NEW'
+    ) {
       return
     }
 
