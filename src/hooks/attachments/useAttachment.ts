@@ -123,10 +123,7 @@ export default function useAttachment(
       setImageUrlState({
         imageUrl,
       })
-
-      return () => {
-        URL.revokeObjectURL(imageUrl)
-      }
+      return
     }
 
     if (!checkIfContentTypeIsImage(value.contentType)) {
@@ -180,10 +177,6 @@ export default function useAttachment(
         setImageUrlState({
           imageUrl,
         })
-
-        return () => {
-          URL.revokeObjectURL(imageUrl)
-        }
       } catch (loadImageUrlError) {
         console.log('Error loading file:', loadImageUrlError)
         if (isMounted.current) {
@@ -193,6 +186,16 @@ export default function useAttachment(
     }
     effect()
   }, [isAuthenticated, isMounted, isOffline, value])
+
+  React.useEffect(() => {
+    return () => {
+      const imageUrl = imageUrlState.imageUrl
+      if (imageUrl && imageUrl.startsWith('blob:')) {
+        console.log('revoking image url:', imageUrl)
+        URL.revokeObjectURL(imageUrl)
+      }
+    }
+  }, [imageUrlState.imageUrl])
 
   const isUploading = React.useMemo(() => {
     return !!(
