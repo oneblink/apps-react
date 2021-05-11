@@ -431,16 +431,18 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        <span className="ob-figure__status">
-          <AttachmentStatus
-            canDownload={canDownload}
-            isLoadingImageUrl={isLoadingImageUrl}
-            loadImageUrlError={loadImageUrlError}
-            isUploading={isUploading}
-            uploadErrorMessage={uploadErrorMessage}
-            imageUrl={imageUrl}
-          />
-        </span>
+        {!checkIsUsingLegacyStorage(element) && (
+          <span className="ob-figure__status">
+            <AttachmentStatus
+              canDownload={canDownload}
+              isLoadingImageUrl={isLoadingImageUrl}
+              loadImageUrlError={loadImageUrlError}
+              isUploading={isUploading}
+              uploadErrorMessage={uploadErrorMessage}
+              imageUrl={imageUrl}
+            />
+          </span>
+        )}
         <img
           src={imageUrl}
           className="cypress-camera-image ob-camera__img"

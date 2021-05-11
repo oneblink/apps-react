@@ -219,7 +219,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     <>
       <figure className="ob-figure">
         <div className="figure-content">
-          <DisplayImage {...result} />
+          <DisplayImage element={element} {...result} />
         </div>
       </figure>
 
@@ -238,13 +238,16 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
 })
 
 const DisplayImage = React.memo(function DisplayImage({
+  element,
   uploadErrorMessage,
   isUploading,
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
   canDownload,
-}: ReturnType<typeof useAttachment>) {
+}: ReturnType<typeof useAttachment> & {
+  element: FormTypes.DrawElement
+}) {
   if (uploadErrorMessage) {
     return (
       <>
@@ -273,16 +276,18 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        <span className="ob-figure__status">
-          <AttachmentStatus
-            canDownload={canDownload}
-            isLoadingImageUrl={isLoadingImageUrl}
-            loadImageUrlError={loadImageUrlError}
-            isUploading={isUploading}
-            uploadErrorMessage={uploadErrorMessage}
-            imageUrl={imageUrl}
-          />
-        </span>
+        {!checkIsUsingLegacyStorage(element) && (
+          <span className="ob-figure__status">
+            <AttachmentStatus
+              canDownload={canDownload}
+              isLoadingImageUrl={isLoadingImageUrl}
+              loadImageUrlError={loadImageUrlError}
+              isUploading={isUploading}
+              uploadErrorMessage={uploadErrorMessage}
+              imageUrl={imageUrl}
+            />
+          </span>
+        )}
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
