@@ -6,7 +6,7 @@ import downloadAttachment from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
 import FormElementFileDisplay from './FormElementFileDisplay'
-import FormElementFileStatus from '../../components/attachments/AttachmentStatus'
+import AttachmentStatus from '../../components/attachments/AttachmentStatus'
 import { AttachmentValid } from '../../types/attachments'
 
 type Props = {
@@ -92,7 +92,7 @@ const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
 
         <div className="ob-files__file-name is-size-6">
           <span className="ob-files__file-name-inner">{file.fileName}</span>
-          <FormElementFileStatus {...attachmentResult} />
+          <AttachmentStatus {...attachmentResult} />
         </div>
       </div>
     </div>
