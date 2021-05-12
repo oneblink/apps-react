@@ -1,9 +1,10 @@
 import * as React from 'react'
-import useAttachment from '../../hooks/attachments/useAttachment'
 
-const FormElementFileDisplay = ({
+const FileCardContent = ({
   imageUrl,
-}: ReturnType<typeof useAttachment>) => {
+}: {
+  imageUrl: string | undefined | null
+}) => {
   if (imageUrl) {
     return (
       <div className="ob-files__content-image">
@@ -21,6 +22,4 @@ const FormElementFileDisplay = ({
   )
 }
 
-export default React.memo<ReturnType<typeof useAttachment>>(
-  FormElementFileDisplay,
-)
+export default React.memo(FileCardContent)

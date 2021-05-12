@@ -21,8 +21,6 @@ export type AttachmentError = AttachmentBase & {
   errorMessage: string
 }
 
-export type AttachmentValid = AttachmentSaved | AttachmentNew | AttachmentSaving
-
-export type Attachment = AttachmentValid | AttachmentError
+export type Attachment = AttachmentSaved | AttachmentNew | AttachmentError
 
 export type FormElementBinaryStorageValue = Attachment | string | undefined

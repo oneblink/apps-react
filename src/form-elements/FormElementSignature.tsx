@@ -244,7 +244,6 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
-  canDownload,
 }: ReturnType<typeof useAttachment> & {
   element: FormTypes.DrawElement
 }) {
@@ -276,18 +275,15 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        {!checkIsUsingLegacyStorage(element) && (
-          <span className="ob-figure__status">
-            <AttachmentStatus
-              canDownload={canDownload}
-              isLoadingImageUrl={isLoadingImageUrl}
-              loadImageUrlError={loadImageUrlError}
-              isUploading={isUploading}
-              uploadErrorMessage={uploadErrorMessage}
-              imageUrl={imageUrl}
-            />
-          </span>
-        )}
+        <span className="ob-figure__status">
+          <AttachmentStatus
+            element={element}
+            isLoadingImageUrl={isLoadingImageUrl}
+            loadImageUrlError={loadImageUrlError}
+            isUploading={isUploading}
+            imageUrl={imageUrl}
+          />
+        </span>
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"

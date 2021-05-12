@@ -1,101 +1,66 @@
 import * as React from 'react'
-import clsx from 'clsx'
-import useBooleanState from '../../hooks/useBooleanState'
-import useClickOutsideElement from '../../hooks/useClickOutsideElement'
 import downloadAttachment from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
-import FormElementFileDisplay from './FormElementFileDisplay'
-import AttachmentStatus from '../../components/attachments/AttachmentStatus'
-import { AttachmentValid } from '../../types/attachments'
+import FileCard from '../../components/attachments/FileCard'
+import { Attachment } from '../../types/attachments'
 
 type Props = {
   element: FormTypes.FilesElement
   onRemove: (id: string) => void
-  file: AttachmentValid
+  file: Attachment
+  disableUpload: boolean
   onChange: OnChange
 }
 
-const FormElementFile = ({ element, onRemove, file, onChange }: Props) => {
-  const dropDownRef = React.useRef(null)
-  const [isShowingMore, showMore, hideMore] = useBooleanState(false)
-  const attachmentResult = useAttachment(file, element, onChange)
-
-  useClickOutsideElement(
-    dropDownRef,
-    React.useCallback(() => {
-      if (isShowingMore) {
-        hideMore()
-      }
-    }, [hideMore, isShowingMore]),
-  )
+const FormElementFile = ({
+  element,
+  onRemove,
+  file,
+  onChange,
+  disableUpload,
+}: Props) => {
+  const attachmentResult = useAttachment(file, element, onChange, disableUpload)
 
   const handleRemove = React.useCallback(() => {
-    hideMore()
     if (!file.type) {
       return onRemove(file.id)
     }
     return onRemove(file._id)
-  }, [file, hideMore, onRemove])
+  }, [file, onRemove])
 
   const handleDownload = React.useCallback(async () => {
     await downloadAttachment(file)
   }, [file])
 
-  return (
-    <div className="column is-one-quarter">
-      <div className="ob-files__box">
-        <div className="ob-files__content">
-          <FormElementFileDisplay {...attachmentResult} />
-        </div>
-        <div
-          className={clsx('dropdown is-right ob-files__menu', {
-            'is-active': isShowingMore,
-          })}
-          ref={dropDownRef}
-        >
-          <div className="dropdown-trigger">
-            <button
-              type="button"
-              className="button ob-files__menu-button cypress-file-menu-button"
-              aria-haspopup="true"
-              aria-controls="dropdown-menu"
-              onClick={isShowingMore ? hideMore : showMore}
-            >
-              <i className="material-icons ob-files__menu-icon">more_vert</i>
-            </button>
-          </div>
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              {attachmentResult.canDownload && (
-                <a
-                  className="dropdown-item cypress-file-download-button"
-                  onClick={() => {
-                    hideMore()
-                    handleDownload()
-                  }}
-                >
-                  Download
-                </a>
-              )}
-              <a
-                className={clsx('dropdown-item cypress-file-remove-button', {
-                  'ob-files__menu-remove-hidden': element.readOnly,
-                })}
-                onClick={handleRemove}
-              >
-                Remove
-              </a>
-            </div>
-          </div>
-        </div>
+  const handleRetry = React.useMemo(() => {
+    if (file.type === 'ERROR') {
+      return () => {
+        onChange(file._id, {
+          type: 'NEW',
+          _id: file._id,
+          data: file.data,
+          fileName: file.fileName,
+          isPrivate: file.isPrivate,
+        })
+      }
+    }
+  }, [file, onChange])
 
-        <div className="ob-files__file-name is-size-6">
-          <span className="ob-files__file-name-inner">{file.fileName}</span>
-          <AttachmentStatus {...attachmentResult} />
-        </div>
-      </div>
-    </div>
+  return (
+    <FileCard
+      element={element}
+      isUploading={attachmentResult.isUploading}
+      isUploadPaused={disableUpload}
+      uploadErrorMessage={attachmentResult.uploadErrorMessage}
+      loadImageUrlError={attachmentResult.loadImageUrlError}
+      isLoadingImageUrl={attachmentResult.isLoadingImageUrl}
+      imageUrl={attachmentResult.imageUrl}
+      fileName={file.fileName}
+      onDownload={attachmentResult.canDownload ? handleDownload : undefined}
+      onRemove={handleRemove}
+      onRetry={handleRetry}
+    />
   )
 }
 

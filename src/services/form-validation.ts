@@ -478,7 +478,8 @@ const generateSchemaReducer = (
           typeof formElement.minNumber === 'number' &&
           typeof formElement.maxNumber === 'number'
         ) {
-          minErrorMessage = maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
+          minErrorMessage =
+            maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
         }
 
         partialSchema[escapeElementName(formElement.name)] = {
@@ -513,19 +514,12 @@ const generateSchemaReducer = (
           },
           type: {
             type: (files: PossibleFileConfiguration[] | undefined) => {
-              let validTypes = true
-              if (Array.isArray(files)) {
-                files.forEach((newFile) => {
-                  const extension = newFile.fileName.split('.').pop()
-                  if (formElement.restrictedFileTypes) {
-                    const restrictedTo = formElement.restrictedFileTypes
-                    validTypes = restrictedTo.some(
-                      (fileType) => fileType === extension,
-                    )
-                  }
+              return (
+                !Array.isArray(files) ||
+                files.every((file) => {
+                  return checkFileNameIsValid(formElement, file.fileName)
                 })
-              }
-              return validTypes
+              )
             },
             message: `Only the following file types are accepted: ${(
               formElement.restrictedFileTypes || []
@@ -606,4 +600,15 @@ const validateSingleMessageError = (
   }
 
   return errors
+}
+
+export function checkFileNameIsValid(
+  formElement: FormTypes.FilesElement,
+  fileName: string,
+) {
+  const extension = fileName.split('.').pop()
+  return (
+    !formElement.restrictedFileTypes ||
+    formElement.restrictedFileTypes.some((fileType) => fileType === extension)
+  )
 }
