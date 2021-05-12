@@ -105,7 +105,7 @@ const getPagesFormElementsCtrl = (
 const conditionallyShowByPredicate = (
   formElementsCtrl: FormElementsCtrl,
   predicate: ConditionTypes.ConditionalPredicate,
-  elementsEvaluated: string[],
+  elementsEvaluated: Array<{ id: string; label: string }>,
 ): FormTypes.FormElement | boolean => {
   const predicateElement = formElementsCtrl.elements.find(
     (element: FormTypes.FormElement) => {
@@ -160,7 +160,7 @@ const conditionallyShowByPredicate = (
 export default function conditionallyShowElement(
   formElementsCtrl: FormElementsCtrl,
   elementToEvaluate: FormTypes.FormElement,
-  elementsEvaluated: string[],
+  elementsEvaluated: Array<{ id: string; label: string }>,
 ): boolean {
   // If the element does not have the `conditionallyShow` flag set,
   // we can always show the element.
@@ -177,14 +177,22 @@ export default function conditionallyShowElement(
 
   // Check to see if this element has already been used to evaluate
   // if the element should be shown based on parent element conditional logic
-  if (
-    elementsEvaluated.some((elementId) => elementId === elementToEvaluate.id)
-  ) {
+  const elementAlreadyEvaluated = elementsEvaluated.find(
+    ({ id }) => id === elementToEvaluate.id,
+  )
+  if (elementAlreadyEvaluated) {
     throw new Error(
-      'Your conditional logic has caused an infinite loop. Check the following Fields to ensure element A does not rely on element B if element B also relies on element A.',
+      `Your conditional logic has caused an infinite loop. Check the "${elementAlreadyEvaluated.label}" form element to ensure element A does not rely on element B if element B also relies on element A.`,
     )
   } else {
-    elementsEvaluated.push(elementToEvaluate.id)
+    elementsEvaluated.push({
+      id: elementToEvaluate.id,
+      label:
+        elementToEvaluate.type === 'form' ||
+        elementToEvaluate.type === 'infoPage'
+          ? elementToEvaluate.name
+          : elementToEvaluate.label,
+    })
   }
 
   const predicateFunction = (
@@ -204,11 +212,12 @@ export default function conditionallyShowElement(
       return true
     }
 
-    return conditionallyShowByPredicate(
-      formElementsCtrl,
-      predicate,
-      elementsEvaluated,
-    )
+    // Spread the array of elements evaluated so that each predicate can
+    // evaluate the tree without causing false positives for infinite
+    // loop conditional logic
+    return conditionallyShowByPredicate(formElementsCtrl, predicate, [
+      ...elementsEvaluated,
+    ])
   }
 
   if (elementToEvaluate.requiresAllConditionallyShowPredicates) {
