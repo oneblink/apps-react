@@ -17,11 +17,11 @@ function OneBlinkAutoSaveForm({
   onCancel,
   onSubmit,
   onSaveDraft,
-  disabled,
   ...rest
 }: Props) {
-  const [isUsingAutoSave, setIsUsingAutoSave] =
-    React.useState<boolean | null>(null)
+  const [isUsingAutoSave, setIsUsingAutoSave] = React.useState<boolean | null>(
+    null,
+  )
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
   const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState<{
     isLoading: boolean
@@ -32,9 +32,6 @@ function OneBlinkAutoSaveForm({
   })
 
   const throttledAutoSave = React.useMemo(() => {
-    if (disabled) {
-      return
-    }
     return _throttle(
       (model) => {
         setIsAutoSaving(true)
@@ -52,13 +49,7 @@ function OneBlinkAutoSaveForm({
       9580, // https://en.wikipedia.org/wiki/100_metres
       { trailing: true, leading: false },
     )
-  }, [autoSaveKey, disabled, form.id])
-
-  const cancelAutoSave = React.useCallback(() => {
-    if (throttledAutoSave) {
-      throttledAutoSave.cancel()
-    }
-  }, [throttledAutoSave])
+  }, [autoSaveKey, form.id])
 
   const deleteAutoSaveData = React.useCallback(() => {
     return autoSaveService
@@ -71,29 +62,29 @@ function OneBlinkAutoSaveForm({
 
   const handleSubmit = React.useCallback(
     (submissionResult) => {
-      cancelAutoSave()
+      throttledAutoSave.cancel()
       deleteAutoSaveData()
       onSubmit(submissionResult)
     },
-    [cancelAutoSave, deleteAutoSaveData, onSubmit],
+    [deleteAutoSaveData, onSubmit, throttledAutoSave],
   )
 
   const handleSaveDraft = React.useCallback(
     (draftFormSubmissionResult) => {
-      cancelAutoSave()
+      throttledAutoSave.cancel()
       deleteAutoSaveData()
       if (onSaveDraft) {
         onSaveDraft(draftFormSubmissionResult)
       }
     },
-    [cancelAutoSave, deleteAutoSaveData, onSaveDraft],
+    [deleteAutoSaveData, onSaveDraft, throttledAutoSave],
   )
 
   const handleCancel = React.useCallback(() => {
-    cancelAutoSave()
+    throttledAutoSave.cancel()
     deleteAutoSaveData()
     onCancel()
-  }, [cancelAutoSave, deleteAutoSaveData, onCancel])
+  }, [deleteAutoSaveData, onCancel, throttledAutoSave])
 
   React.useEffect(() => {
     let ignore = false
@@ -128,9 +119,9 @@ function OneBlinkAutoSaveForm({
   // Clean up throttle function on unmount
   React.useEffect(() => {
     return () => {
-      cancelAutoSave()
+      throttledAutoSave.cancel()
     }
-  }, [cancelAutoSave])
+  }, [throttledAutoSave])
 
   if (isLoading) {
     return (
@@ -184,7 +175,6 @@ function OneBlinkAutoSaveForm({
         initialSubmission={
           isUsingAutoSave ? autoSaveSubmission : initialSubmission
         }
-        disabled={disabled}
         form={form}
         onCancel={handleCancel}
         onSubmit={handleSubmit}
