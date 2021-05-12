@@ -49,9 +49,8 @@ function FormElementCamera({
     isLoading: false,
   })
   const [isDirty, setIsDirty] = useBooleanState(false)
-  const [isAnnotating, setIsAnnotating, clearIsAnnotating] = useBooleanState(
-    false,
-  )
+  const [isAnnotating, setIsAnnotating, clearIsAnnotating] =
+    useBooleanState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const setBase64DataUri = React.useCallback(
@@ -393,7 +392,6 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoading,
   element,
   onAnnotate,
-  canDownload,
 }: ReturnType<typeof useAttachment> & {
   element: FormTypes.CameraElement
   isLoading: boolean
@@ -431,18 +429,15 @@ const DisplayImage = React.memo(function DisplayImage({
   if (imageUrl) {
     return (
       <>
-        {!checkIsUsingLegacyStorage(element) && (
-          <span className="ob-figure__status">
-            <AttachmentStatus
-              canDownload={canDownload}
-              isLoadingImageUrl={isLoadingImageUrl}
-              loadImageUrlError={loadImageUrlError}
-              isUploading={isUploading}
-              uploadErrorMessage={uploadErrorMessage}
-              imageUrl={imageUrl}
-            />
-          </span>
-        )}
+        <span className="ob-figure__status">
+          <AttachmentStatus
+            element={element}
+            isLoadingImageUrl={isLoadingImageUrl}
+            loadImageUrlError={loadImageUrlError}
+            isUploading={isUploading}
+            imageUrl={imageUrl}
+          />
+        </span>
         <img
           src={imageUrl}
           className="cypress-camera-image ob-camera__img"

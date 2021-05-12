@@ -71,28 +71,6 @@
   display: none;
 }
 
-.ob-files__upload-errors-container {
-  border-color: $grey-lighter;
-  border-style: solid;
-  border-width: 1px;
-  margin-top: $size-7;
-  border-radius: $radius;
-}
-.ob-files__upload-error {
-  padding: $size-7;
-  display: flex;
-  align-items: center;
-}
-.ob-files__upload-error-icon {
-  padding-right: $size-8;
-}
-
-.ob-files__upload-errors-clear-button-container {
-  padding: $size-7;
-  display: flex;
-  justify-content: flex-end;
-}
-
 .attachment__status-wrapper {
   display: inherit;
 }

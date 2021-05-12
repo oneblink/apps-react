@@ -1,7 +1,7 @@
 import { Sentry } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
-import { AttachmentValid } from '../types/attachments'
+import { Attachment } from '../types/attachments'
 import { urlToBlobAsync } from './blob-utils'
 
 async function downloadFile(data: Blob | string, fileName: string) {
@@ -100,7 +100,7 @@ export async function downloadFileLegacy(dataURI: string, fileName: string) {
   }
 }
 
-export default async function downloadAttachment(attachment: AttachmentValid) {
+export default async function downloadAttachment(attachment: Attachment) {
   try {
     if (attachment.type) {
       return await downloadFile(attachment.data, attachment.fileName)

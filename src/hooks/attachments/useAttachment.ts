@@ -18,6 +18,7 @@ export default function useAttachment(
   value: FormElementBinaryStorageValue,
   element: FormTypes.FormElementBinaryStorage,
   onChange: OnChange,
+  disableUpload?: boolean,
 ) {
   const isPrivate = element.storageType === 'private'
   const form = useFormDefinition()
@@ -37,6 +38,7 @@ export default function useAttachment(
 
     if (
       isOffline ||
+      disableUpload ||
       !formId ||
       !value ||
       typeof value !== 'object' ||
@@ -98,7 +100,7 @@ export default function useAttachment(
       ignore = true
       abortController.abort()
     }
-  }, [form?.id, isOffline, isPrivate, onChange, value])
+  }, [disableUpload, form?.id, isOffline, isPrivate, onChange, value])
 
   // TRIGGER DOWNLOAD
   React.useEffect(() => {
@@ -229,11 +231,12 @@ export default function useAttachment(
   }, [value])
 
   const canDownload = React.useMemo(() => {
-    const isDownloadableAttachment = (attachment: Attachment) =>
-      !attachment.isPrivate || isAuthenticated
-
     return (
-      !!value && (typeof value === 'string' || isDownloadableAttachment(value))
+      !!value &&
+      (typeof value === 'string' ||
+        !!value.type ||
+        !value.isPrivate ||
+        isAuthenticated)
     )
   }, [isAuthenticated, value])
 

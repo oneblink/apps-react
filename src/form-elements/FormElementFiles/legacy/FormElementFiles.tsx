@@ -1,9 +1,8 @@
 import * as React from 'react'
-import clsx from 'clsx'
 
 import useBooleanState from '../../../hooks/useBooleanState'
-import useClickOutsideElement from '../../../hooks/useClickOutsideElement'
 import useIsMounted from '../../../hooks/useIsMounted'
+import FileCard from '../../../components/attachments/FileCard'
 import { downloadFileLegacy } from '../../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../../components/FormElementLabelContainer'
@@ -34,92 +33,29 @@ type ChildProps = {
 }
 
 const FormElementFile = ({ element, onRemove, file, index }: ChildProps) => {
-  const dropDownRef = React.useRef(null)
-  const [isShowingMore, showMore, hideMore] = useBooleanState(false)
   const isImageType = React.useMemo(() => {
     const matches = file.data.match(/data:(\w*\/\w*);base64/)
     if (!matches) {
       return false
     }
     return checkIfContentTypeIsImage(matches[1])
-  }, [file])
-  useClickOutsideElement(
-    dropDownRef,
-    React.useCallback(() => {
-      if (isShowingMore) {
-        hideMore()
-      }
-    }, [hideMore, isShowingMore]),
+  }, [file.data])
+  const handleRemove = React.useCallback(
+    () => onRemove(index),
+    [index, onRemove],
   )
-  const handleRemove = React.useCallback((index) => onRemove(index), [onRemove])
   const handleDownload = React.useCallback(async () => {
     await downloadFileLegacy(file.data, file.fileName)
   }, [file])
 
   return (
-    <div className="column is-one-quarter" key={index}>
-      <div className="ob-files__box">
-        <div className="ob-files__content">
-          {isImageType ? (
-            <div className="ob-files__content-image">
-              <img className="ob-files__image" src={file.data} />
-            </div>
-          ) : (
-            <div className="ob-files__content-file has-text-centered">
-              <i className="material-icons icon-large ob-files__attach-icon has-text-grey">
-                attach_file
-              </i>
-            </div>
-          )}
-        </div>
-        <div
-          className={clsx('dropdown is-right ob-files__menu', {
-            'is-active': isShowingMore,
-          })}
-          ref={dropDownRef}
-        >
-          <div className="dropdown-trigger">
-            <button
-              type="button"
-              className="button ob-files__menu-button cypress-file-menu-button"
-              aria-haspopup="true"
-              aria-controls="dropdown-menu"
-              onClick={isShowingMore ? hideMore : showMore}
-            >
-              <i className="material-icons ob-files__menu-icon">more_vert</i>
-            </button>
-          </div>
-          <div className="dropdown-menu" role="menu">
-            <div className="dropdown-content">
-              <a
-                className="dropdown-item cypress-file-download-button"
-                onClick={() => {
-                  hideMore()
-                  handleDownload()
-                }}
-              >
-                Download
-              </a>
-              <a
-                className={clsx('dropdown-item cypress-file-remove-button', {
-                  'ob-files__menu-remove-hidden': element.readOnly,
-                })}
-                onClick={() => {
-                  hideMore()
-                  handleRemove(index)
-                }}
-              >
-                Remove
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="ob-files__file-name is-size-6">
-          <span className="ob-files__file-name-inner">{file.fileName}</span>
-        </div>
-      </div>
-    </div>
+    <FileCard
+      element={element}
+      imageUrl={isImageType ? file.data : null}
+      fileName={file.fileName}
+      onDownload={handleDownload}
+      onRemove={handleRemove}
+    />
   )
 }
 

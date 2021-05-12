@@ -4,42 +4,13 @@ import {
   prepareNewAttachment,
   correctFileOrientation,
 } from '../../services/attachments'
-import {
-  Attachment,
-  AttachmentError,
-  AttachmentNew,
-  AttachmentValid,
-} from '../../types/attachments'
+import { Attachment, AttachmentNew } from '../../types/attachments'
 import { canvasToBlob } from '../../services/blob-utils'
-type State = {
-  validAttachments: AttachmentValid[]
-  errorAttachments: AttachmentError[]
-  allAttachments: Attachment[]
-}
-type Actions = {
-  addAttachments: (newAttachments: File[]) => void
-  removeAttachment: (id: string) => void
-  changeAttachment: (id: string, attachment: Attachment) => void
-  clearInvalidAttachments: () => void
-}
 
 const useAttachments = (
-  allAttachments: Attachment[],
   element: FormTypes.FilesElement,
   onChange: FormElementValueChangeHandler<Attachment[]>,
-): [State, Actions] => {
-  const validAttachments = React.useMemo(() => {
-    return allAttachments.filter((att) => {
-      return att.type !== 'ERROR'
-    }) as AttachmentValid[]
-  }, [allAttachments])
-
-  const errorAttachments = React.useMemo(() => {
-    return allAttachments.filter((att) => {
-      return att.type === 'ERROR'
-    }) as AttachmentError[]
-  }, [allAttachments])
-
+) => {
   const addAttachments = React.useCallback(
     async (files: File[]): Promise<void> => {
       if (!files.length) return
@@ -104,15 +75,12 @@ const useAttachments = (
     })
   }, [element, onChange])
 
-  return [
-    { allAttachments, validAttachments, errorAttachments },
-    {
-      addAttachments,
-      removeAttachment,
-      changeAttachment,
-      clearInvalidAttachments,
-    },
-  ]
+  return {
+    addAttachments,
+    removeAttachment,
+    changeAttachment,
+    clearInvalidAttachments,
+  }
 }
 
 export default useAttachments

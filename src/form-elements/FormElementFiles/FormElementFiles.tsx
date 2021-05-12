@@ -5,7 +5,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../../components/FormElementLabelContainer'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../../hooks/attachments/useAttachments'
-import FormElementFilesInvalidAttachment from './FormElementFilesInvalidAttachment'
+import { checkFileNameIsValid } from '../../services/form-validation'
 import { Attachment } from '../../types/attachments'
 type Props = {
   id: string
@@ -24,15 +24,10 @@ function FormElementFiles({
   validationMessage,
   displayValidationMessage,
 }: Props) {
-  const [
-    { allAttachments, validAttachments, errorAttachments },
-    {
-      addAttachments,
-      removeAttachment,
-      changeAttachment,
-      clearInvalidAttachments,
-    },
-  ] = useAttachments(Array.isArray(value) ? value : [], element, onChange)
+  const { addAttachments, removeAttachment, changeAttachment } = useAttachments(
+    element,
+    onChange,
+  )
 
   const [isDirty, setIsDirty] = useBooleanState(false)
 
@@ -53,16 +48,14 @@ function FormElementFiles({
   )
   const handleAdd = React.useCallback(() => {
     if (!inputRef.current) return
+    // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
+    inputRef.current.value = ''
     inputRef.current.click()
   }, [])
 
   const handleRemove = React.useCallback(
     (id: string) => {
       if (isMounted.current) {
-        if (inputRef.current) {
-          // RESET HTML FILE INPUT VALUE SO FILES PREVIOUSLY ADDED AND REMOVED ARE RECOGNISED
-          inputRef.current.value = ''
-        }
         removeAttachment(id)
         setIsDirty()
       }
@@ -71,7 +64,6 @@ function FormElementFiles({
   )
   const handleChange = React.useCallback(
     (id: string, attachment: Attachment) => {
-      //const updatedValues = changeAttachment(id, attachment)
       if (isMounted.current) {
         changeAttachment(id, attachment)
         setIsDirty()
@@ -79,6 +71,8 @@ function FormElementFiles({
     },
     [changeAttachment, isMounted, setIsDirty],
   )
+
+  const attachments = (value || []) as Attachment[]
 
   return (
     <div className="cypress-files-element">
@@ -100,7 +94,7 @@ function FormElementFiles({
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline">
-            {validAttachments.map((attachment, index) => {
+            {attachments.map((attachment, index) => {
               return (
                 <FormElementFile
                   key={index}
@@ -108,12 +102,17 @@ function FormElementFiles({
                   onRemove={handleRemove}
                   file={attachment}
                   onChange={handleChange}
+                  disableUpload={
+                    (!!element.maxEntries &&
+                      attachments.length > element.maxEntries) ||
+                    !checkFileNameIsValid(element, attachment.fileName)
+                  }
                 />
               )
             })}
             {!element.readOnly &&
               (!element.maxEntries ||
-                allAttachments.length < element.maxEntries) && (
+                attachments.length < element.maxEntries) && (
                 <div className="column is-one-quarter">
                   <button
                     type="button"
@@ -131,27 +130,6 @@ function FormElementFiles({
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
-            </div>
-          </div>
-        )}
-        {!!errorAttachments.length && (
-          <div className="ob-files__upload-errors-container">
-            {errorAttachments.map((errorAttachment, i) => {
-              return (
-                <FormElementFilesInvalidAttachment
-                  key={i}
-                  file={errorAttachment}
-                />
-              )
-            })}
-            <div className="buttons ob-buttons ob-files__upload-errors-clear-button-container">
-              <button
-                type="button"
-                className="button ob-button is-light cypress-clear-invalid-attachments"
-                onClick={clearInvalidAttachments}
-              >
-                Clear
-              </button>
             </div>
           </div>
         )}
