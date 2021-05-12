@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- auto save data being saved after submission
+
 ### Added
 
 - Support for `displayAsCurrency` prop in calculation element
