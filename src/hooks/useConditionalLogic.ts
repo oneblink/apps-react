@@ -12,31 +12,20 @@ export default function useConditionalLogic({
   submission: FormElementsCtrl['model']
   pages: FormTypes.PageElement[]
 }) {
-  const [conditionalLogicState, setConditionalLogicState] = React.useState<{
-    elements: string[]
-    message: string
-  } | null>(null)
+  const [conditionalLogicError, setConditionalLogicError] =
+    React.useState<Error | undefined>()
 
   const handleConditionallyShowElement = React.useCallback(
     (formElementsCtrl: FormElementsCtrl, element: FormTypes.FormElement) => {
-      if (!element.conditionallyShow) return true
-      const elementsEvaluated: string[] = []
       try {
-        return conditionallyShowElement(
-          formElementsCtrl,
-          element,
-          elementsEvaluated,
-        )
+        return conditionallyShowElement(formElementsCtrl, element, [])
       } catch (error) {
         Sentry.captureException(error)
         console.warn(
           'Error while checking if element is conditional shown',
           error,
         )
-        setConditionalLogicState({
-          elements: elementsEvaluated,
-          message: error.message,
-        })
+        setConditionalLogicError(error)
         return false
       }
     },
@@ -59,10 +48,7 @@ export default function useConditionalLogic({
         )
       } catch (error) {
         Sentry.captureException(error)
-        setConditionalLogicState({
-          elements: elementsEvaluated,
-          message: error.message,
-        })
+        setConditionalLogicError(error)
         return false
       }
     },
@@ -98,179 +84,180 @@ export default function useConditionalLogic({
     [elementsOnPages, pageFormElements, submission],
   )
 
-  const pageElementsConditionallyShown = React.useMemo<PageElementsConditionallyShown>(() => {
-    const getFormElementConditionallyShown = (
-      elements: FormTypes.FormElement[],
-      element: FormTypes.FormElement,
-      model: FormElementsCtrl['model'],
-      parentFormElementsCtrl?: FormElementsCtrl,
-    ): FormElementConditionallyShown => {
-      const isShown = handleConditionallyShowElement(
-        {
-          elements,
-          model,
-          parentFormElementsCtrl,
-        },
-        element,
-      )
-      switch (element.type) {
-        case 'page': {
-          const formElementConditionallyShown: FormElementConditionallyShown = {
-            type: 'page',
-            isShown,
-            formElements: {},
-          }
-          for (const nestedElement of element.elements) {
-            if (nestedElement.type === 'page') {
-              // Should never happen, just making typescript happy :)
-              continue
-            }
-
-            formElementConditionallyShown.formElements[
-              nestedElement.name
-            ] = getFormElementConditionallyShown(
-              elements,
-              nestedElement,
-              model,
+  const pageElementsConditionallyShown =
+    React.useMemo<PageElementsConditionallyShown>(() => {
+      const getFormElementConditionallyShown = (
+        elements: FormTypes.FormElement[],
+        element: FormTypes.FormElement,
+        model: FormElementsCtrl['model'],
+        parentFormElementsCtrl?: FormElementsCtrl,
+      ): FormElementConditionallyShown => {
+        const isShown = handleConditionallyShowElement(
+          {
+            elements,
+            model,
+            parentFormElementsCtrl,
+          },
+          element,
+        )
+        switch (element.type) {
+          case 'page': {
+            const formElementConditionallyShown: FormElementConditionallyShown =
               {
-                model,
-                elements,
-                parentFormElementsCtrl,
-              },
-            )
-          }
-          return formElementConditionallyShown
-        }
-        case 'infoPage':
-        case 'form': {
-          const formElementConditionallyShown: FormElementConditionallyShown = {
-            type: 'nestedForm',
-            isShown,
-            nested: {},
-          }
-          const nestedModel = model[element.name]
-          if (
-            isShown &&
-            Array.isArray(element.elements) &&
-            nestedModel &&
-            typeof nestedModel === 'object'
-          ) {
+                type: 'page',
+                isShown,
+                formElements: {},
+              }
             for (const nestedElement of element.elements) {
               if (nestedElement.type === 'page') {
                 // Should never happen, just making typescript happy :)
                 continue
               }
 
-              formElementConditionallyShown.nested[
-                nestedElement.name
-              ] = getFormElementConditionallyShown(
-                element.elements,
-                nestedElement,
-                nestedModel as FormElementsCtrl['model'],
-              )
-            }
-          }
-          return formElementConditionallyShown
-        }
-        case 'repeatableSet': {
-          const formElementConditionallyShown: FormElementConditionallyShown = {
-            type: 'repeatableSet',
-            isShown,
-            entries: {},
-          }
-          if (isShown) {
-            const entries = model[element.name]
-            if (Array.isArray(entries)) {
-              entries.forEach((entry, index) => {
-                formElementConditionallyShown.entries[
-                  index
-                ] = element.elements.reduce(
-                  (
-                    partialFormElementsConditionallyShown: FormElementsConditionallyShown,
-                    nestedElement,
-                  ) => {
-                    // Should never happen, just making typescript happy :)
-                    if (
-                      nestedElement.type !== 'page' &&
-                      entry &&
-                      typeof entry === 'object'
-                    ) {
-                      partialFormElementsConditionallyShown[
-                        nestedElement.name
-                      ] = getFormElementConditionallyShown(
-                        element.elements,
-                        nestedElement,
-                        entry,
-                        {
-                          model,
-                          elements,
-                          parentFormElementsCtrl,
-                        },
-                      )
-                    }
-                    return partialFormElementsConditionallyShown
+              formElementConditionallyShown.formElements[nestedElement.name] =
+                getFormElementConditionallyShown(
+                  elements,
+                  nestedElement,
+                  model,
+                  {
+                    model,
+                    elements,
+                    parentFormElementsCtrl,
                   },
-                  {},
                 )
-              })
             }
+            return formElementConditionallyShown
           }
-          return formElementConditionallyShown
-        }
-        default: {
-          return {
-            type: 'formElement',
-            isShown,
+          case 'infoPage':
+          case 'form': {
+            const formElementConditionallyShown: FormElementConditionallyShown =
+              {
+                type: 'nestedForm',
+                isShown,
+                nested: {},
+              }
+            const nestedModel = model[element.name]
+            if (
+              isShown &&
+              Array.isArray(element.elements) &&
+              nestedModel &&
+              typeof nestedModel === 'object'
+            ) {
+              for (const nestedElement of element.elements) {
+                if (nestedElement.type === 'page') {
+                  // Should never happen, just making typescript happy :)
+                  continue
+                }
+
+                formElementConditionallyShown.nested[nestedElement.name] =
+                  getFormElementConditionallyShown(
+                    element.elements,
+                    nestedElement,
+                    nestedModel as FormElementsCtrl['model'],
+                  )
+              }
+            }
+            return formElementConditionallyShown
+          }
+          case 'repeatableSet': {
+            const formElementConditionallyShown: FormElementConditionallyShown =
+              {
+                type: 'repeatableSet',
+                isShown,
+                entries: {},
+              }
+            if (isShown) {
+              const entries = model[element.name]
+              if (Array.isArray(entries)) {
+                entries.forEach((entry, index) => {
+                  formElementConditionallyShown.entries[index] =
+                    element.elements.reduce(
+                      (
+                        partialFormElementsConditionallyShown: FormElementsConditionallyShown,
+                        nestedElement,
+                      ) => {
+                        // Should never happen, just making typescript happy :)
+                        if (
+                          nestedElement.type !== 'page' &&
+                          entry &&
+                          typeof entry === 'object'
+                        ) {
+                          partialFormElementsConditionallyShown[
+                            nestedElement.name
+                          ] = getFormElementConditionallyShown(
+                            element.elements,
+                            nestedElement,
+                            entry,
+                            {
+                              model,
+                              elements,
+                              parentFormElementsCtrl,
+                            },
+                          )
+                        }
+                        return partialFormElementsConditionallyShown
+                      },
+                      {},
+                    )
+                })
+              }
+            }
+            return formElementConditionallyShown
+          }
+          default: {
+            return {
+              type: 'formElement',
+              isShown,
+            }
           }
         }
       }
-    }
 
-    return pageFormElements.reduce(
-      (
-        partialFormElementsConditionallyShown: PageElementsConditionallyShown,
-        pageElement,
-      ) => {
-        // @ts-expect-error ???
-        partialFormElementsConditionallyShown[
-          pageElement.id
-        ] = getFormElementConditionallyShown(
-          rootFormElementsCtrl.elements,
+      return pageFormElements.reduce(
+        (
+          partialFormElementsConditionallyShown: PageElementsConditionallyShown,
           pageElement,
-          rootFormElementsCtrl.model,
-          {
-            model: rootFormElementsCtrl.parentFormElementsCtrl.model,
-            elements: rootFormElementsCtrl.parentFormElementsCtrl.elements,
-          },
-        )
-        return partialFormElementsConditionallyShown
-      },
-      {},
-    )
-  }, [
-    handleConditionallyShowElement,
-    pageFormElements,
-    rootFormElementsCtrl.elements,
-    rootFormElementsCtrl.model,
-    rootFormElementsCtrl.parentFormElementsCtrl.elements,
-    rootFormElementsCtrl.parentFormElementsCtrl.model,
-  ])
+        ) => {
+          // @ts-expect-error ???
+          partialFormElementsConditionallyShown[pageElement.id] =
+            getFormElementConditionallyShown(
+              rootFormElementsCtrl.elements,
+              pageElement,
+              rootFormElementsCtrl.model,
+              {
+                model: rootFormElementsCtrl.parentFormElementsCtrl.model,
+                elements: rootFormElementsCtrl.parentFormElementsCtrl.elements,
+              },
+            )
+          return partialFormElementsConditionallyShown
+        },
+        {},
+      )
+    }, [
+      handleConditionallyShowElement,
+      pageFormElements,
+      rootFormElementsCtrl.elements,
+      rootFormElementsCtrl.model,
+      rootFormElementsCtrl.parentFormElementsCtrl.elements,
+      rootFormElementsCtrl.parentFormElementsCtrl.model,
+    ])
 
-  const rootElementsConditionallyShown: FormElementsConditionallyShown = React.useMemo(() => {
-    return Object.keys(pageElementsConditionallyShown).reduce(
-      (memo: FormElementsConditionallyShown, pageId: string) => {
-        return {
-          ...memo,
-          ...pageElementsConditionallyShown[pageId].formElements,
-        }
-      },
-      {},
-    )
-  }, [pageElementsConditionallyShown])
+  const rootElementsConditionallyShown: FormElementsConditionallyShown =
+    React.useMemo(() => {
+      return Object.keys(pageElementsConditionallyShown).reduce(
+        (memo: FormElementsConditionallyShown, pageId: string) => {
+          return {
+            ...memo,
+            ...pageElementsConditionallyShown[pageId].formElements,
+          }
+        },
+        {},
+      )
+    }, [pageElementsConditionallyShown])
 
   return {
     rootFormElementsCtrl,
-    conditionalLogicState,
+    conditionalLogicError,
     pageElementsConditionallyShown,
     rootElementsConditionallyShown,
     handleConditionallyShowOption,

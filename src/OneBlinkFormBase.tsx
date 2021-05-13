@@ -130,14 +130,10 @@ function OneBlinkFormBase({
   const history = useHistory()
 
   const [isNavigationAllowed, allowNavigation] = useBooleanState(false)
-  const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState<
-    boolean | null
-  >(null)
-  const [
-    goToLocation,
-    setGoToLocation,
-    clearGoToLocation,
-  ] = useNullableState<Location>(null)
+  const [hasConfirmedNavigation, setHasConfirmedNavigation] =
+    React.useState<boolean | null>(null)
+  const [goToLocation, setGoToLocation, clearGoToLocation] =
+    useNullableState<Location>(null)
 
   const handleBlockedNavigation = React.useCallback(
     (location) => {
@@ -190,7 +186,7 @@ function OneBlinkFormBase({
     pageElementsConditionallyShown,
     rootElementsConditionallyShown,
     handleConditionallyShowOption,
-    conditionalLogicState,
+    conditionalLogicError,
     elementsOnPages,
   } = useConditionalLogic({ submission, pages })
 
@@ -202,9 +198,8 @@ function OneBlinkFormBase({
   //
   // #region Validation
 
-  const { validate, executedLookup, executeLookupFailed } = useFormValidation(
-    pages,
-  )
+  const { validate, executedLookup, executeLookupFailed } =
+    useFormValidation(pages)
 
   const pagesValidation = React.useMemo<PageElementsValidation | undefined>(
     () => validate(submission, pageElementsConditionallyShown).pagesValidation,
@@ -432,16 +427,13 @@ function OneBlinkFormBase({
   //
   // #region Lookups
 
-  const {
-    injectPagesAfter,
-    handleChangeElements,
-    handleChangeModel,
-  } = useLookups({
-    formId: definition.id,
-    currentPageId: currentPage.id,
-    setDefinition,
-    setSubmission,
-  })
+  const { injectPagesAfter, handleChangeElements, handleChangeModel } =
+    useLookups({
+      formId: definition.id,
+      currentPageId: currentPage.id,
+      setDefinition,
+      setSubmission,
+    })
 
   // #endregion
   //
@@ -480,26 +472,18 @@ function OneBlinkFormBase({
   //
   //
 
-  if (conditionalLogicState) {
+  if (conditionalLogicError) {
     return (
       <>
         <div className="has-text-centered">
           <i className="material-icons has-text-warning icon-x-large">error</i>
           <h3 className="title is-3">Bad Form Configuration</h3>
-          <p>{conditionalLogicState.message}</p>
+          <p className="cypress-conditional-logic-error-message">
+            {conditionalLogicError.message}
+          </p>
           <p className="has-text-grey">
             {localisationService.formatDatetimeLong(new Date())}
           </p>
-        </div>
-
-        <div className="content">
-          <ul className="cypress-error-modal-elements-evaluated">
-            {conditionalLogicState.elements.map(
-              (elementName: string, index: number) => (
-                <li key={index}>{elementName}</li>
-              ),
-            )}
-          </ul>
         </div>
       </>
     )
