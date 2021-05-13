@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-05-13
+
 ### Fixed
 
 - auto save data being saved after submission
@@ -19,6 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **[BREAKING]** `draw` form element to require Done button press before the drawing is added to the submission data
+
+### Dependencies
+
+- no longer depend upon [@blinkmobile/canvas-manipulation](https://www.npmjs.com/package/@blinkmobile/canvas-manipulation)
+
+- update [@material-ui/core](https://www.npmjs.com/package/@material-ui/core) to [4.11.4](https://github.com/mui-org/material-ui/releases/tag/v4.11.4) (from [4.11.3](https://github.com/mui-org/material-ui/releases/tag/v4.11.3))
+
+- update [jsqr](https://www.npmjs.com/package/jsqr) to 1.4.0 (from 1.3.1)
+
+- depend upon [uuid](https://www.npmjs.com/package/uuid) [8.3.2](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md)
 
 ## [0.2.4] - 2021-04-27
 
