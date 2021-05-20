@@ -10,15 +10,28 @@ export default function useFlatpickr(
     id,
     value,
     onChange,
+    dateOnly,
   }: {
     id: string
     value: unknown | undefined
     onChange: (value: string | undefined) => void
+    dateOnly?: boolean
   },
   fpOpts: FlatpickrOptions,
   htmlElement: { current: HTMLElement | null },
 ) {
   const vpRef = React.useRef<FlatpickrInstance | null>(null)
+
+  const getDateValue = React.useCallback(
+    (date: Date | undefined) => {
+      if (!date) return
+      if (dateOnly) {
+        return vpRef.current?.formatDate(date, 'Y-m-d')
+      }
+      return date.toISOString()
+    },
+    [dateOnly],
+  )
 
   React.useEffect(() => {
     const options: FlatpickrOptions = {
@@ -43,10 +56,10 @@ export default function useFlatpickr(
   React.useEffect(() => {
     if (vpRef.current && vpRef.current.config) {
       vpRef.current.set('onChange', (selectedDates: Date[]) => {
-        onChange(selectedDates[0] && selectedDates[0].toISOString())
+        onChange(getDateValue(selectedDates[0]))
       })
     }
-  }, [onChange, vpRef])
+  }, [getDateValue, onChange, vpRef])
 
   // Sync value with flatpickr when value is changed outside of component
   React.useEffect(() => {
@@ -60,10 +73,10 @@ export default function useFlatpickr(
       } else if (
         value &&
         typeof value === 'string' &&
-        (!selectedDate || selectedDate.toISOString() !== value)
+        (!selectedDate || getDateValue(selectedDate) !== value)
       ) {
         vp.setDate(value, false)
       }
     }
-  }, [value, vpRef])
+  }, [getDateValue, value, vpRef])
 }
