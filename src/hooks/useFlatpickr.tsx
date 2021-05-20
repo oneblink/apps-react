@@ -26,10 +26,7 @@ export default function useFlatpickr(
     (date: Date | undefined) => {
       if (!date) return
       if (dateOnly) {
-        const year = date.getFullYear()
-        const month = (date.getMonth() + 1).toString().padStart(2, '0')
-        const day = date.getDate().toString().padStart(2, '0')
-        return `${year}-${month}-${day}`
+        return vpRef.current?.formatDate(date, 'Y-m-d')
       }
       return date.toISOString()
     },
