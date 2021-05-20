@@ -63,6 +63,7 @@ function FormElementDate({
       id,
       value,
       onChange: handleChange,
+      dateOnly: true,
     },
     flatpickrOptions,
     htmlDivElementRef,
