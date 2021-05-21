@@ -5,6 +5,7 @@ import { FormElementBinaryStorageValue } from '../types/attachments'
 import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { checkIsUsingLegacyStorage } from './attachments'
+import { parseDateValue } from './generate-default-data'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -14,7 +15,7 @@ validate.extend(validate.validators.datetime, {
   // The value is guaranteed not to be null or undefined but otherwise it
   // could be anything.
   parse: function (value: string) {
-    return new Date(value).valueOf()
+    return Date.parse(value)
   },
   // Input is a unix timestamp
   format: function (
@@ -433,10 +434,10 @@ const generateSchemaReducer = (
       case 'date': {
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Please select a date'),
-          datetime: {
+          date: {
             format: (v: Date) => localisationService.formatDate(v),
-            earliest: formElement.fromDate,
-            latest: formElement.toDate,
+            earliest: parseDateValue(true, formElement.fromDate),
+            latest: parseDateValue(true, formElement.toDate),
             notValid: 'Please select a valid date',
             tooEarly: 'Date cannot be before %{date}',
             tooLate: 'Date cannot be after %{date}',
@@ -456,8 +457,8 @@ const generateSchemaReducer = (
           ),
           datetime: {
             format: (v: Date) => localisationService.formatDatetime(v),
-            earliest: formElement.fromDate,
-            latest: formElement.toDate,
+            earliest: parseDateValue(false, formElement.fromDate),
+            latest: parseDateValue(false, formElement.toDate),
             notValid: 'Please select a valid date and time',
             tooEarly: 'Date and time cannot be before %{date}',
             tooLate: 'Date and time cannot be after %{date}',
