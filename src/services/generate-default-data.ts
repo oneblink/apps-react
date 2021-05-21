@@ -36,7 +36,7 @@ export function parseDateValue(
       if (dateOnly) {
         return flatpickr.formatDate(date, 'Y-m-d')
       } else {
-        return date.toDateString()
+        return date.toISOString()
       }
     }
   }
