@@ -7,6 +7,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import { parseDateValue } from '../services/generate-default-data'
 
 type Props = {
   id: string
@@ -36,8 +37,8 @@ function FormElementDateTime({
       altFormat: localisationService.flatpickrDatetimeFormat,
       allowInput: false,
       altInputClass: 'input ob-input cypress-date-time-control',
-      minDate: undefined,
-      maxDate: undefined,
+      minDate: parseDateValue(false, element.fromDate),
+      maxDate: parseDateValue(false, element.toDate),
       defaultDate: undefined,
       enableTime: true,
       allowInvalidPreload: true,

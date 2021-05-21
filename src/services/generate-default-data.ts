@@ -1,4 +1,5 @@
 import { FormTypes } from '@oneblink/types'
+import flatpickr from 'flatpickr'
 import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 
@@ -19,6 +20,25 @@ function parseFiles(
       }
       return file
     })
+  }
+}
+
+export function parseDateValue(
+  dateOnly: boolean,
+  value: unknown,
+): string | undefined {
+  if (value === 'NOW') {
+    return new Date().toISOString()
+  } else if (typeof value === 'string') {
+    const timestamp = Date.parse(value)
+    if (!Number.isNaN(timestamp)) {
+      const date = new Date(timestamp)
+      if (dateOnly) {
+        return flatpickr.formatDate(date, 'Y-m-d')
+      } else {
+        return date.toISOString()
+      }
+    }
   }
 }
 
@@ -57,6 +77,11 @@ function parsePreFillData(
         return parseFiles(element, files)
       }
       break
+    }
+    case 'time':
+    case 'datetime':
+    case 'date': {
+      return parseDateValue(element.type === 'date', value)
     }
   }
 
@@ -131,11 +156,7 @@ export default function generateDefaultData(
       case 'datetime':
       case 'time': {
         if (el.defaultValue) {
-          if (el.defaultValue === 'NOW') {
-            m[el.name] = new Date().toISOString()
-          } else {
-            m[el.name] = el.defaultValue
-          }
+          m[el.name] = parseDateValue(el.type === 'date', el.defaultValue)
         }
         break
       }
