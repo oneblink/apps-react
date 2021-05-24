@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "0.3.2-beta.2",
+  "version": "0.3.2-beta.3",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -16,6 +16,7 @@
     "bulma-slider": "^2.0.4",
     "bulma-steps": "^2.2.1",
     "bulma-toast": "^2.3.0",
+    "clsx": "^1.1.1",
     "color": "^3.1.3",
     "copy-to-clipboard": "^3.3.1",
     "escape-string-regexp": "^5.0.0",
@@ -40,7 +41,7 @@
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.2",
     "@babel/preset-react": "^7.13.13",
-    "@oneblink/apps": "^0.8.2",
+    "@oneblink/apps": "^0.9.0-beta.1",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.2",
@@ -59,7 +60,6 @@
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
-    "clsx": "^1.1.1",
     "copyfiles": "^2.4.1",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
@@ -89,8 +89,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.8.1-beta.5",
-    "clsx": "^1.1.1",
+    "@oneblink/apps": "^0.9.0-beta.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0"
