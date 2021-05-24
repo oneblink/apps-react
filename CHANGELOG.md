@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Only capture date from date element
+- days offset to `date` and `datetime`
 
 ## [0.3.1] - 2021-05-19
 

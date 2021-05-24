@@ -436,8 +436,16 @@ const generateSchemaReducer = (
           presence: presence(formElement.required, 'Please select a date'),
           date: {
             format: (v: Date) => localisationService.formatDate(v),
-            earliest: parseDateValue(true, formElement.fromDate),
-            latest: parseDateValue(true, formElement.toDate),
+            earliest: parseDateValue({
+              dateOnly: true,
+              daysOffset: formElement.fromDateDaysOffset,
+              value: formElement.fromDate,
+            }),
+            latest: parseDateValue({
+              dateOnly: true,
+              daysOffset: formElement.toDateDaysOffset,
+              value: formElement.toDate,
+            }),
             notValid: 'Please select a valid date',
             tooEarly: 'Date cannot be before %{date}',
             tooLate: 'Date cannot be after %{date}',
@@ -457,8 +465,16 @@ const generateSchemaReducer = (
           ),
           datetime: {
             format: (v: Date) => localisationService.formatDatetime(v),
-            earliest: parseDateValue(false, formElement.fromDate),
-            latest: parseDateValue(false, formElement.toDate),
+            earliest: parseDateValue({
+              dateOnly: false,
+              daysOffset: formElement.fromDateDaysOffset,
+              value: formElement.fromDate,
+            }),
+            latest: parseDateValue({
+              dateOnly: false,
+              daysOffset: formElement.toDateDaysOffset,
+              value: formElement.toDate,
+            }),
             notValid: 'Please select a valid date and time',
             tooEarly: 'Date and time cannot be before %{date}',
             tooLate: 'Date and time cannot be after %{date}',

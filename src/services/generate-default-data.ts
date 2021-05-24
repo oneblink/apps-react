@@ -23,22 +23,51 @@ function parseFiles(
   }
 }
 
-export function parseDateValue(
-  dateOnly: boolean,
-  value: unknown,
-): string | undefined {
+const generateDate = ({
+  daysOffset,
+  value,
+}: {
+  daysOffset: number | undefined
+  value: string
+}): Date | undefined => {
   if (value === 'NOW') {
-    return new Date().toISOString()
-  } else if (typeof value === 'string') {
+    const date = new Date()
+    if (daysOffset === undefined) {
+      return date
+    } else {
+      date.setDate(date.getDate() + daysOffset)
+      return date
+    }
+  } else {
     const timestamp = Date.parse(value)
     if (!Number.isNaN(timestamp)) {
-      const date = new Date(timestamp)
-      if (dateOnly) {
-        return flatpickr.formatDate(date, 'Y-m-d')
-      } else {
-        return date.toISOString()
-      }
+      return new Date(timestamp)
     }
+  }
+}
+
+export function parseDateValue({
+  dateOnly,
+  daysOffset,
+  value,
+}: {
+  dateOnly: boolean
+  daysOffset: number | undefined
+  value: unknown
+}): string | undefined {
+  if (typeof value !== 'string') {
+    return
+  }
+
+  const date = generateDate({ daysOffset, value })
+  if (!date) {
+    return
+  }
+
+  if (dateOnly) {
+    return flatpickr.formatDate(date, 'Y-m-d')
+  } else {
+    return date.toISOString()
   }
 }
 
@@ -81,7 +110,11 @@ function parsePreFillData(
     case 'time':
     case 'datetime':
     case 'date': {
-      return parseDateValue(element.type === 'date', value)
+      return parseDateValue({
+        dateOnly: element.type === 'date',
+        daysOffset: undefined,
+        value,
+      })
     }
   }
 
@@ -156,7 +189,11 @@ export default function generateDefaultData(
       case 'datetime':
       case 'time': {
         if (el.defaultValue) {
-          m[el.name] = parseDateValue(el.type === 'date', el.defaultValue)
+          m[el.name] = parseDateValue({
+            dateOnly: el.type === 'date',
+            daysOffset: el.defaultValueDaysOffset,
+            value: el.defaultValue,
+          })
         }
         break
       }

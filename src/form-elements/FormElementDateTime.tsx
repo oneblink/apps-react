@@ -37,8 +37,16 @@ function FormElementDateTime({
       altFormat: localisationService.flatpickrDatetimeFormat,
       allowInput: false,
       altInputClass: 'input ob-input cypress-date-time-control',
-      minDate: parseDateValue(false, element.fromDate),
-      maxDate: parseDateValue(false, element.toDate),
+      minDate: parseDateValue({
+        dateOnly: false,
+        daysOffset: element.fromDateDaysOffset,
+        value: element.fromDate,
+      }),
+      maxDate: parseDateValue({
+        dateOnly: false,
+        daysOffset: element.toDateDaysOffset,
+        value: element.toDate,
+      }),
       defaultDate: undefined,
       enableTime: true,
       allowInvalidPreload: true,
@@ -53,7 +61,13 @@ function FormElementDateTime({
     }
 
     return opts
-  }, [element.fromDate, element.toDate, setIsDirty])
+  }, [
+    element.fromDate,
+    element.fromDateDaysOffset,
+    element.toDate,
+    element.toDateDaysOffset,
+    setIsDirty,
+  ])
 
   const handleChange = React.useCallback(
     (newValue) => onChange(element, newValue),
