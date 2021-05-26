@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2021-05-26
+
+### Added
+
+- icons to right side of inputs for form elements:
+  - `'number'`
+  - `'barcodeScanner'`
+  - `'telephone'`
+  - `'email'`
+  - `'date'`
+  - `'datetime'`
+  - `'time'`
+
 ### Changed
 
 - Hide Add button if repeatable set already has max number of entries
@@ -15,6 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Only capture date from date element
 - days offset to `date` and `datetime`
+
+### Dependencies
+
+- update [escape-string-regexp](https://www.npmjs.com/package/escape-string-regexp) to [5.0.0](https://github.com/sindresorhus/escape-string-regexp/releases/tag/v5.0.0) (from [4.0.0](https://github.com/sindresorhus/escape-string-regexp/releases/tag/v4.0.0))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.4.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.3.3](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- depend upon [clsx](https://www.npmjs.com/package/clsx) [1.1.1](https://github.com/lukeed/clsx/releases/tag/v1.1.1)
 
 ## [0.3.1] - 2021-05-19
 
