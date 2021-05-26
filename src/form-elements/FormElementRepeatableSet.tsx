@@ -21,6 +21,8 @@ type Props = {
   parentFormElementsCtrl: FormElementsCtrl
 }
 
+export const RepeatableSetIndexContext = React.createContext<number>(0)
+
 function FormElementRepeatableSet({
   formId,
   element,
@@ -37,9 +39,10 @@ function FormElementRepeatableSet({
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
-  const entries = React.useMemo(() => (Array.isArray(value) ? value : []), [
-    value,
-  ])
+  const entries = React.useMemo(
+    () => (Array.isArray(value) ? value : []),
+    [value],
+  )
 
   const handleAddEntry = React.useCallback(() => {
     onChange(element, (existingEntries) => {
@@ -90,8 +93,8 @@ function FormElementRepeatableSet({
 
   const handleChangeElements = React.useCallback(
     (index, elements) => {
-      const newElements: FormTypes.FormElement[] = parentFormElementsCtrl.elements.map(
-        (parentElement) => {
+      const newElements: FormTypes.FormElement[] =
+        parentFormElementsCtrl.elements.map((parentElement) => {
           if (parentElement.id === element.id) {
             return {
               ...parentElement,
@@ -99,8 +102,7 @@ function FormElementRepeatableSet({
             }
           }
           return parentElement
-        },
-      )
+        })
 
       onChangeElements(newElements)
     },
@@ -240,9 +242,8 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     onChangeModel,
     onRemove,
   }: RepeatableSetEntryProps) {
-    const [isConfirmingRemove, confirmRemove, cancelRemove] = useBooleanState(
-      false,
-    )
+    const [isConfirmingRemove, confirmRemove, cancelRemove] =
+      useBooleanState(false)
 
     const formElementsCtrl = React.useMemo<FormElementsCtrl>(() => {
       return {
@@ -273,7 +274,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     )
 
     return (
-      <>
+      <RepeatableSetIndexContext.Provider value={index}>
         <Modal
           isOpen={isConfirmingRemove}
           className="cypress-repeatable-set-prompt"
@@ -336,7 +337,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             formElementsConditionallyShown={formElementsConditionallyShown}
           />
         </div>
-      </>
+      </RepeatableSetIndexContext.Provider>
     )
   },
 )
