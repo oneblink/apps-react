@@ -168,20 +168,21 @@ function FormElementRepeatableSet({
             />
           )
         })}
-
-        <button
-          type="button"
-          className="button ob-button ob-button__add is-primary cypress-add-repeatable-set"
-          onClick={handleAddEntry}
-          disabled={element.readOnly}
-        >
-          <span className="icon">
-            <i className="material-icons">add</i>
-          </span>
-          {!!element.addSetEntryLabel && (
-            <span>{element.addSetEntryLabel}</span>
-          )}
-        </button>
+        {(!element.maxSetEntries || entries.length < element.maxSetEntries) && (
+          <button
+            type="button"
+            className="button ob-button ob-button__add is-primary cypress-add-repeatable-set"
+            onClick={handleAddEntry}
+            disabled={element.readOnly}
+          >
+            <span className="icon">
+              <i className="material-icons">add</i>
+            </span>
+            {!!element.addSetEntryLabel && (
+              <span>{element.addSetEntryLabel}</span>
+            )}
+          </button>
+        )}
         {(isDirty || displayValidationMessage) &&
           !!repeatableSetValidation &&
           !!repeatableSetValidation.set && (

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Hide Add button if repeatable set already has max number of entries
+
 ## [0.3.2] - 2021-05-26
 
 ### Added
