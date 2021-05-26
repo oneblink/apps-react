@@ -93,7 +93,7 @@ function FormElementDate({
         required={element.required}
       >
         <div className="field has-addons">
-          <div className="control is-expanded">
+          <div className="control is-expanded has-icons-right">
             <input
               type="date"
               id={id}
@@ -102,6 +102,9 @@ function FormElementDate({
               disabled={element.readOnly}
               className="input ob-input"
             />
+            <span className="ob-input-icon icon is-small is-right">
+              <i className="material-icons is-size-5">event</i>
+            </span>
           </div>
           {!!element.readOnly && !!text && (
             <div className="control">
