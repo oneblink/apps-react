@@ -13,6 +13,7 @@ import useAttachment from '../hooks/attachments/useAttachment'
 import AnnotationModal from '../components/AnnotationModal'
 import Modal from '../components/Modal'
 import {
+  checkIfContentTypeIsImage,
   checkIsUsingLegacyStorage,
   prepareNewAttachment,
   correctFileOrientation,
@@ -72,7 +73,7 @@ function FormElementCamera({
   }, [element, onChange])
 
   const fileChange = React.useCallback(
-    async (changeEvent) => {
+    async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
       if (!changeEvent.target || !changeEvent.target.files) {
         return
       }
@@ -88,6 +89,11 @@ function FormElementCamera({
 
       console.log('File selected event', file)
       try {
+        if (!checkIfContentTypeIsImage(file.type)) {
+          throw new Error(
+            `Invalid file type "${file.type}". Please select an image.`,
+          )
+        }
         const result = await correctFileOrientation(
           file,
           element.includeTimestampWatermark ? drawTimestampOnCanvas : undefined,

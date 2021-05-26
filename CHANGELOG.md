@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- validation for `camera` form element to ensure an image is selected
+
 ### Changed
 
 - Hide Add button if repeatable set already has max number of entries
