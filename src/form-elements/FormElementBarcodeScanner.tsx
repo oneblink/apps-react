@@ -34,11 +34,8 @@ function FormElementBarcodeScanner({
   displayValidationMessage,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
-  const [
-    isCameraOpen,
-    startBarcodeScanner,
-    stopBarcodeScanner,
-  ] = useBooleanState(false)
+  const [isCameraOpen, startBarcodeScanner, stopBarcodeScanner] =
+    useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
   const handleScan = React.useCallback(
@@ -108,7 +105,7 @@ function FormElementBarcodeScanner({
         ) : (
           <div>
             <div className="field has-addons">
-              <div className="control is-expanded">
+              <div className="control is-expanded has-icons-right">
                 <input
                   type="text"
                   placeholder={element.placeholderValue}
@@ -123,6 +120,9 @@ function FormElementBarcodeScanner({
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
                 />
+                <span className="ob-input-icon icon is-small is-right">
+                  <i className="material-icons is-size-5">document_scanner</i>
+                </span>
               </div>
               {!!element.readOnly && !!value && (
                 <div className="control">
@@ -175,18 +175,16 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   const videoElementRef = React.useRef<HTMLVideoElement>(null)
   const figureElementRef = React.useRef<HTMLDivElement>(null)
 
-  const [
-    { isLoading = false, selectedDeviceId, error },
-    setState,
-  ] = React.useState<{
-    isLoading: boolean
-    selectedDeviceId: string | undefined
-    error: Error | undefined
-  }>({
-    isLoading: true,
-    selectedDeviceId: undefined,
-    error: undefined,
-  })
+  const [{ isLoading = false, selectedDeviceId, error }, setState] =
+    React.useState<{
+      isLoading: boolean
+      selectedDeviceId: string | undefined
+      error: Error | undefined
+    }>({
+      isLoading: true,
+      selectedDeviceId: undefined,
+      error: undefined,
+    })
   const [camera, setCamera] = React.useState<HTML5Camera | null>(null)
 
   const setError = React.useCallback((error: Error) => {
@@ -348,13 +346,11 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         })
 
         // @ts-expect-error ???
-        const fadedSquareElement: HTMLDivElement = figureElement.getElementsByClassName(
-          'ob-barcode-scanner__square',
-        )[0]
+        const fadedSquareElement: HTMLDivElement =
+          figureElement.getElementsByClassName('ob-barcode-scanner__square')[0]
         // @ts-expect-error ???
-        const redLineElement: HTMLDivElement = figureElement.getElementsByClassName(
-          'ob-barcode-scanner__line',
-        )[0]
+        const redLineElement: HTMLDivElement =
+          figureElement.getElementsByClassName('ob-barcode-scanner__line')[0]
         console.log('videoElement Width pixels', videoElement.clientWidth)
         console.log('videoElement Height pixels', videoElement.clientHeight)
         console.log('videoElement Width', videoElement.videoWidth)

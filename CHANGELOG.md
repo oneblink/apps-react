@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- icons to right side of inputs for form elements:
+  - `'number'`
+  - `'barcodeScanner'`
+  - `'telephone'`
+  - `'email'`
+  - `'date'`
+  - `'datetime'`
+  - `'time'`
+
 ### Changed
 
 - Only capture date from date element

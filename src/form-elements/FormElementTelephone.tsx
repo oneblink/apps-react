@@ -35,7 +35,7 @@ function FormElementTelephone({
         required={element.required}
       >
         <div className="field has-addons">
-          <div className="control is-expanded">
+          <div className="control is-expanded has-icons-right">
             <input
               type="tel"
               placeholder={element.placeholderValue}
@@ -48,6 +48,9 @@ function FormElementTelephone({
               disabled={element.readOnly}
               onBlur={setIsDirty}
             />
+            <span className="ob-input-icon icon is-small is-right">
+              <i className="material-icons is-size-5">phone</i>
+            </span>
           </div>
           {!!element.readOnly && !!value && (
             <div className="control">
