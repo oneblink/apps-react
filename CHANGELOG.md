@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Hide Add button if repeatable set already has max number of entries
+
+### Changed
+
 - Only capture date from date element
 - days offset to `date` and `datetime`
 
