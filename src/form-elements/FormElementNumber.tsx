@@ -58,7 +58,7 @@ function FormElementNumber({
       >
         {!element.isSlider ? (
           <div className="field has-addons">
-            <div className="control is-expanded">
+            <div className="control is-expanded has-icons-right">
               <input
                 ref={htmlInputElementRef}
                 type="number"
@@ -71,6 +71,9 @@ function FormElementNumber({
                 disabled={element.readOnly}
                 onBlur={setIsDirty}
               />
+              <span className="ob-input-icon icon is-small is-right">
+                <i className="material-icons is-size-5">tag</i>
+              </span>
             </div>
             {!!element.readOnly && !!text && (
               <div className="control">
