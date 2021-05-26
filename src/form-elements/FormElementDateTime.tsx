@@ -53,13 +53,6 @@ function FormElementDateTime({
       onClose: setIsDirty,
     }
 
-    if (element.fromDate) {
-      opts.minDate = element.fromDate
-    }
-    if (element.toDate) {
-      opts.maxDate = element.toDate
-    }
-
     return opts
   }, [
     element.fromDate,
