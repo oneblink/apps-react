@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - validation for `camera` form element to ensure an image is selected
+- replaceable parameter `{INDEX}` in HTML elements nested in repeatable sets
 
 ### Changed
 
