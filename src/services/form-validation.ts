@@ -116,12 +116,11 @@ validate.validators.attachments = function (
   return validateAttachments(
     value?.files as FormElementBinaryStorageValue[] | undefined,
   )
-  return
 }
 
 // Extend validator for lookups
 validate.validators.lookups = function (
-  value: unknown | undefined,
+  value: unknown,
   {
     elementIdsWithLookupsExecuted,
     formElement,
@@ -144,6 +143,26 @@ validate.validators.lookups = function (
   }
 
   return lookupValidationMessage
+}
+
+validate.validators.customRegex = function <
+  T extends FormTypes.FormElementWithInput<T['defaultValue']>,
+>(value: unknown, formElement: T) {
+  console.log('Validation regex...')
+  if (!formElement.regexPattern) return
+  const regex = new RegExp(formElement.regexPattern, formElement.regexFlags)
+
+  switch (typeof value) {
+    case 'string':
+    case 'number': {
+      const v = typeof value === 'number' ? value.toString() : value
+      const isValid = regex.test(v)
+      if (!isValid) return formElement.regexMessage
+      return
+    }
+    default:
+      return
+  }
 }
 
 type ValidateJSSchema = Record<string, unknown>
@@ -371,6 +390,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          customRegex: formElement,
         }
         break
       }
@@ -389,6 +409,7 @@ const generateSchemaReducer = (
             maximum: formElement.maxLength,
             tooLong: 'Please enter a value with %{count} character(s) or less',
           },
+          customRegex: formElement,
         }
         break
       }
@@ -402,6 +423,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          customRegex: formElement,
         }
         break
       }
@@ -418,6 +440,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          customRegex: formElement,
         }
         break
       }
@@ -514,6 +537,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          customRegex: formElement,
         }
         break
       }
