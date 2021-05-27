@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Hide Add button if repeatable set already has max number of entries
 
+### Fixed
+
+- prefill data on multiple pages overriding parsing of prefill data in subsequent pages
+
 ## [0.3.2] - 2021-05-26
 
 ### Added
