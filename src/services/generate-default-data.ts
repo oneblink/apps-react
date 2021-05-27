@@ -125,7 +125,7 @@ export default function generateDefaultData(
   elements: FormTypes.FormElement[],
   preFillData: FormElementsCtrl['model'],
 ): FormElementsCtrl['model'] {
-  return elements.reduce((m, el: FormTypes.FormElement) => {
+  return elements.reduce<FormElementsCtrl['model']>((m, el) => {
     if (el.type !== 'page' && preFillData[el.name] !== undefined) {
       m[el.name] = parsePreFillData(el, preFillData[el.name])
       return m
@@ -228,7 +228,7 @@ export default function generateDefaultData(
     }
 
     return m
-  }, Object.assign({}, preFillData))
+  }, {})
 }
 
 const getOptionsDefaultValue = (el: FormTypes.FormElementWithOptions) => {
