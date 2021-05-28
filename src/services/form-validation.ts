@@ -145,24 +145,16 @@ validate.validators.lookups = function (
   return lookupValidationMessage
 }
 
-validate.validators.customRegex = function <
+function getCustomRegexFormatConfig<
   T extends FormTypes.FormElementWithInput<T['defaultValue']>,
->(value: unknown, formElement: T) {
-  console.log('Validation regex...')
-  if (!formElement.regexPattern) return
-  const regex = new RegExp(formElement.regexPattern, formElement.regexFlags)
-
-  switch (typeof value) {
-    case 'string':
-    case 'number': {
-      const v = typeof value === 'number' ? value.toString() : value
-      const isValid = regex.test(v)
-      if (!isValid) return formElement.regexMessage
-      return
-    }
-    default:
-      return
-  }
+>(formElement: T) {
+  return formElement.regexPattern
+    ? {
+        pattern: formElement.regexPattern,
+        flags: formElement.regexFlags,
+        message: formElement.regexMessage,
+      }
+    : undefined
 }
 
 type ValidateJSSchema = Record<string, unknown>
@@ -390,7 +382,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          customRegex: formElement,
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -409,7 +401,7 @@ const generateSchemaReducer = (
             maximum: formElement.maxLength,
             tooLong: 'Please enter a value with %{count} character(s) or less',
           },
-          customRegex: formElement,
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -423,7 +415,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          customRegex: formElement,
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -440,7 +432,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          customRegex: formElement,
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -537,7 +529,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          customRegex: formElement,
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
