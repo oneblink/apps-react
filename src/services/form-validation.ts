@@ -116,12 +116,11 @@ validate.validators.attachments = function (
   return validateAttachments(
     value?.files as FormElementBinaryStorageValue[] | undefined,
   )
-  return
 }
 
 // Extend validator for lookups
 validate.validators.lookups = function (
-  value: unknown | undefined,
+  value: unknown,
   {
     elementIdsWithLookupsExecuted,
     formElement,
@@ -144,6 +143,18 @@ validate.validators.lookups = function (
   }
 
   return lookupValidationMessage
+}
+
+function getCustomRegexFormatConfig<
+  T extends FormTypes.FormElementWithInput<T['defaultValue']>,
+>(formElement: T) {
+  return formElement.regexPattern
+    ? {
+        pattern: formElement.regexPattern,
+        flags: formElement.regexFlags,
+        message: formElement.regexMessage,
+      }
+    : undefined
 }
 
 type ValidateJSSchema = Record<string, unknown>
@@ -371,6 +382,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -389,6 +401,7 @@ const generateSchemaReducer = (
             maximum: formElement.maxLength,
             tooLong: 'Please enter a value with %{count} character(s) or less',
           },
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -402,6 +415,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -418,6 +432,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
@@ -514,6 +529,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
+          format: getCustomRegexFormatConfig(formElement),
         }
         break
       }
