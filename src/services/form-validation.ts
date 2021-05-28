@@ -145,9 +145,20 @@ validate.validators.lookups = function (
   return lookupValidationMessage
 }
 
-function getCustomRegexFormatConfig<
-  T extends FormTypes.FormElementWithInput<T['defaultValue']>,
->(formElement: T) {
+validate.validators.numberRegex = function (value: unknown, format: unknown) {
+  if (!format) {
+    return
+  }
+  if (typeof value === 'number' && !Number.isNaN(value)) {
+    value = value.toString()
+  }
+  const errorMessages = validate.single(value, { format })
+  return errorMessages && errorMessages[0]
+}
+
+function getCustomRegexFormatConfig<DefaultValue>(
+  formElement: FormTypes.FormElementWithInput<DefaultValue>,
+) {
   return formElement.regexPattern
     ? {
         pattern: formElement.regexPattern,
@@ -529,7 +540,7 @@ const generateSchemaReducer = (
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          format: getCustomRegexFormatConfig(formElement),
+          numberRegex: getCustomRegexFormatConfig(formElement),
         }
         break
       }
