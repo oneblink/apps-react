@@ -7,10 +7,7 @@ type Props = {
 const CustomisableButton = ({ label, icon }: Props) => {
   return (
     <>
-      <span
-        style={{ display: 'flex', gap: '8px' }}
-        className="ob-customisable-button-inner"
-      >
+      <span className="ob-customisable-button-inner">
         {!!icon && <i className="material-icons">{icon}</i>}
         <span>{label}</span>
       </span>

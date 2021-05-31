@@ -13,16 +13,34 @@ import '@oneblink/apps-react/dist/styles.css'
 
 ### Props
 
-| Property            | Type                           | Required    | Description                                                                                                                                                                                                               |
-| ------------------- | ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `form`              | `OneBlinkForm`                 | Yes         | The OneBlink Form to render                                                                                                                                                                                               |
-| `initialSubmission` | `Object`                       | No          | The initial submission data                                                                                                                                                                                               |
-| `googleMapsApiKey`  | `string`                       | Conditional | A [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Required if the form contains a `location` form element.                                                                |
-| `captchaSiteKey`    | `string`                       | Conditional | A [reCAPTCHA Site Key](https://developers.google.com/recaptcha/intro). Required if the form contains a `captcha` form element.                                                                                            |
-| `onSubmit`          | `(NewFormSubmission) => void`  | Yes         | The function to call when the user submits the form with valid submission data. See [NewFormSubmission](#newformsubmission) for the structure of the argument.                                                            |
-| `onCancel`          | `() => void`                   | Yes         | The function to call when the user cancels the form                                                                                                                                                                       |
-| `onSaveDraft`       | `(NewDraftSubmission) => void` | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
-| `disabeld`          | `boolean`                      | No          | Whether the form is currently able to be submitted. False by default.                                                                                                                                                     |
+| Property            | Type                                            | Required    | Description                                                                                                                                                                                                               |
+| ------------------- | ----------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `form`              | `OneBlinkForm`                                  | Yes         | The OneBlink Form to render                                                                                                                                                                                               |
+| `initialSubmission` | `Object`                                        | No          | The initial submission data                                                                                                                                                                                               |
+| `googleMapsApiKey`  | `string`                                        | Conditional | A [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Required if the form contains a `location` form element.                                                                |
+| `captchaSiteKey`    | `string`                                        | Conditional | A [reCAPTCHA Site Key](https://developers.google.com/recaptcha/intro). Required if the form contains a `captcha` form element.                                                                                            |
+| `onSubmit`          | `(NewFormSubmission) => void`                   | Yes         | The function to call when the user submits the form with valid submission data. See [NewFormSubmission](#newformsubmission) for the structure of the argument.                                                            |
+| `onCancel`          | `() => void`                                    | Yes         | The function to call when the user cancels the form                                                                                                                                                                       |
+| `onSaveDraft`       | `(NewDraftSubmission) => void`                  | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
+| `disabled`          | `boolean`                                       | No          | Whether the form is currently able to be submitted. False by default.                                                                                                                                                     |
+| `buttons`           | [`ButtonsConfiguration`](#buttonsconfiguration) | No          | Change properties for certain buttons on the form.                                                                                                                                                                        |
+
+### ButtonsConfiguration
+
+| Property          | Type                                          | Required | Description                                                |
+| ----------------- | --------------------------------------------- | -------- | ---------------------------------------------------------- |
+| `submit`          | [`ButtonConfiguration`](#buttonconfiguration) | No       | Change properties for the Submit button                    |
+| `cancel`          | [`ButtonConfiguration`](#buttonconfiguration) | No       | Change properties for the Cancel button                    |
+| `saveDraft`       | [`ButtonConfiguration`](#buttonconfiguration) | No       | Change properties for the Save Draft button                |
+| `cancelPromptYes` | [`ButtonConfiguration`](#buttonconfiguration) | No       | Change properties for the Unsaved Changes - Discard button |
+| `cancelPromptNo`  | [`ButtonConfiguration`](#buttonconfiguration) | No       | Change properties for the Unsaved Changes - Back button    |
+
+### ButtonConfiguration
+
+| Property | Type     | Required | Description                                                                                                                                                                   |
+| -------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`  | `string` | No       | Change the text that appears in the button                                                                                                                                    |
+| `icon`   | `string` | No       | Add a [Material Icon](https://fonts.google.com/icons?selected=Material+Icons:home) to the button, the string must be the part that goes `<i class="material-icons">HERE</i>`) |
 
 ### NewDraftSubmission
 
@@ -88,14 +106,12 @@ function FormContainer() {
     },
   )
 
-  const [
-    { isSubmitting, submitError, formSubmissionResult },
-    setSubmitState,
-  ] = React.useState({
-    formSubmissionResult: null,
-    isSubmitting: false,
-    submitError: null,
-  })
+  const [{ isSubmitting, submitError, formSubmissionResult }, setSubmitState] =
+    React.useState({
+      formSubmissionResult: null,
+      isSubmitting: false,
+      submitError: null,
+    })
 
   const handleSubmit = React.useCallback(
     async (newFormSubmission: FormTypes.NewFormSubmission) => {
