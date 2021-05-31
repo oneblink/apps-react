@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes, FormsAppsTypes } from '@oneblink/types'
 
 import useNullableState from './hooks/useNullableState'
 import useBooleanState from './hooks/useBooleanState'
@@ -27,24 +27,28 @@ import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
+
 import useChangeEffect from './hooks/useChangeEffect'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
 
-type Props = {
+import CustomisableButtonInner from './components/CustomisableButtonInner'
+export type Props = {
   form: FormTypes.Form
   disabled?: boolean
   isPreview?: boolean
   initialSubmission?: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
   captchaSiteKey?: string
-  isReadOnly?: boolean
-  onCancel?: () => unknown
-  onSubmit?: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
   onSaveDraft?: (
     newDraftSubmission: SubmissionTypes.NewDraftSubmission,
   ) => unknown
   onChange?: (model: FormElementsCtrl['model']) => unknown
+  buttons?: FormsAppsTypes.FormsListStyles['buttons']
+}
+export type OptionalHandlerProps = {
+  onCancel?: () => unknown
+  onSubmit?: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
 }
 
 function OneBlinkFormBase({
@@ -59,7 +63,11 @@ function OneBlinkFormBase({
   onSubmit,
   onSaveDraft,
   onChange,
-}: Props) {
+  buttons,
+}: Props &
+  OptionalHandlerProps & {
+    isReadOnly?: boolean
+  }) {
   const isOffline = useIsOffline()
 
   //
@@ -741,7 +749,10 @@ function OneBlinkFormBase({
                   onClick={handleSaveDraft}
                   disabled={isPreview || disabled}
                 >
-                  <span>Save Draft</span>
+                  <CustomisableButtonInner
+                    label={buttons?.saveDraft?.label || 'Save Draft'}
+                    icon={buttons?.saveDraft?.icon}
+                  />
                 </button>
               )}
               <span className="ob-buttons-submit__spacer"></span>
@@ -752,7 +763,10 @@ function OneBlinkFormBase({
                   onClick={handleCancel}
                   disabled={isPreview || disabled}
                 >
-                  <span>Cancel</span>
+                  <CustomisableButtonInner
+                    label={buttons?.cancel?.label || 'Cancel'}
+                    icon={buttons?.cancel?.icon}
+                  />
                 </button>
               )}
               {isLastVisiblePage && (
@@ -761,7 +775,14 @@ function OneBlinkFormBase({
                   className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
                   disabled={isPreview || disabled}
                 >
-                  <span>{definition.isInfoPage ? 'Done' : 'Submit'}</span>
+                  <CustomisableButtonInner
+                    label={
+                      definition.isInfoPage
+                        ? 'Done'
+                        : buttons?.submit?.label || 'Submit'
+                    }
+                    icon={buttons?.submit?.icon}
+                  />
                 </button>
               )}
             </div>
@@ -789,7 +810,10 @@ function OneBlinkFormBase({
                     className="button ob-button is-success cypress-cancel-confirm-save-draft"
                     onClick={handleSaveDraft}
                   >
-                    Save Draft
+                    <CustomisableButtonInner
+                      label={buttons?.saveDraft?.label || 'Save Draft'}
+                      icon={buttons?.saveDraft?.icon}
+                    />
                   </button>
                 )}
                 <span style={{ flex: 1 }}></span>
@@ -798,14 +822,20 @@ function OneBlinkFormBase({
                   className="button ob-button is-light cypress-cancel-confirm-back"
                   onClick={handleKeepGoing}
                 >
-                  Back
+                  <CustomisableButtonInner
+                    label={buttons?.cancelPromptNo?.label || 'Back'}
+                    icon={buttons?.cancelPromptNo?.icon}
+                  />
                 </button>
                 <button
                   type="button"
                   className="button ob-button is-primary cypress-cancel-confirm-discard"
                   onClick={handleDiscardUnsavedChanges}
                 >
-                  Discard
+                  <CustomisableButtonInner
+                    label={buttons?.cancelPromptYes?.label || 'Discard'}
+                    icon={buttons?.cancelPromptYes?.icon}
+                  />
                 </button>
               </>
             }

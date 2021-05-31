@@ -240,3 +240,8 @@
     font-size: $size-6;
   }
 }
+
+.ob-customisable-button-inner {
+  display: flex;
+  gap: $size-8;
+}

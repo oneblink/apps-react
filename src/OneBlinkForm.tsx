@@ -1,23 +1,9 @@
 import * as React from 'react'
 
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
-
-import OneBlinkFormBase from './OneBlinkFormBase'
-
-type Props = {
-  form: FormTypes.Form
-  disabled?: boolean
-  isPreview?: boolean
-  initialSubmission?: FormElementsCtrl['model'] | null
-  googleMapsApiKey?: string
-  captchaSiteKey?: string
-  onCancel: () => unknown
-  onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
-  onSaveDraft?: (
-    newDraftSubmission: SubmissionTypes.NewDraftSubmission,
-  ) => unknown
-  onChange?: (model: FormElementsCtrl['model']) => unknown
-}
+import OneBlinkFormBase, {
+  Props,
+  OptionalHandlerProps,
+} from './OneBlinkFormBase'
 
 function OneBlinkForm({
   googleMapsApiKey,
@@ -30,7 +16,8 @@ function OneBlinkForm({
   onSubmit,
   onSaveDraft,
   onChange,
-}: Props) {
+  buttons,
+}: Props & Required<OptionalHandlerProps>) {
   return (
     <OneBlinkFormBase
       form={form}
@@ -44,6 +31,7 @@ function OneBlinkForm({
       onSubmit={onSubmit}
       onSaveDraft={onSaveDraft}
       onChange={onChange}
+      buttons={buttons}
     />
   )
 }
