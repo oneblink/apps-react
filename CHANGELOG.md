@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Barcode Scanner lookups to run automatically on scan
+- **[BREAKING]** radio and checkbox inputs to Material UI
 
 ## [0.3.3] - 2021-06-02
 

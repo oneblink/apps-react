@@ -1,5 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { Radio } from '@material-ui/core'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -51,14 +52,20 @@ function FormElementRadio({
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
                   <label
-                    className="checkbox ob-radio__input-label cypress-radio-label"
+                    className="radio ob-radio__input-label cypress-radio-label"
                     htmlFor={`${id}_${option.value}`}
-                    // @ts-expect-error ???
-                    disabled={element.readOnly}
                   >
-                    <input
-                      type="radio"
-                      className="checkbox ob-radio__input cypress-radio-control"
+                    <Radio
+                      color="default"
+                      className={clsx(
+                        'ob-radio__input',
+                        'cypress-radio-control',
+                        {
+                          'ob-radio__input-checked': value === option.value,
+                        },
+                      )}
+                      disableRipple
+                      inputProps={{ className: 'cypress-radio-input' }}
                       value={option.value || ''}
                       id={`${id}_${option.value}`}
                       disabled={element.readOnly}

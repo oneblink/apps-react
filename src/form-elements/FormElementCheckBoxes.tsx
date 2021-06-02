@@ -1,5 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { Checkbox } from '@material-ui/core'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -99,13 +100,19 @@ function FormElementCheckboxes({
                   <div className="control" key={index}>
                     <label
                       className="checkbox ob-checkbox__input-label cypress-checkbox-label"
-                      // @ts-expect-error ???
-                      disabled={element.readOnly}
                       htmlFor={`${id}_${option.value}`}
                     >
-                      <input
-                        type="checkbox"
-                        className="checkbox ob-checkbox__input cypress-checkbox-control"
+                      <Checkbox
+                        color="default"
+                        className={clsx(
+                          'ob-checkbox__input',
+                          'cypress-checkbox-control',
+                          {
+                            'ob-checkbox__input-checked': isSelected,
+                          },
+                        )}
+                        disableRipple
+                        inputProps={{ className: 'cypress-checkbox-input' }}
                         value={option.value}
                         id={`${id}_${option.value}`}
                         checked={isSelected}
