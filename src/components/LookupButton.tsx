@@ -33,7 +33,7 @@ function LookupButton({
           'has-margin-top-8': hasMarginTop,
         },
       )}
-      onClick={onLookup}
+      onClick={() => onLookup(value)}
       disabled={
         formIsReadOnly ||
         isDisabled ||

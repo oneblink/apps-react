@@ -44,21 +44,23 @@ function LookupNotificationComponent({
   const injectPagesAfter = useInjectPages()
   const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
 
-  const [onCancelLookup, setOnCancelLookup] = React.useState<
-    (() => void) | undefined
-  >(undefined)
+  const [onCancelLookup, setOnCancelLookup] =
+    React.useState<(() => void) | undefined>(undefined)
   const [isLookingUp, setIsLookingUp] = React.useState(false)
   const [hasLookupFailed, setHasLookupFailed] = React.useState(false)
   const [hasLookupSucceeded, setHasLookupSucceeded] = React.useState(false)
   const [isCancellable, setIsCancellable] = React.useState(false)
   const [isDisabled, setIsDisabled] = React.useState(false)
-  const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
-    null,
-  )
+  const [lookupErrorHTML, setLookupErrorHTML] =
+    React.useState<string | null>(null)
   const formIsReadOnly = useFormIsReadOnly()
 
   const mergeLookupData = React.useCallback(
-    (dataLookupResult, elementLookupResult: FormTypes.FormElement[]) => {
+    (
+      newValue,
+      dataLookupResult,
+      elementLookupResult: FormTypes.FormElement[],
+    ) => {
       let defaultElementData: FormElementsCtrl['model'] | undefined
 
       if (elementLookupResult) {
@@ -100,6 +102,7 @@ function LookupNotificationComponent({
       onChangeModel({
         ...defaultElementData,
         ...formElementsCtrl.model,
+        [element.name]: newValue,
         ...dataLookupResult,
       })
     },
@@ -113,105 +116,107 @@ function LookupNotificationComponent({
     ],
   )
 
-  const triggerLookup = React.useCallback(async () => {
-    // No lookups for read only forms
-    if (formIsReadOnly) return
-    // if the element triggering the lookup has no value..
-    // ..return and do nothing
-    if (value === undefined || value === null) return
+  const triggerLookup = React.useCallback(
+    async (newValue) => {
+      // No lookups for read only forms
+      if (formIsReadOnly) return
+      // if the element triggering the lookup has no value..
+      // ..return and do nothing
+      if (newValue === undefined || newValue === null) return
 
-    setIsLookingUp(true)
+      setIsLookingUp(true)
 
-    if (isOffline) {
-      setHasLookupFailed(true)
-      return
-    }
-
-    executedLookup(element)
-    setIsDisabled(true)
-    setIsCancellable(false)
-    setHasLookupFailed(false)
-    setHasLookupSucceeded(false)
-    setLookupErrorHTML(null)
-
-    const abortController = new AbortController()
-    setOnCancelLookup(() => () => abortController.abort())
-
-    // After certain amount of time, show the cancel button
-    const isCancellableTimeout = setTimeout(() => {
-      setIsCancellable(!abortController.signal.aborted)
-    }, 5000)
-
-    const payload = {
-      submission: cleanFormElementsCtrlModel(
-        formElementsCtrl,
-        formElementsConditionallyShown,
-        true,
-      ).model,
-    }
-
-    try {
-      const [dataLookupResult, elementLookupResult] = await Promise.all([
-        fetchLookup(
-          element.dataLookupId,
-          definition,
-          payload,
-          abortController.signal,
-        ),
-        fetchLookup(
-          element.elementLookupId,
-          definition,
-          payload,
-          abortController.signal,
-        ),
-      ])
-
-      mergeLookupData(dataLookupResult, elementLookupResult)
-
-      setHasLookupSucceeded(true)
-
-      // After certain amount of time, hide the lookup succeeded message
-      await new Promise((resolve) => setTimeout(() => resolve(false), 750))
-
-      setIsLookingUp(false)
-    } catch (error) {
-      executeLookupFailed(element)
-      // Cancelling will throw an error.
-      if (error.name === 'AbortError') {
-        console.log('Fetch aborted')
-        setIsLookingUp(false)
+      if (isOffline) {
+        setHasLookupFailed(true)
         return
       }
 
-      setHasLookupFailed(true)
-      setLookupErrorHTML(
-        typeof error === 'string'
-          ? error
-          : 'It looks like something went wrong.<br/>Please try again.<br />If the issue continues, please contact support.',
-      )
-    } finally {
-      clearTimeout(isCancellableTimeout)
-      setIsDisabled(false)
-      setOnCancelLookup(undefined)
-    }
-  }, [
-    definition,
-    element,
-    executeLookupFailed,
-    executedLookup,
-    formElementsConditionallyShown,
-    formElementsCtrl,
-    formIsReadOnly,
-    isOffline,
-    mergeLookupData,
-    value,
-  ])
+      executedLookup(element)
+      setIsDisabled(true)
+      setIsCancellable(false)
+      setHasLookupFailed(false)
+      setHasLookupSucceeded(false)
+      setLookupErrorHTML(null)
+
+      const abortController = new AbortController()
+      setOnCancelLookup(() => () => abortController.abort())
+
+      // After certain amount of time, show the cancel button
+      const isCancellableTimeout = setTimeout(() => {
+        setIsCancellable(!abortController.signal.aborted)
+      }, 5000)
+
+      const payload = {
+        submission: cleanFormElementsCtrlModel(
+          formElementsCtrl,
+          formElementsConditionallyShown,
+          true,
+        ).model,
+      }
+
+      try {
+        const [dataLookupResult, elementLookupResult] = await Promise.all([
+          fetchLookup(
+            element.dataLookupId,
+            definition,
+            payload,
+            abortController.signal,
+          ),
+          fetchLookup(
+            element.elementLookupId,
+            definition,
+            payload,
+            abortController.signal,
+          ),
+        ])
+
+        mergeLookupData(newValue, dataLookupResult, elementLookupResult)
+
+        setHasLookupSucceeded(true)
+
+        // After certain amount of time, hide the lookup succeeded message
+        await new Promise((resolve) => setTimeout(() => resolve(false), 750))
+
+        setIsLookingUp(false)
+      } catch (error) {
+        executeLookupFailed(element)
+        // Cancelling will throw an error.
+        if (error.name === 'AbortError') {
+          console.log('Fetch aborted')
+          setIsLookingUp(false)
+          return
+        }
+
+        setHasLookupFailed(true)
+        setLookupErrorHTML(
+          typeof error === 'string'
+            ? error
+            : 'It looks like something went wrong.<br/>Please try again.<br />If the issue continues, please contact support.',
+        )
+      } finally {
+        clearTimeout(isCancellableTimeout)
+        setIsDisabled(false)
+        setOnCancelLookup(undefined)
+      }
+    },
+    [
+      definition,
+      element,
+      executeLookupFailed,
+      executedLookup,
+      formElementsConditionallyShown,
+      formElementsCtrl,
+      formIsReadOnly,
+      isOffline,
+      mergeLookupData,
+    ],
+  )
 
   // For certain elements, do not add click event
   // instead, watch model for changes and trigger lookup function
   React.useEffect(() => {
     if (isAutoLookup) {
-      triggerLookup()
+      triggerLookup(value)
     }
     // Wants to use "triggerLookup" as a dependency,
     // however, this will change on any change made on any
