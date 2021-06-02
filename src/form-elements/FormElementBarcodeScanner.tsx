@@ -45,7 +45,7 @@ function FormElementBarcodeScanner({
       setIsDirty()
       onChange(element, newValue)
       stopBarcodeScanner()
-      onLookup()
+      onLookup(newValue)
     },
     [element, onChange, onLookup, setIsDirty, stopBarcodeScanner],
   )
