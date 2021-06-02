@@ -10,6 +10,7 @@ import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
+import useLookupNotification from '../hooks/useLookupNotification'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
@@ -38,13 +39,15 @@ function FormElementBarcodeScanner({
     useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
+  const { onLookup } = useLookupNotification()
   const handleScan = React.useCallback(
     (newValue: string | undefined) => {
       setIsDirty()
       onChange(element, newValue)
       stopBarcodeScanner()
+      onLookup()
     },
-    [element, onChange, setIsDirty, stopBarcodeScanner],
+    [element, onChange, onLookup, setIsDirty, stopBarcodeScanner],
   )
 
   const openBarcodeScanner = React.useCallback(() => {
