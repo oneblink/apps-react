@@ -73,18 +73,17 @@ function FormElementCheckboxes({
         element={element}
         required={element.required}
       >
-        {element.canToggleAll && (
-          <ToggleAllCheckbox
-            id={id}
-            element={element}
-            options={filteredOptions}
-            selected={selectedValues}
-            disabled={element.readOnly}
-            onChange={onChange}
-          />
-        )}
-
         <FormElementOptions options={element.options}>
+          {element.canToggleAll && (
+            <ToggleAllCheckbox
+              id={id}
+              element={element}
+              options={filteredOptions}
+              selected={selectedValues}
+              disabled={element.readOnly}
+              onChange={onChange}
+            />
+          )}
           {element.buttons ? (
             <div className="ob-button-radio-container">
               <div className="buttons ob-buttons ob-buttons-radio">

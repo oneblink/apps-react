@@ -52,17 +52,17 @@ function FormElementSelect({
         element={element}
         required={element.required}
       >
-        {element.multi && element.canToggleAll && (
-          <ToggleAllCheckbox
-            id={id}
-            element={element}
-            options={filteredOptions}
-            selected={selectedValuesAsArray}
-            disabled={element.readOnly}
-            onChange={onChange as FormElementValueChangeHandler<string[]>}
-          />
-        )}
         <FormElementOptions options={element.options}>
+          {element.multi && element.canToggleAll && (
+            <ToggleAllCheckbox
+              id={id}
+              element={element}
+              options={filteredOptions}
+              selected={selectedValuesAsArray}
+              disabled={element.readOnly}
+              onChange={onChange as FormElementValueChangeHandler<string[]>}
+            />
+          )}
           {!element.multi ? (
             <div className="field has-addons">
               <div className="control is-expanded">
