@@ -8,6 +8,8 @@ import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import ToggleAllCheckbox from '../components/ToggleAllCheckbox'
+
 type Props = {
   id: string
   element: FormTypes.CheckboxElement
@@ -29,6 +31,11 @@ function FormElementCheckboxes({
   displayValidationMessage,
   onConditionallyShowOption,
 }: Props) {
+  const selectedValues = React.useMemo(() => {
+    if (!Array.isArray(value)) return []
+    return value
+  }, [value])
+
   const changeValues = React.useCallback(
     (toggledValue, hasSelectedValue) => {
       onChange(element, (existingValue) => {
@@ -50,6 +57,7 @@ function FormElementCheckboxes({
     },
     [element, onChange],
   )
+
   const filteredOptions = useFormElementOptions({
     element,
     value,
@@ -65,13 +73,23 @@ function FormElementCheckboxes({
         element={element}
         required={element.required}
       >
+        {element.canToggleAll && (
+          <ToggleAllCheckbox
+            id={id}
+            element={element}
+            options={filteredOptions}
+            selected={selectedValues}
+            disabled={element.readOnly}
+            onChange={onChange}
+          />
+        )}
+
         <FormElementOptions options={element.options}>
           {element.buttons ? (
             <div className="ob-button-radio-container">
               <div className="buttons ob-buttons ob-buttons-radio">
                 {filteredOptions.map((option, index) => {
-                  const isSelected =
-                    Array.isArray(value) && value.includes(option.value)
+                  const isSelected = selectedValues.includes(option.value)
                   return (
                     <OptionButton
                       key={index}
@@ -94,8 +112,7 @@ function FormElementCheckboxes({
           ) : (
             <div>
               {filteredOptions.map((option, index) => {
-                const isSelected =
-                  Array.isArray(value) && value.includes(option.value)
+                const isSelected = selectedValues.includes(option.value)
                 return (
                   <div className="control" key={index}>
                     <label
