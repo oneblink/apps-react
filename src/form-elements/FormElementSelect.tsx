@@ -6,6 +6,7 @@ import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import ToggleAllCheckbox from '../components/ToggleAllCheckbox'
 
 type Props = {
   id: string
@@ -37,6 +38,12 @@ function FormElementSelect({
     onFilter: onConditionallyShowOption,
   })
 
+  const selectedValuesAsArray = React.useMemo(() => {
+    if (Array.isArray(value)) return value
+    if (typeof value === 'string') return [value]
+    return []
+  }, [value])
+
   return (
     <div className="cypress-select-element">
       <FormElementLabelContainer
@@ -46,6 +53,16 @@ function FormElementSelect({
         required={element.required}
       >
         <FormElementOptions options={element.options}>
+          {element.multi && element.canToggleAll && (
+            <ToggleAllCheckbox
+              id={id}
+              element={element}
+              options={filteredOptions}
+              selected={selectedValuesAsArray}
+              disabled={element.readOnly}
+              onChange={onChange as FormElementValueChangeHandler<string[]>}
+            />
+          )}
           {!element.multi ? (
             <div className="field has-addons">
               <div className="control is-expanded">
