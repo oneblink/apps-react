@@ -23,7 +23,6 @@ function FormElementBoolean({
   displayValidationMessage,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
-
   return (
     <div className="cypress-boolean-element">
       <FormElementLabelContainer
@@ -40,11 +39,14 @@ function FormElementBoolean({
           className={clsx('ob-boolean__input', 'cypress-boolean-control', {
             'ob-boolean__input-checked': !!value,
           })}
-          inputProps={{ className: 'cypress-boolean-input' }}
+          inputProps={{
+            className:
+              'PrivateSwitchBase-input-4 MuiSwitch-input cypress-boolean-input',
+          }}
           value={!!value}
           disabled={element.readOnly}
           onBlur={setIsDirty}
-          onChange={(e) => onChange(element, !!e.target.value)}
+          onChange={(e) => onChange(element, e.target.checked)}
           disableRipple
         ></Switch>
 
