@@ -208,7 +208,8 @@ export default function generateDefaultData(
       case 'file':
       case 'files':
       case 'draw':
-      case 'location': {
+      case 'location':
+      case 'boolean': {
         if (el.defaultValue) {
           m[el.name] = el.defaultValue
         }

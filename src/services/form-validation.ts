@@ -373,7 +373,8 @@ const generateSchemaReducer = (
       case 'autocomplete':
       case 'checkboxes':
       case 'radio':
-      case 'select': {
+      case 'select':
+      case 'boolean': {
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Required'),
           lookups: {
