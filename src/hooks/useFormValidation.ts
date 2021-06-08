@@ -7,10 +7,8 @@ import {
 } from '../services/form-validation'
 
 export default function useFormValidation(pages: FormTypes.PageElement[]) {
-  const [
-    elementIdsWithLookupsExecuted,
-    setElementIdsWithLookupsExecuted,
-  ] = React.useState<string[]>([])
+  const [elementIdsWithLookupsExecuted, setElementIdsWithLookupsExecuted] =
+    React.useState<string[]>([])
 
   const executedLookup = React.useCallback(
     (element: FormTypes.LookupFormElement) => {
@@ -52,9 +50,8 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
         submission,
         pageElementsConditionallyShown,
       )
-
       return {
-        pagesValidation: pagesValidation,
+        pagesValidation,
       }
     },
     [schemaByPageId],

@@ -31,6 +31,8 @@ import FormElementLocation from '../form-elements/FormElementLocation'
 import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
 import FormElementCompliance from '../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../form-elements/FormElementPointAddress'
+import FormElementBoolean from '../form-elements/FormElementBoolean'
+
 import { FormTypes, GeoscapeTypes, PointTypes } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
@@ -750,6 +752,33 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementPointAddress
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'boolean': {
+      return (
+        <LookupNotification
+          isAutoLookup
+          element={element}
+          elements={elements}
+          value={value}
+          formElementsCtrl={formElementsCtrl}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+        >
+          <FormElementBoolean
+            id={id}
+            element={element}
+            value={value}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementBoolean
               >['onChange']
             }
             validationMessage={validationMessage}

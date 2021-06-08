@@ -1,0 +1,12 @@
+.ob-boolean__input-checked {
+  .MuiSwitch-thumb {
+    background-color: $primary;
+  }
+  .MuiSwitch-track {
+    background-color: $primary;
+  }
+}
+
+.ob-boolean__input {
+  margin-left: -$size-8;
+}

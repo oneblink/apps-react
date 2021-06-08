@@ -9,16 +9,19 @@ function FormElementLabelContainer({
   id,
   required,
   children,
+  leading,
 }: {
   className: string
   element: FormTypes.FormElementBase
   id: string
   required: boolean
   children: React.ReactNode
+  leading?: React.ReactNode
 }) {
   return (
     <div className={clsx('ob-form__element', className)}>
       <div className="label ob-label__container">
+        {leading}
         <label
           className={clsx('ob-label', {
             'ob-label__required is-required': required,
