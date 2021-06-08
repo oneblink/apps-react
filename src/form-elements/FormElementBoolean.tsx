@@ -42,7 +42,7 @@ function FormElementBoolean({
               className:
                 'PrivateSwitchBase-input-4 MuiSwitch-input cypress-boolean-input',
             }}
-            value={!!value}
+            checked={!!value}
             disabled={element.readOnly}
             onChange={(e) => {
               setIsDirty()
