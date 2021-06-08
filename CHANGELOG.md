@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Boolean` form element
 
+### Fixed
+
+- `Barcode Scanner` element auto lookup not sending relevant data
+
 ## [0.4.0] - 2021-06-06
 
 ### Added
