@@ -147,11 +147,14 @@ function LookupNotificationComponent({
       }, 5000)
 
       const payload = {
-        submission: cleanFormElementsCtrlModel(
-          formElementsCtrl,
-          formElementsConditionallyShown,
-          true,
-        ).model,
+        submission: {
+          ...cleanFormElementsCtrlModel(
+            formElementsCtrl,
+            formElementsConditionallyShown,
+            true,
+          ).model,
+          [element.name]: newValue,
+        },
       }
 
       try {
