@@ -38,10 +38,6 @@ function FormElementBoolean({
             className={clsx('ob-boolean__input', 'cypress-boolean-control', {
               'ob-boolean__input-checked': !!value,
             })}
-            inputProps={{
-              className:
-                'PrivateSwitchBase-input-4 MuiSwitch-input cypress-boolean-input',
-            }}
             checked={!!value}
             disabled={element.readOnly}
             onChange={(e) => {
