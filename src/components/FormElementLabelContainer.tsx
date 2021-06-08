@@ -9,19 +9,19 @@ function FormElementLabelContainer({
   id,
   required,
   children,
-  childrenFirst,
+  leading,
 }: {
   className: string
   element: FormTypes.FormElementBase
   id: string
   required: boolean
   children: React.ReactNode
-  childrenFirst?: boolean
+  leading?: React.ReactNode
 }) {
   return (
     <div className={clsx('ob-form__element', className)}>
       <div className="label ob-label__container">
-        {childrenFirst && children}
+        {leading}
         <label
           className={clsx('ob-label', {
             'ob-label__required is-required': required,
@@ -43,7 +43,7 @@ function FormElementLabelContainer({
           </Tooltip>
         )}
       </div>
-      {!childrenFirst && children}
+      {children}
     </div>
   )
 }

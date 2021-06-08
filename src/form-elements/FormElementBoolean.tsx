@@ -30,28 +30,28 @@ function FormElementBoolean({
         id={id}
         element={element}
         required={element.required}
-        childrenFirst
+        leading={
+          <Switch
+            id={id}
+            name={element.name}
+            color="default"
+            className={clsx('ob-boolean__input', 'cypress-boolean-control', {
+              'ob-boolean__input-checked': !!value,
+            })}
+            inputProps={{
+              className:
+                'PrivateSwitchBase-input-4 MuiSwitch-input cypress-boolean-input',
+            }}
+            value={!!value}
+            disabled={element.readOnly}
+            onChange={(e) => {
+              setIsDirty()
+              onChange(element, e.target.checked || undefined)
+            }}
+            disableRipple
+          />
+        }
       >
-        <Switch
-          id={id}
-          name={element.name}
-          color="default"
-          className={clsx('ob-boolean__input', 'cypress-boolean-control', {
-            'ob-boolean__input-checked': !!value,
-          })}
-          inputProps={{
-            className:
-              'PrivateSwitchBase-input-4 MuiSwitch-input cypress-boolean-input',
-          }}
-          value={!!value}
-          disabled={element.readOnly}
-          onChange={(e) => {
-            setIsDirty()
-            onChange(element, e.target.checked)
-          }}
-          disableRipple
-        ></Switch>
-
         {(isDirty || displayValidationMessage) && !!validationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">

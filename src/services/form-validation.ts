@@ -156,6 +156,12 @@ validate.validators.numberRegex = function (value: unknown, format: unknown) {
   return errorMessages && errorMessages[0]
 }
 
+validate.validators.isTrue = function (value: unknown, message?: string) {
+  if (!value) {
+    return message || 'Must be set to true'
+  }
+}
+
 function getCustomRegexFormatConfig<DefaultValue>(
   formElement: FormTypes.FormElementWithInput<DefaultValue>,
 ) {
@@ -373,10 +379,24 @@ const generateSchemaReducer = (
       case 'autocomplete':
       case 'checkboxes':
       case 'radio':
-      case 'select':
-      case 'boolean': {
+      case 'select': {
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(formElement.required, 'Required'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
+      case 'boolean': {
+        if (formElement.type === 'boolean') {
+          console.log(
+            `Validation boolean element is required: ${formElement.required}`,
+          )
+        }
+        partialSchema[escapeElementName(formElement.name)] = {
+          isTrue: formElement.required && 'Required',
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
