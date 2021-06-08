@@ -45,8 +45,10 @@ function FormElementBoolean({
           }}
           value={!!value}
           disabled={element.readOnly}
-          onBlur={setIsDirty}
-          onChange={(e) => onChange(element, e.target.checked)}
+          onChange={(e) => {
+            setIsDirty()
+            onChange(element, e.target.checked)
+          }}
           disableRipple
         ></Switch>
 
