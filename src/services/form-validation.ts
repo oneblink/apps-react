@@ -390,11 +390,6 @@ const generateSchemaReducer = (
         break
       }
       case 'boolean': {
-        if (formElement.type === 'boolean') {
-          console.log(
-            `Validation boolean element is required: ${formElement.required}`,
-          )
-        }
         partialSchema[escapeElementName(formElement.name)] = {
           isTrue: formElement.required && 'Required',
           lookups: {

@@ -46,7 +46,7 @@ function FormElementBoolean({
             disabled={element.readOnly}
             onChange={(e) => {
               setIsDirty()
-              onChange(element, e.target.checked || undefined)
+              onChange(element, e.target.checked)
             }}
             disableRipple
           />
