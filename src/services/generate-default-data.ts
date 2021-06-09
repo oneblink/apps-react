@@ -215,7 +215,7 @@ export default function generateDefaultData(
         break
       }
       case 'boolean': {
-        m[el.name] = el.defaultValue
+        m[el.name] = el.defaultValue || false
         break
       }
       case 'captcha':
