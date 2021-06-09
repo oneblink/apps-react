@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { formService } from '@oneblink/apps'
 
-import AutocompleteDropdown from '../components/AutocompleteDropdown'
+import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
+const AutocompleteDropdown = createTypedAutocompleteDropdown<undefined>()
 
 type Props = {
   formId: number
@@ -30,9 +31,8 @@ function FormElementPointAddress({
   const isMounted = useIsMounted()
   const [label, setLabel] = React.useState('')
   const [error, setError] = React.useState<Error | undefined>()
-  const [isLoadingAddressDetails, setIsLoadingAddressDetails] = React.useState(
-    false,
-  )
+  const [isLoadingAddressDetails, setIsLoadingAddressDetails] =
+    React.useState(false)
 
   const handleSearch = React.useCallback(
     async (address, abortSignal) => {
@@ -69,6 +69,7 @@ function FormElementPointAddress({
       return result.map((suggestion, index) => ({
         value: suggestion.id || index.toString(),
         label: suggestion.address || index.toString(),
+        data: undefined,
       }))
     },
     [element.addressTypeFilter, element.stateTerritoryFilter, formId],
@@ -100,10 +101,9 @@ function FormElementPointAddress({
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (!label && value) {
-      const newLabel =
-        value.addressDetails && value.addressDetails.formattedAddress
-          ? value.addressDetails.formattedAddress
-          : value.addressId
+      const newLabel = value.addressDetails?.formattedAddress
+        ? value.addressDetails.formattedAddress
+        : value.addressId
       setLabel(newLabel)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
