@@ -208,11 +208,14 @@ export default function generateDefaultData(
       case 'file':
       case 'files':
       case 'draw':
-      case 'location':
-      case 'boolean': {
+      case 'location': {
         if (el.defaultValue) {
           m[el.name] = el.defaultValue
         }
+        break
+      }
+      case 'boolean': {
+        m[el.name] = el.defaultValue || false
         break
       }
       case 'captcha':
