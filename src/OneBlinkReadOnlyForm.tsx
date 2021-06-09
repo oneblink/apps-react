@@ -49,11 +49,7 @@ type Props = {
   googleMapsApiKey?: string
 }
 
-function OneBlinkFormReadOnly({
-  googleMapsApiKey,
-  form,
-  initialSubmission,
-}: Props) {
+function OneBlinkFormReadOnly({ form, ...rest }: Props) {
   const definition = React.useMemo(() => {
     const clonedForm = _cloneDeep(form)
     const newElements = recursivelySetReadOnly(clonedForm.elements)
@@ -64,9 +60,8 @@ function OneBlinkFormReadOnly({
     <OneBlinkFormBase
       form={definition}
       disabled={true}
-      googleMapsApiKey={googleMapsApiKey}
-      initialSubmission={initialSubmission}
       isReadOnly={true}
+      {...rest}
     />
   )
 }

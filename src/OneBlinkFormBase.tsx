@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Tooltip } from '@material-ui/core'
+import { createMuiTheme, ThemeProvider, Tooltip } from '@material-ui/core'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import _cloneDeep from 'lodash.clonedeep'
@@ -45,6 +45,7 @@ export type Props = {
   ) => unknown
   onChange?: (model: FormElementsCtrl['model']) => unknown
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
+  primaryColour?: string
 }
 export type OptionalHandlerProps = {
   onCancel?: () => unknown
@@ -64,11 +65,24 @@ function OneBlinkFormBase({
   onSaveDraft,
   onChange,
   buttons,
+  primaryColour,
 }: Props &
   OptionalHandlerProps & {
     isReadOnly?: boolean
   }) {
   const isOffline = useIsOffline()
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          primary: {
+            main: primaryColour || '#4c8da7',
+          },
+        },
+      }),
+    [primaryColour],
+  )
 
   //
   //
@@ -517,298 +531,240 @@ function OneBlinkFormBase({
   }
 
   return (
-    <div className="ob-form-container" ref={obFormContainerHTMLElementRef}>
-      <form
-        name="obForm"
-        className={`ob-form cypress-ob-form ob-form__page-${
-          currentPageIndex + 1
-        }`}
-        noValidate
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <div ref={scrollToTopOfPageHTMLElementRef} />
-          {isShowingMultiplePages && (
-            <div
-              className={clsx('ob-steps-navigation', {
-                'is-active': isStepsHeaderActive,
-              })}
-            >
+    <ThemeProvider theme={theme}>
+      <div className="ob-form-container" ref={obFormContainerHTMLElementRef}>
+        <form
+          name="obForm"
+          className={`ob-form cypress-ob-form ob-form__page-${
+            currentPageIndex + 1
+          }`}
+          noValidate
+          onSubmit={handleSubmit}
+        >
+          <div>
+            <div ref={scrollToTopOfPageHTMLElementRef} />
+            {isShowingMultiplePages && (
               <div
-                className={clsx('ob-steps-navigation__header', {
+                className={clsx('ob-steps-navigation', {
                   'is-active': isStepsHeaderActive,
                 })}
-                onClick={toggleStepsNavigation}
               >
-                <span className="icon is-invisible">
-                  <i className="material-icons">keyboard_arrow_down</i>
-                </span>
-                <div className="steps-header-active-page">
-                  {isDisplayingCurrentPageError ? (
-                    <span className="icon">
-                      <i className="material-icons has-text-danger is-size-4">
-                        warning
-                      </i>
+                <div
+                  className={clsx('ob-steps-navigation__header', {
+                    'is-active': isStepsHeaderActive,
+                  })}
+                  onClick={toggleStepsNavigation}
+                >
+                  <span className="icon is-invisible">
+                    <i className="material-icons">keyboard_arrow_down</i>
+                  </span>
+                  <div className="steps-header-active-page">
+                    {isDisplayingCurrentPageError ? (
+                      <span className="icon">
+                        <i className="material-icons has-text-danger is-size-4">
+                          warning
+                        </i>
+                      </span>
+                    ) : (
+                      <span className="steps-header-active-page-icon">
+                        {currentPageNumber}
+                      </span>
+                    )}
+                    <span className="steps-header-active-page-label cypress-tablet-step-title">
+                      {currentPage ? currentPage.label : ''}
                     </span>
-                  ) : (
-                    <span className="steps-header-active-page-icon">
-                      {currentPageNumber}
-                    </span>
-                  )}
-                  <span className="steps-header-active-page-label cypress-tablet-step-title">
-                    {currentPage ? currentPage.label : ''}
+                  </div>
+                  <span className="dropdown icon">
+                    <i className="material-icons">keyboard_arrow_down</i>
                   </span>
                 </div>
-                <span className="dropdown icon">
-                  <i className="material-icons">keyboard_arrow_down</i>
-                </span>
-              </div>
 
-              <div
-                className={clsx('ob-steps-navigation__steps', {
-                  'is-active': isStepsHeaderActive,
-                })}
-              >
-                <div className="steps is-small is-horizontal-tablet cypress-steps">
-                  {visiblePages.map(
-                    (page: FormTypes.PageElement, index: number) => {
-                      const hasErrors = checkDisplayPageError(page)
-                      return (
-                        <div
-                          key={page.id}
-                          id={`steps-navigation-step-${page.id}`}
-                          className={clsx('step-item cypress-step-item', {
-                            'is-active': currentPage.id === page.id,
-                            'is-completed': currentPageIndex > index,
-                            'is-error': hasErrors,
-                          })}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (page.id !== currentPage.id) {
-                              setPageId(page.id)
-                            }
-                          }}
-                        >
+                <div
+                  className={clsx('ob-steps-navigation__steps', {
+                    'is-active': isStepsHeaderActive,
+                  })}
+                >
+                  <div className="steps is-small is-horizontal-tablet cypress-steps">
+                    {visiblePages.map(
+                      (page: FormTypes.PageElement, index: number) => {
+                        const hasErrors = checkDisplayPageError(page)
+                        return (
                           <div
-                            className="step-marker step-marker-error ob-step-marker cypress-step-marker"
-                            // @ts-expect-error ???
-                            name={`cypress-page-stepper-${index + 1}`}
-                            value={index + 1}
+                            key={page.id}
+                            id={`steps-navigation-step-${page.id}`}
+                            className={clsx('step-item cypress-step-item', {
+                              'is-active': currentPage.id === page.id,
+                              'is-completed': currentPageIndex > index,
+                              'is-error': hasErrors,
+                            })}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              if (page.id !== currentPage.id) {
+                                setPageId(page.id)
+                              }
+                            }}
                           >
-                            {hasErrors ? (
-                              <Tooltip title="Page has errors">
-                                <span className="icon tooltip has-tooltip-top cypress-page-error">
-                                  <i className="material-icons has-text-danger is-size-3">
-                                    warning
-                                  </i>
-                                </span>
-                              </Tooltip>
-                            ) : (
-                              <span>{index + 1}</span>
-                            )}
-                          </div>
-                          <div className="step-details ob-step-details">
-                            <p className="step-title ob-step-title cypress-desktop-step-title">
-                              {page.label}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    },
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div
-            className={clsx('ob-steps-navigation__background', {
-              'is-active': isStepsHeaderActive,
-            })}
-            onClick={toggleStepsNavigation}
-          />
-
-          <div className="steps">
-            <div
-              className={clsx('steps-content', {
-                'is-single-step': !isShowingMultiplePages,
-              })}
-            >
-              <ConditionallyShowOptionCallbackContext.Provider
-                value={handleConditionallyShowOption}
-              >
-                <FlattenElementsContext.Provider value={elementsOnPages}>
-                  <FormDefinitionContext.Provider value={definition}>
-                    <InjectPagesContext.Provider value={injectPagesAfter}>
-                      <ExecutedLookupProvider
-                        executedLookup={executedLookup}
-                        executeLookupFailed={executeLookupFailed}
-                      >
-                        <GoogleMapsApiKeyContext.Provider
-                          value={googleMapsApiKey}
-                        >
-                          <CaptchaSiteKeyContext.Provider
-                            value={captchaSiteKey}
-                          >
-                            <FormIsReadOnlyContext.Provider value={isReadOnly}>
-                              {visiblePages.map(
-                                (page: FormTypes.PageElement) => (
-                                  <div
-                                    key={page.id}
-                                    className={clsx(
-                                      'ob-page step-content is-active cypress-page',
-                                      {
-                                        'is-invisible':
-                                          currentPage.id !== page.id,
-                                      },
-                                    )}
-                                  >
-                                    <OneBlinkFormElements
-                                      formId={definition.id}
-                                      formElementsConditionallyShown={
-                                        rootElementsConditionallyShown
-                                      }
-                                      formElementsValidation={
-                                        pagesValidation &&
-                                        pagesValidation[page.id]
-                                      }
-                                      displayValidationMessages={
-                                        hasAttemptedSubmit ||
-                                        checkDisplayPageError(page)
-                                      }
-                                      elements={page.elements}
-                                      onChange={handleChange}
-                                      onChangeElements={handleChangeElements}
-                                      onChangeModel={handleChangeModel}
-                                      formElementsCtrl={rootFormElementsCtrl}
-                                      idPrefix=""
-                                    />
-                                  </div>
-                                ),
+                            <div
+                              className="step-marker step-marker-error ob-step-marker cypress-step-marker"
+                              // @ts-expect-error ???
+                              name={`cypress-page-stepper-${index + 1}`}
+                              value={index + 1}
+                            >
+                              {hasErrors ? (
+                                <Tooltip title="Page has errors">
+                                  <span className="icon tooltip has-tooltip-top cypress-page-error">
+                                    <i className="material-icons has-text-danger is-size-3">
+                                      warning
+                                    </i>
+                                  </span>
+                                </Tooltip>
+                              ) : (
+                                <span>{index + 1}</span>
                               )}
-                            </FormIsReadOnlyContext.Provider>
-                          </CaptchaSiteKeyContext.Provider>
-                        </GoogleMapsApiKeyContext.Provider>
-                      </ExecutedLookupProvider>
-                    </InjectPagesContext.Provider>
-                  </FormDefinitionContext.Provider>
-                </FlattenElementsContext.Provider>
-              </ConditionallyShowOptionCallbackContext.Provider>
-            </div>
-
-            {isShowingMultiplePages && (
-              <div className="steps-actions">
-                <div className="steps-action">
-                  <button
-                    type="button"
-                    onClick={goToPreviousPage}
-                    disabled={isFirstVisiblePage}
-                    className="button is-light cypress-pages-previous"
-                  >
-                    <span className="icon">
-                      <i className="material-icons">keyboard_arrow_left</i>
-                    </span>
-                    <span>Back</span>
-                  </button>
-                </div>
-                <div className="step-progress-mobile cypress-steps-mobile">
-                  {visiblePages.map((page: FormTypes.PageElement) => (
-                    <div
-                      key={page.id}
-                      className={clsx('step-progress-mobile-dot', {
-                        'is-active': currentPage.id === page.id,
-                        'has-background-danger':
-                          currentPage.id !== page.id &&
-                          checkDisplayPageError(page),
-                      })}
-                    />
-                  ))}
-                </div>
-                <div className="steps-action">
-                  <button
-                    type="button"
-                    onClick={goToNextPage}
-                    disabled={isLastVisiblePage}
-                    className="button is-light cypress-pages-next"
-                  >
-                    <span>Next</span>
-                    <span className="icon">
-                      <i className="material-icons">keyboard_arrow_right</i>
-                    </span>
-                  </button>
+                            </div>
+                            <div className="step-details ob-step-details">
+                              <p className="step-title ob-step-title cypress-desktop-step-title">
+                                {page.label}
+                              </p>
+                            </div>
+                          </div>
+                        )
+                      },
+                    )}
+                  </div>
                 </div>
               </div>
             )}
-          </div>
-          {!isReadOnly && (
-            <div className="buttons ob-buttons ob-buttons-submit">
-              {onSaveDraft && !definition.isInfoPage && (
-                <button
-                  type="button"
-                  className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
-                  onClick={handleSaveDraft}
-                  disabled={isPreview || disabled}
+
+            <div
+              className={clsx('ob-steps-navigation__background', {
+                'is-active': isStepsHeaderActive,
+              })}
+              onClick={toggleStepsNavigation}
+            />
+
+            <div className="steps">
+              <div
+                className={clsx('steps-content', {
+                  'is-single-step': !isShowingMultiplePages,
+                })}
+              >
+                <ConditionallyShowOptionCallbackContext.Provider
+                  value={handleConditionallyShowOption}
                 >
-                  <CustomisableButtonInner
-                    label={buttons?.saveDraft?.label || 'Save Draft'}
-                    icon={buttons?.saveDraft?.icon}
-                  />
-                </button>
-              )}
-              <span className="ob-buttons-submit__spacer"></span>
-              {!definition.isInfoPage && (
-                <button
-                  type="button"
-                  className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
-                  onClick={handleCancel}
-                  disabled={isPreview || disabled}
-                >
-                  <CustomisableButtonInner
-                    label={buttons?.cancel?.label || 'Cancel'}
-                    icon={buttons?.cancel?.icon}
-                  />
-                </button>
-              )}
-              {isLastVisiblePage && (
-                <button
-                  type="submit"
-                  className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
-                  disabled={isPreview || disabled}
-                >
-                  <CustomisableButtonInner
-                    label={
-                      definition.isInfoPage
-                        ? 'Done'
-                        : buttons?.submit?.label || 'Submit'
-                    }
-                    icon={buttons?.submit?.icon}
-                  />
-                </button>
+                  <FlattenElementsContext.Provider value={elementsOnPages}>
+                    <FormDefinitionContext.Provider value={definition}>
+                      <InjectPagesContext.Provider value={injectPagesAfter}>
+                        <ExecutedLookupProvider
+                          executedLookup={executedLookup}
+                          executeLookupFailed={executeLookupFailed}
+                        >
+                          <GoogleMapsApiKeyContext.Provider
+                            value={googleMapsApiKey}
+                          >
+                            <CaptchaSiteKeyContext.Provider
+                              value={captchaSiteKey}
+                            >
+                              <FormIsReadOnlyContext.Provider
+                                value={isReadOnly}
+                              >
+                                {visiblePages.map(
+                                  (page: FormTypes.PageElement) => (
+                                    <div
+                                      key={page.id}
+                                      className={clsx(
+                                        'ob-page step-content is-active cypress-page',
+                                        {
+                                          'is-invisible':
+                                            currentPage.id !== page.id,
+                                        },
+                                      )}
+                                    >
+                                      <OneBlinkFormElements
+                                        formId={definition.id}
+                                        formElementsConditionallyShown={
+                                          rootElementsConditionallyShown
+                                        }
+                                        formElementsValidation={
+                                          pagesValidation &&
+                                          pagesValidation[page.id]
+                                        }
+                                        displayValidationMessages={
+                                          hasAttemptedSubmit ||
+                                          checkDisplayPageError(page)
+                                        }
+                                        elements={page.elements}
+                                        onChange={handleChange}
+                                        onChangeElements={handleChangeElements}
+                                        onChangeModel={handleChangeModel}
+                                        formElementsCtrl={rootFormElementsCtrl}
+                                        idPrefix=""
+                                      />
+                                    </div>
+                                  ),
+                                )}
+                              </FormIsReadOnlyContext.Provider>
+                            </CaptchaSiteKeyContext.Provider>
+                          </GoogleMapsApiKeyContext.Provider>
+                        </ExecutedLookupProvider>
+                      </InjectPagesContext.Provider>
+                    </FormDefinitionContext.Provider>
+                  </FlattenElementsContext.Provider>
+                </ConditionallyShowOptionCallbackContext.Provider>
+              </div>
+
+              {isShowingMultiplePages && (
+                <div className="steps-actions">
+                  <div className="steps-action">
+                    <button
+                      type="button"
+                      onClick={goToPreviousPage}
+                      disabled={isFirstVisiblePage}
+                      className="button is-light cypress-pages-previous"
+                    >
+                      <span className="icon">
+                        <i className="material-icons">keyboard_arrow_left</i>
+                      </span>
+                      <span>Back</span>
+                    </button>
+                  </div>
+                  <div className="step-progress-mobile cypress-steps-mobile">
+                    {visiblePages.map((page: FormTypes.PageElement) => (
+                      <div
+                        key={page.id}
+                        className={clsx('step-progress-mobile-dot', {
+                          'is-active': currentPage.id === page.id,
+                          'has-background-danger':
+                            currentPage.id !== page.id &&
+                            checkDisplayPageError(page),
+                        })}
+                      />
+                    ))}
+                  </div>
+                  <div className="steps-action">
+                    <button
+                      type="button"
+                      onClick={goToNextPage}
+                      disabled={isLastVisiblePage}
+                      className="button is-light cypress-pages-next"
+                    >
+                      <span>Next</span>
+                      <span className="icon">
+                        <i className="material-icons">keyboard_arrow_right</i>
+                      </span>
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
-          )}
-        </div>
-      </form>
-
-      {!isReadOnly && (
-        <React.Fragment>
-          <Prompt
-            when={isDirty && !isNavigationAllowed}
-            message={handleBlockedNavigation}
-          />
-          <Modal
-            isOpen={hasConfirmedNavigation === false}
-            title="Unsaved Changes"
-            cardClassName="cypress-cancel-confirm"
-            titleClassName="cypress-cancel-confirm-title"
-            bodyClassName="cypress-cancel-confirm-body"
-            actions={
-              <>
-                {onSaveDraft && (
+            {!isReadOnly && (
+              <div className="buttons ob-buttons ob-buttons-submit">
+                {onSaveDraft && !definition.isInfoPage && (
                   <button
                     type="button"
-                    className="button ob-button is-success cypress-cancel-confirm-save-draft"
+                    className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
                     onClick={handleSaveDraft}
+                    disabled={isPreview || disabled}
                   >
                     <CustomisableButtonInner
                       label={buttons?.saveDraft?.label || 'Save Draft'}
@@ -816,35 +772,99 @@ function OneBlinkFormBase({
                     />
                   </button>
                 )}
-                <span style={{ flex: 1 }}></span>
-                <button
-                  type="button"
-                  className="button ob-button is-light cypress-cancel-confirm-back"
-                  onClick={handleKeepGoing}
-                >
-                  <CustomisableButtonInner
-                    label={buttons?.cancelPromptNo?.label || 'Back'}
-                    icon={buttons?.cancelPromptNo?.icon}
-                  />
-                </button>
-                <button
-                  type="button"
-                  className="button ob-button is-primary cypress-cancel-confirm-discard"
-                  onClick={handleDiscardUnsavedChanges}
-                >
-                  <CustomisableButtonInner
-                    label={buttons?.cancelPromptYes?.label || 'Discard'}
-                    icon={buttons?.cancelPromptYes?.icon}
-                  />
-                </button>
-              </>
-            }
-          >
-            <p>You have unsaved changes, are you sure you want discard them?</p>
-          </Modal>
-        </React.Fragment>
-      )}
-    </div>
+                <span className="ob-buttons-submit__spacer"></span>
+                {!definition.isInfoPage && (
+                  <button
+                    type="button"
+                    className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
+                    onClick={handleCancel}
+                    disabled={isPreview || disabled}
+                  >
+                    <CustomisableButtonInner
+                      label={buttons?.cancel?.label || 'Cancel'}
+                      icon={buttons?.cancel?.icon}
+                    />
+                  </button>
+                )}
+                {isLastVisiblePage && (
+                  <button
+                    type="submit"
+                    className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
+                    disabled={isPreview || disabled}
+                  >
+                    <CustomisableButtonInner
+                      label={
+                        definition.isInfoPage
+                          ? 'Done'
+                          : buttons?.submit?.label || 'Submit'
+                      }
+                      icon={buttons?.submit?.icon}
+                    />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </form>
+
+        {!isReadOnly && (
+          <React.Fragment>
+            <Prompt
+              when={isDirty && !isNavigationAllowed}
+              message={handleBlockedNavigation}
+            />
+            <Modal
+              isOpen={hasConfirmedNavigation === false}
+              title="Unsaved Changes"
+              cardClassName="cypress-cancel-confirm"
+              titleClassName="cypress-cancel-confirm-title"
+              bodyClassName="cypress-cancel-confirm-body"
+              actions={
+                <>
+                  {onSaveDraft && (
+                    <button
+                      type="button"
+                      className="button ob-button is-success cypress-cancel-confirm-save-draft"
+                      onClick={handleSaveDraft}
+                    >
+                      <CustomisableButtonInner
+                        label={buttons?.saveDraft?.label || 'Save Draft'}
+                        icon={buttons?.saveDraft?.icon}
+                      />
+                    </button>
+                  )}
+                  <span style={{ flex: 1 }}></span>
+                  <button
+                    type="button"
+                    className="button ob-button is-light cypress-cancel-confirm-back"
+                    onClick={handleKeepGoing}
+                  >
+                    <CustomisableButtonInner
+                      label={buttons?.cancelPromptNo?.label || 'Back'}
+                      icon={buttons?.cancelPromptNo?.icon}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    className="button ob-button is-primary cypress-cancel-confirm-discard"
+                    onClick={handleDiscardUnsavedChanges}
+                  >
+                    <CustomisableButtonInner
+                      label={buttons?.cancelPromptYes?.label || 'Discard'}
+                      icon={buttons?.cancelPromptYes?.icon}
+                    />
+                  </button>
+                </>
+              }
+            >
+              <p>
+                You have unsaved changes, are you sure you want discard them?
+              </p>
+            </Modal>
+          </React.Fragment>
+        )}
+      </div>
+    </ThemeProvider>
   )
 }
 

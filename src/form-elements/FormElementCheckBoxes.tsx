@@ -119,16 +119,12 @@ function FormElementCheckboxes({
                       htmlFor={`${id}_${option.value}`}
                     >
                       <Checkbox
-                        color="default"
-                        className={clsx(
-                          'ob-checkbox__input',
-                          'cypress-checkbox-control',
-                          {
-                            'ob-checkbox__input-checked': isSelected,
-                          },
-                        )}
+                        color="primary"
+                        className="ob-checkbox__input cypress-checkbox-control"
+                        classes={{
+                          checked: 'ob-checkbox__input-checked',
+                        }}
                         disableRipple
-                        inputProps={{ className: 'cypress-checkbox-input' }}
                         value={option.value}
                         id={`${id}_${option.value}`}
                         checked={isSelected}

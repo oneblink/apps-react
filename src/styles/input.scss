@@ -1,4 +1,4 @@
-input:disabled,
+input:not([type='checkbox']):not([type='radio']):disabled,
 textarea:disabled {
   -webkit-text-fill-color: $input-disabled-color;
   -webkit-opacity: 1;

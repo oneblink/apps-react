@@ -56,16 +56,12 @@ function FormElementRadio({
                     htmlFor={`${id}_${option.value}`}
                   >
                     <Radio
-                      color="default"
-                      className={clsx(
-                        'ob-radio__input',
-                        'cypress-radio-control',
-                        {
-                          'ob-radio__input-checked': value === option.value,
-                        },
-                      )}
+                      color="primary"
+                      className="ob-radio__input cypress-radio-control"
+                      classes={{
+                        checked: 'ob-radio__input-checked',
+                      }}
                       disableRipple
-                      inputProps={{ className: 'cypress-radio-input' }}
                       value={option.value || ''}
                       id={`${id}_${option.value}`}
                       disabled={element.readOnly}

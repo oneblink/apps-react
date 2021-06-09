@@ -8,14 +8,5 @@
   > .ob-radio__input {
     padding: 0;
     margin-right: $size-8;
-
-    &.ob-checkbox__input-checked,
-    &.ob-radio__input-checked {
-      color: $primary;
-    }
-
-    input {
-      display: none;
-    }
   }
 }
