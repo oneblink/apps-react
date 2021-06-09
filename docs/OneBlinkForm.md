@@ -24,6 +24,7 @@ import '@oneblink/apps-react/dist/styles.css'
 | `onSaveDraft`       | `(NewDraftSubmission) => void`                  | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
 | `disabled`          | `boolean`                                       | No          | Whether the form is currently able to be submitted. False by default.                                                                                                                                                     |
 | `buttons`           | [`ButtonsConfiguration`](#buttonsconfiguration) | No          | Change properties for certain buttons on the form.                                                                                                                                                                        |
+| `primaryColour`     | `string`                                        | No          | Hex colour value for certain inputs (defaults to `#4c8da7`) .                                                                                                                                                             |
 
 ### ButtonsConfiguration
 

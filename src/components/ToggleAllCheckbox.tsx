@@ -1,5 +1,4 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import { Checkbox } from '@material-ui/core'
 import { FormTypes } from '@oneblink/types'
 interface Props {
@@ -49,12 +48,12 @@ const ToggleAllCheckbox = ({
     >
       <Checkbox
         color="default"
-        className={clsx('ob-checkbox__input', 'cypress-checkbox-control', {
-          'ob-checkbox__input-checked': allSelected,
-        })}
+        classes={{
+          checked: 'ob-checkbox__input-checked',
+        }}
+        className="ob-checkbox__input cypress-checkbox-control"
         id={`${id}_select-all`}
         disableRipple
-        inputProps={{ className: 'cypress-checkbox-input' }}
         checked={allSelected}
         indeterminate={!!selected.length && !allSelected}
         onChange={(e) => handleToggleAll(e.target.checked)}

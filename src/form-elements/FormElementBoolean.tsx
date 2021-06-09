@@ -1,5 +1,4 @@
 import * as React from 'react'
-import clsx from 'clsx'
 import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
@@ -34,10 +33,12 @@ function FormElementBoolean({
           <Switch
             id={id}
             name={element.name}
-            color="default"
-            className={clsx('ob-boolean__input', 'cypress-boolean-control', {
-              'ob-boolean__input-checked': !!value,
-            })}
+            color="primary"
+            edge="start"
+            className="ob-boolean__input cypress-boolean-control"
+            classes={{
+              checked: 'ob-boolean__input-checked',
+            }}
             checked={!!value}
             disabled={element.readOnly}
             onChange={(e) => {
