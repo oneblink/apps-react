@@ -128,6 +128,7 @@ export default function useConditionalLogic({
             }
             return formElementConditionallyShown
           }
+          case 'section':
           case 'infoPage':
           case 'form': {
             const formElementConditionallyShown: FormElementConditionallyShown =

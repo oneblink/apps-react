@@ -7,8 +7,7 @@ function cleanElementValue(
   stripBinaryData: boolean,
   captchaTokens: string[],
 ) {
-  const isShowing =
-    !!formElementConditionallyShown && formElementConditionallyShown.isShown
+  const isShowing = !!formElementConditionallyShown?.isShown
 
   switch (element.type) {
     // For content element types, we just need to set true for shown and false for hidden.
@@ -38,6 +37,7 @@ function cleanElementValue(
         return formElementsCtrl.model[element.name]
       }
     }
+    case 'section':
     case 'infoPage':
     case 'form': {
       // Here we will check to make sure that each embedded form
@@ -63,10 +63,8 @@ function cleanElementValue(
                   model: nestedModel,
                   parentFormElementsCtrl: formElementsCtrl,
                 },
-                formElementConditionallyShown &&
-                  formElementConditionallyShown.type === 'nestedForm'
-                  ? formElementConditionallyShown.nested &&
-                      formElementConditionallyShown.nested[e.name]
+                formElementConditionallyShown?.type === 'nestedForm'
+                  ? formElementConditionallyShown.nested?.[e.name]
                   : undefined,
                 stripBinaryData,
                 captchaTokens,
@@ -85,8 +83,7 @@ function cleanElementValue(
       const nestedElements = element.elements
       const entries = formElementsCtrl.model[element.name]
       const formElementsConditionallyShownEntries =
-        formElementConditionallyShown &&
-        formElementConditionallyShown.type === 'repeatableSet'
+        formElementConditionallyShown?.type === 'repeatableSet'
           ? formElementConditionallyShown.entries
           : undefined
       if (
@@ -97,9 +94,6 @@ function cleanElementValue(
         entries.length
       ) {
         return entries.map((entry, index) => {
-          const formElementsConditionallyShown = formElementsConditionallyShownEntries
-            ? formElementsConditionallyShownEntries[index.toString()]
-            : undefined
           return nestedElements.reduce(
             (entryModel: FormElementsCtrl['model'], e) => {
               if (e.type !== 'page' && entry && typeof entry === 'object') {
@@ -110,9 +104,9 @@ function cleanElementValue(
                     model: entry,
                     parentFormElementsCtrl: formElementsCtrl,
                   },
-                  formElementsConditionallyShown
-                    ? formElementsConditionallyShown[e.name]
-                    : undefined,
+                  formElementsConditionallyShownEntries?.[index.toString()]?.[
+                    e.name
+                  ],
                   stripBinaryData,
                   captchaTokens,
                 )

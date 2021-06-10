@@ -19,6 +19,7 @@ function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
       }
 
       if (
+        element.type !== 'section' &&
         element.type !== 'heading' &&
         element.type !== 'page' &&
         element.type !== 'html' &&

@@ -2,10 +2,13 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 import OneBlinkFormElements from '../components/OneBlinkFormElements'
 
-type Props = {
+export type Props = {
   formId: number
   id: string
-  element: FormTypes.FormFormElement | FormTypes.InfoPageElement
+  element:
+    | FormTypes.FormFormElement
+    | FormTypes.InfoPageElement
+    | FormTypes.SectionElement
   value: FormElementsCtrl['model'] | undefined
   onChange: FormElementValueChangeHandler<FormElementsCtrl['model']>
   onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
