@@ -163,6 +163,7 @@ export default function generateDefaultData(
         }
         break
       }
+      case 'section':
       case 'form': {
         if (Array.isArray(el.elements)) {
           m[el.name] = generateDefaultData(el.elements, {})

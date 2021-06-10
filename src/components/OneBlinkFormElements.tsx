@@ -24,6 +24,7 @@ import FormElementSignature from '../form-elements/FormElementSignature'
 import FormElementCheckBoxes from '../form-elements/FormElementCheckBoxes'
 import FormElementFiles from '../form-elements/FormElementFiles'
 import FormElementForm from '../form-elements/FormElementForm'
+import FormElementSection from '../form-elements/FormElementSection'
 import FormElementCamera from '../form-elements/FormElementCamera'
 import FormElementSummary from '../form-elements/FormElementSummary'
 import FormElementCaptcha from '../form-elements/FormElementCaptcha'
@@ -78,17 +79,13 @@ function OneBlinkFormElements({
       formElementsConditionallyShown={formElementsConditionallyShown}
     >
       {elements.map((element) => {
-        if (element.type === 'page') {
-          return null
-        }
-
         if (
-          formElementsConditionallyShown &&
-          formElementsConditionallyShown[element.name] &&
-          !formElementsConditionallyShown[element.name]?.isShown
+          element.type === 'page' ||
+          formElementsConditionallyShown?.[element.name]?.isShown === false
         ) {
           return null
         }
+
         return (
           <div
             key={element.id}
@@ -586,6 +583,29 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         />
       )
     }
+    case 'section': {
+      return (
+        <FormElementSection
+          formId={formId}
+          id={id}
+          element={element}
+          value={value as FormElementsCtrl['model'] | undefined}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementSection
+            >['onChange']
+          }
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+          displayValidationMessage={displayValidationMessage}
+          formElementValidation={formElementValidation}
+          formElementConditionallyShown={
+            formElementsConditionallyShown?.[element.name]
+          }
+          parentFormElementsCtrl={formElementsCtrl}
+        />
+      )
+    }
     case 'infoPage':
     case 'form': {
       return (
@@ -602,8 +622,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           displayValidationMessage={displayValidationMessage}
           formElementValidation={formElementValidation}
           formElementConditionallyShown={
-            formElementsConditionallyShown &&
-            formElementsConditionallyShown[element.name]
+            formElementsConditionallyShown?.[element.name]
           }
           parentFormElementsCtrl={formElementsCtrl}
         />

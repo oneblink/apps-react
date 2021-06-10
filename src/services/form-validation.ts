@@ -615,6 +615,7 @@ const generateSchemaReducer = (
         }
         break
       }
+      case 'section':
       case 'form': {
         if (formElement.elements) {
           partialSchema[escapeElementName(formElement.name)] = {

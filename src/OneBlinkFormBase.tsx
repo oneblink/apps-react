@@ -467,19 +467,20 @@ function OneBlinkFormBase({
 
   const handleChange = React.useCallback<FormElementValueChangeHandler>(
     (element, value) => {
-      if (disabled) return
-      if (element.type !== 'page') {
-        setFormSubmission((currentFormSubmission) => ({
-          isDirty: true,
-          submission: {
-            ...currentFormSubmission.submission,
-            [element.name]:
-              typeof value === 'function'
-                ? value(currentFormSubmission.submission[element.name])
-                : value,
-          },
-        }))
+      if (disabled || element.type === 'page') {
+        return
       }
+
+      setFormSubmission((currentFormSubmission) => ({
+        isDirty: true,
+        submission: {
+          ...currentFormSubmission.submission,
+          [element.name]:
+            typeof value === 'function'
+              ? value(currentFormSubmission.submission[element.name])
+              : value,
+        },
+      }))
     },
     [disabled],
   )
@@ -668,41 +669,28 @@ function OneBlinkFormBase({
                               <FormIsReadOnlyContext.Provider
                                 value={isReadOnly}
                               >
-                                {visiblePages.map(
-                                  (page: FormTypes.PageElement) => (
-                                    <div
-                                      key={page.id}
-                                      className={clsx(
-                                        'ob-page step-content is-active cypress-page',
-                                        {
-                                          'is-invisible':
-                                            currentPage.id !== page.id,
-                                        },
-                                      )}
-                                    >
-                                      <OneBlinkFormElements
-                                        formId={definition.id}
-                                        formElementsConditionallyShown={
-                                          rootElementsConditionallyShown
-                                        }
-                                        formElementsValidation={
-                                          pagesValidation &&
-                                          pagesValidation[page.id]
-                                        }
-                                        displayValidationMessages={
-                                          hasAttemptedSubmit ||
-                                          checkDisplayPageError(page)
-                                        }
-                                        elements={page.elements}
-                                        onChange={handleChange}
-                                        onChangeElements={handleChangeElements}
-                                        onChangeModel={handleChangeModel}
-                                        formElementsCtrl={rootFormElementsCtrl}
-                                        idPrefix=""
-                                      />
-                                    </div>
-                                  ),
-                                )}
+                                <div className="ob-page step-content is-active cypress-page">
+                                  <OneBlinkFormElements
+                                    formId={definition.id}
+                                    formElementsConditionallyShown={
+                                      rootElementsConditionallyShown
+                                    }
+                                    formElementsValidation={
+                                      pagesValidation &&
+                                      pagesValidation[currentPage.id]
+                                    }
+                                    displayValidationMessages={
+                                      hasAttemptedSubmit ||
+                                      checkDisplayPageError(currentPage)
+                                    }
+                                    elements={currentPage.elements}
+                                    onChange={handleChange}
+                                    onChangeElements={handleChangeElements}
+                                    onChangeModel={handleChangeModel}
+                                    formElementsCtrl={rootFormElementsCtrl}
+                                    idPrefix=""
+                                  />
+                                </div>
                               </FormIsReadOnlyContext.Provider>
                             </CaptchaSiteKeyContext.Provider>
                           </GoogleMapsApiKeyContext.Provider>
