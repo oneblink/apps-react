@@ -4,12 +4,13 @@ import clsx from 'clsx'
 import useBooleanState from '../hooks/useBooleanState'
 import { Sentry } from '@oneblink/apps'
 
-type AutocompleteOption = {
+type AutocompleteOption<T> = {
   label: string
   value: string
+  data?: T
 }
 
-type Props = {
+type Props<T> = {
   id: string
   label: string
   value: unknown | undefined
@@ -22,15 +23,18 @@ type Props = {
   displayValidationMessage: boolean
   searchDebounceMs: number
   searchMinCharacters: number
-  onChangeValue: (newValue: string | undefined) => Promise<void> | void
+  onChangeValue: (
+    newValue: string | undefined,
+    data?: T,
+  ) => Promise<void> | void
   onChangeLabel: (newLabel: string) => void
   onSearch: (
     label: string,
     abortSignal: AbortSignal,
-  ) => Promise<AutocompleteOption[]>
+  ) => Promise<AutocompleteOption<T>[]>
 }
 
-function AutocompleteDropdown({
+function AutocompleteDropdown<T>({
   id,
   label,
   value,
@@ -46,29 +50,27 @@ function AutocompleteDropdown({
   onChangeValue,
   onChangeLabel,
   onSearch,
-}: Props) {
+}: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
   const [isDirty, setIsDirty] = React.useState(false)
-  const [
-    currentFocusedOptionIndex,
-    setCurrentFocusedOptionIndex,
-  ] = React.useState(0)
-  const [options, setOptions] = React.useState<AutocompleteOption[]>([])
+  const [currentFocusedOptionIndex, setCurrentFocusedOptionIndex] =
+    React.useState(0)
+  const [options, setOptions] = React.useState<AutocompleteOption<T>[]>([])
   const [error, setError] = React.useState<Error | null>(null)
   const [isFetchingOptions, setIsFetchingOptions] = React.useState(false)
   const [isOpen, onOpen, onClose] = useBooleanState(false)
 
   const onSelectOption = React.useCallback(
-    (option) => {
+    (option: AutocompleteOption<T>) => {
       onChangeLabel(option.label)
-      onChangeValue(option.value)
+      onChangeValue(option.value, option.data)
       onClose()
     },
     [onChangeLabel, onChangeValue, onClose],
   )
 
   const handleClickOption = React.useCallback(
-    (event, option) => {
+    (event, option: AutocompleteOption<T>) => {
       console.log('Selected element option in autocomplete', option)
 
       event.preventDefault()
@@ -188,7 +190,7 @@ function AutocompleteDropdown({
     const abortController = new AbortController()
 
     const timeoutId = setTimeout(async () => {
-      let newOptions: AutocompleteOption[] = []
+      let newOptions: AutocompleteOption<T>[] = []
       let newError = null
 
       try {
@@ -320,7 +322,7 @@ function AutocompleteDropdown({
   )
 }
 
-export default React.memo(AutocompleteDropdown)
+export default React.memo(AutocompleteDropdown) as typeof AutocompleteDropdown
 
 function highlightLabel(text: string, phrase: string) {
   if (phrase) {

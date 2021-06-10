@@ -30,9 +30,8 @@ function FormElementPointAddress({
   const isMounted = useIsMounted()
   const [label, setLabel] = React.useState('')
   const [error, setError] = React.useState<Error | undefined>()
-  const [isLoadingAddressDetails, setIsLoadingAddressDetails] = React.useState(
-    false,
-  )
+  const [isLoadingAddressDetails, setIsLoadingAddressDetails] =
+    React.useState(false)
 
   const handleSearch = React.useCallback(
     async (address, abortSignal) => {
@@ -100,10 +99,9 @@ function FormElementPointAddress({
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (!label && value) {
-      const newLabel =
-        value.addressDetails && value.addressDetails.formattedAddress
-          ? value.addressDetails.formattedAddress
-          : value.addressId
+      const newLabel = value.addressDetails?.formattedAddress
+        ? value.addressDetails.formattedAddress
+        : value.addressId
       setLabel(newLabel)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

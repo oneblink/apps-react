@@ -376,6 +376,7 @@ const generateSchemaReducer = (
       }
       case 'geoscapeAddress':
       case 'pointAddress':
+      case 'civicaStreetName':
       case 'autocomplete':
       case 'checkboxes':
       case 'radio':

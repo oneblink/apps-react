@@ -199,6 +199,7 @@ export default function generateDefaultData(
       }
       case 'geoscapeAddress':
       case 'pointAddress':
+      case 'civicaStreetName':
       case 'camera':
       case 'text':
       case 'barcodeScanner':

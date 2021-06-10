@@ -32,8 +32,14 @@ import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddr
 import FormElementCompliance from '../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../form-elements/FormElementPointAddress'
 import FormElementBoolean from '../form-elements/FormElementBoolean'
+import FormElementCivicaStreetName from '../form-elements/FormElementCivicaStreetName'
 
-import { FormTypes, GeoscapeTypes, PointTypes } from '@oneblink/types'
+import {
+  CivicaTypes,
+  FormTypes,
+  GeoscapeTypes,
+  PointTypes,
+} from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 import { FormElementBinaryStorageValue } from '../types/attachments'
@@ -779,6 +785,35 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementBoolean
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'civicaStreetName': {
+      const v = value as CivicaTypes.CivicaStreetName | undefined
+      return (
+        <LookupNotification
+          isAutoLookup
+          element={element}
+          elements={elements}
+          value={value}
+          formElementsCtrl={formElementsCtrl}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+        >
+          <FormElementCivicaStreetName
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementCivicaStreetName
               >['onChange']
             }
             validationMessage={validationMessage}
