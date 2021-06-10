@@ -5,7 +5,7 @@ import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
-const AutocompleteDropdown = createTypedAutocompleteDropdown<undefined>()
+const AutocompleteDropdown = createTypedAutocompleteDropdown()
 
 type Props = {
   formId: number
@@ -58,7 +58,6 @@ function FormElementGeoscapeAddress({
       return result.suggest.map((suggestion, index) => ({
         value: suggestion.id || index.toString(),
         label: suggestion.address || index.toString(),
-        data: undefined,
       }))
     },
     [element.stateTerritoryFilter, formId],

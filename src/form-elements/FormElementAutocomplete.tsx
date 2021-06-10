@@ -7,7 +7,7 @@ import useFormElementOptions from '../hooks/useFormElementOptions'
 import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes } from '@oneblink/types'
-const AutocompleteDropdown = createTypedAutocompleteDropdown<undefined>()
+const AutocompleteDropdown = createTypedAutocompleteDropdown()
 
 type _BaseProps = {
   id: string
@@ -39,12 +39,6 @@ type Props = _BaseProps &
     onChange: FormElementValueChangeHandler<string>
   }
 
-const mapOptionWithDataProp = (option: FormTypes.ChoiceElementOption) => {
-  return {
-    ...option,
-    data: undefined,
-  }
-}
 const AutocompleteFilter = React.memo(function AutocompleteFilter({
   id,
   element,
@@ -83,7 +77,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   })
 
   const handleSearch = React.useCallback(async () => {
-    return filteredOptions.map(mapOptionWithDataProp)
+    return filteredOptions
   }, [filteredOptions])
 
   // Ensure the label matches the value selected
@@ -156,9 +150,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
       }
 
       const data = await response.json()
-      return formService
-        .parseFormElementOptionsSet(data)
-        .map(mapOptionWithDataProp)
+      return formService.parseFormElementOptionsSet(data)
     },
     [searchUrl],
   )

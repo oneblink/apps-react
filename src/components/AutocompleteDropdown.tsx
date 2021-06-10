@@ -7,7 +7,7 @@ import { Sentry } from '@oneblink/apps'
 type AutocompleteOption<T> = {
   label: string
   value: string
-  data: T | undefined
+  data?: T
 }
 
 type Props<T> = {
@@ -25,7 +25,7 @@ type Props<T> = {
   searchMinCharacters: number
   onChangeValue: (
     newValue: string | undefined,
-    data: T | undefined,
+    data?: T,
   ) => Promise<void> | void
   onChangeLabel: (newLabel: string) => void
   onSearch: (
@@ -170,7 +170,7 @@ function AutocompleteDropdown<T>({
       setCurrentFocusedOptionIndex(0)
 
       // Remove value when changing label
-      onChangeValue(undefined, undefined)
+      onChangeValue(undefined)
       onChangeLabel(newLabel)
     },
     [onChangeLabel, onChangeValue, onOpen],
@@ -322,7 +322,6 @@ function AutocompleteDropdown<T>({
   )
 }
 
-// export default React.memo(AutocompleteDropdown)
 export default function <T>(): React.ComponentType<Props<T>> {
   return React.memo<Props<T>>(AutocompleteDropdown)
 }

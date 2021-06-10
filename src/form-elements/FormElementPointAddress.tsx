@@ -5,7 +5,7 @@ import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
-const AutocompleteDropdown = createTypedAutocompleteDropdown<undefined>()
+const AutocompleteDropdown = createTypedAutocompleteDropdown()
 
 type Props = {
   formId: number
@@ -69,7 +69,6 @@ function FormElementPointAddress({
       return result.map((suggestion, index) => ({
         value: suggestion.id || index.toString(),
         label: suggestion.address || index.toString(),
-        data: undefined,
       }))
     },
     [element.addressTypeFilter, element.stateTerritoryFilter, formId],

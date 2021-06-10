@@ -4,9 +4,9 @@ import { formService } from '@oneblink/apps'
 import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, CivicaTypes } from '@oneblink/types'
-
 const AutocompleteDropdown =
   createTypedAutocompleteDropdown<CivicaTypes.CivicaStreetName>()
+
 type Props = {
   formId: number
   id: string
@@ -51,13 +51,8 @@ function FormElementCivicaStreetName({
   const handleChange = React.useCallback(
     async (
       streetId: string | undefined,
-      streetData: CivicaTypes.CivicaStreetName | undefined,
+      streetData?: CivicaTypes.CivicaStreetName,
     ) => {
-      if (!streetId || !streetData) {
-        onChange(element, undefined)
-        return
-      }
-
       onChange(element, streetData)
     },
     [onChange, element],
