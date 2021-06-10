@@ -323,9 +323,6 @@ function AutocompleteDropdown<T>({
 }
 
 export default React.memo(AutocompleteDropdown) as typeof AutocompleteDropdown
-// export default function <T>(): React.ComponentType<Props<T>> {
-//   return React.memo<Props<T>>(AutocompleteDropdown)
-// }
 
 function highlightLabel(text: string, phrase: string) {
   if (phrase) {
