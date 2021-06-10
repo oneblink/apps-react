@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { formService } from '@oneblink/apps'
 
-import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
+import AutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
-const AutocompleteDropdown = createTypedAutocompleteDropdown()
 
 type Props = {
   formId: number

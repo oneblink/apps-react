@@ -4,10 +4,9 @@ import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import createTypedAutocompleteDropdown from '../components/AutocompleteDropdown'
+import AutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes } from '@oneblink/types'
-const AutocompleteDropdown = createTypedAutocompleteDropdown()
 
 type _BaseProps = {
   id: string
