@@ -34,6 +34,7 @@ import FormElementCompliance from '../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../form-elements/FormElementPointAddress'
 import FormElementBoolean from '../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../form-elements/FormElementCivicaStreetName'
+import FormElementCivicaNameRecord from '../form-elements/FormElementCivicaNameRecord'
 
 import {
   CivicaTypes,
@@ -839,6 +840,29 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             displayValidationMessage={displayValidationMessage}
           />
         </LookupNotification>
+      )
+    }
+    case 'civicaNameRecord': {
+      return (
+        <FormElementCivicaNameRecord
+          formId={formId}
+          id={id}
+          element={element}
+          value={value as FormElementsCtrl['model'] | undefined}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementCivicaNameRecord
+            >['onChange']
+          }
+          onChangeElements={onChangeElements}
+          onChangeModel={onChangeModel}
+          displayValidationMessage={displayValidationMessage}
+          formElementValidation={formElementValidation}
+          formElementConditionallyShown={
+            formElementsConditionallyShown?.[element.name]
+          }
+          parentFormElementsCtrl={formElementsCtrl}
+        />
       )
     }
     default: {

@@ -2,6 +2,7 @@ import { FormTypes } from '@oneblink/types'
 import flatpickr from 'flatpickr'
 import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
+import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
 function parseFiles(
   element: FormTypes.FormElementBinaryStorage,
@@ -161,6 +162,11 @@ export default function generateDefaultData(
         if (Array.isArray(el.elements)) {
           Object.assign(m, generateDefaultData(el.elements, m))
         }
+        break
+      }
+      case 'civicaNameRecord': {
+        const nestedElements = generateCivicaNameRecordElements(el, [])
+        m[el.name] = generateDefaultData(nestedElements, el.defaultValue || {})
         break
       }
       case 'section':
