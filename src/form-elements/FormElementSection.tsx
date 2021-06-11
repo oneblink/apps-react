@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Collapse } from '@material-ui/core'
+import { Collapse, Tooltip } from '@material-ui/core'
 import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
 import FormElementForm, { Props } from './FormElementForm'
@@ -19,20 +19,27 @@ function FormElementSection(
         className="ob-section__header cypress-section-header"
         onClick={toggle}
       >
-        <div className="ob-section__header-icon-container">
-          <i
-            className={clsx('ob-section__header-icon material-icons', {
-              'cypress-section-valid-icon has-text-grey-light': isValid,
-              'cypress-section-invalid-valid has-text-danger': !isValid,
-            })}
-          >
-            {isValid ? 'check_circle' : 'warning'}
-          </i>
-        </div>
         <h3 className="ob-section__header-text title is-3">
           {props.element.label}
+          {props.element.hint && (
+            <Tooltip
+              title={props.element.hint}
+              arrow
+              enterTouchDelay={0}
+              leaveTouchDelay={10000}
+            >
+              <i className="material-icons has-text-grey-light ob-label__hint">
+                info
+              </i>
+            </Tooltip>
+          )}
         </h3>
         <div className="ob-section__header-icon-container">
+          {!isValid && (
+            <i className="material-icons cypress-section-invalid-valid has-text-danger">
+              {'warning'}
+            </i>
+          )}
           <i
             className={clsx('ob-section__header-icon material-icons', {
               'is-rotated': isCollapsed,
