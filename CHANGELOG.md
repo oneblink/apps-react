@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `Civica Street Name` for element
-- `Boolean` form element
+- `civicaNameRecord` form element
+- `civicaStreetName` form element
+- `boolean` form element
 - `section` form element
 
 ### Fixed

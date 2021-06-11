@@ -6,6 +6,7 @@ import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { checkIsUsingLegacyStorage } from './attachments'
 import { parseDateValue } from './generate-default-data'
+import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -612,6 +613,16 @@ const generateSchemaReducer = (
               elementIdsWithLookupsExecuted,
             ),
           },
+        }
+        break
+      }
+      case 'civicaNameRecord': {
+        const nestedElements = generateCivicaNameRecordElements(formElement, [])
+        partialSchema[escapeElementName(formElement.name)] = {
+          nestedElements: generateSchemaReducer(
+            nestedElements,
+            elementIdsWithLookupsExecuted,
+          ),
         }
         break
       }
