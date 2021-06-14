@@ -36,8 +36,8 @@ function FormElementSection(
         </h3>
         <div className="ob-section__header-icon-container">
           {!isValid && (
-            <i className="material-icons cypress-section-invalid-valid has-text-danger">
-              {'warning'}
+            <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon">
+              warning
             </i>
           )}
           <i
