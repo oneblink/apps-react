@@ -46,7 +46,6 @@ function FormElementSection(
       <Collapse
         in={!!isCollapsed}
         classes={{ container: 'ob-section__content' }}
-        unmountOnExit
       >
         <FormElementForm {...props} />
       </Collapse>

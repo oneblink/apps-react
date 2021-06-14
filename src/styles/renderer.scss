@@ -68,6 +68,13 @@
 
       .step-content {
         width: 100%;
+
+        &.is-invisible {
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          overflow: hidden;
+        }
       }
 
       &.is-single-step {

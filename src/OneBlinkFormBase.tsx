@@ -152,8 +152,9 @@ function OneBlinkFormBase({
   const history = useHistory()
 
   const [isNavigationAllowed, allowNavigation] = useBooleanState(false)
-  const [hasConfirmedNavigation, setHasConfirmedNavigation] =
-    React.useState<boolean | null>(null)
+  const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState<
+    boolean | null
+  >(null)
   const [goToLocation, setGoToLocation, clearGoToLocation] =
     useNullableState<Location>(null)
 
@@ -669,28 +670,41 @@ function OneBlinkFormBase({
                               <FormIsReadOnlyContext.Provider
                                 value={isReadOnly}
                               >
-                                <div className="ob-page step-content is-active cypress-page">
-                                  <OneBlinkFormElements
-                                    formId={definition.id}
-                                    formElementsConditionallyShown={
-                                      rootElementsConditionallyShown
-                                    }
-                                    formElementsValidation={
-                                      pagesValidation &&
-                                      pagesValidation[currentPage.id]
-                                    }
-                                    displayValidationMessages={
-                                      hasAttemptedSubmit ||
-                                      checkDisplayPageError(currentPage)
-                                    }
-                                    elements={currentPage.elements}
-                                    onChange={handleChange}
-                                    onChangeElements={handleChangeElements}
-                                    onChangeModel={handleChangeModel}
-                                    formElementsCtrl={rootFormElementsCtrl}
-                                    idPrefix=""
-                                  />
-                                </div>
+                                {visiblePages.map(
+                                  (page: FormTypes.PageElement) => (
+                                    <div
+                                      key={page.id}
+                                      className={clsx(
+                                        'ob-page step-content is-active cypress-page',
+                                        {
+                                          'is-invisible':
+                                            currentPage.id !== page.id,
+                                        },
+                                      )}
+                                    >
+                                      <OneBlinkFormElements
+                                        formId={definition.id}
+                                        formElementsConditionallyShown={
+                                          rootElementsConditionallyShown
+                                        }
+                                        formElementsValidation={
+                                          pagesValidation &&
+                                          pagesValidation[page.id]
+                                        }
+                                        displayValidationMessages={
+                                          hasAttemptedSubmit ||
+                                          checkDisplayPageError(page)
+                                        }
+                                        elements={page.elements}
+                                        onChange={handleChange}
+                                        onChangeElements={handleChangeElements}
+                                        onChangeModel={handleChangeModel}
+                                        formElementsCtrl={rootFormElementsCtrl}
+                                        idPrefix=""
+                                      />
+                                    </div>
+                                  ),
+                                )}
                               </FormIsReadOnlyContext.Provider>
                             </CaptchaSiteKeyContext.Provider>
                           </GoogleMapsApiKeyContext.Provider>
