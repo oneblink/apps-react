@@ -3,7 +3,6 @@ import flatpickr from 'flatpickr'
 import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
-import { isEmpty } from 'validate.js'
 
 function parseFiles(
   element: FormTypes.FormElementBinaryStorage,
@@ -167,11 +166,7 @@ export default function generateDefaultData(
       }
       case 'civicaNameRecord': {
         const nestedElements = generateCivicaNameRecordElements(el, [])
-        const defaultData = generateDefaultData(
-          nestedElements,
-          el.defaultValue || {},
-        )
-        m[el.name] = isEmpty(defaultData) ? undefined : defaultData
+        m[el.name] = generateDefaultData(nestedElements, el.defaultValue || {})
         break
       }
       case 'section':

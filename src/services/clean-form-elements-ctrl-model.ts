@@ -119,6 +119,21 @@ function cleanElementValue(
       }
       break
     }
+    case 'civicaNameRecord': {
+      const nameRecord = formElementsCtrl.model[element.name] as
+        | Record<string, unknown>
+        | undefined
+      if (!isShowing || !nameRecord) {
+        return
+      }
+
+      for (const key in nameRecord) {
+        if (nameRecord[key] !== undefined) {
+          return nameRecord
+        }
+      }
+      return undefined
+    }
     case 'compliance': {
       if (!isShowing || !formElementsCtrl.model[element.name]) {
         return undefined

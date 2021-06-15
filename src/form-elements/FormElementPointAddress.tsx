@@ -98,11 +98,11 @@ function FormElementPointAddress({
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
-    if (!label && value) {
-      const newLabel = value.addressDetails?.formattedAddress
-        ? value.addressDetails.formattedAddress
-        : value.addressId
-      setLabel(newLabel)
+    if (value) {
+      const newLabel = value.addressDetails?.formattedAddress || value.addressId
+      if (label !== newLabel) {
+        setLabel(newLabel || '')
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
