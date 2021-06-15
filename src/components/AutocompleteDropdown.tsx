@@ -284,6 +284,10 @@ function AutocompleteDropdown<T>({
                   Enter at least {searchMinCharacters} character(s) to search
                 </i>
               </a>
+            ) : isShowingLoading ? (
+              <a className="dropdown-item cypress-searching-options ob-autocomplete__drop-down-item-searching">
+                <i>Searching...</i>
+              </a>
             ) : options && options.length ? (
               options.map((option, index) => (
                 <a
