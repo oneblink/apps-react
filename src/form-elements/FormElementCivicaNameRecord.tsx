@@ -3,7 +3,6 @@ import { formService } from '@oneblink/apps'
 import { FormTypes, GeoscapeTypes, CivicaTypes } from '@oneblink/types'
 import FormElementForm, { Props } from './FormElementForm'
 import generateCivicaNameRecordElements from '../services/generateCivicaNameRecordElements'
-import { isEmpty } from 'validate.js'
 
 function FormElementCivicaNameRecord({
   element,
@@ -68,9 +67,6 @@ function FormElementCivicaNameRecord({
               }
             }),
           } as CivicaTypes.CivicaNameRecord
-        }
-        if (isEmpty(newValue)) {
-          return undefined
         }
         return newValue
       })
