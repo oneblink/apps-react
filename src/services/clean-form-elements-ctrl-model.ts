@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { CivicaTypes, FormTypes, GeoscapeTypes } from '@oneblink/types'
 import { Value as ComplianceValue } from '../form-elements/FormElementCompliance'
 function cleanElementValue(
   element: FormTypes.FormElement,
@@ -120,16 +120,52 @@ function cleanElementValue(
       break
     }
     case 'civicaNameRecord': {
-      const nameRecord = formElementsCtrl.model[element.name] as
-        | Record<string, unknown>
+      const civicaNameRecord = formElementsCtrl.model[element.name] as
+        | CivicaTypes.CivicaNameRecord
         | undefined
-      if (!isShowing || !nameRecord) {
+      if (!isShowing || !civicaNameRecord) {
         return
       }
 
-      for (const key in nameRecord) {
-        if (nameRecord[key] !== undefined) {
-          return nameRecord
+      for (const key in civicaNameRecord) {
+        if (
+          civicaNameRecord[key as keyof CivicaTypes.CivicaNameRecord] ===
+          undefined
+        ) {
+          continue
+        }
+
+        if (
+          !element.useGeoscapeAddressing ||
+          !Array.isArray(civicaNameRecord.streetAddress)
+        ) {
+          return civicaNameRecord
+        }
+
+        const streetAddresses = civicaNameRecord.streetAddress.map(
+          (streetAddress) => {
+            if (typeof streetAddress.address1 === 'object') {
+              const geoscapeAddress = streetAddress.address1 as
+                | GeoscapeTypes.GeoscapeAddress
+                | undefined
+              return {
+                address1: [
+                  geoscapeAddress?.addressDetails?.streetNumber1,
+                  geoscapeAddress?.addressDetails?.streetName,
+                  geoscapeAddress?.addressDetails?.streetType,
+                ]
+                  .filter((str) => !!str)
+                  .join(' '),
+                address2: geoscapeAddress?.addressDetails?.localityName,
+                postcode: geoscapeAddress?.addressDetails?.postcode,
+              }
+            }
+            return streetAddress
+          },
+        )
+        return {
+          ...civicaNameRecord,
+          streetAddress: streetAddresses,
         }
       }
       return undefined
