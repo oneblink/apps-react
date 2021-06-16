@@ -42,7 +42,7 @@ function FormElementSection(
           )}
           <i
             className={clsx('ob-section__header-icon material-icons', {
-              'is-rotated': isCollapsed,
+              'is-rotated': !isCollapsed,
             })}
           >
             expand_more
@@ -51,7 +51,7 @@ function FormElementSection(
       </div>
       <hr className="ob-section__divider" />
       <Collapse
-        in={!!isCollapsed}
+        in={!isCollapsed}
         classes={{ container: 'ob-section__content' }}
       >
         <FormElementForm {...props} />
