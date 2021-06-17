@@ -60,3 +60,13 @@ declare type FormElementValueChangeHandler<T = unknown> = (
   element: import('@oneblink/types').FormTypes.FormElement,
   value?: T | ((existingValue?: T) => T | undefined),
 ) => void
+
+declare type FormElementLookupHandler = (
+  setter: (data: {
+    submission: FormElementsCtrl['model']
+    elements: import('@oneblink/types').FormTypes.FormElement[]
+  }) => {
+    submission: FormElementsCtrl['model']
+    elements: import('@oneblink/types').FormTypes.FormElement[]
+  },
+) => void

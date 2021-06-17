@@ -6,140 +6,95 @@ import { FormTypes } from '@oneblink/types'
 
 export default function useLookups({
   formId,
-  currentPageId,
-  setDefinition,
-  setSubmission,
+  setFormSubmission,
 }: {
   formId: number
-  currentPageId: string
-  setDefinition: React.Dispatch<React.SetStateAction<FormTypes.Form>>
-  setSubmission: React.Dispatch<React.SetStateAction<FormElementsCtrl['model']>>
+  setFormSubmission: React.Dispatch<
+    React.SetStateAction<{
+      submission: FormElementsCtrl['model']
+      definition: FormTypes.Form
+      isDirty: boolean
+    }>
+  >
 }) {
-  const handleChangeElements = React.useCallback(
-    (elements: FormTypes.FormElement[]) => {
-      setDefinition((currentDefinition) => {
-        if (currentPageId === formId.toString()) {
-          return {
-            ...currentDefinition,
-            elements,
-          }
-        } else {
-          return {
-            ...currentDefinition,
-            elements: currentDefinition.elements.map((pageElement) => {
-              if (
-                pageElement.id === currentPageId &&
-                pageElement.type === 'page'
-              ) {
-                return {
-                  ...pageElement,
-                  elements,
-                }
-              } else {
-                return pageElement
-              }
-            }),
-          }
-        }
-      })
-    },
-    [currentPageId, formId, setDefinition],
-  )
-
-  const injectPagesAfter = React.useCallback(
+  const handlePagesLookupResult = React.useCallback(
     (
       element: FormTypes.LookupFormElement,
       elementLookupData: FormTypes.PageElement[],
+      dataLookupResult?: FormElementsCtrl['model'],
     ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,
         injectedByElementId: element.id,
       }))
-      setDefinition((currentDefinition) => {
-        if (!currentDefinition.isMultiPage) {
-          return {
-            ...currentDefinition,
-            isMultiPage: true,
-            elements: [
-              {
-                id: formId.toString(),
-                type: 'page',
-                label: 'Page 1',
-                elements: currentDefinition.elements,
-                conditionallyShow: false,
-                requiresAllConditionallyShowPredicates: false,
-              },
-              ...newPageElements,
-            ],
-          }
+      setFormSubmission((currentFormSubmission) => {
+        const definition: FormTypes.Form = {
+          ...currentFormSubmission.definition,
+          isMultiPage: true,
         }
-
-        const pageWithElement = currentDefinition.elements.find(
-          (pageElement: FormTypes.FormElement) => {
-            if (pageElement.type === 'page') {
-              return formService.findFormElement(
-                pageElement.elements,
-                (el) => el.id === element.id,
-              )
-            }
-          },
-        )
-        if (!pageWithElement) {
-          return currentDefinition
-        }
-
-        const indexOfPage = currentDefinition.elements.indexOf(pageWithElement)
-
-        return {
-          ...currentDefinition,
-          elements: currentDefinition.elements.reduce(
-            (
-              partialPageElements: FormTypes.FormElement[],
-              pageElement: FormTypes.FormElement,
-              index: number,
-            ) => {
-              // Sorry typescript, we need to add a property you don't approve of :(
-              // @ts-expect-error ???
-              if (pageElement.injectedByElementId !== element.id) {
-                partialPageElements.push(pageElement)
-              }
-              if (index === indexOfPage) {
-                partialPageElements.push(...newPageElements)
-              }
-              return partialPageElements
+        if (!currentFormSubmission.definition.isMultiPage) {
+          definition.elements = [
+            {
+              id: formId.toString(),
+              type: 'page',
+              label: 'Page 1',
+              elements: currentFormSubmission.definition.elements,
+              conditionallyShow: false,
+              requiresAllConditionallyShowPredicates: false,
             },
-            [],
-          ),
+            ...newPageElements,
+          ]
+        } else {
+          const indexOfPage =
+            currentFormSubmission.definition.elements.findIndex(
+              (pageElement: FormTypes.FormElement) => {
+                if (pageElement.type === 'page') {
+                  return formService.findFormElement(
+                    pageElement.elements,
+                    (el) => el.id === element.id,
+                  )
+                }
+              },
+            )
+          if (indexOfPage === -1) {
+            return currentFormSubmission
+          }
+          definition.elements =
+            currentFormSubmission.definition.elements.reduce(
+              (
+                partialPageElements: FormTypes.FormElement[],
+                pageElement: FormTypes.FormElement,
+                index: number,
+              ) => {
+                // Sorry typescript, we need to add a property you don't approve of :(
+                // @ts-expect-error ???
+                if (pageElement.injectedByElementId !== element.id) {
+                  partialPageElements.push(pageElement)
+                }
+                if (index === indexOfPage) {
+                  partialPageElements.push(...newPageElements)
+                }
+                return partialPageElements
+              },
+              [],
+            )
         }
-      })
 
-      setSubmission((currentSubmission) => {
-        const newSubmission = newPageElements.reduce(
-          (partialSubmission, pageElement) => {
-            const model = generateDefaultData(pageElement.elements, {})
-            return Object.assign(partialSubmission, model)
-          },
-          {},
-        )
+        const submission = generateDefaultData(definition.elements, {
+          ...currentFormSubmission.submission,
+          ...dataLookupResult,
+        })
         return {
-          ...newSubmission,
-          ...currentSubmission,
+          isDirty: true,
+          submission,
+          definition,
         }
       })
     },
-    [formId, setDefinition, setSubmission],
-  )
-
-  const handleChangeModel = React.useCallback(
-    (model: FormElementsCtrl['model']) => {
-      setSubmission(() => model)
-    },
-    [setSubmission],
+    [formId, setFormSubmission],
   )
 
   return {
-    handleChangeElements,
-    handleChangeModel,
-    injectPagesAfter,
+    handlePagesLookupResult,
   }
 }

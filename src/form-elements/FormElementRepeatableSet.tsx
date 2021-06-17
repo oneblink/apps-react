@@ -13,8 +13,7 @@ type Props = {
   element: FormTypes.RepeatableSetElement
   value: Array<FormElementsCtrl['model']> | undefined
   onChange: FormElementValueChangeHandler<FormElementsCtrl['model'][]>
-  onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
-  onChangeModel: (model: FormElementsCtrl['model']) => unknown
+  onLookup: FormElementLookupHandler
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
@@ -34,8 +33,7 @@ function FormElementRepeatableSet({
   formElementConditionallyShown,
   parentFormElementsCtrl,
   onChange,
-  onChangeElements,
-  onChangeModel,
+  onLookup,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
@@ -91,39 +89,6 @@ function FormElementRepeatableSet({
     [element, onChange],
   )
 
-  const handleChangeElements = React.useCallback(
-    (index, elements) => {
-      const newElements: FormTypes.FormElement[] =
-        parentFormElementsCtrl.elements.map((parentElement) => {
-          if (parentElement.id === element.id) {
-            return {
-              ...parentElement,
-              elements,
-            }
-          }
-          return parentElement
-        })
-
-      onChangeElements(newElements)
-    },
-    [element.id, onChangeElements, parentFormElementsCtrl.elements],
-  )
-  const handleChangeModel = React.useCallback(
-    (index, model) => {
-      onChangeModel({
-        ...parentFormElementsCtrl.model,
-        [element.name]: entries.map((entry, i) => {
-          if (i === index) {
-            return model
-          } else {
-            return entry
-          }
-        }),
-      })
-    },
-    [element.name, entries, onChangeModel, parentFormElementsCtrl.model],
-  )
-
   const repeatableSetValidation =
     !formElementValidation ||
     typeof formElementValidation === 'string' ||
@@ -155,8 +120,7 @@ function FormElementRepeatableSet({
               entry={entry}
               element={element}
               onChange={handleNestedChange}
-              onChangeElements={handleChangeElements}
-              onChangeModel={handleChangeModel}
+              onLookup={onLookup}
               onRemove={handleRemoveEntry}
               formElementsConditionallyShown={
                 repeatableSetEntriesConditionallyShown[index.toString()]
@@ -217,11 +181,7 @@ type RepeatableSetEntryProps = {
     formElement: FormTypes.FormElement,
     value: unknown,
   ) => unknown
-  onChangeElements: (
-    index: number,
-    formElements: FormTypes.FormElement[],
-  ) => unknown
-  onChangeModel: (index: number, model: FormElementsCtrl['model']) => unknown
+  onLookup: FormElementLookupHandler
   onRemove: (index: number) => unknown
 }
 
@@ -238,8 +198,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     formElementsValidation,
     parentFormElementsCtrl,
     onChange,
-    onChangeElements,
-    onChangeModel,
+    onLookup,
     onRemove,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
@@ -260,17 +219,48 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       [index, onChange],
     )
 
-    const handleChangeElements = React.useCallback(
-      (elements) => {
-        onChangeElements(index, elements)
+    const handleLookup = React.useCallback(
+      (mergeLookupResults) => {
+        onLookup((currentFormSubmission) => {
+          let newEntry = {}
+          const entries = currentFormSubmission.submission[
+            element.name
+          ] as Array<FormElementsCtrl['model']>
+          const elements = currentFormSubmission.elements.map((formElement) => {
+            if (
+              formElement.type === 'repeatableSet' &&
+              formElement.name === element.name
+            ) {
+              const { elements, submission } = mergeLookupResults({
+                elements: formElement.elements,
+                submission: entries[index],
+              })
+              newEntry = submission
+              return {
+                ...formElement,
+                elements,
+              }
+            }
+            return formElement
+          })
+
+          const submission = {
+            ...currentFormSubmission.submission,
+            [element.name]: entries.map((entry, i) => {
+              if (i === index) {
+                return newEntry
+              }
+              return entry
+            }),
+          }
+
+          return {
+            elements,
+            submission,
+          }
+        })
       },
-      [index, onChangeElements],
-    )
-    const handleChangeModel = React.useCallback(
-      (model) => {
-        onChangeModel(index, model)
-      },
-      [index, onChangeModel],
+      [element.name, index, onLookup],
     )
 
     return (
@@ -331,8 +321,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             displayValidationMessages={displayValidationMessages}
             elements={element.elements}
             onChange={handleChange}
-            onChangeElements={handleChangeElements}
-            onChangeModel={handleChangeModel}
+            onLookup={handleLookup}
             formElementsCtrl={formElementsCtrl}
             formElementsConditionallyShown={formElementsConditionallyShown}
           />

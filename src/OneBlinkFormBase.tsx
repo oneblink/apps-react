@@ -13,7 +13,7 @@ import Modal from './components/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
 import generateDefaultData from './services/generate-default-data'
 import cleanFormElementsCtrlModel from './services/clean-form-elements-ctrl-model'
-import OneBlinkFormElements from './components/OneBlinkFormElements'
+import PageFormElements from './components/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
 import useConditionalLogic from './hooks/useConditionalLogic'
 import usePages from './hooks/usePages'
@@ -27,12 +27,11 @@ import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
-
 import useChangeEffect from './hooks/useChangeEffect'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
-
 import CustomisableButtonInner from './components/CustomisableButtonInner'
+
 export type Props = {
   form: FormTypes.Form
   disabled?: boolean
@@ -88,9 +87,20 @@ function OneBlinkFormBase({
   //
   // #region Form Definition
 
-  const [definition, setDefinition] = React.useState<FormTypes.Form>(() =>
-    _cloneDeep(_form),
-  )
+  const [{ definition, submission, isDirty }, setFormSubmission] =
+    React.useState(() => {
+      const definition = _cloneDeep(_form)
+      const defaultData = generateDefaultData(
+        definition.elements,
+        initialSubmission || {},
+      )
+      return {
+        definition,
+        isDirty: false,
+        submission: defaultData,
+      }
+    })
+
   const pages = React.useMemo<FormTypes.PageElement[]>(() => {
     if (definition.isMultiPage) {
       return definition.elements.reduce(
@@ -124,20 +134,10 @@ function OneBlinkFormBase({
     definition.name,
   ])
 
-  const [{ submission, isDirty }, setFormSubmission] = React.useState(() => {
-    const defaultData = generateDefaultData(
-      definition.elements,
-      initialSubmission || {},
-    )
-    return {
-      isDirty: false,
-      submission: defaultData,
-    }
-  })
-  const setSubmission = React.useCallback((setter) => {
+  const setDefinition = React.useCallback((setter) => {
     return setFormSubmission((currentFormSubmission) => ({
       ...currentFormSubmission,
-      submission: setter(currentFormSubmission.submission),
+      definition: setter(currentFormSubmission.definition),
     }))
   }, [])
 
@@ -423,13 +423,10 @@ function OneBlinkFormBase({
   //
   // #region Lookups
 
-  const { injectPagesAfter, handleChangeElements, handleChangeModel } =
-    useLookups({
-      formId: definition.id,
-      currentPageId: currentPage.id,
-      setDefinition,
-      setSubmission,
-    })
+  const { handlePagesLookupResult } = useLookups({
+    formId: definition.id,
+    setFormSubmission,
+  })
 
   // #endregion
   //
@@ -446,6 +443,7 @@ function OneBlinkFormBase({
       }
 
       setFormSubmission((currentFormSubmission) => ({
+        definition: currentFormSubmission.definition,
         isDirty: true,
         submission: {
           ...currentFormSubmission.submission,
@@ -631,7 +629,9 @@ function OneBlinkFormBase({
                     value={rootFormElementsCtrl.elements}
                   >
                     <FormDefinitionContext.Provider value={definition}>
-                      <InjectPagesContext.Provider value={injectPagesAfter}>
+                      <InjectPagesContext.Provider
+                        value={handlePagesLookupResult}
+                      >
                         <ExecutedLookupProvider
                           executedLookup={executedLookup}
                           executeLookupFailed={executeLookupFailed}
@@ -646,37 +646,28 @@ function OneBlinkFormBase({
                                 value={isReadOnly}
                               >
                                 {visiblePages.map(
-                                  (page: FormTypes.PageElement) => (
-                                    <div
-                                      key={page.id}
-                                      className={clsx(
-                                        'ob-page step-content is-active cypress-page',
-                                        {
-                                          'is-invisible':
-                                            currentPage.id !== page.id,
-                                        },
-                                      )}
-                                    >
-                                      <OneBlinkFormElements
-                                        formId={definition.id}
-                                        formElementsConditionallyShown={
-                                          formElementsConditionallyShown
-                                        }
-                                        formElementsValidation={
-                                          formElementsValidation
-                                        }
-                                        displayValidationMessages={
-                                          hasAttemptedSubmit ||
-                                          isDisplayingCurrentPageError
-                                        }
-                                        elements={page.elements}
-                                        onChange={handleChange}
-                                        onChangeElements={handleChangeElements}
-                                        onChangeModel={handleChangeModel}
-                                        formElementsCtrl={rootFormElementsCtrl}
-                                        idPrefix=""
-                                      />
-                                    </div>
+                                  (pageElement: FormTypes.PageElement) => (
+                                    <PageFormElements
+                                      key={pageElement.id}
+                                      isActive={
+                                        pageElement.id === currentPage.id
+                                      }
+                                      formId={definition.id}
+                                      formElementsConditionallyShown={
+                                        formElementsConditionallyShown
+                                      }
+                                      formElementsValidation={
+                                        formElementsValidation
+                                      }
+                                      displayValidationMessages={
+                                        hasAttemptedSubmit ||
+                                        isDisplayingCurrentPageError
+                                      }
+                                      pageElement={pageElement}
+                                      onChange={handleChange}
+                                      formElementsCtrl={rootFormElementsCtrl}
+                                      setFormSubmission={setFormSubmission}
+                                    />
                                   ),
                                 )}
                               </FormIsReadOnlyContext.Provider>
