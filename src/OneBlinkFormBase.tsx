@@ -206,11 +206,9 @@ function OneBlinkFormBase({
 
   const {
     rootFormElementsCtrl,
-    pageElementsConditionallyShown,
-    rootElementsConditionallyShown,
+    formElementsConditionallyShown,
     handleConditionallyShowOption,
     conditionalLogicError,
-    elementsOnPages,
   } = useConditionalLogic({ submission, pages })
 
   // #endregion
@@ -224,9 +222,11 @@ function OneBlinkFormBase({
   const { validate, executedLookup, executeLookupFailed } =
     useFormValidation(pages)
 
-  const pagesValidation = React.useMemo<PageElementsValidation | undefined>(
-    () => validate(submission, pageElementsConditionallyShown).pagesValidation,
-    [pageElementsConditionallyShown, submission, validate],
+  const formElementsValidation = React.useMemo<
+    FormElementsValidation | undefined
+  >(
+    () => validate(submission, formElementsConditionallyShown),
+    [formElementsConditionallyShown, submission, validate],
   )
 
   // #endregion
@@ -255,8 +255,8 @@ function OneBlinkFormBase({
     scrollToTopOfPageHTMLElementRef,
   } = usePages({
     pages,
-    pagesValidation,
-    pageElementsConditionallyShown,
+    formElementsValidation,
+    formElementsConditionallyShown,
   })
 
   // #endregion
@@ -283,44 +283,17 @@ function OneBlinkFormBase({
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
-      // Clear data from submission on fields that are hidden on visible pages
-      return visiblePages.reduce(
-        (
-          cleanSubmissionData: {
-            submission: FormElementsCtrl['model']
-            captchaTokens: string[]
-          },
-          pageElement: FormTypes.PageElement,
-        ) => {
-          const { model, captchaTokens } = cleanFormElementsCtrlModel(
-            {
-              elements: pageElement.elements,
-              model: submission,
-              parentFormElementsCtrl: rootFormElementsCtrl,
-            },
-            rootElementsConditionallyShown,
-            stripBinaryData,
-          )
-          return {
-            submission: {
-              ...cleanSubmissionData.submission,
-              ...model,
-            },
-            captchaTokens: [
-              ...cleanSubmissionData.captchaTokens,
-              ...captchaTokens,
-            ],
-          }
-        },
-        { submission: {}, captchaTokens: [] },
+      const { model, captchaTokens } = cleanFormElementsCtrlModel(
+        rootFormElementsCtrl,
+        formElementsConditionallyShown,
+        stripBinaryData,
       )
+      return {
+        submission: model,
+        captchaTokens,
+      }
     },
-    [
-      rootElementsConditionallyShown,
-      rootFormElementsCtrl,
-      submission,
-      visiblePages,
-    ],
+    [formElementsConditionallyShown, rootFormElementsCtrl],
   )
 
   const obFormContainerHTMLElementRef = React.useRef<HTMLDivElement>(null)
@@ -376,7 +349,7 @@ function OneBlinkFormBase({
       if (onSubmit) {
         setHasAttemptedSubmit(true)
 
-        if (pagesValidation) {
+        if (formElementsValidation) {
           bulmaToast.toast({
             message: 'Please fix validation errors',
             // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
@@ -408,10 +381,10 @@ function OneBlinkFormBase({
       checkAttachmentsCanBeSubmitted,
       definition,
       disabled,
+      formElementsValidation,
       getCurrentSubmissionData,
       isReadOnly,
       onSubmit,
-      pagesValidation,
     ],
   )
 
@@ -468,7 +441,7 @@ function OneBlinkFormBase({
 
   const handleChange = React.useCallback<FormElementValueChangeHandler>(
     (element, value) => {
-      if (disabled || element.type === 'page') {
+      if (disabled || element.type === 'page' || element.type === 'section') {
         return
       }
 
@@ -654,7 +627,9 @@ function OneBlinkFormBase({
                 <ConditionallyShowOptionCallbackContext.Provider
                   value={handleConditionallyShowOption}
                 >
-                  <FlattenElementsContext.Provider value={elementsOnPages}>
+                  <FlattenElementsContext.Provider
+                    value={rootFormElementsCtrl.elements}
+                  >
                     <FormDefinitionContext.Provider value={definition}>
                       <InjectPagesContext.Provider value={injectPagesAfter}>
                         <ExecutedLookupProvider
@@ -685,15 +660,14 @@ function OneBlinkFormBase({
                                       <OneBlinkFormElements
                                         formId={definition.id}
                                         formElementsConditionallyShown={
-                                          rootElementsConditionallyShown
+                                          formElementsConditionallyShown
                                         }
                                         formElementsValidation={
-                                          pagesValidation &&
-                                          pagesValidation[page.id]
+                                          formElementsValidation
                                         }
                                         displayValidationMessages={
                                           hasAttemptedSubmit ||
-                                          checkDisplayPageError(page)
+                                          isDisplayingCurrentPageError
                                         }
                                         elements={page.elements}
                                         onChange={handleChange}

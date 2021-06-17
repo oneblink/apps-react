@@ -1,65 +1,60 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+// type PageElementId = string
+type FormElementKey = string
+type RepeatableSetEntryIndex = string
+
 declare type FormElementsCtrl = {
-  model: { [property: string]: unknown }
+  model: Record<FormElementKey, unknown>
   elements: import('@oneblink/types').FormTypes.FormElement[]
   parentFormElementsCtrl?: FormElementsCtrl
 }
 
+declare type FormElementsValidation = Record<
+  FormElementKey,
+  FormElementValidation
+>
+
 declare type FormElementValidation =
-  | string
   | undefined
+  | string
+  | {
+      type: 'formElements'
+      formElements: FormElementsValidation | undefined
+    }
   | {
       type: 'repeatableSet'
       set: string | undefined
-      entries: {
-        [index: string]: FormElementsValidation | undefined
-      }
-    }
-  | {
-      type: 'nestedForm'
-      nested: FormElementsValidation
+      entries: Record<
+        RepeatableSetEntryIndex,
+        FormElementsValidation | undefined
+      >
     }
 
-declare type FormElementsValidation = {
-  [formElementName: string]: FormElementValidation | undefined
-}
-
-declare type PageElementsValidation = {
-  [pageElementId: string]: FormElementsValidation | undefined
-}
-
-interface PageConditionallyShown {
-  type: 'page'
-  isShown: boolean
-  formElements: FormElementsConditionallyShown
-}
-
-declare type FormElementsConditionallyShown = {
-  [formElementName: string]: FormElementConditionallyShown | undefined
-}
+declare type FormElementsConditionallyShown = Record<
+  FormElementKey,
+  FormElementConditionallyShown
+>
 
 declare type FormElementConditionallyShown =
+  | undefined
   | {
       type: 'formElement'
       isShown: boolean
     }
-  | PageConditionallyShown
+  | {
+      type: 'formElements'
+      isShown: boolean
+      formElements: FormElementsConditionallyShown | undefined
+    }
   | {
       type: 'repeatableSet'
       isShown: boolean
-      entries: {
-        [index: string]: FormElementsConditionallyShown | undefined
-      }
+      entries: Record<
+        RepeatableSetEntryIndex,
+        FormElementsConditionallyShown | undefined
+      >
     }
-  | {
-      type: 'nestedForm'
-      isShown: boolean
-      nested: FormElementsConditionallyShown
-    }
-
-declare type PageElementsConditionallyShown = {
-  [pageElementId: string]: PageConditionallyShown
-}
 
 declare type FormElementValueChangeHandler<T = unknown> = (
   element: import('@oneblink/types').FormTypes.FormElement,

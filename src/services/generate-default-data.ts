@@ -127,7 +127,11 @@ export default function generateDefaultData(
   preFillData: FormElementsCtrl['model'],
 ): FormElementsCtrl['model'] {
   return elements.reduce<FormElementsCtrl['model']>((m, el) => {
-    if (el.type !== 'page' && m[el.name] !== undefined) {
+    if (
+      el.type !== 'page' &&
+      el.type !== 'section' &&
+      m[el.name] !== undefined
+    ) {
       m[el.name] = parsePreFillData(el, m[el.name])
       return m
     }
@@ -158,6 +162,7 @@ export default function generateDefaultData(
         }
         break
       }
+      case 'section':
       case 'page': {
         if (Array.isArray(el.elements)) {
           Object.assign(m, generateDefaultData(el.elements, m))
@@ -169,7 +174,6 @@ export default function generateDefaultData(
         m[el.name] = generateDefaultData(nestedElements, el.defaultValue || {})
         break
       }
-      case 'section':
       case 'form': {
         if (Array.isArray(el.elements)) {
           m[el.name] = generateDefaultData(el.elements, {})

@@ -38,7 +38,11 @@ const handlePredicate = (
   model: FormElementsCtrl['model'],
   predicateElement: FormTypes.FormElement,
 ) => {
-  if (!predicateElement || predicateElement.type === 'page') {
+  if (
+    !predicateElement ||
+    predicateElement.type === 'page' ||
+    predicateElement.type === 'section'
+  ) {
     return false
   }
   switch (predicate.type) {
@@ -93,11 +97,11 @@ const handlePredicate = (
   }
 }
 
-const getPagesFormElementsCtrl = (
+const getRootFormElementsCtrl = (
   formElementsCtrl: FormElementsCtrl,
 ): FormElementsCtrl => {
   if (formElementsCtrl.parentFormElementsCtrl) {
-    return getPagesFormElementsCtrl(formElementsCtrl.parentFormElementsCtrl)
+    return getRootFormElementsCtrl(formElementsCtrl.parentFormElementsCtrl)
   }
   return formElementsCtrl
 }
@@ -133,8 +137,8 @@ const conditionallyShowByPredicate = (
   // is on a page element and the page element is also hidden.
   // If it is hidden we will treat this predicate element as
   // hidden as well.
-  const pagesFormElementCtrl = getPagesFormElementsCtrl(formElementsCtrl)
-  const pageElement = pagesFormElementCtrl.elements.find((element) => {
+  const rootFormElementsCtrl = getRootFormElementsCtrl(formElementsCtrl)
+  const pageElement = rootFormElementsCtrl.elements.find((element) => {
     return (
       element.type === 'page' &&
       element.elements.some((e) => e.id === predicateElement.id)
@@ -142,7 +146,7 @@ const conditionallyShowByPredicate = (
   })
   if (
     pageElement &&
-    !conditionallyShowElement(formElementsCtrl, pageElement, [])
+    !conditionallyShowElement(rootFormElementsCtrl, pageElement, [])
   ) {
     return false
   }

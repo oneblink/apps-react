@@ -7,6 +7,7 @@ import { Value as FormElementComplianceValue } from '../form-elements/FormElemen
 import { checkIsUsingLegacyStorage } from './attachments'
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
+import flattenFormElements from './flattenFormElements'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -68,8 +69,8 @@ validate.validators.nestedElements = function (
     return
   }
   return {
-    type: 'nestedForm',
-    nested: errors,
+    type: 'formElements',
+    formElements: errors,
   }
 }
 
@@ -177,63 +178,21 @@ function getCustomRegexFormatConfig<DefaultValue>(
 
 type ValidateJSSchema = Record<string, unknown>
 
-type ValidateJSSchemaByPageId = {
-  [pageElementId: string]: ValidateJSSchema
-}
-
-export function generateSchemasByPages(
-  pages: FormTypes.PageElement[],
-  elementIdsWithLookupsExecuted: string[],
-): ValidateJSSchemaByPageId {
-  return pages.reduce(
-    (partialSchemaByPageId: ValidateJSSchemaByPageId, pageElement) => {
-      partialSchemaByPageId[pageElement.id] = generateSchemaReducer(
-        pageElement.elements,
-        elementIdsWithLookupsExecuted,
-      )
-      return partialSchemaByPageId
-    },
-    {},
-  )
-}
-
-export const validatePages = (
-  schemaByPageId: ValidateJSSchemaByPageId,
+export function validateSubmission(
+  schema: ValidateJSSchema,
   submission: FormElementsCtrl['model'],
-  pageElementsConditionallyShown: PageElementsConditionallyShown,
-): PageElementsValidation | undefined => {
-  const pagesValidation = Object.keys(schemaByPageId).reduce(
-    (partialMessagesByPageId: PageElementsValidation, pageId) => {
-      const schema = schemaByPageId[pageId]
-      const pageElementConditionallyShown =
-        pageElementsConditionallyShown[pageId]
-
-      if (
-        !pageElementConditionallyShown ||
-        pageElementConditionallyShown.isShown
-      ) {
-        const formElementsValidation = validateSingleMessageError(
-          submission,
-          schema,
-        )
-        if (formElementsValidation) {
-          clearValidationMessagesForHiddenElements(
-            formElementsValidation,
-            pageElementConditionallyShown &&
-              pageElementConditionallyShown.formElements,
-          )
-          if (!validate.isEmpty(formElementsValidation)) {
-            partialMessagesByPageId[pageId] = formElementsValidation
-          }
-        }
-      }
-
-      return partialMessagesByPageId
-    },
-    {},
-  )
-
-  return validate.isEmpty(pagesValidation) ? undefined : pagesValidation
+  formElementsConditionallyShown: FormElementsConditionallyShown,
+): FormElementsValidation | undefined {
+  const formElementsValidation = validateSingleMessageError(submission, schema)
+  if (formElementsValidation) {
+    clearValidationMessagesForHiddenElements(
+      formElementsValidation,
+      formElementsConditionallyShown,
+    )
+    if (!validate.isEmpty(formElementsValidation)) {
+      return formElementsValidation
+    }
+  }
 }
 
 const clearValidationMessagesForHiddenElements = (
@@ -253,8 +212,7 @@ const clearValidationMessagesForHiddenElements = (
     }
 
     const formElementConditionallyShown = formElementsConditionallyShown[key]
-    const isShown =
-      !formElementConditionallyShown || formElementConditionallyShown.isShown
+    const isShown = formElementConditionallyShown?.isShown !== false
 
     // If the validation is for an element that is being hidden,
     // we can remove the validation message and move to the next validation
@@ -264,7 +222,7 @@ const clearValidationMessagesForHiddenElements = (
     }
 
     // If the validation is for a single element (not nested elements),
-    // we can will always show the validation message
+    // we will always show the validation message
     if (typeof formElementValidation === 'string') {
       continue
     }
@@ -294,15 +252,14 @@ const clearValidationMessagesForHiddenElements = (
         }
         break
       }
-      case 'nestedForm': {
+      case 'formElements': {
         clearValidationMessagesForHiddenElements(
-          formElementValidation.nested,
-          formElementConditionallyShown &&
-            formElementConditionallyShown.type === 'nestedForm'
-            ? formElementConditionallyShown.nested
+          formElementValidation.formElements,
+          formElementConditionallyShown?.type === 'formElements'
+            ? formElementConditionallyShown?.formElements
             : undefined,
         )
-        if (validate.isEmpty(formElementValidation.nested)) {
+        if (validate.isEmpty(formElementValidation.formElements)) {
           delete formElementsValidation[key]
         }
         break
@@ -319,11 +276,12 @@ const escapeElementName = (elementName: string) => {
   return escapedName
 }
 
-const generateSchemaReducer = (
-  formElements: FormTypes.FormElement[],
+export function generateValidationSchema(
+  elements: FormTypes.FormElement[],
   elementIdsWithLookupsExecuted: string[],
-): ValidateJSSchema => {
-  return formElements.reduce((partialSchema: ValidateJSSchema, formElement) => {
+): ValidateJSSchema {
+  const formElements = flattenFormElements(elements)
+  return formElements.reduce<ValidateJSSchema>((partialSchema, formElement) => {
     switch (formElement.type) {
       case 'summary':
       case 'calculation':
@@ -331,6 +289,7 @@ const generateSchemaReducer = (
       case 'html':
       case 'infoPage':
       case 'heading':
+      case 'section':
       case 'page': {
         break
       }
@@ -608,7 +567,7 @@ const generateSchemaReducer = (
                 tooShort: 'Must have at least %{count} entry/entries',
               },
             },
-            entrySchema: generateSchemaReducer(
+            entrySchema: generateValidationSchema(
               formElement.elements,
               elementIdsWithLookupsExecuted,
             ),
@@ -619,18 +578,17 @@ const generateSchemaReducer = (
       case 'civicaNameRecord': {
         const nestedElements = generateCivicaNameRecordElements(formElement, [])
         partialSchema[escapeElementName(formElement.name)] = {
-          nestedElements: generateSchemaReducer(
+          nestedElements: generateValidationSchema(
             nestedElements,
             elementIdsWithLookupsExecuted,
           ),
         }
         break
       }
-      case 'section':
       case 'form': {
         if (formElement.elements) {
           partialSchema[escapeElementName(formElement.name)] = {
-            nestedElements: generateSchemaReducer(
+            nestedElements: generateValidationSchema(
               formElement.elements,
               elementIdsWithLookupsExecuted,
             ),
@@ -684,4 +642,24 @@ export function checkFileNameIsValid(
     !formElement.restrictedFileTypes ||
     formElement.restrictedFileTypes.some((fileType) => fileType === extension)
   )
+}
+
+export function checkSectionValidity(
+  element: FormTypes.PageElement | FormTypes.SectionElement,
+  formElementsValidation: FormElementsValidation | undefined,
+): boolean {
+  // If everything is valid, no need to check elements
+  if (!formElementsValidation) {
+    return false
+  }
+
+  // If there is no elements on the page that are invalid, we will treat as valid
+  const formElementsInSection = flattenFormElements(element.elements)
+  return formElementsInSection.some((formElement) => {
+    return (
+      formElement.type !== 'page' &&
+      formElement.type !== 'section' &&
+      formElementsValidation[formElement.name]
+    )
+  })
 }

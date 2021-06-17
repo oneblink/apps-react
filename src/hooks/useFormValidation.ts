@@ -2,8 +2,8 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import {
-  validatePages,
-  generateSchemasByPages,
+  validateSubmission,
+  generateValidationSchema,
 } from '../services/form-validation'
 
 export default function useFormValidation(pages: FormTypes.PageElement[]) {
@@ -36,25 +36,22 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
     [],
   )
 
-  const schemaByPageId = React.useMemo(() => {
-    return generateSchemasByPages(pages, elementIdsWithLookupsExecuted)
+  const validationSchema = React.useMemo(() => {
+    return generateValidationSchema(pages, elementIdsWithLookupsExecuted)
   }, [pages, elementIdsWithLookupsExecuted])
 
   const handleValidate = React.useCallback(
     (
       submission: FormElementsCtrl['model'],
-      pageElementsConditionallyShown: PageElementsConditionallyShown,
+      formElementsConditionallyShown: FormElementsConditionallyShown,
     ) => {
-      const pagesValidation = validatePages(
-        schemaByPageId,
+      return validateSubmission(
+        validationSchema,
         submission,
-        pageElementsConditionallyShown,
+        formElementsConditionallyShown,
       )
-      return {
-        pagesValidation,
-      }
     },
-    [schemaByPageId],
+    [validationSchema],
   )
 
   return {

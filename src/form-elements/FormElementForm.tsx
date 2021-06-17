@@ -5,16 +5,13 @@ import OneBlinkFormElements from '../components/OneBlinkFormElements'
 export type Props = {
   formId: number
   id: string
-  element:
-    | FormTypes.FormFormElement
-    | FormTypes.InfoPageElement
-    | FormTypes.SectionElement
+  element: FormTypes.FormFormElement | FormTypes.InfoPageElement
   value: FormElementsCtrl['model'] | undefined
   onChange: FormElementValueChangeHandler<FormElementsCtrl['model']>
   onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
   onChangeModel: (model: FormElementsCtrl['model']) => unknown
   formElementValidation: FormElementValidation | undefined
-  displayValidationMessage: boolean
+  displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   parentFormElementsCtrl: FormElementsCtrl
 }
@@ -25,7 +22,7 @@ function FormElementForm({
   value,
   id,
   formElementValidation,
-  displayValidationMessage,
+  displayValidationMessages,
   formElementConditionallyShown,
   onChange,
   onChangeElements,
@@ -76,15 +73,15 @@ function FormElementForm({
   const validation = React.useMemo(() => {
     return !!formElementValidation &&
       typeof formElementValidation !== 'string' &&
-      formElementValidation.type === 'nestedForm'
-      ? formElementValidation.nested
+      formElementValidation.type === 'formElements'
+      ? formElementValidation.formElements
       : undefined
   }, [formElementValidation])
 
   const formElementsConditionallyShown = React.useMemo(() => {
     return formElementConditionallyShown &&
-      formElementConditionallyShown.type === 'nestedForm'
-      ? formElementConditionallyShown.nested
+      formElementConditionallyShown.type === 'formElements'
+      ? formElementConditionallyShown.formElements
       : undefined
   }, [formElementConditionallyShown])
 
@@ -100,7 +97,7 @@ function FormElementForm({
     <OneBlinkFormElements
       formId={formId}
       formElementsValidation={validation}
-      displayValidationMessages={displayValidationMessage}
+      displayValidationMessages={displayValidationMessages}
       elements={element.elements || []}
       onChange={handleNestedChange}
       onChangeElements={handleChangeElements}
