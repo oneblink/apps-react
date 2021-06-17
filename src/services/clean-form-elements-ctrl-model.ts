@@ -73,7 +73,7 @@ function cleanElementValue(
                 : undefined,
               stripBinaryData,
               captchaTokens,
-            ).model
+            )
           }
           break
         }
