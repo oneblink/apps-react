@@ -6,11 +6,16 @@ import {
 } from '../../services/attachments'
 import { Attachment, AttachmentNew } from '../../types/attachments'
 import { canvasToBlob } from '../../services/blob-utils'
+import useBooleanState from '../useBooleanState'
+import useIsMounted from '../useIsMounted'
 
 const useAttachments = (
   element: FormTypes.FilesElement,
   onChange: FormElementValueChangeHandler<Attachment[]>,
 ) => {
+  const isMounted = useIsMounted()
+  const [isDirty, setIsDirty] = useBooleanState(false)
+
   const addAttachments = React.useCallback(
     async (files: File[]): Promise<void> => {
       if (!files.length) return
@@ -30,8 +35,11 @@ const useAttachments = (
         if (!currentAttachments) return newAttachments
         return [...currentAttachments, ...newAttachments]
       })
+      if (isMounted.current) {
+        setIsDirty()
+      }
     },
-    [element, onChange],
+    [element, isMounted, onChange, setIsDirty],
   )
 
   const removeAttachment = React.useCallback(
@@ -46,8 +54,11 @@ const useAttachments = (
           return att._id !== id
         })
       })
+      if (isMounted.current) {
+        setIsDirty()
+      }
     },
-    [element, onChange],
+    [element, isMounted, onChange, setIsDirty],
   )
 
   const changeAttachment = React.useCallback(
@@ -62,24 +73,18 @@ const useAttachments = (
           return att
         })
       })
+      if (isMounted.current) {
+        setIsDirty()
+      }
     },
-    [element, onChange],
+    [element, isMounted, onChange, setIsDirty],
   )
 
-  const clearInvalidAttachments = React.useCallback(() => {
-    onChange(element, (currentAttachments) => {
-      if (!currentAttachments) return
-      return currentAttachments.filter((att) => {
-        return att.type !== 'ERROR'
-      })
-    })
-  }, [element, onChange])
-
   return {
+    isDirty,
     addAttachments,
     removeAttachment,
     changeAttachment,
-    clearInvalidAttachments,
   }
 }
 
