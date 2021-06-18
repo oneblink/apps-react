@@ -3,16 +3,24 @@ import clsx from 'clsx'
 import { Collapse, Tooltip } from '@material-ui/core'
 import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
-import FormElementForm, { Props } from './FormElementForm'
+import OneBlinkFormElements, { Props } from '../components/OneBlinkFormElements'
+import { checkSectionValidity } from '../services/form-validation'
 
-function FormElementSection(
-  props: Omit<Props, 'element'> & {
-    element: FormTypes.SectionElement
-  },
-) {
-  const [isCollapsed, , , toggle] = useBooleanState(props.element.isCollapsed)
-  const isValid =
-    !props.formElementValidation || !props.displayValidationMessage
+function FormElementSection({
+  element,
+  ...props
+}: Omit<Props, 'elements'> & {
+  element: FormTypes.SectionElement
+}) {
+  const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
+
+  const isInvalid = React.useMemo(() => {
+    return (
+      !!props.displayValidationMessages &&
+      checkSectionValidity(element, props.formElementsValidation)
+    )
+  }, [element, props.displayValidationMessages, props.formElementsValidation])
+
   return (
     <div className="ob-section">
       <div
@@ -20,10 +28,10 @@ function FormElementSection(
         onClick={toggle}
       >
         <h3 className="ob-section__header-text title is-3">
-          {props.element.label}
-          {props.element.hint && (
+          {element.label}
+          {element.hint && (
             <Tooltip
-              title={props.element.hint}
+              title={element.hint}
               arrow
               enterTouchDelay={0}
               leaveTouchDelay={10000}
@@ -35,7 +43,7 @@ function FormElementSection(
           )}
         </h3>
         <div className="ob-section__header-icon-container">
-          {!isValid && (
+          {isInvalid && (
             <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon">
               warning
             </i>
@@ -54,7 +62,7 @@ function FormElementSection(
         in={!isCollapsed}
         classes={{ container: 'ob-section__content' }}
       >
-        <FormElementForm {...props} />
+        <OneBlinkFormElements {...props} elements={element.elements} />
       </Collapse>
     </div>
   )

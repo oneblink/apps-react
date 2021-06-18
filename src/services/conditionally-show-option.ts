@@ -130,6 +130,7 @@ const isAttributeFilterValid = (
   if (
     // Will never be a page, just making typescript happy :)
     predicateElement.type === 'page' ||
+    predicateElement.type === 'section' ||
     !conditionallyShowElement(formElementsCtrl, predicateElement, [])
   ) {
     return false

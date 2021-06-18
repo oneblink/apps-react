@@ -46,7 +46,7 @@ import {
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 
-type Props = {
+export type Props = {
   formId: number
   elements: FormTypes.FormElement[]
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
@@ -80,6 +80,32 @@ function OneBlinkFormElements({
       formElementsConditionallyShown={formElementsConditionallyShown}
     >
       {elements.map((element) => {
+        if (element.type === 'section') {
+          if (formElementsConditionallyShown?.[element.id]?.isShown === false) {
+            return null
+          }
+
+          return (
+            <div
+              key={element.id}
+              className="ob-element cypress-element-container"
+            >
+              <FormElementSection
+                formId={formId}
+                element={element}
+                displayValidationMessages={displayValidationMessages}
+                idPrefix={idPrefix}
+                formElementsConditionallyShown={formElementsConditionallyShown}
+                formElementsValidation={formElementsValidation}
+                onChange={onChange}
+                onChangeElements={onChangeElements}
+                onChangeModel={onChangeModel}
+                formElementsCtrl={formElementsCtrl}
+              />
+            </div>
+          )
+        }
+
         if (
           element.type === 'page' ||
           formElementsConditionallyShown?.[element.name]?.isShown === false
@@ -584,29 +610,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         />
       )
     }
-    case 'section': {
-      return (
-        <FormElementSection
-          formId={formId}
-          id={id}
-          element={element}
-          value={value as FormElementsCtrl['model'] | undefined}
-          onChange={
-            onChange as React.ComponentProps<
-              typeof FormElementSection
-            >['onChange']
-          }
-          onChangeElements={onChangeElements}
-          onChangeModel={onChangeModel}
-          displayValidationMessage={displayValidationMessage}
-          formElementValidation={formElementValidation}
-          formElementConditionallyShown={
-            formElementsConditionallyShown?.[element.name]
-          }
-          parentFormElementsCtrl={formElementsCtrl}
-        />
-      )
-    }
     case 'infoPage':
     case 'form': {
       return (
@@ -620,7 +623,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}
-          displayValidationMessage={displayValidationMessage}
+          displayValidationMessages={displayValidationMessage}
           formElementValidation={formElementValidation}
           formElementConditionallyShown={
             formElementsConditionallyShown?.[element.name]
@@ -856,7 +859,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           onChangeElements={onChangeElements}
           onChangeModel={onChangeModel}
-          displayValidationMessage={displayValidationMessage}
+          displayValidationMessages={displayValidationMessage}
           formElementValidation={formElementValidation}
           formElementConditionallyShown={
             formElementsConditionallyShown?.[element.name]

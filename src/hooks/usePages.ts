@@ -2,35 +2,29 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import useBooleanState from '../hooks/useBooleanState'
+import { checkSectionValidity } from '../services/form-validation'
 import scrollingService from '../services/scrolling-service'
 
 export default function usePages({
   pages,
-  pagesValidation,
-  pageElementsConditionallyShown,
+  formElementsValidation,
+  formElementsConditionallyShown,
 }: {
   pages: FormTypes.PageElement[]
-  pagesValidation: PageElementsValidation | undefined
-  pageElementsConditionallyShown: PageElementsConditionallyShown
+  formElementsValidation: FormElementsValidation | undefined
+  formElementsConditionallyShown: FormElementsConditionallyShown
 }) {
   const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
 
-  const [
-    isStepsHeaderActive,
-    ,
-    closeStepsNavigation,
-    toggleStepsNavigation,
-  ] = useBooleanState(false)
+  const [isStepsHeaderActive, , closeStepsNavigation, toggleStepsNavigation] =
+    useBooleanState(false)
 
   const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
     return pages.filter((pageElement) => {
-      return (
-        pageElementsConditionallyShown[pageElement.id] &&
-        pageElementsConditionallyShown[pageElement.id].isShown
-      )
+      return formElementsConditionallyShown?.[pageElement.id]?.isShown !== false
     })
-  }, [pageElementsConditionallyShown, pages])
+  }, [formElementsConditionallyShown, pages])
 
   const [currentPageId, setCurrentPageId] = React.useState(visiblePages[0].id)
 
@@ -117,10 +111,9 @@ export default function usePages({
         return false
       }
 
-      // If there is no page validation, we will treat as valid
-      return !!pagesValidation && !!pagesValidation[page.id]
+      return checkSectionValidity(page, formElementsValidation)
     },
-    [pagesValidation, visitedPageIds],
+    [formElementsValidation, visitedPageIds],
   )
 
   React.useEffect(() => {
