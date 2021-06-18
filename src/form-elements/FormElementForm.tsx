@@ -8,8 +8,7 @@ export type Props = {
   element: FormTypes.FormFormElement | FormTypes.InfoPageElement
   value: FormElementsCtrl['model'] | undefined
   onChange: FormElementValueChangeHandler<FormElementsCtrl['model']>
-  onChangeElements: (formElements: FormTypes.FormElement[]) => unknown
-  onChangeModel: (model: FormElementsCtrl['model']) => unknown
+  onLookup: FormElementLookupHandler
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
@@ -25,8 +24,7 @@ function FormElementForm({
   displayValidationMessages,
   formElementConditionallyShown,
   onChange,
-  onChangeElements,
-  onChangeModel,
+  onLookup,
   parentFormElementsCtrl,
 }: Props) {
   const handleNestedChange = React.useCallback(
@@ -42,32 +40,46 @@ function FormElementForm({
             : nestedElementValue,
       }))
     },
-    [onChange, element],
+    [element, onChange],
   )
-  const handleChangeElements = React.useCallback(
-    (elements) => {
-      onChangeElements(
-        parentFormElementsCtrl.elements.map((parentElement) => {
-          if (parentElement.id === element.id) {
+
+  const handleLookup = React.useCallback<FormElementLookupHandler>(
+    (mergeLookupResults) => {
+      onLookup((currentFormSubmission) => {
+        let model = currentFormSubmission.submission[
+          element.name
+        ] as FormElementsCtrl['model']
+        const elements = currentFormSubmission.elements.map((formElement) => {
+          if (
+            formElement.type === 'form' &&
+            formElement.name === element.name &&
+            Array.isArray(formElement.elements)
+          ) {
+            const { elements, submission } = mergeLookupResults({
+              elements: formElement.elements,
+              submission: model,
+            })
+            model = submission
             return {
-              ...parentElement,
+              ...formElement,
               elements,
             }
           }
-          return parentElement
-        }),
-      )
-    },
-    [element.id, onChangeElements, parentFormElementsCtrl.elements],
-  )
-  const handleChangeModel = React.useCallback(
-    (model) => {
-      onChangeModel({
-        ...parentFormElementsCtrl.model,
-        [element.name]: model,
+          return formElement
+        })
+
+        const submission = {
+          ...currentFormSubmission.submission,
+          [element.name]: model,
+        }
+
+        return {
+          elements,
+          submission,
+        }
       })
     },
-    [element.name, onChangeModel, parentFormElementsCtrl.model],
+    [element.name, onLookup],
   )
 
   const validation = React.useMemo(() => {
@@ -100,8 +112,7 @@ function FormElementForm({
       displayValidationMessages={displayValidationMessages}
       elements={element.elements || []}
       onChange={handleNestedChange}
-      onChangeElements={handleChangeElements}
-      onChangeModel={handleChangeModel}
+      onLookup={handleLookup}
       formElementsConditionallyShown={formElementsConditionallyShown}
       formElementsCtrl={formElementsCtrl}
       idPrefix={`${id}_`}

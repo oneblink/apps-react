@@ -8,6 +8,7 @@ import { checkSectionValidity } from '../services/form-validation'
 
 function FormElementSection({
   element,
+  onLookup,
   ...props
 }: Omit<Props, 'elements'> & {
   element: FormTypes.SectionElement
@@ -20,6 +21,34 @@ function FormElementSection({
       checkSectionValidity(element, props.formElementsValidation)
     )
   }, [element, props.displayValidationMessages, props.formElementsValidation])
+
+  const handleLookup = React.useCallback<FormElementLookupHandler>(
+    (mergeLookupResults) => {
+      onLookup((currentFormSubmission) => {
+        let model = currentFormSubmission.submission
+        const elements = currentFormSubmission.elements.map((formElement) => {
+          if (formElement.type === 'section' && formElement.id === element.id) {
+            const { elements, submission } = mergeLookupResults({
+              elements: formElement.elements,
+              submission: currentFormSubmission.submission,
+            })
+            model = submission
+            return {
+              ...formElement,
+              elements,
+            }
+          }
+          return formElement
+        })
+
+        return {
+          elements,
+          submission: model,
+        }
+      })
+    },
+    [element.id, onLookup],
+  )
 
   return (
     <div className="ob-section">
@@ -62,7 +91,11 @@ function FormElementSection({
         in={!isCollapsed}
         classes={{ container: 'ob-section__content' }}
       >
-        <OneBlinkFormElements {...props} elements={element.elements} />
+        <OneBlinkFormElements
+          {...props}
+          onLookup={handleLookup}
+          elements={element.elements}
+        />
       </Collapse>
     </div>
   )

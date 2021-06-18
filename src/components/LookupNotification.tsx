@@ -10,50 +10,45 @@ import generateDefaultData from '../services/generate-default-data'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useFormDefinition from '../hooks/useFormDefinition'
 import useInjectPages from '../hooks/useInjectPages'
-import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
+import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import useExecutedLookupCallback from '../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import { Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
+import useIsMounted from '../hooks/useIsMounted'
 
 type Props = {
-  isAutoLookup?: boolean
+  autoLookupValue?: unknown
   element: FormTypes.LookupFormElement
-  elements: FormTypes.FormElement[]
-  value: unknown | undefined
-  formElementsCtrl: FormElementsCtrl
-  formElementsConditionallyShown: FormElementsConditionallyShown | undefined
-  onChangeElements: (formElements: FormTypes.FormElement[]) => void
-  onChangeModel: (model: FormElementsCtrl['model']) => void
+  onLookup: FormElementLookupHandler
   children: React.ReactNode
 }
 
 function LookupNotificationComponent({
-  isAutoLookup,
+  autoLookupValue,
   element,
-  elements,
-  value,
-  formElementsCtrl,
-  formElementsConditionallyShown,
-  onChangeElements,
-  onChangeModel,
+  onLookup,
   children,
 }: Props) {
+  const isMounted = useIsMounted()
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
   const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
 
-  const [onCancelLookup, setOnCancelLookup] =
-    React.useState<(() => void) | undefined>(undefined)
+  const [onCancelLookup, setOnCancelLookup] = React.useState<
+    (() => void) | undefined
+  >(undefined)
   const [isLookingUp, setIsLookingUp] = React.useState(false)
   const [hasLookupFailed, setHasLookupFailed] = React.useState(false)
   const [hasLookupSucceeded, setHasLookupSucceeded] = React.useState(false)
   const [isCancellable, setIsCancellable] = React.useState(false)
   const [isDisabled, setIsDisabled] = React.useState(false)
-  const [lookupErrorHTML, setLookupErrorHTML] =
-    React.useState<string | null>(null)
+  const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
+    null,
+  )
   const formIsReadOnly = useFormIsReadOnly()
+  const model = useFormSubmissionModel()
 
   const mergeLookupData = React.useCallback(
     (
@@ -61,59 +56,51 @@ function LookupNotificationComponent({
       dataLookupResult,
       elementLookupResult: FormTypes.FormElement[],
     ) => {
-      let defaultElementData: FormElementsCtrl['model'] | undefined
-
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
           // @ts-expect-error ???
-          injectPagesAfter(element, elementLookupResult)
+          injectPagesAfter(element, elementLookupResult, dataLookupResult)
           return
-        }
-
-        // @ts-expect-error ???
-        const indexOfElement = elements.indexOf(element)
-        if (indexOfElement === -1) {
-          console.log('Could not find element', element)
-        } else {
-          defaultElementData = generateDefaultData(
-            elementLookupResult,
-            formElementsCtrl.model,
-          )
-
-          // Filter out already injected elements
-          const allElements = elements.filter(
-            // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
-            (e) => e.injectedByElementId !== element.id,
-          )
-          allElements.splice(
-            indexOfElement + 1,
-            0,
-            ...elementLookupResult.map((e) => {
-              // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
-              e.injectedByElementId = element.id
-              return e
-            }),
-          )
-
-          onChangeElements(allElements)
         }
       }
 
-      onChangeModel({
-        ...defaultElementData,
-        ...formElementsCtrl.model,
-        [element.name]: newValue,
-        ...dataLookupResult,
+      onLookup(({ submission, elements }) => {
+        let allElements = elements
+        if (Array.isArray(elementLookupResult)) {
+          const indexOfElement = elements.findIndex(
+            ({ id }) => id === element.id,
+          )
+          if (indexOfElement === -1) {
+            console.log('Could not find element', element)
+          } else {
+            // Filter out already injected elements
+            allElements = elements.filter(
+              // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
+              (e) => e.injectedByElementId !== element.id,
+            )
+            allElements.splice(
+              indexOfElement + 1,
+              0,
+              ...elementLookupResult.map((e) => {
+                // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
+                e.injectedByElementId = element.id
+                return e
+              }),
+            )
+          }
+        }
+
+        return {
+          elements: allElements,
+          submission: generateDefaultData(allElements, {
+            ...submission,
+            [element.name]: newValue,
+            ...dataLookupResult,
+          }),
+        }
       })
     },
-    [
-      element,
-      elements,
-      formElementsCtrl.model,
-      injectPagesAfter,
-      onChangeElements,
-      onChangeModel,
-    ],
+    [element, injectPagesAfter, onLookup],
   )
 
   const triggerLookup = React.useCallback(
@@ -148,11 +135,7 @@ function LookupNotificationComponent({
 
       const payload = {
         submission: {
-          ...cleanFormElementsCtrlModel(
-            formElementsCtrl,
-            formElementsConditionallyShown,
-            true,
-          ).model,
+          ...model,
           [element.name]: newValue,
         },
       }
@@ -161,13 +144,15 @@ function LookupNotificationComponent({
         const [dataLookupResult, elementLookupResult] = await Promise.all([
           fetchLookup(
             element.dataLookupId,
-            definition,
+            definition?.organisationId,
+            definition?.formsAppEnvironmentId,
             payload,
             abortController.signal,
           ),
           fetchLookup(
             element.elementLookupId,
-            definition,
+            definition?.organisationId,
+            definition?.formsAppEnvironmentId,
             payload,
             abortController.signal,
           ),
@@ -175,14 +160,23 @@ function LookupNotificationComponent({
 
         mergeLookupData(newValue, dataLookupResult, elementLookupResult)
 
-        setHasLookupSucceeded(true)
+        if (isMounted.current) {
+          setHasLookupSucceeded(true)
+        }
 
         // After certain amount of time, hide the lookup succeeded message
         await new Promise((resolve) => setTimeout(() => resolve(false), 750))
 
-        setIsLookingUp(false)
+        if (isMounted.current) {
+          setIsLookingUp(false)
+        }
       } catch (error) {
         executeLookupFailed(element)
+
+        if (!isMounted.current) {
+          return
+        }
+
         // Cancelling will throw an error.
         if (error.name === 'AbortError') {
           console.log('Fetch aborted')
@@ -198,35 +192,38 @@ function LookupNotificationComponent({
         )
       } finally {
         clearTimeout(isCancellableTimeout)
-        setIsDisabled(false)
-        setOnCancelLookup(undefined)
+        if (isMounted.current) {
+          setIsDisabled(false)
+          setOnCancelLookup(undefined)
+        }
       }
     },
     [
-      definition,
+      definition?.formsAppEnvironmentId,
+      definition?.organisationId,
       element,
       executeLookupFailed,
       executedLookup,
-      formElementsConditionallyShown,
-      formElementsCtrl,
       formIsReadOnly,
+      isMounted,
       isOffline,
       mergeLookupData,
+      model,
     ],
   )
 
   // For certain elements, do not add click event
   // instead, watch model for changes and trigger lookup function
   React.useEffect(() => {
-    if (isAutoLookup) {
-      triggerLookup(value)
+    if (autoLookupValue !== undefined) {
+      triggerLookup(autoLookupValue)
     }
     // Wants to use "triggerLookup" as a dependency,
     // however, this will change on any change made on any
     // element. Checking if "value" has changed is enough
-    // to trigger a lookup when the correct values change
+    // to trigger a lookup when the correct dependencies change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAutoLookup, value])
+  }, [autoLookupValue])
 
   const contextValue = React.useMemo(
     () => ({
@@ -325,11 +322,16 @@ export default React.memo(LookupNotification)
 
 async function fetchLookup(
   formElementLookupId: number | undefined,
-  form: FormTypes.Form | undefined,
+  organisationId: string | undefined,
+  formsAppEnvironmentId: number | undefined,
   payload: FormElementsCtrl['model'],
   abortSignal: AbortSignal,
 ) {
-  if (typeof formElementLookupId !== 'number' || !form) {
+  if (
+    typeof formElementLookupId !== 'number' ||
+    !organisationId ||
+    typeof formsAppEnvironmentId !== 'number'
+  ) {
     return
   }
 
@@ -338,8 +340,8 @@ async function fetchLookup(
     formElementLookupId,
   )
   const formElementLookup = await formService.getFormElementLookupById(
-    form.organisationId,
-    form.formsAppEnvironmentId,
+    organisationId,
+    formsAppEnvironmentId,
     formElementLookupId,
   )
 
