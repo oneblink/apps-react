@@ -18,7 +18,7 @@ function generateCivicaNameRecordAddressElements(
         ...createFormElement(),
         type: 'geoscapeAddress',
         name: 'address1',
-        label: 'Address',
+        label: element.address1Label || 'Address',
         required: element.required,
         readOnly: element.readOnly,
       },
@@ -29,7 +29,7 @@ function generateCivicaNameRecordAddressElements(
       ...createFormElement(),
       type: 'text',
       name: 'address1',
-      label: 'Address',
+      label: element.address1Label || 'Address',
       required: element.required,
       readOnly: element.readOnly,
     },
@@ -37,7 +37,7 @@ function generateCivicaNameRecordAddressElements(
       ...createFormElement(),
       type: 'text',
       name: 'address2',
-      label: 'Suburb',
+      label: element.address2Label || 'Suburb',
       required: element.required,
       readOnly: element.readOnly,
     },
@@ -45,7 +45,7 @@ function generateCivicaNameRecordAddressElements(
       ...createFormElement(),
       type: 'text',
       name: 'postcode',
-      label: 'Postcode',
+      label: element.postcodeLabel || 'Postcode',
       required: element.required,
       readOnly: element.readOnly,
     },
@@ -56,7 +56,9 @@ export default function generateCivicaNameRecordElements(
   element: FormTypes.CivicaNameRecordElement,
   titleCodeOptions?: FormTypes.ChoiceElementOption[],
 ): FormTypes.FormElement[] {
-  return [
+  const elementsWithHidden: Array<
+    FormTypes.FormElement & { civicaIsHidden?: boolean }
+  > = [
     {
       ...createFormElement(),
       type: titleCodeOptions ? 'select' : 'text',
@@ -72,9 +74,10 @@ export default function generateCivicaNameRecordElements(
       ...createFormElement(),
       type: 'text',
       name: 'givenName1',
-      label: 'First Name',
-      required: false,
+      label: element.givenName1Label || 'First Name',
+      required: !!element.givenName1IsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.givenName1IsHidden,
     },
     {
       ...createFormElement(),
@@ -88,41 +91,46 @@ export default function generateCivicaNameRecordElements(
       ...createFormElement(),
       type: 'email',
       name: 'emailAddress',
-      label: 'Email Address',
-      required: false,
+      label: element.emailAddressLabel || 'Email Address',
+      required: !!element.emailAddressIsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.emailAddressIsHidden,
     },
     {
       ...createFormElement(),
       type: 'telephone',
       name: 'homePhone',
-      label: 'Home Phone Number',
-      required: false,
+      label: element.homePhoneLabel || 'Home Phone Number',
+      required: !!element.homePhoneIsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.homePhoneIsHidden,
     },
     {
       ...createFormElement(),
       type: 'telephone',
       name: 'businessPhone',
-      label: 'Business Phone Number',
-      required: false,
+      label: element.businessPhoneLabel || 'Business Phone Number',
+      required: !!element.businessPhoneIsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.businessPhoneIsHidden,
     },
     {
       ...createFormElement(),
       type: 'telephone',
       name: 'mobilePhone',
-      label: 'Mobile Number',
-      required: false,
+      label: element.mobilePhoneLabel || 'Mobile Number',
+      required: !!element.mobilePhoneIsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.mobilePhoneIsHidden,
     },
     {
       ...createFormElement(),
       type: 'telephone',
       name: 'faxPhone',
-      label: 'Fax Number',
-      required: false,
+      label: element.faxPhoneLabel || 'Fax Number',
+      required: !!element.faxPhoneIsRequired,
       readOnly: element.readOnly,
+      civicaIsHidden: element.faxPhoneIsHidden,
     },
     {
       ...createFormElement(),
@@ -134,4 +142,10 @@ export default function generateCivicaNameRecordElements(
       elements: generateCivicaNameRecordAddressElements(element),
     },
   ]
+  return elementsWithHidden
+    .filter((ele) => !ele.civicaIsHidden)
+    .map((ele) => {
+      delete ele.civicaIsHidden
+      return ele
+    })
 }
