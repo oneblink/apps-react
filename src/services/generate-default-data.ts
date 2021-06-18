@@ -171,7 +171,7 @@ export default function generateDefaultData(
       }
       case 'civicaNameRecord': {
         const nestedElements = generateCivicaNameRecordElements(el, [])
-        m[el.name] = generateDefaultData(nestedElements, el.defaultValue || {})
+        m[el.name] = generateDefaultData(nestedElements, { ...el.defaultValue })
         break
       }
       case 'form': {
