@@ -9,18 +9,29 @@ import { checkSectionValidity } from '../services/form-validation'
 function FormElementSection({
   element,
   onLookup,
+  displayValidationMessages,
   ...props
 }: Omit<Props, 'elements'> & {
   element: FormTypes.SectionElement
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
+  const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
+
+  React.useEffect(() => {
+    if (isCollapsed && !isDisplayingError) {
+      setIsDisplayingError(true)
+    }
+  }, [isCollapsed, isDisplayingError])
+
+  const displayValidationMessage =
+    displayValidationMessages || isDisplayingError
 
   const isInvalid = React.useMemo(() => {
     return (
-      !!props.displayValidationMessages &&
+      displayValidationMessage &&
       checkSectionValidity(element, props.formElementsValidation)
     )
-  }, [element, props.displayValidationMessages, props.formElementsValidation])
+  }, [displayValidationMessage, element, props.formElementsValidation])
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
@@ -51,7 +62,11 @@ function FormElementSection({
   )
 
   return (
-    <div className="ob-section">
+    <div
+      className={clsx('ob-section', {
+        'ob-section__invalid': isInvalid,
+      })}
+    >
       <div
         className="ob-section__header cypress-section-header"
         onClick={toggle}
@@ -73,7 +88,7 @@ function FormElementSection({
         </h3>
         <div className="ob-section__header-icon-container">
           {isInvalid && (
-            <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon">
+            <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
               warning
             </i>
           )}
@@ -93,6 +108,7 @@ function FormElementSection({
       >
         <OneBlinkFormElements
           {...props}
+          displayValidationMessages={displayValidationMessage}
           onLookup={handleLookup}
           elements={element.elements}
         />
