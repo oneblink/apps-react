@@ -88,9 +88,11 @@ function FormElementSection({
         </h3>
         <div className="ob-section__header-icon-container">
           {isInvalid && (
-            <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
-              warning
-            </i>
+            <Tooltip title="Section has errors">
+              <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
+                warning
+              </i>
+            </Tooltip>
           )}
           <i
             className={clsx('ob-section__header-icon material-icons', {
