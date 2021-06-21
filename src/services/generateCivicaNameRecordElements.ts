@@ -136,7 +136,7 @@ export default function generateCivicaNameRecordElements(
       ...createFormElement(),
       type: 'repeatableSet',
       name: 'streetAddress',
-      label: 'Street Addresses',
+      label: element.streetAddressesLabel || 'Street Addresses',
       minSetEntries: element.required ? 1 : undefined,
       readOnly: element.readOnly,
       elements: generateCivicaNameRecordAddressElements(element),
