@@ -9,9 +9,10 @@ export type ConditionallyShowOptionCallbackContextValue = (
 
 const defaultContext = () => true
 
-export const ConditionallyShowOptionCallbackContext = React.createContext<ConditionallyShowOptionCallbackContextValue>(
-  defaultContext,
-)
+export const ConditionallyShowOptionCallbackContext =
+  React.createContext<ConditionallyShowOptionCallbackContextValue>(
+    defaultContext,
+  )
 
 export default function useConditionallyShowOptionCallback(
   formElementsCtrl: FormElementsCtrl,

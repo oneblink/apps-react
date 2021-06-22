@@ -24,12 +24,8 @@ As such, the items in the array can be destructured and named whatever you like:
 ```js
 import { useBooleanState } from '@oneblink/apps-react'
 
-const [
-  dialogIsOpen /* true */,
-  openDialog,
-  closeDialog,
-  toggleDialog,
-] = useBooleanState(true)
+const [dialogIsOpen /* true */, openDialog, closeDialog, toggleDialog] =
+  useBooleanState(true)
 ```
 
 These properties can then be used like:

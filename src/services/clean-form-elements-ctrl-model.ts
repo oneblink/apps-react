@@ -183,17 +183,19 @@ function cleanElementValue(
         }
         case 'page':
         case 'section': {
-          const nestedModel = cleanElementValue(
-            {
-              elements: element.elements,
-              model: formElementsCtrl.model,
-              parentFormElementsCtrl: formElementsCtrl.parentFormElementsCtrl,
-            },
-            formElementsConditionallyShown,
-            stripBinaryData,
-            captchaTokens,
-          )
-          Object.assign(model, nestedModel)
+          if (formElementsConditionallyShown?.[element.id]?.isShown !== false) {
+            const nestedModel = cleanElementValue(
+              {
+                elements: element.elements,
+                model: formElementsCtrl.model,
+                parentFormElementsCtrl: formElementsCtrl.parentFormElementsCtrl,
+              },
+              formElementsConditionallyShown,
+              stripBinaryData,
+              captchaTokens,
+            )
+            Object.assign(model, nestedModel)
+          }
           break
         }
         default: {

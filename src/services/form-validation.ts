@@ -292,7 +292,10 @@ export function generateValidationSchema(
       }
       case 'section':
       case 'page': {
-        const nestedSchema = generateValidationSchema(formElement.elements, elementIdsWithLookupsExecuted)
+        const nestedSchema = generateValidationSchema(
+          formElement.elements,
+          elementIdsWithLookupsExecuted,
+        )
         Object.assign(partialSchema, nestedSchema)
         break
       }

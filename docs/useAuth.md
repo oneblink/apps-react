@@ -60,11 +60,7 @@ The return type is an object with the following properties:
 import { useAuth } from '@oneblink/apps-react'
 
 function Component() {
-  const {
-    isLoggedIn,
-    userProfile,
-    userFriendlyName,
-    isUsingFormsKey,
-  } = useAuth()
+  const { isLoggedIn, userProfile, userFriendlyName, isUsingFormsKey } =
+    useAuth()
 }
 ```

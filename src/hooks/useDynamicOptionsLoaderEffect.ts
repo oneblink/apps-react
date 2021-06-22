@@ -10,9 +10,8 @@ export default function useDynamicOptionsLoaderState(
   elementId: string
   error: OneBlinkAppsError
 } | null {
-  const [state, setState] = React.useState<
-    ReturnType<typeof useDynamicOptionsLoaderState>
-  >(null)
+  const [state, setState] =
+    React.useState<ReturnType<typeof useDynamicOptionsLoaderState>>(null)
   React.useEffect(() => {
     if (state) {
       return

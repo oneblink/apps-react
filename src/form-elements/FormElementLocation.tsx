@@ -55,11 +55,8 @@ function FormElementLocation({
   displayValidationMessage,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
-  const [
-    isLocationPickerOpen,
-    showLocationPicker,
-    hideLocationPicker,
-  ] = useBooleanState(false)
+  const [isLocationPickerOpen, showLocationPicker, hideLocationPicker] =
+    useBooleanState(false)
 
   const [location, setLocation] = React.useState<Coords | undefined>(undefined)
   const onClear = React.useCallback(() => {

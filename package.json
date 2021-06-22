@@ -108,6 +108,7 @@
     "copy:styles": "copyfiles -u 1 ./src/styles/* ./dist",
     "eslint": "eslint src/**/*.{ts,tsx} --fix --cache",
     "fixpack": "fixpack",
+    "format": "prettier --write .",
     "jest": "jest",
     "prepare": "npm run build",
     "pretest": "npm run fixpack && npm run eslint && npm run build",

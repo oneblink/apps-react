@@ -1,6 +1,3 @@
 {
-  "moduleDirectories": [
-    "src",
-    "node_modules"
-  ]
+  "moduleDirectories": ["src", "node_modules"]
 }
