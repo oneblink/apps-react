@@ -39,30 +39,6 @@ const baseElement = {
   requiresAllConditionallyShowPredicates: false,
 }
 
-const generateNotesElement = (
-  element: FormTypes.ComplianceElement,
-): FormTypes.TextareaElement => ({
-  ...baseElement,
-  readOnly: element.readOnly,
-  id: `${element.id}-notes`,
-  label: 'Notes',
-  name: `${element.name}_notes`,
-  type: 'textarea',
-})
-const generateFilesElement = (
-  element: FormTypes.ComplianceElement,
-): FormTypes.FilesElement => ({
-  ...baseElement,
-  readOnly: element.readOnly,
-  id: `${element.id}-files`,
-  label: 'Media',
-  name: `${element.name}_files`,
-  type: 'files',
-  maxEntries: undefined,
-  minEntries: undefined,
-  restrictFileTypes: false,
-  storageType: element.storageType,
-})
 function FormElementCompliance({
   id,
   element,
@@ -75,12 +51,32 @@ function FormElementCompliance({
 }: Props) {
   const typedValue = value as Value | undefined
 
-  const notesElement = React.useMemo(() => generateNotesElement(element), [
-    element,
-  ])
-  const filesElement = React.useMemo(() => generateFilesElement(element), [
-    element,
-  ])
+  const notesElement = React.useMemo<FormTypes.TextareaElement>(
+    () => ({
+      ...baseElement,
+      readOnly: element.readOnly,
+      id: `${element.id}-notes`,
+      label: 'Notes',
+      name: `${element.name}_notes`,
+      type: 'textarea',
+    }),
+    [element.id, element.name, element.readOnly],
+  )
+  const filesElement = React.useMemo<FormTypes.FilesElement>(
+    () => ({
+      ...baseElement,
+      readOnly: element.readOnly,
+      id: `${element.id}-files`,
+      label: 'Media',
+      name: `${element.name}_files`,
+      type: 'files',
+      maxEntries: undefined,
+      minEntries: undefined,
+      restrictFileTypes: false,
+      storageType: element.storageType,
+    }),
+    [element.id, element.name, element.readOnly, element.storageType],
+  )
 
   const handleValueChange = React.useCallback<
     FormElementValueChangeHandler<string>

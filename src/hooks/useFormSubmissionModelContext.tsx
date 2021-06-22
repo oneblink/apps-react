@@ -3,9 +3,8 @@ import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-mod
 
 export type FormSubmissionModelContextValue = FormElementsCtrl['model']
 
-const FormSubmissionModelContext = React.createContext<FormSubmissionModelContextValue>(
-  {},
-)
+const FormSubmissionModelContext =
+  React.createContext<FormSubmissionModelContextValue>({})
 
 export function FormSubmissionModelContextProvider({
   children,

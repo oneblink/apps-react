@@ -20,8 +20,9 @@ function OneBlinkAutoSaveForm({
   disabled,
   ...rest
 }: Props) {
-  const [isUsingAutoSave, setIsUsingAutoSave] =
-    React.useState<boolean | null>(null)
+  const [isUsingAutoSave, setIsUsingAutoSave] = React.useState<boolean | null>(
+    null,
+  )
   const [isAutoSaving, setIsAutoSaving] = React.useState(false)
   const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState<{
     isLoading: boolean

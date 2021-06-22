@@ -197,11 +197,8 @@ export default function useLogin({
   ])
 
   // Forgot Password
-  const [
-    isShowingForgotPassword,
-    showForgotPassword,
-    hideForgotPassword,
-  ] = useBooleanState(false)
+  const [isShowingForgotPassword, showForgotPassword, hideForgotPassword] =
+    useBooleanState(false)
   const [
     {
       resetForgottenPasswordCallback,
@@ -248,9 +245,8 @@ export default function useLogin({
     })
 
     try {
-      const newResetForgottenPasswordCallback = await authService.forgotPassword(
-        username,
-      )
+      const newResetForgottenPasswordCallback =
+        await authService.forgotPassword(username)
       if (isMounted.current) {
         setForgotPasswordState({
           isSendingForgotPasswordCode: false,
