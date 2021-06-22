@@ -183,6 +183,17 @@ function cleanElementValue(
         }
         case 'page':
         case 'section': {
+          const nestedModel = cleanElementValue(
+            {
+              elements: element.elements,
+              model: formElementsCtrl.model,
+              parentFormElementsCtrl: formElementsCtrl.parentFormElementsCtrl,
+            },
+            formElementsConditionallyShown,
+            stripBinaryData,
+            captchaTokens,
+          )
+          Object.assign(model, nestedModel)
           break
         }
         default: {

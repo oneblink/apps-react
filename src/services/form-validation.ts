@@ -280,17 +280,20 @@ export function generateValidationSchema(
   elements: FormTypes.FormElement[],
   elementIdsWithLookupsExecuted: string[],
 ): ValidateJSSchema {
-  const formElements = flattenFormElements(elements)
-  return formElements.reduce<ValidateJSSchema>((partialSchema, formElement) => {
+  return elements.reduce<ValidateJSSchema>((partialSchema, formElement) => {
     switch (formElement.type) {
       case 'summary':
       case 'calculation':
       case 'image':
       case 'html':
       case 'infoPage':
-      case 'heading':
+      case 'heading': {
+        break
+      }
       case 'section':
       case 'page': {
+        const nestedSchema = generateValidationSchema(formElement.elements, elementIdsWithLookupsExecuted)
+        Object.assign(partialSchema, nestedSchema)
         break
       }
       case 'draw': {
