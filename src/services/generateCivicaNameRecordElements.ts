@@ -83,7 +83,7 @@ export default function generateCivicaNameRecordElements(
       ...createFormElement(),
       type: 'text',
       name: 'familyName',
-      label: element.titleLabel || 'Family Name',
+      label: element.familyNameLabel || 'Family Name',
       required: element.required,
       readOnly: element.readOnly,
     },
