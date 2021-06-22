@@ -5,11 +5,25 @@ export default function flattenFormElements(
 ): FormTypes.FormElement[] {
   return elements.reduce<FormTypes.FormElement[]>(
     (flattenedElements, element) => {
-      flattenedElements.push(element)
       switch (element.type) {
         case 'section':
         case 'page': {
-          flattenedElements.push(...flattenFormElements(element.elements))
+          flattenedElements.push(
+            element,
+            ...flattenFormElements(element.elements),
+          )
+          break
+        }
+        case 'repeatableSet': {
+          const flattenedChildren = flattenFormElements(element.elements)
+          flattenedElements.push({
+            ...element,
+            elements: flattenedChildren,
+          })
+          break
+        }
+        default: {
+          flattenedElements.push(element)
         }
       }
       return flattenedElements
