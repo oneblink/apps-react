@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2021-06-23
+
 ### Added
+
 - `definition` to POST payload for lookup requests
 - `civicaNameRecord` form element
 - `civicaStreetName` form element
@@ -17,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `Barcode Scanner` element auto lookup not sending relevant data
+
+### Dependencies
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.2.0 (from 2.1.1)
+
+- update [bulma-toast](https://www.npmjs.com/package/bulma-toast) to [2.3.1](https://github.com/rfoel/bulma-toast/releases/tag/v2.3.1) (from [2.3.0](https://github.com/rfoel/bulma-toast/releases/tag/v2.3.0))
 
 ## [0.4.0] - 2021-06-06
 
