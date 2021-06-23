@@ -134,6 +134,7 @@ function LookupNotificationComponent({
       }, 5000)
 
       const payload = {
+        definition,
         submission: {
           ...model,
           [element.name]: newValue,
@@ -199,8 +200,7 @@ function LookupNotificationComponent({
       }
     },
     [
-      definition?.formsAppEnvironmentId,
-      definition?.organisationId,
+      definition,
       element,
       executeLookupFailed,
       executedLookup,

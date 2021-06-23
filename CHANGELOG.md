@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
+- `definition` to POST payload for lookup requests
 - `civicaNameRecord` form element
 - `civicaStreetName` form element
 - `boolean` form element
