@@ -422,8 +422,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           onLookup={onLookup}
           formElementConditionallyShown={
-            formElementsConditionallyShown &&
-            formElementsConditionallyShown[element.name]
+            formElementsConditionallyShown?.[element.name]
           }
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}

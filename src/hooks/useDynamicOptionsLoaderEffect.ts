@@ -5,7 +5,7 @@ import { FormTypes } from '@oneblink/types'
 
 export default function useDynamicOptionsLoaderState(
   form: FormTypes.Form,
-  onSetForm: React.Dispatch<React.SetStateAction<FormTypes.Form>>,
+  setFormSubmission: SetFormSubmission,
 ): {
   elementId: string
   error: OneBlinkAppsError
@@ -36,8 +36,10 @@ export default function useDynamicOptionsLoaderState(
         return
       }
 
-      onSetForm((currentForm) => {
-        const clonedForm: FormTypes.Form = _cloneDeep(currentForm)
+      setFormSubmission((currentFormSubmission) => {
+        const clonedForm: FormTypes.Form = _cloneDeep(
+          currentFormSubmission.definition,
+        )
         for (const optionsForElementId of optionsByElementId) {
           if (optionsForElementId.ok) {
             formService.forEachFormElementWithOptions(
@@ -50,14 +52,17 @@ export default function useDynamicOptionsLoaderState(
             )
           }
         }
-        return clonedForm
+        return {
+          ...currentFormSubmission,
+          definition: clonedForm,
+        }
       })
     })()
 
     return () => {
       ignore = true
     }
-  }, [form, onSetForm, state])
+  }, [form, setFormSubmission, state])
 
   return state
 }

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [`<OneBlinkFormControlled />`](./docs/OneBlinkFormControlled.md) component
+- [`useFormSubmissionAutoSaveState()`](./docs/useFormSubmissionAutoSaveState.md) hook
+- [`useFormSubmissionState()`](./docs/useFormSubmissionState.md) hook
+
+### FAQ
+
+- [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
+
 ## [0.4.1] - 2021-06-23
 
 ### Added

@@ -15,13 +15,13 @@ import '@oneblink/apps-react/dist/styles.css'
 
 | Property            | Type                                            | Required    | Description                                                                                                                                                                                                               |
 | ------------------- | ----------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `form`              | `OneBlinkForm`                                  | Yes         | The OneBlink Form to render                                                                                                                                                                                               |
+| `form`              | `Form`                                          | Yes         | The OneBlink Form to render                                                                                                                                                                                               |
 | `initialSubmission` | `Object`                                        | No          | The initial submission data                                                                                                                                                                                               |
 | `googleMapsApiKey`  | `string`                                        | Conditional | A [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Required if the form contains a `location` form element.                                                                |
 | `captchaSiteKey`    | `string`                                        | Conditional | A [reCAPTCHA Site Key](https://developers.google.com/recaptcha/intro). Required if the form contains a `captcha` form element.                                                                                            |
-| `onSubmit`          | `(NewFormSubmission) => void`                   | Yes         | The function to call when the user submits the form with valid submission data. See [NewFormSubmission](#newformsubmission) for the structure of the argument.                                                            |
+| `onSubmit`          | `(FormSubmissionResult) => void`                | Yes         | The function to call when the user submits the form with valid submission data. See [NewFormSubmission](#newformsubmission) for the structure of the argument.                                                            |
 | `onCancel`          | `() => void`                                    | Yes         | The function to call when the user cancels the form                                                                                                                                                                       |
-| `onSaveDraft`       | `(NewDraftSubmission) => void`                  | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
+| `onSaveDraft`       | `(FormSubmission) => void`                      | No          | The function to call when the user wishes to save there submission data as a draft submission. If not specified, drafts cannot be saved. See [NewDraftSubmission](#newdraftsubmission) for the structure of the argument. |
 | `disabled`          | `boolean`                                       | No          | Whether the form is currently able to be submitted. False by default.                                                                                                                                                     |
 | `buttons`           | [`ButtonsConfiguration`](#buttonsconfiguration) | No          | Change properties for certain buttons on the form.                                                                                                                                                                        |
 | `primaryColour`     | `string`                                        | No          | Hex colour value for certain inputs (defaults to `#4c8da7`) .                                                                                                                                                             |
@@ -43,16 +43,16 @@ import '@oneblink/apps-react/dist/styles.css'
 | `label`  | `string` | No       | Change the text that appears in the button                                                                                                                                    |
 | `icon`   | `string` | No       | Add a [Material Icon](https://fonts.google.com/icons?selected=Material+Icons:home) to the button, the string must be the part that goes `<i class="material-icons">HERE</i>`) |
 
-### NewDraftSubmission
+### FormSubmission
 
 | Property     | Type           | Description                                                                                                                       |
 | ------------ | -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `submission` | `Object`       | The submission data                                                                                                               |
 | `definition` | `OneBlinkForm` | The OneBlink Form, this will be different from the `form` prop passed to the Component as it is cloned when the component mounts. |
 
-### NewFormSubmission
+### FormSubmissionResult
 
-Inherits properties from [`NewDraftSubmission`](#newdraftsubmission)
+Inherits properties from [`FormSubmission`](#formsubmission)
 
 | Property        | Type       | Description                                         |
 | --------------- | ---------- | --------------------------------------------------- |
@@ -234,16 +234,11 @@ function FormContainer() {
     // Render submission success
   }
 
-  if (postSubmissionActionErrorMessage) {
-    // Render error executing post submission action
-  }
-
   return (
     <OneBlinkForm
       captchaSiteKey={captchaSiteKey}
       googleMapsApiKey={googleMapsApiKey}
       formsAppId={formsAppId}
-      initialSubmission={null}
       form={form}
       onCancel={handleCancel}
       onSubmit={handleSubmit}
