@@ -17,11 +17,16 @@ export function FormSubmissionModelContextProvider({
 }) {
   const value = React.useMemo(() => {
     return cleanFormElementsCtrlModel(
-      formElementsCtrl,
+      formElementsCtrl.model,
+      formElementsCtrl.elements,
       formElementsConditionallyShown,
       true,
     ).model
-  }, [formElementsConditionallyShown, formElementsCtrl])
+  }, [
+    formElementsConditionallyShown,
+    formElementsCtrl.elements,
+    formElementsCtrl.model,
+  ])
   return (
     <FormSubmissionModelContext.Provider value={value}>
       {children}
