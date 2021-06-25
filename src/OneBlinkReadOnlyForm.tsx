@@ -1,21 +1,25 @@
 import * as React from 'react'
-
 import { FormTypes } from '@oneblink/types'
-
 import OneBlinkFormBase from './OneBlinkFormBase'
+import useFormSubmissionState from './hooks/useFormSubmissionState'
 
-import _cloneDeep from 'lodash.clonedeep'
-
-function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
-  const newFormElements = formElements.reduce<FormTypes.FormElement[]>(
-    (elements, element) => {
+function recursivelySetReadOnly<
+  T extends { elements?: FormTypes.FormElement[] },
+>(parent: T): T {
+  const newElements = parent?.elements
+    ?.filter((element) => element.type !== 'captcha')
+    ?.map((element) => {
       if (
         (element.type === 'form' ||
+          element.type === 'section' ||
           element.type === 'page' ||
           element.type === 'repeatableSet') &&
         Array.isArray(element.elements)
       ) {
-        element.elements = recursivelySetReadOnly(element.elements)
+        return {
+          ...element,
+          elements: recursivelySetReadOnly(element),
+        }
       }
 
       if (
@@ -30,41 +34,49 @@ function recursivelySetReadOnly(formElements: FormTypes.FormElement[]) {
         element.type !== 'form' &&
         element.type !== 'infoPage'
       ) {
-        element.readOnly = true
+        return {
+          ...element,
+          readOnly: true,
+        }
       }
 
-      if (element.type !== 'captcha') {
-        elements.push(element)
-      }
+      return element
+    })
 
-      return elements
-    },
-    [],
-  )
-  return newFormElements
+  return {
+    ...parent,
+    elements: newElements,
+  }
 }
 
 type Props = {
   form: FormTypes.Form
-  initialSubmission?: FormElementsCtrl['model'] | null
+  initialSubmission?: FormElementsCtrl['model']
   googleMapsApiKey?: string
 }
 
-function OneBlinkFormReadOnly({ form, ...rest }: Props) {
-  const definition = React.useMemo(() => {
-    const clonedForm = _cloneDeep(form)
-    const newElements = recursivelySetReadOnly(clonedForm.elements)
-    return { ...clonedForm, elements: newElements }
-  }, [form])
+function OneBlinkReadOnlyForm({ form, initialSubmission, ...rest }: Props) {
+  const [{ submission, definition }, setFormSubmission] =
+    useFormSubmissionState(form, initialSubmission)
+
+  const readOnlyDefinition = React.useMemo(() => {
+    return recursivelySetReadOnly(definition)
+  }, [definition])
+
+  const noop = React.useCallback(() => {}, [])
 
   return (
     <OneBlinkFormBase
-      form={definition}
+      definition={readOnlyDefinition}
+      submission={submission}
       disabled={true}
       isReadOnly={true}
+      onCancel={noop}
+      onSubmit={noop}
+      setFormSubmission={setFormSubmission}
       {...rest}
     />
   )
 }
 
-export default React.memo(OneBlinkFormReadOnly)
+export default React.memo(OneBlinkReadOnlyForm)

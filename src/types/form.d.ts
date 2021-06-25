@@ -70,3 +70,10 @@ declare type FormElementLookupHandler = (
     elements: import('@oneblink/types').FormTypes.FormElement[]
   },
 ) => void
+
+declare type SetFormSubmission = React.Dispatch<
+  React.SetStateAction<{
+    definition: import('@oneblink/types').FormTypes.Form
+    submission: FormElementsCtrl['model']
+  }>
+>

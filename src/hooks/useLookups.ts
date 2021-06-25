@@ -4,19 +4,10 @@ import { formService } from '@oneblink/apps'
 import generateDefaultData from '../services/generate-default-data'
 import { FormTypes } from '@oneblink/types'
 
-export default function useLookups({
-  formId,
-  setFormSubmission,
-}: {
-  formId: number
-  setFormSubmission: React.Dispatch<
-    React.SetStateAction<{
-      submission: FormElementsCtrl['model']
-      definition: FormTypes.Form
-      isDirty: boolean
-    }>
-  >
-}) {
+export default function useLookups(
+  formId: number,
+  setFormSubmission: SetFormSubmission,
+) {
   const handlePagesLookupResult = React.useCallback(
     (
       element: FormTypes.LookupFormElement,
@@ -85,7 +76,6 @@ export default function useLookups({
           ...dataLookupResult,
         })
         return {
-          isDirty: true,
           submission,
           definition,
         }

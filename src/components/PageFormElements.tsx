@@ -12,13 +12,7 @@ export type Props = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   onChange: FormElementValueChangeHandler
-  setFormSubmission: React.Dispatch<
-    React.SetStateAction<{
-      submission: FormElementsCtrl['model']
-      definition: FormTypes.Form
-      isDirty: boolean
-    }>
-  >
+  setFormSubmission: SetFormSubmission
 }
 
 function PageFormElements({
@@ -64,7 +58,6 @@ function PageFormElements({
         }
 
         return {
-          isDirty: true,
           submission,
           definition,
         }
