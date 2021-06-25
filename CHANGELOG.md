@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- reCAPTCHA tokens being duplicated when cleaning submission data
+
 ## [0.4.1] - 2021-06-23
 
 ### Added
