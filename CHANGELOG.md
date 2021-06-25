@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
 
+## [0.4.2] - 2021-06-25
+
+### Fixed
+
+- reCAPTCHA tokens being duplicated when cleaning submission data
+
 ## [0.4.1] - 2021-06-23
 
 ### Added

@@ -284,7 +284,8 @@ function OneBlinkFormBase({
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
       const { model, captchaTokens } = cleanFormElementsCtrlModel(
-        rootFormElementsCtrl,
+        submission,
+        definition.elements,
         formElementsConditionallyShown,
         stripBinaryData,
       )
@@ -293,7 +294,7 @@ function OneBlinkFormBase({
         captchaTokens,
       }
     },
-    [formElementsConditionallyShown, rootFormElementsCtrl],
+    [definition.elements, formElementsConditionallyShown, submission],
   )
 
   const obFormContainerHTMLElementRef = React.useRef<HTMLDivElement>(null)
