@@ -1,139 +1,44 @@
 import * as React from 'react'
-import _throttle from 'lodash.throttle'
-import { autoSaveService, Sentry } from '@oneblink/apps'
-
 import OnLoading from './components/OnLoading'
 import Modal from './components/Modal'
-import OneBlinkForm from './OneBlinkForm'
+import OneBlinkFormBase from './OneBlinkFormBase'
+import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
+import { OneBlinkFormUncontrolled } from './OneBlinkForm'
 
-type Props = React.ComponentProps<typeof OneBlinkForm> & {
-  autoSaveKey?: string
+type Props = React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
+  autoSaveKey: string
 }
 
 function OneBlinkAutoSaveForm({
   form,
-  autoSaveKey,
   initialSubmission,
+  autoSaveKey,
   onCancel,
   onSubmit,
   onSaveDraft,
-  disabled,
-  ...rest
+  ...props
 }: Props) {
-  const [isUsingAutoSave, setIsUsingAutoSave] = React.useState<boolean | null>(
-    null,
-  )
-  const [isAutoSaving, setIsAutoSaving] = React.useState(false)
-  const [{ isLoading, autoSaveSubmission }, setAutoSaveState] = React.useState<{
-    isLoading: boolean
-    autoSaveSubmission: FormElementsCtrl['model'] | null
-  }>({
-    isLoading: true,
-    autoSaveSubmission: null,
+  const {
+    definition,
+    submission,
+    isLoadingAutoSaveSubmission,
+    isAutoSaveSubmissionAvailable,
+    startNewSubmission,
+    continueAutoSaveSubmission,
+    handleSubmit,
+    handleCancel,
+    handleSaveDraft,
+    setFormSubmission,
+  } = useFormSubmissionAutoSaveState({
+    form,
+    initialSubmission,
+    autoSaveKey,
+    onCancel,
+    onSubmit,
+    onSaveDraft,
   })
 
-  const throttledAutoSave = React.useMemo(() => {
-    if (disabled) {
-      return
-    }
-    return _throttle(
-      (model) => {
-        setIsAutoSaving(true)
-        console.log('Auto saving...')
-        autoSaveService
-          .upsertAutoSaveData(form.id, autoSaveKey, model)
-          .catch((error) => {
-            Sentry.captureException(error)
-            console.warn('Error while auto saving', error)
-          })
-          .then(() => {
-            setIsAutoSaving(false)
-          })
-      },
-      9580, // https://en.wikipedia.org/wiki/100_metres
-      { trailing: true, leading: false },
-    )
-  }, [autoSaveKey, disabled, form.id])
-
-  const cancelAutoSave = React.useCallback(() => {
-    if (throttledAutoSave) {
-      throttledAutoSave.cancel()
-    }
-  }, [throttledAutoSave])
-
-  const deleteAutoSaveData = React.useCallback(() => {
-    return autoSaveService
-      .deleteAutoSaveData(form.id, autoSaveKey)
-      .catch((error) => {
-        Sentry.captureException(error)
-        console.warn('Error removing auto save data: ', error)
-      })
-  }, [autoSaveKey, form.id])
-
-  const handleSubmit = React.useCallback(
-    (submissionResult) => {
-      cancelAutoSave()
-      deleteAutoSaveData()
-      onSubmit(submissionResult)
-    },
-    [cancelAutoSave, deleteAutoSaveData, onSubmit],
-  )
-
-  const handleSaveDraft = React.useCallback(
-    (draftFormSubmissionResult) => {
-      cancelAutoSave()
-      deleteAutoSaveData()
-      if (onSaveDraft) {
-        onSaveDraft(draftFormSubmissionResult)
-      }
-    },
-    [cancelAutoSave, deleteAutoSaveData, onSaveDraft],
-  )
-
-  const handleCancel = React.useCallback(() => {
-    cancelAutoSave()
-    deleteAutoSaveData()
-    onCancel()
-  }, [cancelAutoSave, deleteAutoSaveData, onCancel])
-
-  React.useEffect(() => {
-    let ignore = false
-    const loadAutoSaveData = async () => {
-      try {
-        const autoSaveData = await autoSaveService.getAutoSaveData<
-          FormElementsCtrl['model']
-        >(form.id, autoSaveKey)
-        if (!ignore) {
-          setAutoSaveState({
-            isLoading: false,
-            autoSaveSubmission: autoSaveData,
-          })
-        }
-      } catch (error) {
-        Sentry.captureException(error)
-        console.warn('Error loading auto save data', error)
-        if (!ignore) {
-          setAutoSaveState({
-            isLoading: false,
-            autoSaveSubmission: null,
-          })
-        }
-      }
-    }
-    loadAutoSaveData()
-    return () => {
-      ignore = true
-    }
-  }, [autoSaveKey, form.id])
-
-  // Clean up throttle function on unmount
-  React.useEffect(() => {
-    return () => {
-      cancelAutoSave()
-    }
-  }, [cancelAutoSave])
-
-  if (isLoading) {
+  if (isLoadingAutoSaveSubmission) {
     return (
       <div className="cypress-loading has-text-centered">
         <OnLoading className="has-text-centered"></OnLoading>
@@ -141,7 +46,7 @@ function OneBlinkAutoSaveForm({
     )
   }
 
-  if (isUsingAutoSave === null && autoSaveSubmission) {
+  if (isAutoSaveSubmissionAvailable) {
     return (
       <Modal
         isOpen
@@ -152,17 +57,14 @@ function OneBlinkAutoSaveForm({
             <button
               type="button"
               className="button ob-button is-light cypress-continue-auto-save-start-again-button"
-              onClick={() => {
-                deleteAutoSaveData()
-                setIsUsingAutoSave(false)
-              }}
+              onClick={startNewSubmission}
             >
               Start Again
             </button>
             <button
               type="button"
               className="button ob-button is-primary cypress-continue-auto-save-continue-button"
-              onClick={() => setIsUsingAutoSave(true)}
+              onClick={continueAutoSaveSubmission}
             >
               Continue
             </button>
@@ -176,23 +78,16 @@ function OneBlinkAutoSaveForm({
   }
 
   return (
-    <>
-      {isAutoSaving && (
-        <i className="material-icons ob-form__auto-save-icon">sync</i>
-      )}
-      <OneBlinkForm
-        {...rest}
-        initialSubmission={
-          isUsingAutoSave ? autoSaveSubmission : initialSubmission
-        }
-        disabled={disabled}
-        form={form}
-        onCancel={handleCancel}
-        onSubmit={handleSubmit}
-        onSaveDraft={onSaveDraft && handleSaveDraft}
-        onChange={throttledAutoSave}
-      />
-    </>
+    <OneBlinkFormBase
+      {...props}
+      isReadOnly={false}
+      submission={submission}
+      definition={definition}
+      onCancel={handleCancel}
+      onSubmit={handleSubmit}
+      onSaveDraft={handleSaveDraft}
+      setFormSubmission={setFormSubmission}
+    />
   )
 }
 

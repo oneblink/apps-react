@@ -13,9 +13,8 @@ export default function useConditionalLogic({
   submission: FormElementsCtrl['model']
   pages: FormTypes.PageElement[]
 }) {
-  const [conditionalLogicError, setConditionalLogicError] = React.useState<
-    Error | undefined
-  >()
+  const [conditionalLogicError, setConditionalLogicError] =
+    React.useState<Error | undefined>()
 
   const handleConditionallyShowElement = React.useCallback(
     (formElementsCtrl: FormElementsCtrl, element: FormTypes.FormElement) => {
@@ -84,6 +83,9 @@ export default function useConditionalLogic({
             switch (element.type) {
               case 'section':
               case 'page': {
+                if (formElementsConditionallyShown[element.id]) {
+                  break
+                }
                 formElementsConditionallyShown[element.id] = {
                   type: 'formElement',
                   isShown,

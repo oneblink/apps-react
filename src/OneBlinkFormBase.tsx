@@ -2,16 +2,12 @@ import * as React from 'react'
 import { createMuiTheme, ThemeProvider, Tooltip } from '@material-ui/core'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
-import _cloneDeep from 'lodash.clonedeep'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes, FormsAppsTypes } from '@oneblink/types'
 
-import useNullableState from './hooks/useNullableState'
-import useBooleanState from './hooks/useBooleanState'
 import Modal from './components/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
-import generateDefaultData from './services/generate-default-data'
 import cleanFormElementsCtrlModel from './services/clean-form-elements-ctrl-model'
 import PageFormElements from './components/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
@@ -27,48 +23,50 @@ import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
-import useChangeEffect from './hooks/useChangeEffect'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/CustomisableButtonInner'
 
-export type Props = {
-  form: FormTypes.Form
+export type BaseProps = {
+  onCancel: () => unknown
+  onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
   disabled?: boolean
   isPreview?: boolean
-  initialSubmission?: FormElementsCtrl['model'] | null
   googleMapsApiKey?: string
   captchaSiteKey?: string
+  buttons?: FormsAppsTypes.FormsListStyles['buttons']
+  primaryColour?: string
   onSaveDraft?: (
     newDraftSubmission: SubmissionTypes.NewDraftSubmission,
   ) => unknown
-  onChange?: (model: FormElementsCtrl['model']) => unknown
-  buttons?: FormsAppsTypes.FormsListStyles['buttons']
-  primaryColour?: string
 }
-export type OptionalHandlerProps = {
-  onCancel?: () => unknown
-  onSubmit?: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
+
+export type ControlledProps = {
+  definition: FormTypes.Form
+  submission: FormElementsCtrl['model']
+  setFormSubmission: SetFormSubmission
 }
+
+type Props = BaseProps &
+  ControlledProps & {
+    isReadOnly: boolean
+  }
 
 function OneBlinkFormBase({
   googleMapsApiKey,
   captchaSiteKey,
-  form: _form,
+  definition,
   disabled,
   isPreview,
-  initialSubmission,
-  isReadOnly = false,
+  submission,
+  isReadOnly,
   onCancel,
   onSubmit,
   onSaveDraft,
-  onChange,
+  setFormSubmission,
   buttons,
   primaryColour,
-}: Props &
-  OptionalHandlerProps & {
-    isReadOnly?: boolean
-  }) {
+}: Props) {
   const isOffline = useIsOffline()
 
   const theme = React.useMemo(
@@ -86,20 +84,6 @@ function OneBlinkFormBase({
   //
   //
   // #region Form Definition
-
-  const [{ definition, submission, isDirty }, setFormSubmission] =
-    React.useState(() => {
-      const definition = _cloneDeep(_form)
-      const defaultData = generateDefaultData(
-        definition.elements,
-        initialSubmission || {},
-      )
-      return {
-        definition,
-        isDirty: false,
-        submission: defaultData,
-      }
-    })
 
   const pages = React.useMemo<FormTypes.PageElement[]>(() => {
     if (definition.isMultiPage) {
@@ -134,13 +118,6 @@ function OneBlinkFormBase({
     definition.name,
   ])
 
-  const setDefinition = React.useCallback((setter) => {
-    return setFormSubmission((currentFormSubmission) => ({
-      ...currentFormSubmission,
-      definition: setter(currentFormSubmission.definition),
-    }))
-  }, [])
-
   // #endregion
   //
   //
@@ -151,38 +128,51 @@ function OneBlinkFormBase({
 
   const history = useHistory()
 
-  const [isNavigationAllowed, allowNavigation] = useBooleanState(false)
-  const [hasConfirmedNavigation, setHasConfirmedNavigation] = React.useState<
-    boolean | null
-  >(null)
-  const [goToLocation, setGoToLocation, clearGoToLocation] =
-    useNullableState<Location>(null)
-
-  const handleBlockedNavigation = React.useCallback(
-    (location) => {
-      setGoToLocation(location)
-      setHasConfirmedNavigation(false)
-      return false
-    },
-    [setGoToLocation],
-  )
+  const [
+    { isDirty, isNavigationAllowed, hasConfirmedNavigation, goToLocation },
+    setUnsavedChangesState,
+  ] = React.useState<{
+    isDirty: boolean
+    isNavigationAllowed: boolean
+    hasConfirmedNavigation: boolean | null
+    goToLocation: Location | null
+  }>({
+    isDirty: false,
+    isNavigationAllowed: false,
+    hasConfirmedNavigation: null,
+    goToLocation: null,
+  })
+  const handleBlockedNavigation = React.useCallback((location) => {
+    setUnsavedChangesState((current) => ({
+      ...current,
+      goToLocation: location,
+      hasConfirmedNavigation: false,
+    }))
+    return false
+  }, [])
 
   const handleKeepGoing = React.useCallback(() => {
-    setHasConfirmedNavigation(null)
-    clearGoToLocation()
-  }, [clearGoToLocation])
+    setUnsavedChangesState((current) => ({
+      ...current,
+      goToLocation: null,
+      hasConfirmedNavigation: null,
+    }))
+  }, [])
 
   const handleDiscardUnsavedChanges = React.useCallback(() => {
-    setHasConfirmedNavigation(true)
-    allowNavigation()
-  }, [allowNavigation])
+    setUnsavedChangesState((current) => ({
+      ...current,
+      isNavigationAllowed: true,
+      hasConfirmedNavigation: true,
+    }))
+  }, [])
 
   React.useEffect(() => {
     if (hasConfirmedNavigation) {
       // Navigate to the previous blocked location with your navigate function
       if (goToLocation) {
         history.push(`${goToLocation.pathname}${goToLocation.search}`)
-      } else if (onCancel) {
+      } else {
         onCancel()
       }
     }
@@ -190,11 +180,21 @@ function OneBlinkFormBase({
 
   const handleCancel = React.useCallback(() => {
     if (isDirty) {
-      setHasConfirmedNavigation(false)
-    } else if (onCancel) {
+      setUnsavedChangesState((current) => ({
+        ...current,
+        hasConfirmedNavigation: false,
+      }))
+    } else {
       onCancel()
     }
   }, [isDirty, onCancel])
+
+  const allowNavigation = React.useCallback(() => {
+    setUnsavedChangesState((current) => ({
+      ...current,
+      isNavigationAllowed: true,
+    }))
+  }, [])
 
   // #endregion Unsaved Changed
   //
@@ -269,7 +269,7 @@ function OneBlinkFormBase({
 
   const loadDynamicOptionsState = useDynamicOptionsLoaderEffect(
     definition,
-    setDefinition,
+    setFormSubmission,
   )
 
   // #endregion
@@ -346,35 +346,33 @@ function OneBlinkFormBase({
     (event) => {
       event.preventDefault()
       if (disabled || isReadOnly) return
-      if (onSubmit) {
-        setHasAttemptedSubmit(true)
+      setHasAttemptedSubmit(true)
 
-        if (formElementsValidation) {
-          bulmaToast.toast({
-            message: 'Please fix validation errors',
-            // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-            type: 'ob-toast is-danger cypress-invalid-submit-attempt',
-            duration: 4000,
-            pauseOnHover: true,
-            closeOnClick: true,
-          })
-          return
-        }
-
-        const submissionData = getCurrentSubmissionData(false)
-
-        if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
-          return
-        }
-
-        allowNavigation()
-
-        onSubmit({
-          definition,
-          submission: submissionData.submission,
-          captchaTokens: submissionData.captchaTokens,
+      if (formElementsValidation) {
+        bulmaToast.toast({
+          message: 'Please fix validation errors',
+          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+          type: 'ob-toast is-danger cypress-invalid-submit-attempt',
+          duration: 4000,
+          pauseOnHover: true,
+          closeOnClick: true,
         })
+        return
       }
+
+      const submissionData = getCurrentSubmissionData(false)
+
+      if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
+        return
+      }
+
+      allowNavigation()
+
+      onSubmit({
+        definition,
+        submission: submissionData.submission,
+        captchaTokens: submissionData.captchaTokens,
+      })
     },
     [
       allowNavigation,
@@ -423,10 +421,10 @@ function OneBlinkFormBase({
   //
   // #region Lookups
 
-  const { handlePagesLookupResult } = useLookups({
-    formId: definition.id,
+  const { handlePagesLookupResult } = useLookups(
+    definition.id,
     setFormSubmission,
-  })
+  )
 
   // #endregion
   //
@@ -442,9 +440,13 @@ function OneBlinkFormBase({
         return
       }
 
-      setFormSubmission((currentFormSubmission) => ({
-        definition: currentFormSubmission.definition,
+      setUnsavedChangesState((current) => ({
+        ...current,
         isDirty: true,
+      }))
+
+      setFormSubmission((currentFormSubmission) => ({
+        ...currentFormSubmission,
         submission: {
           ...currentFormSubmission.submission,
           [element.name]:
@@ -454,14 +456,8 @@ function OneBlinkFormBase({
         },
       }))
     },
-    [disabled],
+    [disabled, setFormSubmission],
   )
-
-  useChangeEffect(() => {
-    if (onChange) {
-      onChange(submission)
-    }
-  }, [onChange, submission])
 
   // #endregion
   //

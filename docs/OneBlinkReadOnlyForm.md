@@ -21,7 +21,7 @@ import '@oneblink/apps-react/dist/styles.css'
 
 ### Example
 
-```js
+```tsx
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { FormTypes } from '@oneblink/apps'
