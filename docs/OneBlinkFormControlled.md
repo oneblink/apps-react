@@ -2,7 +2,7 @@
 
 ## `<OneBlinkFormControlled />`
 
-Similar to [`<OneBlinkForm />`](./OneBlinkForm.md), however requires props to control the `definition`, `submission` values.
+Similar to [`<OneBlinkForm />`](./OneBlinkForm.md), however requires props to control the `definition` and `submission` values.
 
 ### Props
 
@@ -19,18 +19,18 @@ Also requires the same props as [`<OneBlinkForm />`](./OneBlinkForm.md) with the
 
 ### Example
 
-```js
+```tsx
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { FormTypes } from '@oneblink/types'
 import {
   OneBlinkAppsError,
   draftService,
   submissionService,
-  FormTypes,
 } from '@oneblink/apps'
 import {
   IsOfflineContextProvider,
-  OneBlinkForm,
+  OneBlinkFormControlled,
   useIsMounted,
   useFormSubmissionState,
 } from '@oneblink/apps-react'

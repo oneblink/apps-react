@@ -60,14 +60,14 @@ Inherits properties from [`FormSubmission`](#formsubmission)
 
 ### Example
 
-```js
+```tsx
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { FormTypes } from '@oneblink/types'
 import {
   OneBlinkAppsError,
   draftService,
   submissionService,
-  FormTypes,
 } from '@oneblink/apps'
 import {
   IsOfflineContextProvider,
