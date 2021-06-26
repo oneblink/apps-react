@@ -4,6 +4,8 @@
 
 This component is a drop in replacement for [`<OneBlinkForm />`](./OneBlinkForm.md) with the addition of auto save happening periodically to prevent users from losing submission data.
 
+If you need auto saving with a controlled form, [read this](./faq/how-to-implement-auto-save.md).
+
 ```js
 import { OneBlinkAutoSaveForm } from '@oneblink/apps-react'
 ```
