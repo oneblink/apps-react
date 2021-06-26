@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- date only parsing in timezones behind UTC
+
 ## [0.4.2] - 2021-06-25
 
 ### Fixed

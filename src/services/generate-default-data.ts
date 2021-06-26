@@ -1,5 +1,4 @@
 import { FormTypes } from '@oneblink/types'
-import flatpickr from 'flatpickr'
 import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
@@ -65,10 +64,11 @@ export function parseDateValue({
     return
   }
 
+  const isoDate = date.toISOString()
   if (dateOnly) {
-    return flatpickr.formatDate(date, 'Y-m-d')
+    return isoDate.split('T')[0]
   } else {
-    return date.toISOString()
+    return isoDate
   }
 }
 
