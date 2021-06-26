@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
 
+## [0.4.3] - 2021-06-26
+
+### Fixed
+
+- date only parsing in timezones behind UTC
+
 ## [0.4.2] - 2021-06-25
 
 ### Fixed
