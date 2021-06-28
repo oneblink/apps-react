@@ -158,10 +158,7 @@ function parsePreFillData(
       return
     }
     case 'boolean': {
-      if (typeof value === 'boolean') {
-        return value
-      }
-      return
+      return !!value
     }
     case 'summary':
     case 'captcha':
