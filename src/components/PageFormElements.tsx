@@ -2,13 +2,14 @@ import * as React from 'react'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import OneBlinkFormElements from './OneBlinkFormElements'
+import useFormDefinition from '../hooks/useFormDefinition'
 
 export type Props = {
   formId: number
   isActive: boolean
   pageElement: FormTypes.PageElement
   displayValidationMessages: boolean
-  formElementsCtrl: FormElementsCtrl
+  model: FormSubmissionModel
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   onChange: FormElementValueChangeHandler
@@ -19,7 +20,7 @@ function PageFormElements({
   formId,
   isActive,
   pageElement,
-  formElementsCtrl,
+  model,
   displayValidationMessages,
   formElementsConditionallyShown,
   formElementsValidation,
@@ -66,6 +67,8 @@ function PageFormElements({
     [formId, pageElement.elements, pageElement.id, setFormSubmission],
   )
 
+  const form = useFormDefinition()
+
   return (
     <div
       key={pageElement.id}
@@ -75,7 +78,8 @@ function PageFormElements({
     >
       <OneBlinkFormElements
         formId={formId}
-        formElementsCtrl={formElementsCtrl}
+        model={model}
+        parentElement={form}
         formElementsConditionallyShown={formElementsConditionallyShown}
         formElementsValidation={formElementsValidation}
         displayValidationMessages={displayValidationMessages}

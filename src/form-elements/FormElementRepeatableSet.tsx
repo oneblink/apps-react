@@ -11,13 +11,12 @@ type Props = {
   id: string
   isEven: boolean
   element: FormTypes.RepeatableSetElement
-  value: Array<FormElementsCtrl['model']> | undefined
-  onChange: FormElementValueChangeHandler<FormElementsCtrl['model'][]>
+  value: Array<FormSubmissionModel> | undefined
+  onChange: FormElementValueChangeHandler<FormSubmissionModel[]>
   onLookup: FormElementLookupHandler
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
-  parentFormElementsCtrl: FormElementsCtrl
 }
 
 export const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -31,7 +30,6 @@ function FormElementRepeatableSet({
   isEven,
   displayValidationMessage,
   formElementConditionallyShown,
-  parentFormElementsCtrl,
   onChange,
   onLookup,
 }: Props) {
@@ -130,7 +128,6 @@ function FormElementRepeatableSet({
                 repeatableSetValidation.entries[index.toString()]
               }
               displayValidationMessages={displayValidationMessage}
-              parentFormElementsCtrl={parentFormElementsCtrl}
             />
           )
         })}
@@ -170,9 +167,8 @@ type RepeatableSetEntryProps = {
   id: string
   index: number
   isEven: boolean
-  entry: FormElementsCtrl['model']
+  entry: FormSubmissionModel
   element: FormTypes.RepeatableSetElement
-  parentFormElementsCtrl: FormElementsCtrl | undefined
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
@@ -196,21 +192,12 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     formElementsConditionallyShown,
     displayValidationMessages,
     formElementsValidation,
-    parentFormElementsCtrl,
     onChange,
     onLookup,
     onRemove,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
-
-    const formElementsCtrl = React.useMemo<FormElementsCtrl>(() => {
-      return {
-        model: entry,
-        elements: element.elements,
-        parentFormElementsCtrl,
-      }
-    }, [element.elements, entry, parentFormElementsCtrl])
 
     const handleChange = React.useCallback(
       (element, value) => {
@@ -225,7 +212,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           let newEntry = {}
           const entries = currentFormSubmission.submission[
             element.name
-          ] as Array<FormElementsCtrl['model']>
+          ] as Array<FormSubmissionModel>
           const elements = currentFormSubmission.elements.map((formElement) => {
             if (
               formElement.type === 'repeatableSet' &&
@@ -322,7 +309,8 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             elements={element.elements}
             onChange={handleChange}
             onLookup={handleLookup}
-            formElementsCtrl={formElementsCtrl}
+            model={entry}
+            parentElement={element}
             formElementsConditionallyShown={formElementsConditionallyShown}
           />
         </div>

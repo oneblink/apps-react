@@ -6,12 +6,12 @@ import useBooleanState from '../hooks/useBooleanState'
 import OneBlinkFormElements, { Props } from '../components/OneBlinkFormElements'
 import { checkSectionValidity } from '../services/form-validation'
 
-function FormElementSection({
+function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   onLookup,
   displayValidationMessages,
   ...props
-}: Omit<Props, 'elements'> & {
+}: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)

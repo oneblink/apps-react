@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### FAQ
+
+- [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
+
 ### Added
 
 - [`<OneBlinkFormControlled />`](./docs/OneBlinkFormControlled.md) component
 - [`useFormSubmissionAutoSaveState()`](./docs/useFormSubmissionAutoSaveState.md) hook
 - [`useFormSubmissionState()`](./docs/useFormSubmissionState.md) hook
 
-### FAQ
+### Fixed
 
-- [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
+- conditional logic referencing elements inside nested sections
 
 ## [0.4.3] - 2021-06-26
 

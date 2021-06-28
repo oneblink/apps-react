@@ -12,7 +12,7 @@ export default function useLookups(
     (
       element: FormTypes.LookupFormElement,
       elementLookupData: FormTypes.PageElement[],
-      dataLookupResult?: FormElementsCtrl['model'],
+      dataLookupResult?: FormSubmissionModel,
     ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,

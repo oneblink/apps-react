@@ -22,7 +22,7 @@ export default function usePages({
 
   const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
     return pages.filter((pageElement) => {
-      return formElementsConditionallyShown?.[pageElement.id]?.isShown !== false
+      return !formElementsConditionallyShown?.[pageElement.id]?.isHidden
     })
   }, [formElementsConditionallyShown, pages])
 

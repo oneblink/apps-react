@@ -124,9 +124,9 @@ function parsePreFillData(
 
 export default function generateDefaultData(
   elements: FormTypes.FormElement[],
-  preFillData: FormElementsCtrl['model'],
-): FormElementsCtrl['model'] {
-  return elements.reduce<FormElementsCtrl['model']>((m, el) => {
+  preFillData: FormSubmissionModel,
+): FormSubmissionModel {
+  return elements.reduce<FormSubmissionModel>((m, el) => {
     if (
       el.type !== 'page' &&
       el.type !== 'section' &&

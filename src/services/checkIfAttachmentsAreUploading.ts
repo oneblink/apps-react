@@ -5,7 +5,7 @@ import { checkIsUsingLegacyStorage } from './attachments'
 
 function checkIfAttachmentsAreUploadingForFormElements(
   formElements: FormTypes.FormElement[],
-  submission: FormElementsCtrl['model'],
+  submission: FormSubmissionModel,
 ): boolean {
   return formElements.some((formElement) => {
     switch (formElement.type) {
@@ -22,7 +22,7 @@ function checkIfAttachmentsAreUploadingForFormElements(
         }
         return checkIfAttachmentsAreUploadingForFormElements(
           formElement.elements || [],
-          nestedSubmission as FormElementsCtrl['model'],
+          nestedSubmission as FormSubmissionModel,
         )
       }
       case 'repeatableSet': {
@@ -77,7 +77,7 @@ function checkIfAttachmentsAreUploadingForFormElements(
 
 export default function checkIfAttachmentsAreUploading(
   form: FormTypes.Form,
-  submission: FormElementsCtrl['model'],
+  submission: FormSubmissionModel,
 ): boolean {
   return checkIfAttachmentsAreUploadingForFormElements(
     form.elements,

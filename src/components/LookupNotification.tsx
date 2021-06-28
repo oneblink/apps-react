@@ -322,7 +322,7 @@ async function fetchLookup(
   formElementLookupId: number | undefined,
   organisationId: string | undefined,
   formsAppEnvironmentId: number | undefined,
-  payload: FormElementsCtrl['model'],
+  payload: FormSubmissionModel,
   abortSignal: AbortSignal,
 ) {
   if (

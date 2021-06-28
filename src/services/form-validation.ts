@@ -7,7 +7,6 @@ import { Value as FormElementComplianceValue } from '../form-elements/FormElemen
 import { checkIsUsingLegacyStorage } from './attachments'
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
-import flattenFormElements from './flattenFormElements'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -60,7 +59,7 @@ validate.validators.entries = function (
 }
 
 validate.validators.nestedElements = function (
-  value: FormElementsCtrl['model'] | undefined,
+  value: FormSubmissionModel | undefined,
   schema: ValidateJSSchema,
 ) {
   if (!value || typeof value !== 'object') return
@@ -180,7 +179,7 @@ type ValidateJSSchema = Record<string, unknown>
 
 export function validateSubmission(
   schema: ValidateJSSchema,
-  submission: FormElementsCtrl['model'],
+  submission: FormSubmissionModel,
   formElementsConditionallyShown: FormElementsConditionallyShown,
 ): FormElementsValidation | undefined {
   const formElementsValidation = validateSingleMessageError(submission, schema)
@@ -212,11 +211,10 @@ const clearValidationMessagesForHiddenElements = (
     }
 
     const formElementConditionallyShown = formElementsConditionallyShown[key]
-    const isShown = formElementConditionallyShown?.isShown !== false
 
     // If the validation is for an element that is being hidden,
     // we can remove the validation message and move to the next validation
-    if (!isShown) {
+    if (formElementConditionallyShown?.isHidden) {
       delete formElementsValidation[key]
       continue
     }
@@ -611,7 +609,7 @@ export function generateValidationSchema(
 }
 
 const validateSingleMessageError = (
-  submission: FormElementsCtrl['model'],
+  submission: FormSubmissionModel,
   schema: ValidateJSSchema,
 ): FormElementsValidation | undefined => {
   const errorsAsArray = validate(submission, schema, {
@@ -660,12 +658,15 @@ export function checkSectionValidity(
   }
 
   // If there is no elements on the page that are invalid, we will treat as valid
-  const formElementsInSection = flattenFormElements(element.elements)
-  return formElementsInSection.some((formElement) => {
-    return (
-      formElement.type !== 'page' &&
-      formElement.type !== 'section' &&
-      formElementsValidation[formElement.name]
-    )
+  return element.elements.some((formElement) => {
+    switch (formElement.type) {
+      case 'page':
+      case 'section': {
+        return checkSectionValidity(formElement, formElementsValidation)
+      }
+      default: {
+        return formElementsValidation[formElement.name]
+      }
+    }
   })
 }

@@ -5,19 +5,30 @@ export default function useFormElementOptions<T>({
   element,
   value,
   onChange,
+  conditionallyShownOptions,
   onFilter,
 }: {
   element: FormTypes.FormElementWithOptions
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<T>
-  onFilter: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  onFilter?: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
 }) {
   const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
     if (!element.options) {
       return []
     }
-    return element.options.filter(onFilter)
-  }, [element.options, onFilter])
+    if (!conditionallyShownOptions && !onFilter) {
+      return element.options
+    }
+    return element.options.filter((option) => {
+      return (
+        (!conditionallyShownOptions ||
+          conditionallyShownOptions.some(({ id }) => id === option.id)) &&
+        (!onFilter || onFilter(option))
+      )
+    })
+  }, [conditionallyShownOptions, element.options, onFilter])
 
   React.useEffect(() => {
     if (!element.options) {

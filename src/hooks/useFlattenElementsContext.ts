@@ -1,10 +1,11 @@
-import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-
-export const FlattenElementsContext = React.createContext<
-  FormTypes.FormElement[]
->([])
+import flattenFormElements from '../services/flattenFormElements'
+import useFormDefinition from './useFormDefinition'
 
 export default function useFlattenElements() {
-  return React.useContext(FlattenElementsContext)
+  const definition = useFormDefinition()
+  return React.useMemo(
+    () => flattenFormElements(definition.elements),
+    [definition.elements],
+  )
 }

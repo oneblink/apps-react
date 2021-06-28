@@ -2,17 +2,16 @@ import { Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
-import conditionallyShowElement from '../services/conditionally-show-element'
+import conditionallyShowElement, {
+  FormElementsCtrl,
+} from '../services/conditionally-show-element'
 import conditionallyShowOption from '../services/conditionally-show-option'
 import flattenFormElements from '../services/flattenFormElements'
 
-export default function useConditionalLogic({
-  submission,
-  pages,
-}: {
-  submission: FormElementsCtrl['model']
-  pages: FormTypes.PageElement[]
-}) {
+export default function useConditionalLogic(
+  definition: FormTypes.Form,
+  submission: FormSubmissionModel,
+) {
   const [conditionalLogicError, setConditionalLogicError] =
     React.useState<Error | undefined>()
 
@@ -39,14 +38,8 @@ export default function useConditionalLogic({
       element: FormTypes.FormElementWithOptions,
       option: FormTypes.ChoiceElementOption,
     ) => {
-      const elementsEvaluated: string[] = []
       try {
-        return conditionallyShowOption(
-          formElementsCtrl,
-          element,
-          option,
-          elementsEvaluated,
-        )
+        return conditionallyShowOption(formElementsCtrl, element, option, [])
       } catch (error) {
         Sentry.captureException(error)
         setConditionalLogicError(error)
@@ -56,137 +49,179 @@ export default function useConditionalLogic({
     [],
   )
 
-  const flattenedElements = React.useMemo(
-    () => flattenFormElements(pages),
-    [pages],
-  )
+  const generateFormElementsConditionallyShown = React.useCallback(
+    (
+      elements: FormTypes.FormElement[],
+      model: FormSubmissionModel,
+      parentFormElementsCtrl: FormElementsCtrl['parentFormElementsCtrl'],
+    ): FormElementsConditionallyShown => {
+      const formElementsCtrl = {
+        elements: flattenFormElements(elements),
+        model,
+        parentFormElementsCtrl,
+      }
+      return formElementsCtrl.elements.reduce<FormElementsConditionallyShown>(
+        (formElementsConditionallyShown, element) => {
+          switch (element.type) {
+            case 'section':
+            case 'page': {
+              const formElementConditionallyShown =
+                formElementsConditionallyShown[element.id]
+              const isHidden = formElementConditionallyShown
+                ? formElementConditionallyShown.isHidden
+                : !handleConditionallyShowElement(formElementsCtrl, element)
 
-  const rootFormElementsCtrl = React.useMemo(
-    () => ({
-      elements: flattenedElements,
-      model: submission,
-    }),
-    [flattenedElements, submission],
+              formElementsConditionallyShown[element.id] = {
+                type: 'formElement',
+                isHidden,
+              }
+
+              // If the parent element is hidden, hide all the child elements
+              if (isHidden) {
+                element.elements.forEach((childElement) => {
+                  switch (childElement.type) {
+                    case 'section':
+                    case 'page': {
+                      formElementsConditionallyShown[childElement.id] = {
+                        type: 'formElement',
+                        isHidden: true,
+                      }
+                      break
+                    }
+                    default: {
+                      formElementsConditionallyShown[childElement.name] = {
+                        type: 'formElement',
+                        isHidden: true,
+                      }
+                    }
+                  }
+                })
+              }
+              break
+            }
+            case 'infoPage':
+            case 'form': {
+              if (formElementsConditionallyShown[element.name]) {
+                break
+              }
+              const nestedModel = model[element.name] as
+                | FormSubmissionModel
+                | undefined
+              formElementsConditionallyShown[element.name] = {
+                type: 'formElements',
+                isHidden: !handleConditionallyShowElement(
+                  formElementsCtrl,
+                  element,
+                ),
+                formElements: generateFormElementsConditionallyShown(
+                  element.elements || [],
+                  nestedModel || {},
+                  formElementsCtrl,
+                ),
+              }
+              break
+            }
+            case 'repeatableSet': {
+              if (formElementsConditionallyShown[element.name]) {
+                break
+              }
+              const entries = formElementsCtrl.model[element.name] as
+                | Array<FormSubmissionModel>
+                | undefined
+              formElementsConditionallyShown[element.name] = {
+                type: 'repeatableSet',
+                isHidden: !handleConditionallyShowElement(
+                  formElementsCtrl,
+                  element,
+                ),
+                entries: (entries || []).reduce(
+                  (
+                    result: Record<
+                      RepeatableSetEntryIndex,
+                      FormElementsConditionallyShown | undefined
+                    >,
+                    entry,
+                    index,
+                  ) => {
+                    result[index.toString()] =
+                      generateFormElementsConditionallyShown(
+                        element.elements,
+                        entry,
+                        formElementsCtrl,
+                      )
+                    return result
+                  },
+                  {},
+                ),
+              }
+              break
+            }
+            default: {
+              if (formElementsConditionallyShown[element.name]) {
+                break
+              }
+              const formElementConditionallyShown: FormElementConditionallyShown =
+                {
+                  type: 'formElement',
+                  isHidden: !handleConditionallyShowElement(
+                    formElementsCtrl,
+                    element,
+                  ),
+                }
+
+              if (!formElementConditionallyShown.isHidden) {
+                switch (element.type) {
+                  case 'compliance':
+                  case 'autocomplete':
+                  case 'radio':
+                  case 'checkboxes':
+                  case 'select': {
+                    if (
+                      element.conditionallyShowOptions &&
+                      Array.isArray(element.options)
+                    ) {
+                      formElementConditionallyShown.options =
+                        element.options.filter((option) =>
+                          handleConditionallyShowOption(
+                            formElementsCtrl,
+                            element,
+                            option,
+                          ),
+                        )
+                    }
+                    break
+                  }
+                }
+              }
+
+              formElementsConditionallyShown[element.name] =
+                formElementConditionallyShown
+            }
+          }
+
+          return formElementsConditionallyShown
+        },
+        {},
+      )
+    },
+    [handleConditionallyShowElement, handleConditionallyShowOption],
   )
 
   const formElementsConditionallyShown =
     React.useMemo<FormElementsConditionallyShown>(() => {
-      const generateFormElementsConditionallyShown = (
-        formElementsCtrl: FormElementsCtrl,
-      ): FormElementsConditionallyShown => {
-        return formElementsCtrl?.elements.reduce<FormElementsConditionallyShown>(
-          (formElementsConditionallyShown, element) => {
-            const isShown = handleConditionallyShowElement(
-              formElementsCtrl,
-              element,
-            )
-            switch (element.type) {
-              case 'section':
-              case 'page': {
-                if (formElementsConditionallyShown[element.id]) {
-                  break
-                }
-                formElementsConditionallyShown[element.id] = {
-                  type: 'formElement',
-                  isShown,
-                }
-                // If the parent element is not hidden, hide all the children elements
-                if (!isShown) {
-                  element.elements.forEach((childElement) => {
-                    switch (childElement.type) {
-                      case 'section':
-                      case 'page': {
-                        formElementsConditionallyShown[childElement.id] = {
-                          type: 'formElement',
-                          isShown: false,
-                        }
-                        break
-                      }
-                      default: {
-                        formElementsConditionallyShown[childElement.name] = {
-                          type: 'formElement',
-                          isShown: false,
-                        }
-                      }
-                    }
-                  })
-                }
-                break
-              }
-              case 'infoPage':
-              case 'form': {
-                if (formElementsConditionallyShown[element.name]) {
-                  break
-                }
-                const nestedModel = formElementsCtrl.model[element.name] as
-                  | FormElementsCtrl['model']
-                  | undefined
-                formElementsConditionallyShown[element.name] = {
-                  type: 'formElements',
-                  isShown,
-                  formElements: generateFormElementsConditionallyShown({
-                    model: nestedModel || {},
-                    elements: element.elements || [],
-                    parentFormElementsCtrl: formElementsCtrl,
-                  }),
-                }
-                break
-              }
-              case 'repeatableSet': {
-                if (formElementsConditionallyShown[element.name]) {
-                  break
-                }
-                const entries = formElementsCtrl.model[element.name] as
-                  | Array<FormElementsCtrl['model']>
-                  | undefined
-                formElementsConditionallyShown[element.name] = {
-                  type: 'repeatableSet',
-                  isShown,
-                  entries: (entries || []).reduce(
-                    (
-                      result: Record<
-                        RepeatableSetEntryIndex,
-                        FormElementsConditionallyShown | undefined
-                      >,
-                      entry,
-                      index,
-                    ) => {
-                      result[index.toString()] =
-                        generateFormElementsConditionallyShown({
-                          model: entry,
-                          elements: element.elements,
-                          parentFormElementsCtrl: formElementsCtrl,
-                        })
-                      return result
-                    },
-                    {},
-                  ),
-                }
-                break
-              }
-              default: {
-                if (!formElementsConditionallyShown[element.name]) {
-                  formElementsConditionallyShown[element.name] = {
-                    type: 'formElement',
-                    isShown,
-                  }
-                }
-              }
-            }
-
-            return formElementsConditionallyShown
-          },
-          {},
-        )
-      }
-
-      return generateFormElementsConditionallyShown(rootFormElementsCtrl)
-    }, [handleConditionallyShowElement, rootFormElementsCtrl])
+      return generateFormElementsConditionallyShown(
+        definition.elements,
+        submission,
+        undefined,
+      )
+    }, [
+      definition.elements,
+      generateFormElementsConditionallyShown,
+      submission,
+    ])
 
   return {
-    rootFormElementsCtrl,
     conditionalLogicError,
     formElementsConditionallyShown,
-    handleConditionallyShowOption,
   }
 }
