@@ -72,10 +72,24 @@ export function parseDateValue({
   }
 }
 
+function parseStringValue(value: unknown) {
+  if (typeof value === 'string' && !!value) {
+    return value
+  }
+  return
+}
+
+function parseStringArrayValue(value: unknown) {
+  if (Array.isArray(value)) {
+    return value.filter((val) => typeof val === 'string')
+  }
+  return
+}
+
 function parsePreFillData(
   element: FormTypes.FormElement,
   value: unknown,
-): unknown | undefined {
+): unknown {
   switch (element.type) {
     // If a form element is pre-filled and the storage type is not "legacy"
     // but the pre-fill data is in the format for the “legacy” storage type
@@ -117,9 +131,95 @@ function parsePreFillData(
         value,
       })
     }
-  }
+    case 'text':
+    case 'barcodeScanner':
+    case 'email':
+    case 'telephone':
+    case 'textarea':
+    case 'radio':
+    case 'image':
+    case 'autocomplete': {
+      return parseStringValue(value)
+    }
+    case 'select': {
+      if (element.multi) {
+        return parseStringArrayValue(value)
+      } else {
+        return parseStringValue(value)
+      }
+    }
+    case 'checkboxes': {
+      return parseStringArrayValue(value)
+    }
+    case 'number': {
+      if (typeof value === 'number' && !isNaN(value)) {
+        return value
+      }
+      return
+    }
+    case 'boolean': {
+      if (typeof value === 'boolean') {
+        return value
+      }
+      return
+    }
+    case 'summary':
+    case 'captcha':
+    case 'calculation':
+    case 'heading': {
+      return
+    }
 
-  return value
+    case 'form':
+    case 'infoPage': {
+      if (typeof value === 'object' && !!value) {
+        // @ts-expect-error type `{}` does not match type `Record<string, unknown>`
+        return generateDefaultData(element.elements || [], value)
+      }
+      return
+    }
+    case 'repeatableSet': {
+      if (Array.isArray(element.elements) && Array.isArray(value)) {
+        return value
+          .map((val) => {
+            if (typeof value !== 'object' || !value) {
+              return
+            }
+            return generateDefaultData(element.elements, val)
+          })
+          .filter((val) => !!val)
+      }
+      break
+    }
+    case 'location': {
+      if (typeof value === 'object' && !!value) {
+        const clonedValue = {
+          ...value,
+        } as Record<string, unknown>
+        if (
+          typeof clonedValue.latitude !== 'number' ||
+          isNaN(clonedValue.latitude) ||
+          typeof clonedValue.longitude !== 'number' ||
+          isNaN(clonedValue.longitude)
+        ) {
+          return
+        }
+
+        return {
+          latitude: clonedValue.latitude,
+          longitude: clonedValue.longitude,
+          zoom:
+            typeof clonedValue.zoom === 'number' && !isNaN(clonedValue.zoom)
+              ? clonedValue.zoom
+              : undefined,
+        }
+      }
+      return
+    }
+    default: {
+      return value
+    }
+  }
 }
 
 export default function generateDefaultData(
@@ -159,6 +259,8 @@ export default function generateDefaultData(
           m[el.name] = el.defaultValue
         } else if (el.isSlider) {
           m[el.name] = el.minNumber
+        } else {
+          m[el.name] = undefined
         }
         break
       }
