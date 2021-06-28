@@ -1,14 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-// type PageElementId = string
 type FormElementKey = string
 type RepeatableSetEntryIndex = string
 
-declare type FormElementsCtrl = {
-  model: Record<FormElementKey, unknown>
-  elements: import('@oneblink/types').FormTypes.FormElement[]
-  parentFormElementsCtrl?: FormElementsCtrl
-}
+declare type FormSubmissionModel = Record<FormElementKey, unknown>
 
 declare type FormElementsValidation = Record<
   FormElementKey,
@@ -40,16 +35,17 @@ declare type FormElementConditionallyShown =
   | undefined
   | {
       type: 'formElement'
-      isShown: boolean
+      isHidden: boolean
+      options?: import('@oneblink/types').FormTypes.ChoiceElementOption[]
     }
   | {
       type: 'formElements'
-      isShown: boolean
+      isHidden: boolean
       formElements: FormElementsConditionallyShown | undefined
     }
   | {
       type: 'repeatableSet'
-      isShown: boolean
+      isHidden: boolean
       entries: Record<
         RepeatableSetEntryIndex,
         FormElementsConditionallyShown | undefined
@@ -63,10 +59,10 @@ declare type FormElementValueChangeHandler<T = unknown> = (
 
 declare type FormElementLookupHandler = (
   setter: (data: {
-    submission: FormElementsCtrl['model']
+    submission: FormSubmissionModel
     elements: import('@oneblink/types').FormTypes.FormElement[]
   }) => {
-    submission: FormElementsCtrl['model']
+    submission: FormSubmissionModel
     elements: import('@oneblink/types').FormTypes.FormElement[]
   },
 ) => void
@@ -74,6 +70,6 @@ declare type FormElementLookupHandler = (
 declare type SetFormSubmission = React.Dispatch<
   React.SetStateAction<{
     definition: import('@oneblink/types').FormTypes.Form
-    submission: FormElementsCtrl['model']
+    submission: FormSubmissionModel
   }>
 >

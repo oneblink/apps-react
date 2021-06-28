@@ -13,11 +13,9 @@ type Props = {
   element: FormTypes.SelectElement
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<string | string[]>
-  onConditionallyShowOption: (
-    choiceElementOption: FormTypes.ChoiceElementOption,
-  ) => boolean
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
 }
 
 function FormElementSelect({
@@ -27,7 +25,7 @@ function FormElementSelect({
   onChange,
   validationMessage,
   displayValidationMessage,
-  onConditionallyShowOption,
+  conditionallyShownOptions,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
@@ -35,7 +33,7 @@ function FormElementSelect({
     element,
     value,
     onChange,
-    onFilter: onConditionallyShowOption,
+    conditionallyShownOptions,
   })
 
   const selectedValuesAsArray = React.useMemo(() => {

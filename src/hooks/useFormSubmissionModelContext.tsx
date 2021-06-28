@@ -1,32 +1,31 @@
+import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-import cleanFormElementsCtrlModel from '../services/clean-form-elements-ctrl-model'
+import cleanFormElementsCtrlModel from '../services/cleanFormSubmissionModel'
 
-export type FormSubmissionModelContextValue = FormElementsCtrl['model']
+export type FormSubmissionModelContextValue = FormSubmissionModel
 
 const FormSubmissionModelContext =
   React.createContext<FormSubmissionModelContextValue>({})
 
 export function FormSubmissionModelContextProvider({
   children,
-  formElementsCtrl,
+  model,
+  elements,
   formElementsConditionallyShown,
 }: {
-  formElementsCtrl: FormElementsCtrl
+  model: FormSubmissionModel
+  elements: FormTypes.FormElement[] | undefined
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   children: React.ReactNode
 }) {
   const value = React.useMemo(() => {
     return cleanFormElementsCtrlModel(
-      formElementsCtrl.model,
-      formElementsCtrl.elements,
+      model,
+      elements || [],
       formElementsConditionallyShown,
       true,
     ).model
-  }, [
-    formElementsConditionallyShown,
-    formElementsCtrl.elements,
-    formElementsCtrl.model,
-  ])
+  }, [formElementsConditionallyShown, elements, model])
   return (
     <FormSubmissionModelContext.Provider value={value}>
       {children}

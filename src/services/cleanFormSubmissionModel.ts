@@ -1,15 +1,15 @@
-import { CivicaTypes, GeoscapeTypes } from '@oneblink/types'
+import { CivicaTypes, FormTypes, GeoscapeTypes } from '@oneblink/types'
 import { Value as ComplianceValue } from '../form-elements/FormElementCompliance'
 
 function cleanElementValue(
-  submission: FormElementsCtrl['model'],
-  elements: FormElementsCtrl['elements'],
+  submission: FormSubmissionModel,
+  elements: FormTypes.FormElement[],
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
   stripBinaryData: boolean,
   captchaTokens: string[],
-): FormElementsCtrl['model'] {
+): FormSubmissionModel {
   // Clear data from submission on fields that are hidden on visible pages
-  return elements.reduce<FormElementsCtrl['model']>((model, element) => {
+  return elements.reduce<FormSubmissionModel>((model, element) => {
     switch (element.type) {
       // For content element types, we just need to set true for shown and false for hidden.
       // This is to allow renderers of the data to know when to show/hide the content
@@ -18,7 +18,7 @@ function cleanElementValue(
       case 'html': {
         if (
           !stripBinaryData &&
-          formElementsConditionallyShown?.[element.name]?.isShown !== false
+          !formElementsConditionallyShown?.[element.name]?.isHidden
         ) {
           model[element.name] = true
         }
@@ -40,7 +40,7 @@ function cleanElementValue(
       case 'draw': {
         if (
           !stripBinaryData &&
-          formElementsConditionallyShown?.[element.name]?.isShown !== false
+          !formElementsConditionallyShown?.[element.name]?.isHidden
         ) {
           model[element.name] = submission[element.name]
         }
@@ -52,12 +52,12 @@ function cleanElementValue(
         // also has its values wiped if the element is hidden based on conditional logic
         const nestedElements = element.elements
         const nestedModel = submission[element.name] as
-          | FormElementsCtrl['model']
+          | FormSubmissionModel
           | undefined
         const nestedFormElementConditionallyShown =
           formElementsConditionallyShown?.[element.name]
         if (
-          formElementsConditionallyShown?.[element.name]?.isShown !== false &&
+          !formElementsConditionallyShown?.[element.name]?.isHidden &&
           Array.isArray(nestedElements) &&
           nestedElements.length &&
           nestedModel
@@ -79,12 +79,12 @@ function cleanElementValue(
         // also has its values wiped if the element is hidden based on conditional logic
         const nestedElements = element.elements
         const entries = submission[element.name] as
-          | Array<FormElementsCtrl['model']>
+          | Array<FormSubmissionModel>
           | undefined
         const formElementConditionallyShown =
           formElementsConditionallyShown?.[element.name]
         if (
-          formElementConditionallyShown?.isShown !== false &&
+          !formElementConditionallyShown?.isHidden &&
           Array.isArray(nestedElements) &&
           Array.isArray(entries) &&
           entries.length
@@ -108,7 +108,7 @@ function cleanElementValue(
           | CivicaTypes.CivicaNameRecord
           | undefined
         if (
-          formElementsConditionallyShown?.[element.name]?.isShown === false ||
+          formElementsConditionallyShown?.[element.name]?.isHidden ||
           !civicaNameRecord
         ) {
           break
@@ -160,7 +160,7 @@ function cleanElementValue(
       }
       case 'compliance': {
         if (
-          formElementsConditionallyShown?.[element.name]?.isShown === false ||
+          formElementsConditionallyShown?.[element.name]?.isHidden ||
           !submission[element.name]
         ) {
           break
@@ -177,7 +177,7 @@ function cleanElementValue(
       }
       case 'page':
       case 'section': {
-        if (formElementsConditionallyShown?.[element.id]?.isShown !== false) {
+        if (!formElementsConditionallyShown?.[element.id]?.isHidden) {
           const nestedModel = cleanElementValue(
             submission,
             element.elements,
@@ -190,7 +190,7 @@ function cleanElementValue(
         break
       }
       default: {
-        if (formElementsConditionallyShown?.[element.name]?.isShown !== false) {
+        if (!formElementsConditionallyShown?.[element.name]?.isHidden) {
           model[element.name] = submission[element.name]
         }
       }
@@ -200,13 +200,13 @@ function cleanElementValue(
   }, {})
 }
 
-export default function cleanFormElementsCtrlModel(
-  submission: FormElementsCtrl['model'],
-  elements: FormElementsCtrl['elements'],
+export default function cleanFormSubmissionModel(
+  submission: FormSubmissionModel,
+  elements: FormTypes.FormElement[],
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
   stripBinaryData: boolean,
 ): {
-  model: FormElementsCtrl['model']
+  model: FormSubmissionModel
   captchaTokens: string[]
 } {
   // Clear data from submission on fields that are hidden on visible pages

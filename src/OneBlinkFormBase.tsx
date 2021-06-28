@@ -8,14 +8,12 @@ import { FormTypes, SubmissionTypes, FormsAppsTypes } from '@oneblink/types'
 
 import Modal from './components/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
-import cleanFormElementsCtrlModel from './services/clean-form-elements-ctrl-model'
+import cleanFormSubmissionModel from './services/cleanFormSubmissionModel'
 import PageFormElements from './components/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
 import useConditionalLogic from './hooks/useConditionalLogic'
 import usePages from './hooks/usePages'
 import useLookups from './hooks/useLookups'
-import { ConditionallyShowOptionCallbackContext } from './hooks/useConditionallyShowOptionCallback'
-import { FlattenElementsContext } from './hooks/useFlattenElementsContext'
 import { FormDefinitionContext } from './hooks/useFormDefinition'
 import { InjectPagesContext } from './hooks/useInjectPages'
 import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
@@ -43,7 +41,7 @@ export type BaseProps = {
 
 export type ControlledProps = {
   definition: FormTypes.Form
-  submission: FormElementsCtrl['model']
+  submission: FormSubmissionModel
   setFormSubmission: SetFormSubmission
 }
 
@@ -204,12 +202,8 @@ function OneBlinkFormBase({
   //
   // #region Conditional Logic
 
-  const {
-    rootFormElementsCtrl,
-    formElementsConditionallyShown,
-    handleConditionallyShowOption,
-    conditionalLogicError,
-  } = useConditionalLogic({ submission, pages })
+  const { formElementsConditionallyShown, conditionalLogicError } =
+    useConditionalLogic(definition, submission)
 
   // #endregion
   //
@@ -283,7 +277,7 @@ function OneBlinkFormBase({
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
-      const { model, captchaTokens } = cleanFormElementsCtrlModel(
+      const { model, captchaTokens } = cleanFormSubmissionModel(
         submission,
         definition.elements,
         formElementsConditionallyShown,
@@ -317,7 +311,7 @@ function OneBlinkFormBase({
   }, [])
 
   const checkAttachmentsCanBeSubmitted = React.useCallback(
-    (submission: FormElementsCtrl['model']) => {
+    (submission: FormSubmissionModel) => {
       // Prevent submission until all attachment uploads are finished
       // Unless the user is offline, in which case, the uploads will
       // be taken care of by a pending queue...hopefully.
@@ -350,6 +344,7 @@ function OneBlinkFormBase({
       setHasAttemptedSubmit(true)
 
       if (formElementsValidation) {
+        console.log('Validation errors', formElementsValidation)
         bulmaToast.toast({
           message: 'Please fix validation errors',
           // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
@@ -619,62 +614,46 @@ function OneBlinkFormBase({
                   'is-single-step': !isShowingMultiplePages,
                 })}
               >
-                <ConditionallyShowOptionCallbackContext.Provider
-                  value={handleConditionallyShowOption}
-                >
-                  <FlattenElementsContext.Provider
-                    value={rootFormElementsCtrl.elements}
-                  >
-                    <FormDefinitionContext.Provider value={definition}>
-                      <InjectPagesContext.Provider
-                        value={handlePagesLookupResult}
+                <FormDefinitionContext.Provider value={definition}>
+                  <InjectPagesContext.Provider value={handlePagesLookupResult}>
+                    <ExecutedLookupProvider
+                      executedLookup={executedLookup}
+                      executeLookupFailed={executeLookupFailed}
+                    >
+                      <GoogleMapsApiKeyContext.Provider
+                        value={googleMapsApiKey}
                       >
-                        <ExecutedLookupProvider
-                          executedLookup={executedLookup}
-                          executeLookupFailed={executeLookupFailed}
-                        >
-                          <GoogleMapsApiKeyContext.Provider
-                            value={googleMapsApiKey}
-                          >
-                            <CaptchaSiteKeyContext.Provider
-                              value={captchaSiteKey}
-                            >
-                              <FormIsReadOnlyContext.Provider
-                                value={isReadOnly}
-                              >
-                                {visiblePages.map(
-                                  (pageElement: FormTypes.PageElement) => (
-                                    <PageFormElements
-                                      key={pageElement.id}
-                                      isActive={
-                                        pageElement.id === currentPage.id
-                                      }
-                                      formId={definition.id}
-                                      formElementsConditionallyShown={
-                                        formElementsConditionallyShown
-                                      }
-                                      formElementsValidation={
-                                        formElementsValidation
-                                      }
-                                      displayValidationMessages={
-                                        hasAttemptedSubmit ||
-                                        isDisplayingCurrentPageError
-                                      }
-                                      pageElement={pageElement}
-                                      onChange={handleChange}
-                                      formElementsCtrl={rootFormElementsCtrl}
-                                      setFormSubmission={setFormSubmission}
-                                    />
-                                  ),
-                                )}
-                              </FormIsReadOnlyContext.Provider>
-                            </CaptchaSiteKeyContext.Provider>
-                          </GoogleMapsApiKeyContext.Provider>
-                        </ExecutedLookupProvider>
-                      </InjectPagesContext.Provider>
-                    </FormDefinitionContext.Provider>
-                  </FlattenElementsContext.Provider>
-                </ConditionallyShowOptionCallbackContext.Provider>
+                        <CaptchaSiteKeyContext.Provider value={captchaSiteKey}>
+                          <FormIsReadOnlyContext.Provider value={isReadOnly}>
+                            {visiblePages.map(
+                              (pageElement: FormTypes.PageElement) => (
+                                <PageFormElements
+                                  key={pageElement.id}
+                                  isActive={pageElement.id === currentPage.id}
+                                  formId={definition.id}
+                                  formElementsConditionallyShown={
+                                    formElementsConditionallyShown
+                                  }
+                                  formElementsValidation={
+                                    formElementsValidation
+                                  }
+                                  displayValidationMessages={
+                                    hasAttemptedSubmit ||
+                                    isDisplayingCurrentPageError
+                                  }
+                                  pageElement={pageElement}
+                                  onChange={handleChange}
+                                  model={submission}
+                                  setFormSubmission={setFormSubmission}
+                                />
+                              ),
+                            )}
+                          </FormIsReadOnlyContext.Provider>
+                        </CaptchaSiteKeyContext.Provider>
+                      </GoogleMapsApiKeyContext.Provider>
+                    </ExecutedLookupProvider>
+                  </InjectPagesContext.Provider>
+                </FormDefinitionContext.Provider>
               </div>
 
               {isShowingMultiplePages && (

@@ -17,11 +17,9 @@ interface Props {
   element: FormTypes.ComplianceElement
   value: unknown
   onChange: FormElementValueChangeHandler<Value>
-  onConditionallyShowOption: (
-    choiceElementOption: FormTypes.ChoiceElementOption,
-  ) => boolean
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
   isEven?: boolean
 }
 
@@ -44,7 +42,7 @@ function FormElementCompliance({
   element,
   value,
   onChange,
-  onConditionallyShowOption,
+  conditionallyShownOptions,
   validationMessage,
   displayValidationMessage,
   isEven,
@@ -162,7 +160,7 @@ function FormElementCompliance({
     element,
     value: typedValue?.value,
     onChange: handleValueChange,
-    onFilter: onConditionallyShowOption,
+    conditionallyShownOptions,
   })
 
   return (

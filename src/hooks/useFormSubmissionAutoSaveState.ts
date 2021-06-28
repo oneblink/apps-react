@@ -16,7 +16,7 @@ export default function useFormSubmissionAutoSaveState({
   autoSaveKey: string
   onCancel: () => unknown
   onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
-  initialSubmission?: FormElementsCtrl['model']
+  initialSubmission?: FormSubmissionModel
   onSaveDraft?: (
     newDraftSubmission: SubmissionTypes.NewDraftSubmission,
   ) => unknown
@@ -29,7 +29,7 @@ export default function useFormSubmissionAutoSaveState({
     setAutoSaveState,
   ] = React.useState<{
     isLoadingAutoSaveSubmission: boolean
-    autoSaveSubmission: FormElementsCtrl['model'] | null
+    autoSaveSubmission: FormSubmissionModel | null
   }>({
     isLoadingAutoSaveSubmission: true,
     autoSaveSubmission: null,
@@ -37,7 +37,7 @@ export default function useFormSubmissionAutoSaveState({
 
   const throttledAutoSave = React.useMemo(() => {
     return _throttle(
-      (model: FormElementsCtrl['model']) => {
+      (model: FormSubmissionModel) => {
         console.log('Auto saving...')
         autoSaveService
           .upsertAutoSaveData(definition.id, autoSaveKey, model)
@@ -97,9 +97,11 @@ export default function useFormSubmissionAutoSaveState({
     let ignore = false
     const loadAutoSaveData = async () => {
       try {
-        const autoSaveData = await autoSaveService.getAutoSaveData<
-          FormElementsCtrl['model']
-        >(definition.id, autoSaveKey)
+        const autoSaveData =
+          await autoSaveService.getAutoSaveData<FormSubmissionModel>(
+            definition.id,
+            autoSaveKey,
+          )
         if (!ignore) {
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,

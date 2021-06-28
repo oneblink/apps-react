@@ -5,7 +5,7 @@ import generateDefaultData from '../services/generate-default-data'
 
 export default function useFormSubmissionState(
   form: FormTypes.Form,
-  initialSubmission?: FormElementsCtrl['model'],
+  initialSubmission?: FormSubmissionModel,
 ) {
   return React.useState(() => {
     const definition = _cloneDeep(form)

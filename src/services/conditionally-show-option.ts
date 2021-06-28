@@ -2,13 +2,14 @@ import { FormTypes, ConditionTypes } from '@oneblink/types'
 
 import conditionallyShowElement, {
   handleOptionsPredicate,
+  FormElementsCtrl,
 } from '../services/conditionally-show-element'
 
 const handleAttributePredicate = (
   predicate:
     | ConditionTypes.ConditionalPredicate
     | FormTypes.ChoiceElementOptionAttribute,
-  model: FormElementsCtrl['model'],
+  model: FormSubmissionModel,
   predicateElement: FormTypes.FormElementWithOptions,
 ) => {
   const values = model[predicateElement.name]

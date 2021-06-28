@@ -14,11 +14,9 @@ type Props = {
   element: FormTypes.RadioButtonElement
   value: unknown
   onChange: FormElementValueChangeHandler<string>
-  onConditionallyShowOption: (
-    choiceElementOption: FormTypes.ChoiceElementOption,
-  ) => boolean
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
 }
 
 function FormElementRadio({
@@ -26,7 +24,7 @@ function FormElementRadio({
   element,
   value,
   onChange,
-  onConditionallyShowOption,
+  conditionallyShownOptions,
   validationMessage,
   displayValidationMessage,
 }: Props) {
@@ -35,7 +33,7 @@ function FormElementRadio({
     element,
     value,
     onChange,
-    onFilter: onConditionallyShowOption,
+    conditionallyShownOptions,
   })
 
   return (

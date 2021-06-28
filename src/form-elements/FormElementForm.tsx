@@ -6,13 +6,12 @@ export type Props = {
   formId: number
   id: string
   element: FormTypes.FormFormElement | FormTypes.InfoPageElement
-  value: FormElementsCtrl['model'] | undefined
-  onChange: FormElementValueChangeHandler<FormElementsCtrl['model']>
+  value: FormSubmissionModel | undefined
+  onChange: FormElementValueChangeHandler<FormSubmissionModel>
   onLookup: FormElementLookupHandler
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  parentFormElementsCtrl: FormElementsCtrl
 }
 
 function FormElementForm({
@@ -25,7 +24,6 @@ function FormElementForm({
   formElementConditionallyShown,
   onChange,
   onLookup,
-  parentFormElementsCtrl,
 }: Props) {
   const handleNestedChange = React.useCallback(
     (nestedElement, nestedElementValue) => {
@@ -48,7 +46,7 @@ function FormElementForm({
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission[
           element.name
-        ] as FormElementsCtrl['model']
+        ] as FormSubmissionModel
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (
             formElement.type === 'form' &&
@@ -97,24 +95,23 @@ function FormElementForm({
       : undefined
   }, [formElementConditionallyShown])
 
-  const formElementsCtrl = React.useMemo<FormElementsCtrl>(() => {
+  const parentElement = React.useMemo(() => {
     return {
-      model: value || {},
-      elements: element.elements || [],
-      parentFormElementsCtrl,
+      elements: Array.isArray(element.elements) ? element.elements : [],
     }
-  }, [element.elements, parentFormElementsCtrl, value])
+  }, [element.elements])
 
   return (
     <OneBlinkFormElements
       formId={formId}
       formElementsValidation={validation}
       displayValidationMessages={displayValidationMessages}
-      elements={element.elements || []}
+      elements={parentElement.elements}
       onChange={handleNestedChange}
       onLookup={handleLookup}
       formElementsConditionallyShown={formElementsConditionallyShown}
-      formElementsCtrl={formElementsCtrl}
+      model={value || {}}
+      parentElement={parentElement}
       idPrefix={`${id}_`}
     />
   )

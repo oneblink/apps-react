@@ -42,7 +42,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
 
   const handleValidate = React.useCallback(
     (
-      submission: FormElementsCtrl['model'],
+      submission: FormSubmissionModel,
       formElementsConditionallyShown: FormElementsConditionallyShown,
     ) => {
       return validateSubmission(

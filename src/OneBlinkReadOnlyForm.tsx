@@ -51,7 +51,7 @@ function recursivelySetReadOnly<
 
 type Props = {
   form: FormTypes.Form
-  initialSubmission?: FormElementsCtrl['model']
+  initialSubmission?: FormSubmissionModel
   googleMapsApiKey?: string
 }
 

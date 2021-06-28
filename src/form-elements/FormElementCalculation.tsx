@@ -55,7 +55,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     ) => {
       exprParser.registerProperty(
         replacement,
-        (submission: FormElementsCtrl['model']) => {
+        (submission: FormSubmissionModel) => {
           const defaultAccumulator = submission[nestedElementNames[0]]
 
           return nestedElementNames.reduce(

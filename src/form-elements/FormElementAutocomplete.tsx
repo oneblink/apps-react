@@ -21,9 +21,7 @@ type _AutocompleteChangeHandlerProps = _BaseProps & {
 }
 
 type _AutocompleteConditionallyShowOptionProps = {
-  onConditionallyShowOption: (
-    choiceElementOption: FormTypes.ChoiceElementOption,
-  ) => boolean
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
 }
 
 type AutocompleteFilterProps = _AutocompleteChangeHandlerProps &
@@ -43,7 +41,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   element,
   value,
   onChange,
-  onConditionallyShowOption,
+  conditionallyShownOptions,
   validationMessage,
   displayValidationMessage,
 }: AutocompleteFilterProps) {
@@ -51,11 +49,6 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
 
   const onFilter = React.useCallback(
     (option) => {
-      const isShowing = onConditionallyShowOption(option)
-      if (!isShowing) {
-        return false
-      }
-
       // If the user has typed nothing in, display all options
       if (!label) {
         return true
@@ -65,13 +58,14 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
 
       return option.label.toLowerCase().includes(lowerCase)
     },
-    [label, onConditionallyShowOption],
+    [label],
   )
 
   const filteredOptions = useFormElementOptions({
     element,
     value,
     onChange,
+    conditionallyShownOptions,
     onFilter,
   })
 
@@ -191,7 +185,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
 })
 
 function FormElementAutocomplete({
-  onConditionallyShowOption,
+  conditionallyShownOptions,
   onChange,
   ...props
 }: Props) {
@@ -215,7 +209,7 @@ function FormElementAutocomplete({
     <AutocompleteFilter
       {...props}
       onChange={handleChange}
-      onConditionallyShowOption={onConditionallyShowOption}
+      conditionallyShownOptions={conditionallyShownOptions}
     />
   )
 }

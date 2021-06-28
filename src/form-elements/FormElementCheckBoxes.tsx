@@ -17,9 +17,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onConditionallyShowOption: (
-    choiceElementOption: FormTypes.ChoiceElementOption,
-  ) => boolean
+  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
 }
 
 function FormElementCheckboxes({
@@ -29,7 +27,7 @@ function FormElementCheckboxes({
   onChange,
   validationMessage,
   displayValidationMessage,
-  onConditionallyShowOption,
+  conditionallyShownOptions,
 }: Props) {
   const selectedValues = React.useMemo(() => {
     if (!Array.isArray(value)) return []
@@ -62,7 +60,7 @@ function FormElementCheckboxes({
     element,
     value,
     onChange,
-    onFilter: onConditionallyShowOption,
+    conditionallyShownOptions,
   })
 
   return (

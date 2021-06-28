@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import useConditionallyShowOptionCallback from '../hooks/useConditionallyShowOptionCallback'
 import LookupNotification from '../components/LookupNotification'
 
 import FormElementBarcodeScanner from '../form-elements/FormElementBarcodeScanner'
@@ -46,7 +45,7 @@ import {
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 
-export type Props = {
+export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
   elements: FormTypes.FormElement[]
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
@@ -57,10 +56,11 @@ export type Props = {
   // Props passed by repeatable sets
   isEven?: boolean
   idPrefix: string
-  formElementsCtrl: FormElementsCtrl
+  model: FormSubmissionModel
+  parentElement: T
 }
 
-function OneBlinkFormElements({
+function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   formId,
   elements,
   isEven,
@@ -70,16 +70,18 @@ function OneBlinkFormElements({
   formElementsConditionallyShown,
   onChange,
   onLookup,
-  formElementsCtrl,
-}: Props) {
+  model,
+  parentElement,
+}: Props<T>) {
   return (
     <FormSubmissionModelContextProvider
-      formElementsCtrl={formElementsCtrl}
+      elements={parentElement.elements}
+      model={model}
       formElementsConditionallyShown={formElementsConditionallyShown}
     >
       {elements.map((element) => {
         if (element.type === 'section') {
-          if (formElementsConditionallyShown?.[element.id]?.isShown === false) {
+          if (formElementsConditionallyShown?.[element.id]?.isHidden) {
             return null
           }
 
@@ -97,7 +99,8 @@ function OneBlinkFormElements({
                 formElementsValidation={formElementsValidation}
                 onChange={onChange}
                 onLookup={onLookup}
-                formElementsCtrl={formElementsCtrl}
+                model={model}
+                parentElement={parentElement}
               />
             </div>
           )
@@ -105,7 +108,7 @@ function OneBlinkFormElements({
 
         if (
           element.type === 'page' ||
-          formElementsConditionallyShown?.[element.name]?.isShown === false
+          formElementsConditionallyShown?.[element.name]?.isHidden
         ) {
           return null
         }
@@ -120,19 +123,16 @@ function OneBlinkFormElements({
             <FormElementSwitch
               formId={formId}
               element={element}
-              value={formElementsCtrl.model[element.name]}
+              value={model[element.name]}
               displayValidationMessage={displayValidationMessages}
               isEven={isEven}
               id={`${idPrefix}${element.name}`}
-              formElementsConditionallyShown={formElementsConditionallyShown}
-              formElementValidation={
-                formElementsValidation
-                  ? formElementsValidation[element.name]
-                  : undefined
+              formElementConditionallyShown={
+                formElementsConditionallyShown?.[element.name]
               }
+              formElementValidation={formElementsValidation?.[element.name]}
               onChange={onChange}
               onLookup={onLookup}
-              formElementsCtrl={formElementsCtrl}
             />
           </div>
         )
@@ -149,29 +149,27 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   value,
   displayValidationMessage,
   formElementValidation,
-  formElementsConditionallyShown,
+  formElementConditionallyShown,
   isEven,
   id,
   onChange,
   onLookup,
-  formElementsCtrl,
 }: {
   formId: number
   element: FormTypes.FormElement
   value: unknown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
-  formElementsConditionallyShown: FormElementsConditionallyShown | undefined
+  formElementConditionallyShown: FormElementConditionallyShown | undefined
   id: string
-  isEven: Props['isEven']
-  onChange: Props['onChange']
-  onLookup: Props['onLookup']
-  formElementsCtrl: FormElementsCtrl
+  isEven: boolean | undefined
+  onChange: FormElementValueChangeHandler
+  onLookup: FormElementLookupHandler
 }) {
-  const handleConditionallyShowOption = useConditionallyShowOptionCallback(
-    formElementsCtrl,
-    element,
-  )
+  const conditionallyShownOptions =
+    formElementConditionallyShown?.type === 'formElement'
+      ? formElementConditionallyShown?.options
+      : undefined
   const validationMessage =
     typeof formElementValidation === 'string'
       ? formElementValidation
@@ -327,7 +325,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            onConditionallyShowOption={handleConditionallyShowOption}
+            conditionallyShownOptions={conditionallyShownOptions}
           />
         </LookupNotification>
       )
@@ -350,7 +348,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            onConditionallyShowOption={handleConditionallyShowOption}
+            conditionallyShownOptions={conditionallyShownOptions}
           />
         </LookupNotification>
       )
@@ -373,7 +371,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            onConditionallyShowOption={handleConditionallyShowOption}
+            conditionallyShownOptions={conditionallyShownOptions}
           />
         </LookupNotification>
       )
@@ -414,19 +412,16 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           isEven={!isEven}
           element={element}
-          value={value as Array<FormElementsCtrl['model']> | undefined}
+          value={value as Array<FormSubmissionModel> | undefined}
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementRepeatableSet
             >['onChange']
           }
           onLookup={onLookup}
-          formElementConditionallyShown={
-            formElementsConditionallyShown?.[element.name]
-          }
+          formElementConditionallyShown={formElementConditionallyShown}
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
-          parentFormElementsCtrl={formElementsCtrl}
         />
       )
     }
@@ -483,7 +478,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            onConditionallyShowOption={handleConditionallyShowOption}
+            conditionallyShownOptions={conditionallyShownOptions}
           />
         </LookupNotification>
       )
@@ -511,17 +506,14 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formId={formId}
           id={id}
           element={element}
-          value={value as FormElementsCtrl['model'] | undefined}
+          value={value as FormSubmissionModel | undefined}
           onChange={
             onChange as React.ComponentProps<typeof FormElementForm>['onChange']
           }
           onLookup={onLookup}
           displayValidationMessages={displayValidationMessage}
           formElementValidation={formElementValidation}
-          formElementConditionallyShown={
-            formElementsConditionallyShown?.[element.name]
-          }
-          parentFormElementsCtrl={formElementsCtrl}
+          formElementConditionallyShown={formElementConditionallyShown}
         />
       )
     }
@@ -634,7 +626,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            onConditionallyShowOption={handleConditionallyShowOption}
+            conditionallyShownOptions={conditionallyShownOptions}
             isEven={isEven}
           />
         </LookupNotification>
@@ -716,7 +708,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formId={formId}
           id={id}
           element={element}
-          value={value as FormElementsCtrl['model'] | undefined}
+          value={value as FormSubmissionModel | undefined}
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementCivicaNameRecord
@@ -725,10 +717,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           onLookup={onLookup}
           displayValidationMessages={displayValidationMessage}
           formElementValidation={formElementValidation}
-          formElementConditionallyShown={
-            formElementsConditionallyShown?.[element.name]
-          }
-          parentFormElementsCtrl={formElementsCtrl}
+          formElementConditionallyShown={formElementConditionallyShown}
         />
       )
     }

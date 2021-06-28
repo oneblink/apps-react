@@ -9,9 +9,15 @@ const fnMap = {
   '<': (lhs: number, rhs: number) => lhs < rhs,
 }
 
+export type FormElementsCtrl = {
+  model: FormSubmissionModel
+  elements: import('@oneblink/types').FormTypes.FormElement[]
+  parentFormElementsCtrl?: FormElementsCtrl
+}
+
 export const handleOptionsPredicate = (
   predicate: ConditionTypes.ConditionalPredicateOptions,
-  model: FormElementsCtrl['model'],
+  model: FormSubmissionModel,
   predicateElement: FormTypes.FormElementWithOptions,
 ) => {
   return predicate.optionIds.some((optionId) => {
@@ -35,7 +41,7 @@ export const handleOptionsPredicate = (
 
 const handlePredicate = (
   predicate: ConditionTypes.ConditionalPredicate,
-  model: FormElementsCtrl['model'],
+  model: FormSubmissionModel,
   predicateElement: FormTypes.FormElement,
 ) => {
   if (
@@ -97,13 +103,26 @@ const handlePredicate = (
   }
 }
 
-const getRootFormElementsCtrl = (
+const getParentFormElements = (
   formElementsCtrl: FormElementsCtrl,
-): FormElementsCtrl => {
-  if (formElementsCtrl.parentFormElementsCtrl) {
-    return getRootFormElementsCtrl(formElementsCtrl.parentFormElementsCtrl)
+  childElement: FormTypes.FormElement,
+): Array<FormTypes.SectionElement | FormTypes.PageElement> => {
+  const parentElement = formElementsCtrl.elements.find((element) => {
+    return (
+      (element.type === 'page' || element.type === 'section') &&
+      element.elements.some(({ id }) => id === childElement.id)
+    )
+  })
+  if (
+    parentElement &&
+    (parentElement.type === 'page' || parentElement.type === 'section')
+  ) {
+    return [
+      parentElement,
+      ...getParentFormElements(formElementsCtrl, parentElement),
+    ]
   }
-  return formElementsCtrl
+  return []
 }
 
 const conditionallyShowByPredicate = (
@@ -134,21 +153,21 @@ const conditionallyShowByPredicate = (
   }
 
   // Here we will also need to check if the predicate element
-  // is on a page element and the page element is also hidden.
-  // If it is hidden we will treat this predicate element as
-  // hidden as well.
-  const rootFormElementsCtrl = getRootFormElementsCtrl(formElementsCtrl)
-  const pageElement = rootFormElementsCtrl.elements.find((element) => {
-    return (
-      element.type === 'page' &&
-      element.elements.some((e) => e.id === predicateElement.id)
-    )
-  })
-  if (
-    pageElement &&
-    !conditionallyShowElement(rootFormElementsCtrl, pageElement, [])
-  ) {
-    return false
+  // is on a page/section element and the page/section element
+  // is also hidden. If it is hidden we will treat this
+  // predicate element as hidden as well.
+  const parentFormElements = getParentFormElements(
+    formElementsCtrl,
+    predicateElement,
+  )
+  for (const parentFormElement of parentFormElements) {
+    if (
+      !conditionallyShowElement(formElementsCtrl, parentFormElement, [
+        ...elementsEvaluated,
+      ])
+    ) {
+      return false
+    }
   }
 
   // Check to see if the model has one of the valid values to show the element

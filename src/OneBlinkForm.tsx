@@ -14,7 +14,7 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
 
 type UncontrolledProps = {
   form: FormTypes.Form
-  initialSubmission?: FormElementsCtrl['model']
+  initialSubmission?: FormSubmissionModel
 }
 
 const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
