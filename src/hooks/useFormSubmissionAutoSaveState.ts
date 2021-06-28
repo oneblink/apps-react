@@ -3,6 +3,7 @@ import _throttle from 'lodash.throttle'
 import { autoSaveService, Sentry } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
+import { FormSubmissionModel } from '../types/form'
 
 export default function useFormSubmissionAutoSaveState({
   form,

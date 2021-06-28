@@ -1,25 +1,87 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FilesElementFile } from '../form-elements/FormElementFiles/legacy/FormElementFiles'
+import { Attachment } from '../types/attachments'
+import { FormSubmissionModel } from '../types/form'
 import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
+function parseAttachment(value: unknown): Attachment | undefined {
+  return parseUnknownAsRecord(value, (record) => {
+    // Check for attachments that have not been uploaded yet
+    if (
+      record.data instanceof Blob &&
+      typeof record.type === 'string' &&
+      typeof record._id === 'string' &&
+      typeof record.fileName === 'string' &&
+      typeof record.isPrivate === 'boolean'
+    ) {
+      return record as Attachment
+    }
+
+    // Check for attachments that have been uploaded already
+    if (
+      typeof record.id === 'string' &&
+      typeof record.fileName === 'string' &&
+      typeof record.url === 'string' &&
+      typeof record.contentType === 'string' &&
+      typeof record.isPrivate === 'boolean' &&
+      parseUnknownAsRecord(
+        record.s3,
+        (s3) =>
+          typeof s3.bucket === 'string' &&
+          typeof s3.key === 'string' &&
+          typeof s3.region === 'string',
+      )
+    ) {
+      return record as SubmissionTypes.FormSubmissionAttachment
+    }
+  })
+}
+
+function parseFile(
+  element: FormTypes.FormElementBinaryStorage,
+  value: unknown,
+): FilesElementFile | Attachment | undefined {
+  return parseUnknownAsRecord(value, (record) => {
+    const isUsingLegacyStorage = checkIsUsingLegacyStorage(element)
+    if (
+      record.type === undefined &&
+      typeof record.fileName === 'string' &&
+      typeof record.data === 'string'
+    ) {
+      if (isUsingLegacyStorage) {
+        return record as FilesElementFile
+      }
+
+      const blob = dataUriToBlobSync(record.data)
+      return prepareNewAttachment(blob, record.fileName, element)
+    }
+
+    if (!isUsingLegacyStorage) {
+      return parseAttachment(record)
+    }
+  })
+}
+
 function parseFiles(
   element: FormTypes.FormElementBinaryStorage,
-  files: unknown,
-): unknown[] | undefined {
-  if (Array.isArray(files)) {
-    return files?.map((file) => {
-      if (
-        file &&
-        typeof file === 'object' &&
-        typeof file.fileName === 'string' &&
-        typeof file.data === 'string'
-      ) {
-        const blob = dataUriToBlobSync(file.data)
-        return prepareNewAttachment(blob, file.fileName, element)
-      }
-      return file
-    })
+  value: unknown,
+): Array<Attachment | FilesElementFile> | undefined {
+  if (Array.isArray(value)) {
+    const files = value.reduce<Array<Attachment | FilesElementFile>>(
+      (files, v) => {
+        const file = parseFile(element, v)
+        if (file) {
+          files.push(file)
+        }
+        return files
+      },
+      [],
+    )
+    if (files.length) {
+      return files
+    }
   }
 }
 
@@ -79,11 +141,50 @@ function parseStringValue(value: unknown) {
   return
 }
 
+function parseNumberValue(value: unknown) {
+  if (typeof value === 'number' && !isNaN(value)) {
+    return value
+  }
+  return
+}
+
 function parseStringArrayValue(value: unknown) {
   if (Array.isArray(value)) {
     return value.filter((val) => typeof val === 'string')
   }
   return
+}
+
+function parseUnknownAsRecord<T>(
+  value: unknown,
+  validate: (value: Record<string, unknown>) => T | undefined,
+): T | undefined {
+  if (typeof value === 'object' && value !== null) {
+    return validate(value as Record<string, unknown>)
+  }
+}
+
+function parseFormSubmissionModel(
+  elements: FormTypes.FormElement[],
+  value: unknown,
+): FormSubmissionModel | undefined {
+  return parseUnknownAsRecord(value, (record) => {
+    return elements.reduce<FormSubmissionModel>((model, element) => {
+      switch (element.type) {
+        case 'section':
+        case 'page': {
+          const partialModel = parseFormSubmissionModel(element.elements, {})
+          Object.assign(model, partialModel)
+          break
+        }
+        default: {
+          model[element.name] = parsePreFillData(element, record[element.name])
+        }
+      }
+
+      return model
+    }, record)
+  })
 }
 
 function parsePreFillData(
@@ -99,28 +200,36 @@ function parsePreFillData(
     // a form element is updated to “public” or “private”.
     case 'camera':
     case 'draw': {
-      if (!checkIsUsingLegacyStorage(element) && typeof value === 'string') {
+      if (!value) {
+        break
+      }
+      if (checkIsUsingLegacyStorage(element)) {
+        if (typeof value === 'string') {
+          return value
+        }
+      } else if (typeof value === 'string') {
         const blob = dataUriToBlobSync(value)
         return prepareNewAttachment(blob, 'file', element)
+      } else {
+        return parseAttachment(value)
       }
       break
     }
     case 'files': {
-      if (!checkIsUsingLegacyStorage(element)) {
-        return parseFiles(element, value)
-      }
-      break
+      return parseFiles(element, value)
     }
     case 'compliance': {
-      if (
-        !checkIsUsingLegacyStorage(element) &&
-        value &&
-        typeof value === 'object'
-      ) {
-        const files = (value as Record<string, unknown>)?.files
-        return parseFiles(element, files)
-      }
-      break
+      return parseUnknownAsRecord(value, (record) => {
+        const selectedValue = parseStringValue(record.value)
+        const notes = parseStringValue(record.notes)
+        if (selectedValue) {
+          return {
+            value: selectedValue,
+            notes,
+            files: parseFiles(element, record.files),
+          }
+        }
+      })
     }
     case 'time':
     case 'datetime':
@@ -137,7 +246,6 @@ function parsePreFillData(
     case 'telephone':
     case 'textarea':
     case 'radio':
-    case 'image':
     case 'autocomplete': {
       return parseStringValue(value)
     }
@@ -152,10 +260,7 @@ function parsePreFillData(
       return parseStringArrayValue(value)
     }
     case 'number': {
-      if (typeof value === 'number' && !isNaN(value)) {
-        return value
-      }
-      return
+      return parseNumberValue(value)
     }
     case 'boolean': {
       return !!value
@@ -166,55 +271,77 @@ function parsePreFillData(
     case 'heading': {
       return
     }
-
-    case 'form':
-    case 'infoPage': {
-      if (typeof value === 'object' && !!value) {
-        // @ts-expect-error type `{}` does not match type `Record<string, unknown>`
-        return generateDefaultData(element.elements || [], value)
+    case 'pointAddress':
+    case 'geoscapeAddress': {
+      return parseUnknownAsRecord(value, (record) => {
+        if (parseStringValue(record.addressId)) {
+          return record
+        }
+      })
+    }
+    case 'civicaNameRecord': {
+      return parseUnknownAsRecord(value, (record) => {
+        if (
+          parseStringValue(record.title) &&
+          parseStringValue(record.familyName) &&
+          Array.isArray(record.streetAddress)
+        ) {
+          return record
+        }
+      })
+    }
+    case 'civicaStreetName': {
+      return parseUnknownAsRecord(value, (record) => {
+        if (
+          parseStringValue(record.formattedAccount) &&
+          parseStringValue(record.formattedStreet)
+        ) {
+          return record
+        }
+      })
+    }
+    case 'form': {
+      const elements = element.elements
+      if (Array.isArray(elements)) {
+        return parseFormSubmissionModel(elements, value)
       }
-      return
+      break
     }
     case 'repeatableSet': {
       if (Array.isArray(element.elements) && Array.isArray(value)) {
-        return value
-          .map((val) => {
-            if (typeof val !== 'object' || !val) {
-              return
-            }
-            return generateDefaultData(element.elements, val)
-          })
-          .filter((val) => !!val)
+        return value.reduce((entries, v) => {
+          const entry = parseFormSubmissionModel(element.elements, v)
+          if (entry) {
+            entries.push(entry)
+          }
+          return entries
+        }, [])
       }
       break
     }
     case 'location': {
-      if (typeof value === 'object' && !!value) {
-        const clonedValue = {
-          ...value,
-        } as Record<string, unknown>
-        if (
-          typeof clonedValue.latitude !== 'number' ||
-          isNaN(clonedValue.latitude) ||
-          typeof clonedValue.longitude !== 'number' ||
-          isNaN(clonedValue.longitude)
-        ) {
-          return
+      return parseUnknownAsRecord(value, (record) => {
+        const latitude = parseNumberValue(record.latitude)
+        const longitude = parseNumberValue(record.longitude)
+        if (latitude !== undefined && longitude !== undefined) {
+          return {
+            latitude,
+            longitude,
+            zoom: parseNumberValue(record.zoom),
+          }
         }
-
-        return {
-          latitude: clonedValue.latitude,
-          longitude: clonedValue.longitude,
-          zoom:
-            typeof clonedValue.zoom === 'number' && !isNaN(clonedValue.zoom)
-              ? clonedValue.zoom
-              : undefined,
-        }
-      }
+      })
+    }
+    case 'image':
+    case 'html':
+    case 'file':
+    case 'infoPage':
+    case 'page':
+    case 'section': {
       return
     }
     default: {
-      return value
+      console.warn('Invalid element type used in prefill data', element)
     }
   }
 }

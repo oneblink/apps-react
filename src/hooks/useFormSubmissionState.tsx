@@ -2,6 +2,7 @@ import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
 import { FormTypes } from '@oneblink/types'
 import generateDefaultData from '../services/generate-default-data'
+import { FormSubmissionModel } from '../types/form'
 
 export default function useFormSubmissionState(
   form: FormTypes.Form,

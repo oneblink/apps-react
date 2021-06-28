@@ -25,6 +25,7 @@ import {
   urlToBlobAsync,
 } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   id: string

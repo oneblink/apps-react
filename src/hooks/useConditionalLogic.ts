@@ -7,13 +7,20 @@ import conditionallyShowElement, {
 } from '../services/conditionally-show-element'
 import conditionallyShowOption from '../services/conditionally-show-option'
 import flattenFormElements from '../services/flattenFormElements'
+import {
+  FormElementConditionallyShown,
+  FormElementsConditionallyShown,
+  FormSubmissionModel,
+  RepeatableSetEntryIndex,
+} from '../types/form'
 
 export default function useConditionalLogic(
   definition: FormTypes.Form,
   submission: FormSubmissionModel,
 ) {
-  const [conditionalLogicError, setConditionalLogicError] =
-    React.useState<Error | undefined>()
+  const [conditionalLogicError, setConditionalLogicError] = React.useState<
+    Error | undefined
+  >()
 
   const handleConditionallyShowElement = React.useCallback(
     (formElementsCtrl: FormElementsCtrl, element: FormTypes.FormElement) => {
@@ -56,11 +63,11 @@ export default function useConditionalLogic(
       parentFormElementsCtrl: FormElementsCtrl['parentFormElementsCtrl'],
     ): FormElementsConditionallyShown => {
       const formElementsCtrl = {
-        elements: flattenFormElements(elements),
+        flattenedElements: flattenFormElements(elements),
         model,
         parentFormElementsCtrl,
       }
-      return formElementsCtrl.elements.reduce<FormElementsConditionallyShown>(
+      return formElementsCtrl.flattenedElements.reduce<FormElementsConditionallyShown>(
         (formElementsConditionallyShown, element) => {
           switch (element.type) {
             case 'section':

@@ -11,6 +11,7 @@ import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import ComplianceButton from './ComplianceButton'
 import FormElementFiles, { PossibleFileConfiguration } from './FormElementFiles'
 import FormElementTextarea from './FormElementTextarea'
+import { FormElementValueChangeHandler } from '../types/form'
 
 interface Props {
   id: string

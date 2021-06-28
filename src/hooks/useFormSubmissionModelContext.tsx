@@ -1,6 +1,10 @@
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-import cleanFormElementsCtrlModel from '../services/cleanFormSubmissionModel'
+import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
+import {
+  FormElementsConditionallyShown,
+  FormSubmissionModel,
+} from '../types/form'
 
 export type FormSubmissionModelContextValue = FormSubmissionModel
 
@@ -19,7 +23,7 @@ export function FormSubmissionModelContextProvider({
   children: React.ReactNode
 }) {
   const value = React.useMemo(() => {
-    return cleanFormElementsCtrlModel(
+    return cleanFormSubmissionModel(
       model,
       elements || [],
       formElementsConditionallyShown,

@@ -6,6 +6,7 @@ import FormElementFilesLegacy, {
 import FormElementFiles from './FormElementFiles'
 import { Attachment } from '../../types/attachments'
 import { checkIsUsingLegacyStorage } from '../../services/attachments'
+import { FormElementValueChangeHandler } from '../../types/form'
 export type PossibleFileConfiguration = Attachment | FilesElementFile
 interface Props {
   id: string

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
+import { FormSubmissionModel } from './types/form'
 
 function recursivelySetReadOnly<
   T extends { elements?: FormTypes.FormElement[] },

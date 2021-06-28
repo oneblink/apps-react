@@ -4,6 +4,10 @@ import * as React from 'react'
 import useBooleanState from '../hooks/useBooleanState'
 import { checkSectionValidity } from '../services/form-validation'
 import scrollingService from '../services/scrolling-service'
+import {
+  FormElementsConditionallyShown,
+  FormElementsValidation,
+} from '../types/form'
 
 export default function usePages({
   pages,

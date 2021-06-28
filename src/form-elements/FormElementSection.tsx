@@ -5,6 +5,7 @@ import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
 import OneBlinkFormElements, { Props } from '../components/OneBlinkFormElements'
 import { checkSectionValidity } from '../services/form-validation'
+import { FormElementLookupHandler } from '../types/form'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,

@@ -3,6 +3,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { Switch } from '@material-ui/core'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   id: string

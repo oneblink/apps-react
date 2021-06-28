@@ -5,6 +5,7 @@ import OneBlinkFormBase, {
   ControlledProps,
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
+import { FormSubmissionModel } from './types/form'
 
 const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
   props: BaseProps & ControlledProps,

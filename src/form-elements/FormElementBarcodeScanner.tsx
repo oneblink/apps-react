@@ -11,6 +11,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
 import useLookupNotification from '../hooks/useLookupNotification'
+import { FormElementValueChangeHandler } from '../types/form'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200

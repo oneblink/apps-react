@@ -10,6 +10,7 @@ import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   id: string

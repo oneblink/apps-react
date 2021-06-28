@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`<OneBlinkFormControlled />`](./docs/OneBlinkFormControlled.md) component
 - [`useFormSubmissionAutoSaveState()`](./docs/useFormSubmissionAutoSaveState.md) hook
 - [`useFormSubmissionState()`](./docs/useFormSubmissionState.md) hook
+- parsing validation for initial submission and data lookup result data
 
 ### Fixed
 

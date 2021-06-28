@@ -4,6 +4,7 @@ import conditionallyShowElement, {
   handleOptionsPredicate,
   FormElementsCtrl,
 } from '../services/conditionally-show-element'
+import { FormSubmissionModel } from '../types/form'
 
 const handleAttributePredicate = (
   predicate:
@@ -37,9 +38,11 @@ const conditionallyShowOptionByPredicate = (
     | FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
-  const predicateElement = formElementsCtrl.elements.find((element) => {
-    return element.id === predicate.elementId
-  })
+  const predicateElement = formElementsCtrl.flattenedElements.find(
+    (element) => {
+      return element.id === predicate.elementId
+    },
+  )
 
   // If we cant find the element used for the predicate,
   // we can check to see if the element being evaluated
@@ -80,7 +83,7 @@ const conditionallyShowOptionByPredicate = (
     if (!predicateOption) return false
 
     return conditionallyShowOption(
-      { model: formElementsCtrl.model, elements: [] },
+      { model: formElementsCtrl.model, flattenedElements: [] },
       predicateElement,
       predicateOption,
       elementsEvaluated,
@@ -106,9 +109,11 @@ const isAttributeFilterValid = (
     | FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
-  const predicateElement = formElementsCtrl.elements.find((element) => {
-    return element.id === predicate.elementId
-  })
+  const predicateElement = formElementsCtrl.flattenedElements.find(
+    (element) => {
+      return element.id === predicate.elementId
+    },
+  )
 
   // If we cant find the element used for the predicate,
   // we can check to see if the element being evaluated
