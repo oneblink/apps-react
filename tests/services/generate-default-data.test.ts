@@ -1658,11 +1658,12 @@ describe('generateDefaultData()', () => {
       requiresAllConditionallyShowPredicates: false,
       elements: [
         {
-          name: 'Text',
-          label: 'Text',
+          name: 'text',
+          label: 'text',
           type: 'text',
           required: false,
           id: '9b9e477b-577c-44a6-a727-cef8dd57670a',
+          defaultValue: 'default text',
           conditionallyShow: false,
           requiresAllConditionallyShowPredicates: false,
           readOnly: false,
@@ -1682,7 +1683,17 @@ describe('generateDefaultData()', () => {
       })
     })
 
-    test('it should set valid pre-fill data', () => {
+    test('it should remove set default values for nested elements', () => {
+      const result = generateDefaultData([element], {})
+
+      expect(result).toEqual({
+        form: {
+          text: 'default text',
+        },
+      })
+    })
+
+    test('it should set valid pre-fill data over default data', () => {
       const result = generateDefaultData([element], {
         form: {
           text: 'pre-fill',
@@ -1695,6 +1706,18 @@ describe('generateDefaultData()', () => {
         },
       })
     })
+
+    test('it should not set default if pre-fill has no value', () => {
+      const result = generateDefaultData([element], {
+        form: {},
+      })
+
+      expect(result).toEqual({
+        form: {
+          text: undefined,
+        },
+      })
+    })
   })
 
   describe('"repeatableSet" element type', () => {
@@ -1704,14 +1727,16 @@ describe('generateDefaultData()', () => {
       type: 'repeatableSet',
       id: 'd0b1a6bc-8ec4-488c-9d42-5c1109bfad94',
       readOnly: false,
+      minSetEntries: 1,
       conditionallyShow: false,
       requiresAllConditionallyShowPredicates: false,
       elements: [
         {
-          name: 'Text',
-          label: 'Text',
+          name: 'text',
+          label: 'text',
           type: 'text',
           required: false,
+          defaultValue: 'default text',
           id: '9b9e477b-577c-44a6-a727-cef8dd57670a',
           conditionallyShow: false,
           requiresAllConditionallyShowPredicates: false,
@@ -1729,6 +1754,18 @@ describe('generateDefaultData()', () => {
 
       expect(result).toEqual({
         repeatableSet: undefined,
+      })
+    })
+
+    test('it should set default based on "minSetEntries" property', () => {
+      const result = generateDefaultData([element], {})
+
+      expect(result).toEqual({
+        repeatableSet: [
+          {
+            text: 'default text',
+          },
+        ],
       })
     })
 
@@ -1751,6 +1788,23 @@ describe('generateDefaultData()', () => {
           },
           {
             text: 'pre-fill',
+          },
+        ],
+      })
+    })
+
+    test('it should not set default if pre-fill has no value', () => {
+      const result = generateDefaultData([element], {
+        repeatableSet: [{}, {}],
+      })
+
+      expect(result).toEqual({
+        repeatableSet: [
+          {
+            text: undefined,
+          },
+          {
+            text: undefined,
           },
         ],
       })

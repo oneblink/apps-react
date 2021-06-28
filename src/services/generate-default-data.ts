@@ -164,6 +164,29 @@ function parseUnknownAsRecord<T>(
   }
 }
 
+function parseFormSubmissionModel(
+  elements: FormTypes.FormElement[],
+  value: unknown,
+): FormSubmissionModel | undefined {
+  return parseUnknownAsRecord(value, (record) => {
+    return elements.reduce<FormSubmissionModel>((model, element) => {
+      switch (element.type) {
+        case 'section':
+        case 'page': {
+          const partialModel = parseFormSubmissionModel(element.elements, {})
+          Object.assign(model, partialModel)
+          break
+        }
+        default: {
+          model[element.name] = parsePreFillData(element, record[element.name])
+        }
+      }
+
+      return model
+    }, record)
+  })
+}
+
 function parsePreFillData(
   element: FormTypes.FormElement,
   value: unknown,
@@ -207,7 +230,6 @@ function parsePreFillData(
           }
         }
       })
-      break
     }
     case 'time':
     case 'datetime':
@@ -281,18 +303,14 @@ function parsePreFillData(
     case 'form': {
       const elements = element.elements
       if (Array.isArray(elements)) {
-        return parseUnknownAsRecord(value, (record) =>
-          generateDefaultData(elements, record),
-        )
+        return parseFormSubmissionModel(elements, value)
       }
       break
     }
     case 'repeatableSet': {
       if (Array.isArray(element.elements) && Array.isArray(value)) {
         return value.reduce((entries, v) => {
-          const entry = parseUnknownAsRecord(v, (record) => {
-            return generateDefaultData(element.elements || [], record)
-          })
+          const entry = parseFormSubmissionModel(element.elements, v)
           if (entry) {
             entries.push(entry)
           }
