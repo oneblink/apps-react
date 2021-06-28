@@ -63,11 +63,11 @@ export default function useConditionalLogic(
       parentFormElementsCtrl: FormElementsCtrl['parentFormElementsCtrl'],
     ): FormElementsConditionallyShown => {
       const formElementsCtrl = {
-        elements: flattenFormElements(elements),
+        flattenedElements: flattenFormElements(elements),
         model,
         parentFormElementsCtrl,
       }
-      return formElementsCtrl.elements.reduce<FormElementsConditionallyShown>(
+      return formElementsCtrl.flattenedElements.reduce<FormElementsConditionallyShown>(
         (formElementsConditionallyShown, element) => {
           switch (element.type) {
             case 'section':

@@ -12,7 +12,7 @@ const fnMap = {
 
 export type FormElementsCtrl = {
   model: FormSubmissionModel
-  elements: import('@oneblink/types').FormTypes.FormElement[]
+  flattenedElements: import('@oneblink/types').FormTypes.FormElement[]
   parentFormElementsCtrl?: FormElementsCtrl
 }
 
@@ -108,7 +108,7 @@ const getParentFormElements = (
   formElementsCtrl: FormElementsCtrl,
   childElement: FormTypes.FormElement,
 ): Array<FormTypes.SectionElement | FormTypes.PageElement> => {
-  const parentElement = formElementsCtrl.elements.find((element) => {
+  const parentElement = formElementsCtrl.flattenedElements.find((element) => {
     return (
       (element.type === 'page' || element.type === 'section') &&
       element.elements.some(({ id }) => id === childElement.id)
@@ -131,7 +131,7 @@ const conditionallyShowByPredicate = (
   predicate: ConditionTypes.ConditionalPredicate,
   elementsEvaluated: Array<{ id: string; label: string }>,
 ): FormTypes.FormElement | boolean => {
-  const predicateElement = formElementsCtrl.elements.find(
+  const predicateElement = formElementsCtrl.flattenedElements.find(
     (element: FormTypes.FormElement) => {
       return element.id === predicate.elementId
     },
