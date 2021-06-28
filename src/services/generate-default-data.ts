@@ -179,7 +179,7 @@ function parsePreFillData(
       if (Array.isArray(element.elements) && Array.isArray(value)) {
         return value
           .map((val) => {
-            if (typeof value !== 'object' || !value) {
+            if (typeof val !== 'object' || !val) {
               return
             }
             return generateDefaultData(element.elements, val)
