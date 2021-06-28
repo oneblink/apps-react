@@ -18,8 +18,9 @@ export default function useConditionalLogic(
   definition: FormTypes.Form,
   submission: FormSubmissionModel,
 ) {
-  const [conditionalLogicError, setConditionalLogicError] =
-    React.useState<Error | undefined>()
+  const [conditionalLogicError, setConditionalLogicError] = React.useState<
+    Error | undefined
+  >()
 
   const handleConditionallyShowElement = React.useCallback(
     (formElementsCtrl: FormElementsCtrl, element: FormTypes.FormElement) => {

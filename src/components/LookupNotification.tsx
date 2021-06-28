@@ -37,15 +37,17 @@ function LookupNotificationComponent({
   const injectPagesAfter = useInjectPages()
   const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
 
-  const [onCancelLookup, setOnCancelLookup] =
-    React.useState<(() => void) | undefined>(undefined)
+  const [onCancelLookup, setOnCancelLookup] = React.useState<
+    (() => void) | undefined
+  >(undefined)
   const [isLookingUp, setIsLookingUp] = React.useState(false)
   const [hasLookupFailed, setHasLookupFailed] = React.useState(false)
   const [hasLookupSucceeded, setHasLookupSucceeded] = React.useState(false)
   const [isCancellable, setIsCancellable] = React.useState(false)
   const [isDisabled, setIsDisabled] = React.useState(false)
-  const [lookupErrorHTML, setLookupErrorHTML] =
-    React.useState<string | null>(null)
+  const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
+    null,
+  )
   const formIsReadOnly = useFormIsReadOnly()
   const model = useFormSubmissionModel()
 
