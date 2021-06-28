@@ -5,6 +5,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   id: string

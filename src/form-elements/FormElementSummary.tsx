@@ -4,6 +4,7 @@ import { localisationService } from '@oneblink/apps'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
 import { FormTypes } from '@oneblink/types'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   element: FormTypes.SummaryElement

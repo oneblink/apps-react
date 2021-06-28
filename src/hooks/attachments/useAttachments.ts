@@ -8,6 +8,7 @@ import { Attachment, AttachmentNew } from '../../types/attachments'
 import { canvasToBlob } from '../../services/blob-utils'
 import useBooleanState from '../useBooleanState'
 import useIsMounted from '../useIsMounted'
+import { FormElementValueChangeHandler } from '../../types/form'
 
 const useAttachments = (
   element: FormTypes.FilesElement,

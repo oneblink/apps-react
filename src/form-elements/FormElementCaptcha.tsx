@@ -3,6 +3,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 
 import useCaptchaSiteKey from '../hooks/useCaptchaSiteKey'
 import { FormTypes } from '@oneblink/types'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   element: FormTypes.CaptchaElement

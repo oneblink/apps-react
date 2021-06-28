@@ -2,6 +2,7 @@ import { FormTypes } from '@oneblink/types'
 import { Attachment } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { checkIsUsingLegacyStorage } from './attachments'
+import { FormSubmissionModel } from '../types/form'
 
 function checkIfAttachmentsAreUploadingForFormElements(
   formElements: FormTypes.FormElement[],

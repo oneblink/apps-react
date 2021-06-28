@@ -24,6 +24,12 @@ import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/CustomisableButtonInner'
+import {
+  FormElementsValidation,
+  FormElementValueChangeHandler,
+  FormSubmissionModel,
+  SetFormSubmission,
+} from './types/form'
 
 export type BaseProps = {
   onCancel: () => unknown

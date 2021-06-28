@@ -16,6 +16,7 @@ import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import { Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
+import { FormElementLookupHandler, FormSubmissionModel } from '../types/form'
 
 type Props = {
   autoLookupValue?: unknown

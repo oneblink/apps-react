@@ -1,4 +1,5 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
+import { FormSubmissionModel } from '../types/form'
 
 const fnMap = {
   '>': (lhs: number, rhs: number) => lhs > rhs,

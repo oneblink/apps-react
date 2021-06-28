@@ -5,6 +5,10 @@ import {
   validateSubmission,
   generateValidationSchema,
 } from '../services/form-validation'
+import {
+  FormElementsConditionallyShown,
+  FormSubmissionModel,
+} from '../types/form'
 
 export default function useFormValidation(pages: FormTypes.PageElement[]) {
   const [elementIdsWithLookupsExecuted, setElementIdsWithLookupsExecuted] =

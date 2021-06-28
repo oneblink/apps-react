@@ -7,6 +7,12 @@ import conditionallyShowElement, {
 } from '../services/conditionally-show-element'
 import conditionallyShowOption from '../services/conditionally-show-option'
 import flattenFormElements from '../services/flattenFormElements'
+import {
+  FormElementConditionallyShown,
+  FormElementsConditionallyShown,
+  FormSubmissionModel,
+  RepeatableSetEntryIndex,
+} from '../types/form'
 
 export default function useConditionalLogic(
   definition: FormTypes.Form,

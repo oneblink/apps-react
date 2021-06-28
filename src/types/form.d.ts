@@ -3,14 +3,14 @@
 type FormElementKey = string
 type RepeatableSetEntryIndex = string
 
-declare type FormSubmissionModel = Record<FormElementKey, unknown>
+export type FormSubmissionModel = Record<FormElementKey, unknown>
 
-declare type FormElementsValidation = Record<
+export type FormElementsValidation = Record<
   FormElementKey,
   FormElementValidation
 >
 
-declare type FormElementValidation =
+export type FormElementValidation =
   | undefined
   | string
   | {
@@ -26,12 +26,12 @@ declare type FormElementValidation =
       >
     }
 
-declare type FormElementsConditionallyShown = Record<
+export type FormElementsConditionallyShown = Record<
   FormElementKey,
   FormElementConditionallyShown
 >
 
-declare type FormElementConditionallyShown =
+export type FormElementConditionallyShown =
   | undefined
   | {
       type: 'formElement'
@@ -52,12 +52,12 @@ declare type FormElementConditionallyShown =
       >
     }
 
-declare type FormElementValueChangeHandler<T = unknown> = (
+export type FormElementValueChangeHandler<T = unknown> = (
   element: import('@oneblink/types').FormTypes.FormElement,
   value?: T | ((existingValue?: T) => T | undefined),
 ) => void
 
-declare type FormElementLookupHandler = (
+export type FormElementLookupHandler = (
   setter: (data: {
     submission: FormSubmissionModel
     elements: import('@oneblink/types').FormTypes.FormElement[]
@@ -67,7 +67,7 @@ declare type FormElementLookupHandler = (
   },
 ) => void
 
-declare type SetFormSubmission = React.Dispatch<
+export type SetFormSubmission = React.Dispatch<
   React.SetStateAction<{
     definition: import('@oneblink/types').FormTypes.Form
     submission: FormSubmissionModel

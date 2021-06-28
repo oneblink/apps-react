@@ -4,6 +4,7 @@ import conditionallyShowElement, {
   handleOptionsPredicate,
   FormElementsCtrl,
 } from '../services/conditionally-show-element'
+import { FormSubmissionModel } from '../types/form'
 
 const handleAttributePredicate = (
   predicate:

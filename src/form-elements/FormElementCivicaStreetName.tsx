@@ -4,6 +4,7 @@ import { formService } from '@oneblink/apps'
 import AutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, CivicaTypes } from '@oneblink/types'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   formId: number

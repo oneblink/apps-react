@@ -10,6 +10,7 @@ import {
   checkIfContentTypeIsImage,
   parseFilesAsAttachmentsLegacy,
 } from '../../../services/attachments'
+import { FormElementValueChangeHandler } from '../../../types/form'
 
 export type FilesElementFile = {
   data: string

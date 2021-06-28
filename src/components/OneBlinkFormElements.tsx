@@ -44,6 +44,15 @@ import {
 
 import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
 import { FormElementBinaryStorageValue } from '../types/attachments'
+import {
+  FormElementConditionallyShown,
+  FormElementLookupHandler,
+  FormElementsConditionallyShown,
+  FormElementsValidation,
+  FormElementValidation,
+  FormElementValueChangeHandler,
+  FormSubmissionModel,
+} from '../types/form'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number

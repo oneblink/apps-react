@@ -5,6 +5,7 @@ import FormElementFile from './FormElementFile'
 import useAttachments from '../../hooks/attachments/useAttachments'
 import { checkFileNameIsValid } from '../../services/form-validation'
 import { Attachment } from '../../types/attachments'
+import { FormElementValueChangeHandler } from '../../types/form'
 type Props = {
   id: string
   element: FormTypes.FilesElement

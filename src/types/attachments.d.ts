@@ -1,10 +1,7 @@
-type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-
-export type AttachmentSaved = UnwrapPromise<
-  ReturnType<typeof import('@oneblink/apps').submissionService.uploadAttachment>
-> & {
-  type?: undefined
-}
+type AttachmentSaved =
+  import('@oneblink/types').SubmissionTypes.FormSubmissionAttachment & {
+    type?: undefined
+  }
 
 interface AttachmentBase {
   _id: string

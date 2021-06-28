@@ -5,6 +5,7 @@ import AutocompleteDropdown from '../components/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
+import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
   formId: number

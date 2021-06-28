@@ -1,3 +1,18 @@
 {
-  "moduleDirectories": ["src", "node_modules"]
+  "preset": "ts-jest",
+  "testEnvironment": "jsdom",
+  "moduleDirectories": [
+    "src",
+    "node_modules"
+  ],
+  "roots": [
+    ".",
+    "src"
+  ],
+  "transform": {
+    "^.+\\.jsx?$": "babel-jest"
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!@oneblink/apps)"
+  ]
 }
