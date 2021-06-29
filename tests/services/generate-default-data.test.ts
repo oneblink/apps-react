@@ -130,6 +130,24 @@ describe('generateDefaultData()', () => {
       })
     })
 
+    test('it should not set default data if pre-fill has property', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: 'defaultValue',
+          },
+        ],
+        {
+          text: undefined,
+        },
+      )
+
+      expect(result).toEqual({
+        text: undefined,
+      })
+    })
+
     test('it should set valid pre-fill data over default value', () => {
       const result = generateDefaultData(
         [

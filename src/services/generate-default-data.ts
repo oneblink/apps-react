@@ -351,11 +351,7 @@ export default function generateDefaultData(
   preFillData: FormSubmissionModel,
 ): FormSubmissionModel {
   return elements.reduce<FormSubmissionModel>((m, el) => {
-    if (
-      el.type !== 'page' &&
-      el.type !== 'section' &&
-      m[el.name] !== undefined
-    ) {
+    if (el.type !== 'page' && el.type !== 'section' && el.name in m) {
       m[el.name] = parsePreFillData(el, m[el.name])
       return m
     }
