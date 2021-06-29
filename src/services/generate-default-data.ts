@@ -263,7 +263,7 @@ function parsePreFillData(
       return parseNumberValue(value)
     }
     case 'boolean': {
-      return !!value
+      return typeof value === 'boolean' ? value : false
     }
     case 'summary':
     case 'captcha':
