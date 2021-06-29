@@ -461,23 +461,33 @@ describe('generateDefaultData()', () => {
       isElementLookup: false,
     }
 
-    test('it should set truthy pre-fill data to a boolean', () => {
+    test('it should set truthy pre-fill data to a `false` boolean', () => {
       const result = generateDefaultData([element], {
         boolean: 'truthy',
       })
 
       expect(result).toEqual({
-        boolean: true,
+        boolean: false,
       })
     })
 
-    test('it should set falsey pre-fill data to a boolean', () => {
+    test('it should set falsey pre-fill data to a `false` boolean', () => {
       const result = generateDefaultData([element], {
         boolean: 0,
       })
 
       expect(result).toEqual({
         boolean: false,
+      })
+    })
+
+    test('it should set `true` pre-fill data to a `true` boolean', () => {
+      const result = generateDefaultData([element], {
+        boolean: true,
+      })
+
+      expect(result).toEqual({
+        boolean: true,
       })
     })
 
