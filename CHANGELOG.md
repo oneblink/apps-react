@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2021-06-30
+
 ### FAQ
 
 - [How do I implement auto saving with a controlled form?](./docs/faq/how-to-implement-auto-save.md)
@@ -21,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - conditional logic referencing elements inside nested sections
+
+### Dependencies
+
+- update [bulma](https://www.npmjs.com/package/bulma) to [0.9.3](https://github.com/jgthms/bulma/releases/tag/0.9.3) (from [0.9.2](https://github.com/jgthms/bulma/releases/tag/0.9.2))
+
+- update [query-string](https://www.npmjs.com/package/query-string) to [7.0.1](https://github.com/sindresorhus/query-string/releases/tag/v7.0.1) (from [7.0.0](https://github.com/sindresorhus/query-string/releases/tag/v7.0.0))
 
 ## [0.4.3] - 2021-06-26
 
