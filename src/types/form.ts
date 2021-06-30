@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 type FormElementKey = string
-type RepeatableSetEntryIndex = string
+export type RepeatableSetEntryIndex = string
 
 export type FormSubmissionModel = Record<FormElementKey, unknown>
 
