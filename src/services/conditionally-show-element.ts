@@ -57,8 +57,7 @@ const handlePredicate = (
       return !predicate.hasValue === !model[predicateElement.name]
     }
     case 'NUMERIC': {
-      // @ts-expect-error ???
-      const lhs = Number.parseFloat(model[predicateElement.name])
+      const lhs = Number.parseFloat(model[predicateElement.name] as string)
       const rhs =
         typeof predicate.value === 'string'
           ? Number.parseFloat(predicate.value)
@@ -71,8 +70,7 @@ const handlePredicate = (
       return operatorFn(lhs, rhs)
     }
     case 'BETWEEN': {
-      // @ts-expect-error ???
-      const value = Number.parseFloat(model[predicateElement.name])
+      const value = Number.parseFloat(model[predicateElement.name] as string)
       if (Number.isNaN(value)) {
         return false
       }

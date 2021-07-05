@@ -409,12 +409,12 @@ export default function generateDefaultData(
         ) {
           const minSetEntries = el.minSetEntries
           // add min number of entries by default
-          m[el.name] = []
+          const entries = []
           for (let index = 0; index < minSetEntries; index++) {
             const entry = generateDefaultData(el.elements, {})
-            // @ts-expect-error ???
-            m[el.name].push(entry)
+            entries.push(entry)
           }
+          m[el.name] = entries
         }
         break
       }

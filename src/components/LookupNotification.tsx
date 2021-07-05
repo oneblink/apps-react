@@ -59,8 +59,11 @@ function LookupNotificationComponent({
     ) => {
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
-          // @ts-expect-error ???
-          injectPagesAfter(element, elementLookupResult, dataLookupResult)
+          injectPagesAfter(
+            element,
+            elementLookupResult as FormTypes.PageElement[],
+            dataLookupResult,
+          )
           return
         }
       }
