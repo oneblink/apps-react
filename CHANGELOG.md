@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- validation on nested forms not trigging until form has a value in submission
+
 ## [0.4.4] - 2021-06-30
 
 ### FAQ

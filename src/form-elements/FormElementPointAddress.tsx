@@ -54,8 +54,7 @@ function FormElementPointAddress({
       if (element.addressTypeFilter) {
         let addressType: AddressType = 'all'
         if (element.addressTypeFilter.length === 1) {
-          // @ts-expect-error It's OK sweet typescript, We screwed up and stored the type as an array of strings instead of a single enum string
-          addressType = element.addressTypeFilter[0]
+          addressType = element.addressTypeFilter[0] as AddressType
         }
         params.addressType = addressType
       }

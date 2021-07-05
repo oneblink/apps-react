@@ -67,8 +67,7 @@ validate.validators.nestedElements = function (
   value: FormSubmissionModel | undefined,
   schema: ValidateJSSchema,
 ) {
-  if (!value || typeof value !== 'object') return
-  const errors = validateSingleMessageError(value, schema)
+  const errors = validateSingleMessageError(value || {}, schema)
   if (!errors) {
     return
   }

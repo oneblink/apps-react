@@ -70,8 +70,7 @@ function FormElementSelect({
                     id={id}
                     name={element.name}
                     className="cypress-select-single-control ob-input ob-select__single"
-                    // @ts-expect-error ???
-                    value={value || ''}
+                    value={typeof value === 'string' ? value : ''}
                     onChange={(e) =>
                       onChange(element, e.target.value || undefined)
                     }
@@ -96,8 +95,7 @@ function FormElementSelect({
                 id={id}
                 name={element.name}
                 className="cypress-select-multiple-control ob-input ob-select__multi"
-                // @ts-expect-error ???
-                value={value || []}
+                value={Array.isArray(value) ? value : []}
                 onChange={(e) => {
                   const vals = []
                   for (let i = 0; i < e.target.selectedOptions.length; i++) {

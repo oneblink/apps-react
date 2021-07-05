@@ -58,8 +58,7 @@ export default function useLookups(
                 pageElement: FormTypes.FormElement,
                 index: number,
               ) => {
-                // Sorry typescript, we need to add a property you don't approve of :(
-                // @ts-expect-error ???
+                // @ts-expect-error Sorry typescript, we need to add a property you don't approve of :(
                 if (pageElement.injectedByElementId !== element.id) {
                   partialPageElements.push(pageElement)
                 }
