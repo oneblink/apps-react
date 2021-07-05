@@ -1,15 +1,13 @@
-import { FormTypes, ConditionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
+import { conditionalLogicService } from '@oneblink/sdk-core'
 
 import conditionallyShowElement, {
-  handleOptionsPredicate,
   FormElementsCtrl,
 } from '../services/conditionally-show-element'
 import { FormSubmissionModel } from '../types/form'
 
 const handleAttributePredicate = (
-  predicate:
-    | ConditionTypes.ConditionalPredicate
-    | FormTypes.ChoiceElementOptionAttribute,
+  predicate: FormTypes.ChoiceElementOptionAttribute,
   model: FormSubmissionModel,
   predicateElement: FormTypes.FormElementWithOptions,
 ) => {
@@ -23,21 +21,34 @@ const handleAttributePredicate = (
   ) {
     return true
   }
-  return handleOptionsPredicate(
-    // @ts-expect-error predicate is compatible with the element conditionally logic...I think (/shrug)
-    predicate,
-    model,
+
+  return conditionalLogicService.evaluateConditionalOptionsPredicate({
+    predicate: {
+      type: 'OPTIONS',
+      elementId: predicate.elementId,
+      optionIds: predicate.optionIds,
+    },
+    submission: model,
     predicateElement,
-  )
+  })
 }
 
 const conditionallyShowOptionByPredicate = (
   formElementsCtrl: FormElementsCtrl,
-  predicate:
-    | ConditionTypes.ConditionalPredicateOptions
-    | FormTypes.ChoiceElementOptionAttribute,
+  predicate: FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
+  // Validate the predicate data, if it is invalid,
+  // we will always show the field
+  if (
+    !predicate ||
+    !predicate.elementId ||
+    !predicate.optionIds ||
+    !predicate.optionIds.length
+  ) {
+    return true
+  }
+
   const predicateElement = formElementsCtrl.flattenedElements.find(
     (element) => {
       return element.id === predicate.elementId
@@ -104,9 +115,7 @@ const conditionallyShowOptionByPredicate = (
 
 const isAttributeFilterValid = (
   formElementsCtrl: FormElementsCtrl,
-  predicate:
-    | ConditionTypes.ConditionalPredicate
-    | FormTypes.ChoiceElementOptionAttribute,
+  predicate: FormTypes.ChoiceElementOptionAttribute,
   elementsEvaluated: string[],
 ): boolean => {
   const predicateElement = formElementsCtrl.flattenedElements.find(
@@ -186,29 +195,6 @@ export default function conditionallyShowOption(
     optionsEvaluated.push(optionToEvaluate.id)
   }
 
-  const predicateFunction = (
-    predicate:
-      | ConditionTypes.ConditionalPredicateOptions
-      | FormTypes.ChoiceElementOptionAttribute,
-  ) => {
-    // Validate the predicate data, if it is invalid,
-    // we will always show the field
-    if (
-      !predicate ||
-      !predicate.elementId ||
-      !predicate.optionIds ||
-      !predicate.optionIds.length
-    ) {
-      return true
-    }
-
-    return conditionallyShowOptionByPredicate(
-      formElementsCtrl,
-      predicate,
-      optionsEvaluated,
-    )
-  }
-
   const validPredicates = (optionToEvaluate.attributes || []).filter(
     (predicate) => {
       return isAttributeFilterValid(
@@ -220,5 +206,11 @@ export default function conditionallyShowOption(
   )
 
   if (!validPredicates.length) return true
-  return validPredicates.some(predicateFunction)
+  return validPredicates.some((predicate) =>
+    conditionallyShowOptionByPredicate(
+      formElementsCtrl,
+      predicate,
+      optionsEvaluated,
+    ),
+  )
 }

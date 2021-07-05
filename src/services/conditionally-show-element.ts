@@ -1,105 +1,11 @@
 import { FormTypes, ConditionTypes } from '@oneblink/types'
+import { conditionalLogicService } from '@oneblink/sdk-core'
 import { FormSubmissionModel } from '../types/form'
-
-const fnMap = {
-  '>': (lhs: number, rhs: number) => lhs > rhs,
-  '>=': (lhs: number, rhs: number) => lhs >= rhs,
-  '===': (lhs: number, rhs: number) => lhs === rhs,
-  '!==': (lhs: number, rhs: number) => lhs !== rhs,
-  '<=': (lhs: number, rhs: number) => lhs <= rhs,
-  '<': (lhs: number, rhs: number) => lhs < rhs,
-}
 
 export type FormElementsCtrl = {
   model: FormSubmissionModel
   flattenedElements: import('@oneblink/types').FormTypes.FormElement[]
   parentFormElementsCtrl?: FormElementsCtrl
-}
-
-export const handleOptionsPredicate = (
-  predicate: ConditionTypes.ConditionalPredicateOptions,
-  model: FormSubmissionModel,
-  predicateElement: FormTypes.FormElementWithOptions,
-) => {
-  return predicate.optionIds.some((optionId) => {
-    const option = predicateElement.options.find((o) => o.id === optionId)
-    if (option) {
-      const value = model[predicateElement.name]
-      if (Array.isArray(value)) {
-        return value.some((modelValue) => {
-          return modelValue === option.value
-        })
-      } else if (predicateElement.type === 'compliance' && value) {
-        return option.value === (value as { value: unknown }).value
-      } else {
-        return option.value === value
-      }
-    } else {
-      return false
-    }
-  })
-}
-
-const handlePredicate = (
-  predicate: ConditionTypes.ConditionalPredicate,
-  model: FormSubmissionModel,
-  predicateElement: FormTypes.FormElement,
-) => {
-  if (
-    !predicateElement ||
-    predicateElement.type === 'page' ||
-    predicateElement.type === 'section'
-  ) {
-    return false
-  }
-  switch (predicate.type) {
-    case 'VALUE': {
-      return !predicate.hasValue === !model[predicateElement.name]
-    }
-    case 'NUMERIC': {
-      const lhs = Number.parseFloat(model[predicateElement.name] as string)
-      const rhs =
-        typeof predicate.value === 'string'
-          ? Number.parseFloat(predicate.value)
-          : predicate.value
-
-      // if either of the values is not a number or the operator fn doesn't exist, hide the control
-      const operatorFn = fnMap[predicate.operator]
-      if (!operatorFn || Number.isNaN(lhs) || Number.isNaN(rhs)) return false
-
-      return operatorFn(lhs, rhs)
-    }
-    case 'BETWEEN': {
-      const value = Number.parseFloat(model[predicateElement.name] as string)
-      if (Number.isNaN(value)) {
-        return false
-      }
-
-      return value >= predicate.min && value <= predicate.max
-    }
-    case 'OPTIONS':
-    default: {
-      if (
-        predicateElement.type !== 'select' &&
-        predicateElement.type !== 'autocomplete' &&
-        predicateElement.type !== 'radio' &&
-        predicateElement.type !== 'checkboxes' &&
-        predicateElement.type !== 'compliance'
-      ) {
-        return false
-      }
-
-      // If the predicate element does not have any options to evaluate,
-      // we will show the element.
-      // Unless the predicate element is a has dynamic options and
-      // options have not been fetched yet.
-      if (!Array.isArray(predicateElement.options)) {
-        return predicateElement.optionsType !== 'DYNAMIC'
-      } else {
-        return handleOptionsPredicate(predicate, model, predicateElement)
-      }
-    }
-  }
 }
 
 const getParentFormElements = (
@@ -175,7 +81,12 @@ const conditionallyShowByPredicate = (
       formElementsCtrl,
       predicateElement,
       elementsEvaluated,
-    ) && handlePredicate(predicate, formElementsCtrl.model, predicateElement)
+    ) &&
+    conditionalLogicService.evaluateConditionalPredicate({
+      predicate,
+      submission: formElementsCtrl.model,
+      predicateElement,
+    })
   )
 }
 
@@ -220,20 +131,6 @@ export default function conditionallyShowElement(
   const predicateFunction = (
     predicate: ConditionTypes.ConditionalPredicate,
   ) => {
-    // Validate the predicate data, if it is invalid,
-    // we will always show the field
-    if (
-      !predicate ||
-      !predicate.elementId ||
-      (predicate.type === 'OPTIONS' &&
-        (!Array.isArray(predicate.optionIds) || !predicate.optionIds.length)) ||
-      (predicate.type === 'NUMERIC' &&
-        (Object.keys(fnMap).indexOf(predicate.operator) === -1 ||
-          !Number.isFinite(predicate.value)))
-    ) {
-      return true
-    }
-
     // Spread the array of elements evaluated so that each predicate can
     // evaluate the tree without causing false positives for infinite
     // loop conditional logic
