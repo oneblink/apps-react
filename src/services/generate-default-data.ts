@@ -259,17 +259,12 @@ function parsePreFillData(
     case 'checkboxes': {
       return parseStringArrayValue(value)
     }
+    case 'calculation':
     case 'number': {
       return parseNumberValue(value)
     }
     case 'boolean': {
       return typeof value === 'boolean' ? value : false
-    }
-    case 'summary':
-    case 'captcha':
-    case 'calculation':
-    case 'heading': {
-      return
     }
     case 'pointAddress':
     case 'geoscapeAddress': {
@@ -301,11 +296,7 @@ function parsePreFillData(
       })
     }
     case 'form': {
-      const elements = element.elements
-      if (Array.isArray(elements)) {
-        return parseFormSubmissionModel(elements, value)
-      }
-      break
+      return parseFormSubmissionModel(element.elements || [], value)
     }
     case 'repeatableSet': {
       if (Array.isArray(element.elements) && Array.isArray(value)) {
@@ -334,7 +325,9 @@ function parsePreFillData(
     }
     case 'image':
     case 'html':
-    case 'file':
+    case 'summary':
+    case 'captcha':
+    case 'heading':
     case 'infoPage':
     case 'page':
     case 'section': {

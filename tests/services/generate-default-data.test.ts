@@ -74,7 +74,7 @@ describe('generateDefaultData()', () => {
         html: 'invalid',
         image: 'invalid',
         infoPage: 'invalid',
-        calculation: 'invalid',
+        calculation: 2,
         captcha: 'invalid',
         summary: 'invalid',
       },
@@ -85,7 +85,7 @@ describe('generateDefaultData()', () => {
       html: undefined,
       image: undefined,
       infoPage: undefined,
-      calculation: undefined,
+      calculation: 2,
       captcha: undefined,
       summary: undefined,
     })
