@@ -62,12 +62,10 @@ function cleanElementValue(
           formElementsConditionallyShown?.[element.name]
         if (
           !formElementsConditionallyShown?.[element.name]?.isHidden &&
-          Array.isArray(nestedElements) &&
-          nestedElements.length &&
-          nestedModel
+          Array.isArray(nestedElements)
         ) {
           model[element.name] = cleanElementValue(
-            nestedModel,
+            nestedModel || {},
             nestedElements,
             nestedFormElementConditionallyShown?.type === 'formElements'
               ? nestedFormElementConditionallyShown.formElements
