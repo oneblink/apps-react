@@ -1,5 +1,6 @@
 import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
+import { formElementsService } from '@oneblink/sdk-core'
 import { formService, OneBlinkAppsError } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import { SetFormSubmission } from '../types/form'
@@ -43,7 +44,7 @@ export default function useDynamicOptionsLoaderState(
         )
         for (const optionsForElementId of optionsByElementId) {
           if (optionsForElementId.ok) {
-            formService.forEachFormElementWithOptions(
+            formElementsService.forEachFormElementWithOptions(
               clonedForm.elements,
               (formElement) => {
                 if (formElement.id === optionsForElementId.elementId) {

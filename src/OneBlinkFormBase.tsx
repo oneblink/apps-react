@@ -1,10 +1,14 @@
 import * as React from 'react'
-import { createMuiTheme, ThemeProvider, Tooltip } from '@material-ui/core'
+import {
+  createTheme as createMuiTheme,
+  ThemeProvider,
+  Tooltip,
+} from '@material-ui/core'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
-import { localisationService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes, FormsAppsTypes } from '@oneblink/types'
+import { localisationService, submissionService } from '@oneblink/apps'
+import { FormTypes, FormsAppsTypes } from '@oneblink/types'
 
 import Modal from './components/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
@@ -33,7 +37,7 @@ import {
 
 export type BaseProps = {
   onCancel: () => unknown
-  onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
+  onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
   disabled?: boolean
   isPreview?: boolean
   googleMapsApiKey?: string
@@ -41,7 +45,7 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   onSaveDraft?: (
-    newDraftSubmission: SubmissionTypes.NewDraftSubmission,
+    newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
 }
 
