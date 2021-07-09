@@ -107,7 +107,11 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       <hr className="ob-section__divider" />
       <Collapse
         in={!isCollapsed}
-        classes={{ container: 'ob-section__content' }}
+        classes={{
+          root: 'ob-section__content',
+          entered: 'ob-section__expanded',
+          hidden: 'ob-section__collapsed',
+        }}
       >
         <OneBlinkFormElements
           {...props}

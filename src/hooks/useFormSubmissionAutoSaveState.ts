@@ -1,7 +1,7 @@
 import * as React from 'react'
 import _throttle from 'lodash.throttle'
-import { autoSaveService, Sentry } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { autoSaveService, submissionService, Sentry } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
 import { FormSubmissionModel } from '../types/form'
 
@@ -16,10 +16,10 @@ export default function useFormSubmissionAutoSaveState({
   form: FormTypes.Form
   autoSaveKey: string
   onCancel: () => unknown
-  onSubmit: (newFormSubmission: SubmissionTypes.NewFormSubmission) => unknown
+  onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
   initialSubmission?: FormSubmissionModel
   onSaveDraft?: (
-    newDraftSubmission: SubmissionTypes.NewDraftSubmission,
+    newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
 }) {
   const [{ definition, submission }, setFormSubmission] =
@@ -78,7 +78,7 @@ export default function useFormSubmissionAutoSaveState({
 
   const handleSaveDraft = React.useMemo(() => {
     if (onSaveDraft) {
-      return (newDraftSubmission: SubmissionTypes.NewDraftSubmission) => {
+      return (newDraftSubmission: submissionService.NewDraftSubmission) => {
         cancelAutoSave()
         deleteAutoSaveSubmission()
         if (onSaveDraft) {

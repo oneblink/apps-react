@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { formService } from '@oneblink/apps'
+import { formElementsService } from '@oneblink/sdk-core'
 
 import generateDefaultData from '../services/generate-default-data'
 import { FormTypes } from '@oneblink/types'
@@ -41,7 +41,7 @@ export default function useLookups(
             currentFormSubmission.definition.elements.findIndex(
               (pageElement: FormTypes.FormElement) => {
                 if (pageElement.type === 'page') {
-                  return formService.findFormElement(
+                  return formElementsService.findFormElement(
                     pageElement.elements,
                     (el) => el.id === element.id,
                   )
