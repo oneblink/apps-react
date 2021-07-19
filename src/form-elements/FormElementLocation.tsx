@@ -27,6 +27,12 @@ type Coords = {
   zoom: number
 }
 
+export const stringifyLocation = (location: Coords | undefined) => {
+  if (location) {
+    return `${location.latitude},${location.longitude}`
+  }
+}
+
 function parseLocationValue(value: unknown): Coords | undefined {
   if (!value || typeof value !== 'object') {
     return
