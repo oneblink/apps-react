@@ -27,11 +27,11 @@ export default function useConditionalLogic(
       try {
         return conditionallyShowElement(formElementsCtrl, element, [])
       } catch (error) {
-        Sentry.captureException(error)
         console.warn(
           'Error while checking if element is conditional shown',
           error,
         )
+        Sentry.captureException(error)
         setConditionalLogicError(error)
         return false
       }
