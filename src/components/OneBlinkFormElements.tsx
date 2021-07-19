@@ -27,7 +27,9 @@ import FormElementSection from '../form-elements/FormElementSection'
 import FormElementCamera from '../form-elements/FormElementCamera'
 import FormElementSummary from '../form-elements/FormElementSummary'
 import FormElementCaptcha from '../form-elements/FormElementCaptcha'
-import FormElementLocation from '../form-elements/FormElementLocation'
+import FormElementLocation, {
+  stringifyLocation,
+} from '../form-elements/FormElementLocation'
 import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
 import FormElementCompliance from '../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../form-elements/FormElementPointAddress'
@@ -573,6 +575,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       return (
         <LookupNotification
           autoLookupValue={value}
+          stringifyAutoLookupValue={
+            stringifyLocation as React.ComponentProps<
+              typeof LookupNotification
+            >['stringifyAutoLookupValue']
+          }
           element={element}
           onLookup={onLookup}
         >

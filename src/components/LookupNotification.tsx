@@ -20,6 +20,7 @@ import { FormElementLookupHandler, FormSubmissionModel } from '../types/form'
 
 type Props = {
   autoLookupValue?: unknown
+  stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
   element: FormTypes.LookupFormElement
   onLookup: FormElementLookupHandler
   children: React.ReactNode
@@ -27,6 +28,7 @@ type Props = {
 
 function LookupNotificationComponent({
   autoLookupValue,
+  stringifyAutoLookupValue,
   element,
   onLookup,
   children,
@@ -183,7 +185,7 @@ function LookupNotificationComponent({
         }
 
         // Cancelling will throw an error.
-        if (error.name === 'AbortError') {
+        if (abortController.signal.aborted) {
           console.log('Fetch aborted')
           setIsLookingUp(false)
           return
@@ -217,7 +219,13 @@ function LookupNotificationComponent({
   )
 
   // For certain elements, do not add click event
-  // instead, watch model for changes and trigger lookup function
+  // instead, watch model for changes and trigger lookup function.
+  // We add this stringify function here to allow the value to be
+  // an object which may have a reference change, but the values
+  // have not changed. e.g. the 'location' element's value
+  const autoLookupValueString = stringifyAutoLookupValue
+    ? stringifyAutoLookupValue(autoLookupValue)
+    : autoLookupValue
   React.useEffect(() => {
     if (autoLookupValue !== undefined) {
       triggerLookup(autoLookupValue)
@@ -227,7 +235,7 @@ function LookupNotificationComponent({
     // element. Checking if "value" has changed is enough
     // to trigger a lookup when the correct dependencies change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLookupValue])
+  }, [autoLookupValueString])
 
   const contextValue = React.useMemo(
     () => ({
