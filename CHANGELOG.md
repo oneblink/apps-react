@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.7] - 2021-07-19
+
 ### Fixed
 
 - location elements with lookups looping due to reference changes
+
+### Dependencies
+
+- update [@material-ui/core](https://www.npmjs.com/package/@material-ui/core) to [4.12.1](https://github.com/mui-org/material-ui/releases/tag/v4.12.1) (from [4.11.4](https://github.com/mui-org/material-ui/releases/tag/v4.11.4))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.1.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [0.4.6] - 2021-07-07
 
