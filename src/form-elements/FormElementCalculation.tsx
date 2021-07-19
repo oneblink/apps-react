@@ -205,12 +205,12 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         hasError: false,
       }
     } catch (e) {
-      Sentry.captureException(e)
       console.warn(
         'Error while setting up parsing for calculation element',
         element,
         e,
       )
+      Sentry.captureException(e)
       return {
         calculation: null,
         hasError: true,

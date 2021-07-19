@@ -197,9 +197,9 @@ function AutocompleteDropdown<T>({
         newOptions = await onSearch(label, abortController.signal)
       } catch (error) {
         // Cancelling will throw an error.
-        if (error.name !== 'AbortError') {
-          Sentry.captureException(error)
+        if (!abortController.signal.aborted) {
           console.warn('Error while fetching autocomplete options', error)
+          Sentry.captureException(error)
           newError = error
         }
       }

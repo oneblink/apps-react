@@ -79,8 +79,8 @@ async function downloadFile(data: Blob | string, fileName: string) {
 
 const handleError = (error?: Error) => {
   if (error) {
-    Sentry.captureException(error)
     console.warn('An error occurred attempting to download file:', error)
+    Sentry.captureException(error)
     bulmaToast.toast({
       message:
         'Sorry, there was an issue downloading your file, please try again.',

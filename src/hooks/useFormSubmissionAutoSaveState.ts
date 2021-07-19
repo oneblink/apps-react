@@ -43,8 +43,8 @@ export default function useFormSubmissionAutoSaveState({
         autoSaveService
           .upsertAutoSaveData(definition.id, autoSaveKey, model)
           .catch((error) => {
-            Sentry.captureException(error)
             console.warn('Error while auto saving', error)
+            Sentry.captureException(error)
           })
       },
       9580, // https://en.wikipedia.org/wiki/100_metres
@@ -62,8 +62,8 @@ export default function useFormSubmissionAutoSaveState({
     return autoSaveService
       .deleteAutoSaveData(definition.id, autoSaveKey)
       .catch((error) => {
-        Sentry.captureException(error)
         console.warn('Error removing auto save data: ', error)
+        Sentry.captureException(error)
       })
   }, [autoSaveKey, definition.id])
 
@@ -110,8 +110,8 @@ export default function useFormSubmissionAutoSaveState({
           })
         }
       } catch (error) {
-        Sentry.captureException(error)
         console.warn('Error loading auto save data', error)
+        Sentry.captureException(error)
         if (!ignore) {
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
