@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@blinkmobile/geolocation": "^2.0.3",
-    "@material-ui/core": "^4.11.4",
-    "@oneblink/sdk-core": "^0.1.0-beta.1",
+    "@material-ui/core": "^4.12.1",
+    "@oneblink/sdk-core": "^0.1.0-beta.3",
     "@react-google-maps/api": "^2.2.0",
     "abort-controller": "^3.0.0",
     "blueimp-load-image": "^5.14.0",
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.5",
-    "@oneblink/apps": "^0.9.3",
+    "@oneblink/apps": "^0.10.0-beta.2",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.2",
@@ -87,7 +87,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.9.3",
+    "@oneblink/apps": "^0.10.0-beta.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0"

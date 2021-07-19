@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { formService } from '@oneblink/apps'
+import { formElementsService } from '@oneblink/sdk-core'
 import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
 import FormElementOptions from '../components/FormElementOptions'
@@ -144,7 +144,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
       }
 
       const data = await response.json()
-      return formService.parseFormElementOptionsSet(data)
+      return formElementsService.parseFormElementOptionsSet(data)
     },
     [searchUrl],
   )
