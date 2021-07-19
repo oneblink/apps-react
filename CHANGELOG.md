@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- location elements with lookups looping due to reference changes
+
 ## [0.4.6] - 2021-07-07
 
 ### Fixed
