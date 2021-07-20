@@ -4,12 +4,12 @@ import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
 import { FormSubmissionModel } from './types/form'
 
-function recursivelySetReadOnly<
-  T extends { elements?: FormTypes.FormElement[] },
->(parent: T): T {
-  const newElements = parent?.elements
-    ?.filter((element) => element.type !== 'captcha')
-    ?.map((element) => {
+function recursivelySetReadOnly(
+  elements: FormTypes.FormElement[],
+): FormTypes.FormElement[] {
+  const newElements = elements
+    .filter((element) => element.type !== 'captcha')
+    .map((element) => {
       if (
         (element.type === 'form' ||
           element.type === 'section' ||
@@ -19,7 +19,7 @@ function recursivelySetReadOnly<
       ) {
         return {
           ...element,
-          elements: recursivelySetReadOnly(element),
+          elements: recursivelySetReadOnly(element.elements) || [],
         }
       }
 
@@ -44,10 +44,7 @@ function recursivelySetReadOnly<
       return element
     })
 
-  return {
-    ...parent,
-    elements: newElements,
-  }
+  return newElements
 }
 
 type Props = {
@@ -61,7 +58,10 @@ function OneBlinkReadOnlyForm({ form, initialSubmission, ...rest }: Props) {
     useFormSubmissionState(form, initialSubmission)
 
   const readOnlyDefinition = React.useMemo(() => {
-    return recursivelySetReadOnly(definition)
+    return {
+      ...definition,
+      elements: recursivelySetReadOnly(definition.elements || []),
+    }
   }, [definition])
 
   const noop = React.useCallback(() => {}, [])
