@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - logging with Sentry errors
+- `OneBlinkReadOnlyForm` component crashing when trying to render a form with nested elements
 
 ## [0.4.7] - 2021-07-19
 
