@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.8] - 2021-07-20
+
 ### Fixed
 
 - logging with Sentry errors
 - `OneBlinkReadOnlyForm` component crashing when trying to render a form with nested elements
+
+### Dependencies
+
+- update [@material-ui/core](https://www.npmjs.com/package/@material-ui/core) to [4.12.2](https://github.com/mui-org/material-ui/releases/tag/v4.12.2) (from [4.12.1](https://github.com/mui-org/material-ui/releases/tag/v4.12.1))
+
+- update [color](https://www.npmjs.com/package/color) to [3.2.1](https://github.com/Qix-/color/releases/tag/3.2.1) (from [3.1.3](https://github.com/Qix-/color/releases/tag/3.1.3))
 
 ## [0.4.7] - 2021-07-19
 
