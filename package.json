@@ -35,7 +35,8 @@
     "sanitize-html": "^2.4.0",
     "signature_pad": "^3.0.0-beta.4",
     "uuid": "^8.3.2",
-    "validate.js": "^0.13.1"
+    "validate.js": "^0.13.1",
+    "zod": "^3.7.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.5",

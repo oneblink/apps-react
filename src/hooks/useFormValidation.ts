@@ -49,11 +49,13 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
       submission: FormSubmissionModel,
       formElementsConditionallyShown: FormElementsConditionallyShown,
     ) => {
-      return validateSubmission(
+      const v = validateSubmission(
         validationSchema,
         submission,
         formElementsConditionallyShown,
       )
+      console.log('v', JSON.stringify(v, null, 2))
+      return v
     },
     [validationSchema],
   )
