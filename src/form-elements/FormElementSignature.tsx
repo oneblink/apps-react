@@ -16,6 +16,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import { urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
+import useIsPageVisible from '../hooks/useIsPageVisible'
 
 type Props = {
   id: string
@@ -35,6 +36,7 @@ function FormElementSignature({
   displayValidationMessage,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
+  const isPageVisible = useIsPageVisible()
 
   const handleChange = React.useCallback(
     (formElement, newValue) => {
@@ -59,9 +61,9 @@ function FormElementSignature({
               value={value}
               onChange={handleChange}
             />
-          ) : (
+          ) : isPageVisible ? (
             <SignatureDrawing element={element} onChange={handleChange} />
-          )}
+          ) : null}
         </div>
 
         {(isDirty || displayValidationMessage) && !!validationMessage && (

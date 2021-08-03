@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - date only formatting
+- `draw` form element drawing offset on multi page forms
 
 ## [0.4.8] - 2021-07-20
 

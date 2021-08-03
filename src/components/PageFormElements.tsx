@@ -11,6 +11,7 @@ import {
   FormSubmissionModel,
   SetFormSubmission,
 } from '../types/form'
+import { IsPageVisibleProvider } from '../hooks/useIsPageVisible'
 
 export type Props = {
   formId: number
@@ -78,25 +79,27 @@ function PageFormElements({
   const form = useFormDefinition()
 
   return (
-    <div
-      key={pageElement.id}
-      className={clsx('ob-page step-content is-active cypress-page', {
-        'is-invisible': !isActive,
-      })}
-    >
-      <OneBlinkFormElements
-        formId={formId}
-        model={model}
-        parentElement={form}
-        formElementsConditionallyShown={formElementsConditionallyShown}
-        formElementsValidation={formElementsValidation}
-        displayValidationMessages={displayValidationMessages}
-        elements={pageElement.elements}
-        onChange={onChange}
-        onLookup={handleLookup}
-        idPrefix=""
-      />
-    </div>
+    <IsPageVisibleProvider isPageVisible={isActive}>
+      <div
+        key={pageElement.id}
+        className={clsx('ob-page step-content is-active cypress-page', {
+          'is-invisible': !isActive,
+        })}
+      >
+        <OneBlinkFormElements
+          formId={formId}
+          model={model}
+          parentElement={form}
+          formElementsConditionallyShown={formElementsConditionallyShown}
+          formElementsValidation={formElementsValidation}
+          displayValidationMessages={displayValidationMessages}
+          elements={pageElement.elements}
+          onChange={onChange}
+          onLookup={handleLookup}
+          idPrefix=""
+        />
+      </div>
+    </IsPageVisibleProvider>
   )
 }
 
