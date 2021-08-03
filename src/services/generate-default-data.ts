@@ -1,4 +1,5 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { localisationService } from '@oneblink/apps'
 import { FilesElementFile } from '../form-elements/FormElementFiles/legacy/FormElementFiles'
 import { Attachment } from '../types/attachments'
 import { FormSubmissionModel } from '../types/form'
@@ -126,11 +127,30 @@ export function parseDateValue({
     return
   }
 
-  const isoDate = date.toISOString()
   if (dateOnly) {
-    return isoDate.split('T')[0]
+    const { year, month, day } = new Intl.DateTimeFormat(
+      localisationService.locale,
+      {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      },
+    )
+      .formatToParts(date)
+      .reduce(
+        (memo, { type, value }) => ({
+          ...memo,
+          [type]: value,
+        }),
+        {
+          year: '',
+          month: '',
+          day: '',
+        },
+      )
+    return `${year}-${month}-${day}`
   } else {
-    return isoDate
+    return date.toISOString()
   }
 }
 
