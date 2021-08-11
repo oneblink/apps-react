@@ -34,7 +34,6 @@ function cleanElementValue(
         const token = submission[element.name]
         if (typeof token === 'string') {
           captchaTokens.push(token)
-          model[element.name] = token
         }
         break
       }
