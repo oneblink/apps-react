@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.11] - 2021-08-12
+
 ### Fixed
 
 - reCAPTCHA token being included in submission
