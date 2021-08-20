@@ -89,9 +89,11 @@ function parseFiles(
 const generateDate = ({
   daysOffset,
   value,
+  dateOnly,
 }: {
   daysOffset: number | undefined
   value: string
+  dateOnly: boolean
 }): Date | undefined => {
   if (value === 'NOW') {
     const date = new Date()
@@ -104,7 +106,12 @@ const generateDate = ({
   } else {
     const timestamp = Date.parse(value)
     if (!Number.isNaN(timestamp)) {
-      return new Date(timestamp)
+      const date = new Date(timestamp)
+      if (dateOnly) {
+        const offset = date.getTimezoneOffset()
+        return new Date(date.getTime() + offset * 60000)
+      }
+      return date
     }
   }
 }
@@ -122,7 +129,7 @@ export function parseDateValue({
     return
   }
 
-  const date = generateDate({ daysOffset, value })
+  const date = generateDate({ daysOffset, value, dateOnly })
   if (!date) {
     return
   }
