@@ -32,7 +32,7 @@ export default function useConditionalLogic(
           error,
         )
         Sentry.captureException(error)
-        setConditionalLogicError(error)
+        setConditionalLogicError(error as Error)
         return false
       }
     },
@@ -49,7 +49,7 @@ export default function useConditionalLogic(
         return conditionallyShowOption(formElementsCtrl, element, option, [])
       } catch (error) {
         Sentry.captureException(error)
-        setConditionalLogicError(error)
+        setConditionalLogicError(error as Error)
         return false
       }
     },

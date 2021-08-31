@@ -414,7 +414,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         }
         console.warn('Error while attempting to open camera', error)
         Sentry.captureException(error)
-        switch (error.name) {
+        switch ((error as Error).name) {
           case 'NotSupportedError': {
             setError(
               new Error(

@@ -89,7 +89,7 @@ export default function useAttachment(
         onChange(newAttachment._id, {
           ...newAttachment,
           type: 'ERROR',
-          errorMessage: error.message,
+          errorMessage: (error as Error).message,
         })
       }
     }
@@ -188,7 +188,7 @@ export default function useAttachment(
         }
         console.warn('Error loading file:', error)
         setImageUrlState({
-          loadImageUrlError: error,
+          loadImageUrlError: error as Error,
         })
       }
     }
