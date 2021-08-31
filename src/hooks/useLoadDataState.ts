@@ -38,7 +38,7 @@ export default function useLoadDataState<T>(
       if (isMounted.current) {
         setState({
           status: 'ERROR',
-          error: err,
+          error: err as Error,
         })
       }
     }

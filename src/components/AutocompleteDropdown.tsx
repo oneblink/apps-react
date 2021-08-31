@@ -200,7 +200,7 @@ function AutocompleteDropdown<T>({
         if (!abortController.signal.aborted) {
           console.warn('Error while fetching autocomplete options', error)
           Sentry.captureException(error)
-          newError = error
+          newError = error as Error
         }
       }
       if (!ignore) {

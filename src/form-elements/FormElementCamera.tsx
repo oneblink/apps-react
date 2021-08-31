@@ -124,7 +124,7 @@ function FormElementCamera({
       } catch (error) {
         setState({
           isLoading: false,
-          cameraError: error,
+          cameraError: error as Error,
         })
       }
     },
@@ -254,7 +254,7 @@ function FormElementCamera({
               })
           } catch (error) {
             setState({
-              cameraError: error,
+              cameraError: error as Error,
               isLoading: false,
             })
           }

@@ -76,7 +76,7 @@ function FormElementGeoscapeAddress({
         onChange(element, result)
       } catch (newError) {
         if (isMounted.current) {
-          setError(newError)
+          setError(newError as Error)
         }
       }
       if (isMounted.current) {

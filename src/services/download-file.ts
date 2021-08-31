@@ -96,7 +96,7 @@ export async function downloadFileLegacy(dataURI: string, fileName: string) {
   try {
     return await downloadFile(dataURI, fileName)
   } catch (error) {
-    handleError(error)
+    handleError(error as Error)
   }
 }
 
@@ -111,6 +111,6 @@ export default async function downloadAttachment(attachment: Attachment) {
     const blob = await urlToBlobAsync(attachment.url, attachment.isPrivate)
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
-    handleError(error)
+    handleError(error as Error)
   }
 }

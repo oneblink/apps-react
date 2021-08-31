@@ -55,7 +55,7 @@ function FormElementCivicaNameRecord({
         if (!abortController.signal.aborted) {
           setState({
             isLoading: false,
-            loadError: error,
+            loadError: error as Error,
           })
         }
       }

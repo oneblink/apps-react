@@ -137,7 +137,7 @@ export default function useLogin({
           isResettingTemporaryPassword: false,
           isLoggingIn: false,
           resetTemporaryPasswordCallback: null,
-          loginError: error,
+          loginError: error as Error,
         })
       }
     }
@@ -184,7 +184,7 @@ export default function useLogin({
         setLoginState((current) => ({
           ...current,
           isResettingPassword: false,
-          loginError: error,
+          loginError: error as Error,
         }))
       }
     }
@@ -261,7 +261,7 @@ export default function useLogin({
         setForgotPasswordState({
           isSendingForgotPasswordCode: false,
           resetForgottenPasswordCallback: null,
-          forgotPasswordError: error,
+          forgotPasswordError: error as Error,
           isResettingForgottenPassword: false,
         })
       }
@@ -319,7 +319,7 @@ export default function useLogin({
         setForgotPasswordState((current) => ({
           ...current,
           isChangingPassword: false,
-          forgotPasswordError: error,
+          forgotPasswordError: error as Error,
         }))
       }
     }
