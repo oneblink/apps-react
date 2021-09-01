@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.13] - 2021-09-01
+
+### Dependencies
+
+- update [@material-ui/core](https://www.npmjs.com/package/@material-ui/core) to [4.12.3](https://github.com/mui-org/material-ui/releases/tag/v4.12.3) (from [4.12.2](https://github.com/mui-org/material-ui/releases/tag/v4.12.2))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.1.1-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [bulma-toast](https://www.npmjs.com/package/bulma-toast) to [2.4.1](https://github.com/rfoel/bulma-toast/releases/tag/v2.4.1) (from [2.3.1](https://github.com/rfoel/bulma-toast/releases/tag/v2.3.1))
+
+- update [color](https://www.npmjs.com/package/color) to [4.0.1](https://github.com/Qix-/color/releases/tag/4.0.1) (from [3.2.1](https://github.com/Qix-/color/releases/tag/3.2.1))
+
 ## [0.4.12] - 2021-08-20
 
 ### Fixed
