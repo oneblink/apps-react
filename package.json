@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "0.4.14-beta.1",
+  "version": "0.4.14-beta.2",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -18,7 +18,7 @@
     "bulma-steps": "^2.2.1",
     "bulma-toast": "^2.4.1",
     "clsx": "^1.1.1",
-    "color": "^4.0.1",
+    "color": "^3.2.1",
     "copy-to-clipboard": "^3.3.1",
     "escape-string-regexp": "^5.0.0",
     "file-saver": "^2.0.5",
