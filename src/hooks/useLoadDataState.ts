@@ -15,34 +15,41 @@ type LoadDataState<T> =
     }
 
 export default function useLoadDataState<T>(
-  onLoad: () => Promise<T>,
-): [LoadDataState<T>, () => void, React.Dispatch<React.SetStateAction<T>>] {
+  onLoad: (abortSignal?: AbortSignal) => Promise<T>,
+): [
+  LoadDataState<T>,
+  (abortSignal?: AbortSignal) => void,
+  React.Dispatch<React.SetStateAction<T>>,
+] {
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<LoadDataState<T>>({
     status: 'LOADING',
   })
 
-  const handleLoad = React.useCallback(async () => {
-    setState({
-      status: 'LOADING',
-    })
-    try {
-      const result = await onLoad()
-      if (isMounted.current) {
-        setState({
-          status: 'SUCCESS',
-          result,
-        })
+  const handleLoad = React.useCallback(
+    async (abortSignal?: AbortSignal) => {
+      setState({
+        status: 'LOADING',
+      })
+      try {
+        const result = await onLoad(abortSignal)
+        if (isMounted.current && !abortSignal?.aborted) {
+          setState({
+            status: 'SUCCESS',
+            result,
+          })
+        }
+      } catch (err) {
+        if (isMounted.current && !abortSignal?.aborted) {
+          setState({
+            status: 'ERROR',
+            error: err as Error,
+          })
+        }
       }
-    } catch (err) {
-      if (isMounted.current) {
-        setState({
-          status: 'ERROR',
-          error: err as Error,
-        })
-      }
-    }
-  }, [isMounted, onLoad])
+    },
+    [isMounted, onLoad],
+  )
 
   const setResult: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (setter) => {
@@ -65,7 +72,11 @@ export default function useLoadDataState<T>(
   )
 
   React.useEffect(() => {
-    handleLoad()
+    const abortController = new AbortController()
+    handleLoad(abortController.signal)
+    return () => {
+      abortController.abort()
+    }
   }, [handleLoad])
 
   return [state, handleLoad, setResult]
