@@ -37,7 +37,7 @@ const fetchData = async () => {
 }
 
 const MyComponent = () => {
-  const [state, refresh] = useLoadDataState(fetchData)
+  const [state, refresh, setResult] = useLoadDataState(fetchData)
 
   switch (state.status) {
     case 'LOADING':

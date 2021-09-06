@@ -16,7 +16,7 @@ type LoadDataState<T> =
 
 export default function useLoadDataState<T>(
   onLoad: () => Promise<T>,
-): [LoadDataState<T>, () => void] {
+): [LoadDataState<T>, () => void, React.Dispatch<React.SetStateAction<T>>] {
   const isMounted = useIsMounted()
   const [state, setState] = React.useState<LoadDataState<T>>({
     status: 'LOADING',
@@ -44,9 +44,29 @@ export default function useLoadDataState<T>(
     }
   }, [isMounted, onLoad])
 
+  const setResult: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
+    (setter) => {
+      setState((currentState: LoadDataState<T>) => {
+        if (currentState.status === 'SUCCESS') {
+          return {
+            ...currentState,
+            result:
+              typeof setter === 'function'
+                ? // @ts-expect-error Typescript cannot tell between a generic type (T) and a function
+                  setter(currentState.result)
+                : setter,
+          }
+        } else {
+          return currentState
+        }
+      })
+    },
+    [],
+  )
+
   React.useEffect(() => {
     handleLoad()
   }, [handleLoad])
 
-  return [state, handleLoad]
+  return [state, handleLoad, setResult]
 }
