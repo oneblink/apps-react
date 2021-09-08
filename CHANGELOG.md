@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.14] - 2021-09-08
+
 ### Added
 
 - `setResult` to result from `userLoadDataState()` hook
@@ -14,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - return type for `useNullableState()` hook
+
+### Dependencies
+
+- rollback [color](https://www.npmjs.com/package/color) to [3.2.1](https://github.com/Qix-/color/releases/tag/3.2.1) (from [4.0.1](https://github.com/Qix-/color/releases/tag/4.0.1))
 
 ## [0.4.13] - 2021-09-01
 
