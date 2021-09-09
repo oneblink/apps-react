@@ -10,6 +10,7 @@ function checkIfAttachmentsAreUploadingForFormElements(
 ): boolean {
   return formElements.some((formElement) => {
     switch (formElement.type) {
+      case 'section':
       case 'page': {
         return checkIfAttachmentsAreUploadingForFormElements(
           formElement.elements,

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- attachments in section elements not preventing submissions while uploading
+
 ## [0.4.14] - 2021-09-08
 
 ### Added
