@@ -648,7 +648,9 @@ export function checkFileNameIsValid(
   const extension = fileName.split('.').pop()
   return (
     !formElement.restrictedFileTypes ||
-    formElement.restrictedFileTypes.some((fileType) => fileType === extension)
+    formElement.restrictedFileTypes.some(
+      (fileType) => fileType.toLowerCase() === extension?.toLowerCase(),
+    )
   )
 }
 
