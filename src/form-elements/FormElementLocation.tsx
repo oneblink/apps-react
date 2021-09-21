@@ -24,7 +24,7 @@ type Props = {
 type Coords = {
   latitude: number
   longitude: number
-  zoom: number
+  zoom?: number
 }
 
 export const stringifyLocation = (location: Coords | undefined) => {
@@ -341,7 +341,7 @@ const LocationPicker = React.memo(function SummaryResult({
 }) {
   const googleMapsApiKey = useGoogleMapsApiKeyKey()
 
-  const [map, setMap] = React.useState(null)
+  const [map, setMap] = React.useState<google.maps.Map | null>(null)
 
   const center = React.useMemo(() => {
     return {
@@ -358,7 +358,6 @@ const LocationPicker = React.memo(function SummaryResult({
     onChange({
       latitude: location.latitude,
       longitude: location.longitude,
-      // @ts-expect-error ???
       zoom: map.getZoom(),
     })
   }, [location.latitude, location.longitude, map, onChange])
@@ -381,6 +380,9 @@ const LocationPicker = React.memo(function SummaryResult({
             position={center}
             draggable
             onDragEnd={(e) => {
+              if (!e.latLng) {
+                return
+              }
               const { lat, lng } = e.latLng.toJSON()
               onChange({
                 latitude: lat,

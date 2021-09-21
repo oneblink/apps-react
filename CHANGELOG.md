@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- BSB form element
+
 ## [0.4.16] - 2021-09-20
 
 ### Dependencies

@@ -4,6 +4,7 @@ import LookupNotification from '../components/LookupNotification'
 
 import FormElementBarcodeScanner from '../form-elements/FormElementBarcodeScanner'
 import FormElementEmail from '../form-elements/FormElementEmail'
+import FormElementBSB from '../form-elements/FormElementBSB'
 import FormElementText from '../form-elements/FormElementText'
 import FormElementTextarea from '../form-elements/FormElementTextarea'
 import FormElementNumber from '../form-elements/FormElementNumber'
@@ -238,6 +239,25 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementText
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'bsb': {
+      return (
+        <LookupNotification element={element} onLookup={onLookup}>
+          <FormElementBSB
+            id={id}
+            formId={formId}
+            element={element}
+            value={value}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementBSB
               >['onChange']
             }
             validationMessage={validationMessage}
