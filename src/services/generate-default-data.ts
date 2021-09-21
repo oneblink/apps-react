@@ -267,6 +267,13 @@ function parsePreFillData(
         value,
       })
     }
+    case 'bsb': {
+      const text = parseStringValue(value)
+      if (text?.match(/\d{3}-\d{3}/)) {
+        return text
+      }
+      return
+    }
     case 'text':
     case 'barcodeScanner':
     case 'email':
@@ -454,6 +461,7 @@ export default function generateDefaultData(
       case 'pointAddress':
       case 'civicaStreetName':
       case 'camera':
+      case 'bsb':
       case 'text':
       case 'barcodeScanner':
       case 'email':

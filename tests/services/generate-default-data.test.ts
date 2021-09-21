@@ -167,6 +167,82 @@ describe('generateDefaultData()', () => {
     })
   })
 
+  describe('"bsb" element type', () => {
+    const element: FormTypes.BSBElement = {
+      name: 'bsb',
+      label: 'bsb',
+      type: 'bsb',
+      required: false,
+      id: 'd1f0ee6c-2fdd-4dbf-b4df-c3b02bf41be4',
+      conditionallyShow: false,
+      requiresAllConditionallyShowPredicates: false,
+      readOnly: false,
+      isDataLookup: false,
+      isElementLookup: false,
+    }
+    test('it should remove invalid pre-fill data', () => {
+      const result = generateDefaultData([element], {
+        bsb: 1,
+      })
+
+      expect(result).toEqual({
+        bsb: undefined,
+      })
+    })
+
+    test('it should set default value', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: '123-321',
+          },
+        ],
+        {},
+      )
+
+      expect(result).toEqual({
+        bsb: '123-321',
+      })
+    })
+
+    test('it should not set default data if pre-fill has property', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: '123-321',
+          },
+        ],
+        {
+          bsb: undefined,
+        },
+      )
+
+      expect(result).toEqual({
+        bsb: undefined,
+      })
+    })
+
+    test('it should set valid pre-fill data over default value', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: 'defaultValue',
+          },
+        ],
+        {
+          bsb: '123-321',
+        },
+      )
+
+      expect(result).toEqual({
+        bsb: '123-321',
+      })
+    })
+  })
+
   describe('"textarea" element type', () => {
     const element: FormTypes.TextareaElement = {
       name: 'textarea',

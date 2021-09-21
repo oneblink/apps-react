@@ -368,6 +368,20 @@ export function generateValidationSchema(
         }
         break
       }
+      case 'bsb': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(formElement.required, 'Please enter a BSB number'),
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+          format: {
+            pattern: /\d{3}-\d{3}/,
+            message: 'Please enter a valid BSB number',
+          },
+        }
+        break
+      }
       case 'barcodeScanner': {
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
