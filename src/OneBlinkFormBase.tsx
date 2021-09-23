@@ -34,6 +34,7 @@ import {
   FormSubmissionModel,
   SetFormSubmission,
 } from './types/form'
+import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -347,6 +348,13 @@ function OneBlinkFormBase({
     [definition, isOffline],
   )
 
+  const checkBsbsCanBeSubmitted = React.useCallback(
+    (submission: FormSubmissionModel) => {
+      return !checkBsbsAreInvalid(definition, submission)
+    },
+    [definition],
+  )
+
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
@@ -372,6 +380,10 @@ function OneBlinkFormBase({
         return
       }
 
+      if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
+        return
+      }
+
       allowNavigation()
 
       onSubmit({
@@ -389,6 +401,7 @@ function OneBlinkFormBase({
       getCurrentSubmissionData,
       isReadOnly,
       onSubmit,
+      checkBsbsCanBeSubmitted,
     ],
   )
 
