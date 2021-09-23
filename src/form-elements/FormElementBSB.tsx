@@ -29,7 +29,7 @@ function FormElementBSB({
   displayValidationMessage,
 }: Props) {
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
-  const isValid = /\d{3}-\d{3}/.test(text)
+  const isValidFormat = /\d{3}-\d{3}/.test(text)
 
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [{ isLoading, errorMessage, bsbRecord }, setState] = React.useState<{
@@ -59,7 +59,7 @@ function FormElementBSB({
       return
     }
 
-    if (!isValid) {
+    if (!isValidFormat) {
       setState({
         isLoading: false,
         errorMessage: null,
@@ -97,7 +97,6 @@ function FormElementBSB({
             errorMessage: `The BSB number "${text}" does not exist`,
             bsbRecord: null,
           })
-          setText('')
         }
       }
     }
@@ -107,7 +106,7 @@ function FormElementBSB({
     return () => {
       abortController.abort()
     }
-  }, [formId, isValid, text])
+  }, [formId, isValidFormat, text])
 
   return (
     <div className="cypress-bsb-element">
