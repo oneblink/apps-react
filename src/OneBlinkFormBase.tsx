@@ -35,6 +35,7 @@ import {
   SetFormSubmission,
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
+import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -355,12 +356,36 @@ function OneBlinkFormBase({
     [definition],
   )
 
+  const checkBsbAreValidating = React.useCallback(
+    (submission: FormSubmissionModel) => {
+      if (checkIfBsbsAreValidating(definition, submission)) {
+        bulmaToast.toast({
+          message:
+            'Bsb(s) are still being validated, please wait for them to finish before trying again.',
+          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+          type: 'ob-toast is-primary cypress-still-validating-toast',
+          duration: 4000,
+          pauseOnHover: true,
+          closeOnClick: true,
+        })
+        return false
+      }
+
+      return true
+    },
+    [definition],
+  )
+
   const handleSubmit = React.useCallback(
     (event) => {
       event.preventDefault()
       if (disabled || isReadOnly) return
       setHasAttemptedSubmit(true)
 
+      const submissionData = getCurrentSubmissionData(false)
+      if (!checkBsbAreValidating(submissionData.submission)) {
+        return
+      }
       if (formElementsValidation) {
         console.log('Validation errors', formElementsValidation)
         bulmaToast.toast({
@@ -373,8 +398,6 @@ function OneBlinkFormBase({
         })
         return
       }
-
-      const submissionData = getCurrentSubmissionData(false)
 
       if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
         return
@@ -402,6 +425,7 @@ function OneBlinkFormBase({
       isReadOnly,
       onSubmit,
       checkBsbsCanBeSubmitted,
+      checkBsbAreValidating,
     ],
   )
 
@@ -413,7 +437,9 @@ function OneBlinkFormBase({
       // For drafts we don't need to save the captcha tokens,
       // they will need to prove they are not robot again
       const { submission } = getCurrentSubmissionData(false)
-
+      if (!checkBsbAreValidating(submission)) {
+        return
+      }
       if (!checkAttachmentsCanBeSubmitted(submission)) {
         return
       }
@@ -430,6 +456,7 @@ function OneBlinkFormBase({
     disabled,
     getCurrentSubmissionData,
     onSaveDraft,
+    checkBsbAreValidating,
   ])
 
   // #endregion
