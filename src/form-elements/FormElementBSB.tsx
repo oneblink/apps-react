@@ -14,7 +14,7 @@ type Props = {
   formId: number
   element: FormTypes.BSBElement
   value: unknown
-  onChange: FormElementValueChangeHandler<string>
+  onChange: FormElementValueChangeHandler<string | { isInvalid: boolean }>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
@@ -43,13 +43,7 @@ function FormElementBSB({
   })
 
   React.useEffect(() => {
-    if (text === '' && value !== undefined) {
-      onChange(element)
-    }
-  }, [element, onChange, text, value])
-
-  React.useEffect(() => {
-    if (bsbRecord && value === undefined) {
+    if (bsbRecord) {
       onChange(element, bsbRecord.bsb)
     }
   }, [bsbRecord, element, onChange, value])
@@ -92,6 +86,7 @@ function FormElementBSB({
       } catch (error) {
         console.warn('Error validating BSB number', error)
         if (!abortController.signal.aborted) {
+          onChange(element, { isInvalid: true })
           setState({
             isLoading: false,
             errorMessage: `The BSB number "${text}" does not exist`,
@@ -106,7 +101,7 @@ function FormElementBSB({
     return () => {
       abortController.abort()
     }
-  }, [formId, isValidFormat, text])
+  }, [formId, isValidFormat, text, onChange, element])
 
   return (
     <div className="cypress-bsb-element">
