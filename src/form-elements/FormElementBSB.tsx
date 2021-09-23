@@ -14,7 +14,9 @@ type Props = {
   formId: number
   element: FormTypes.BSBElement
   value: unknown
-  onChange: FormElementValueChangeHandler<string | { isInvalid: boolean }>
+  onChange: FormElementValueChangeHandler<
+    string | { isInvalid: boolean; isValidating: boolean }
+  >
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
@@ -70,6 +72,7 @@ function FormElementBSB({
 
     const abortController = new AbortController()
     const getBSBRecord = async () => {
+      onChange(element, { isValidating: true, isInvalid: false })
       try {
         const bsbRecord = await formService.getBSBRecord(
           formId,
@@ -86,7 +89,7 @@ function FormElementBSB({
       } catch (error) {
         console.warn('Error validating BSB number', error)
         if (!abortController.signal.aborted) {
-          onChange(element, { isInvalid: true })
+          onChange(element, { isInvalid: true, isValidating: false })
           setState({
             isLoading: false,
             errorMessage: `The BSB number "${text}" does not exist`,
