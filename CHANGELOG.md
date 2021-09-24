@@ -7,9 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.17] - 2021-09-24
+
 ### Added
 
 - BSB form element
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.1.3](https://github.com/oneblink/sdk-core-js/releases/tag/v0.1.3) (from [0.1.3-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.4.0 (from 2.2.0)
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.5.1](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.4.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- depend upon [react-input-mask](https://www.npmjs.com/package/react-input-mask) [2.0.4](https://github.com/sanniassin/react-input-mask/releases/tag/2.0.4)
 
 ## [0.4.16] - 2021-09-20
 
