@@ -123,7 +123,6 @@ function FormElementSummary({ element, onChange, value }: Props) {
         }
         case 'date': {
           if (typeof formElementValue !== 'string') return partialSummary
-          console.log(formElementValue)
           partialSummary.push(
             localisationService.formatDate(
               getCorrectDateFromDateOnlyString(formElementValue),

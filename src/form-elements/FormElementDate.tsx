@@ -87,7 +87,7 @@ function FormElementDate({
       getCorrectDateFromDateOnlyString(value),
     )
   }, [value])
-  console.log('copy pasta', text)
+
   return (
     <div className="cypress-date-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer
