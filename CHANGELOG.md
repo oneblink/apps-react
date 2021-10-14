@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Date display in summary element and date element clipboard copy in USA time
+
 ## [0.4.17] - 2021-09-24
 
 ### Added

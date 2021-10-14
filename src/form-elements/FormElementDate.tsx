@@ -9,6 +9,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler } from '../types/form'
+import getCorrectDateFromDateOnlyString from '../services/getCorrectDateFromDateOnlyString'
 
 type Props = {
   id: string
@@ -82,9 +83,11 @@ function FormElementDate({
     if (typeof value !== 'string') {
       return null
     }
-    return localisationService.formatDate(new Date(value))
+    return localisationService.formatDate(
+      getCorrectDateFromDateOnlyString(value),
+    )
   }, [value])
-
+  console.log('copy pasta', text)
   return (
     <div className="cypress-date-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer
