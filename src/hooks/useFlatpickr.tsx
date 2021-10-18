@@ -2,6 +2,7 @@ import * as React from 'react'
 import Flatpickr from 'flatpickr'
 import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
+import { Sentry } from '@oneblink/apps'
 
 export { FlatpickrOptions }
 
@@ -63,20 +64,35 @@ export default function useFlatpickr(
 
   // Sync value with flatpickr when value is changed outside of component
   React.useEffect(() => {
+    // try {
     const vp = vpRef.current
 
     if (vp && vp.selectedDates) {
       const selectedDate = vp.selectedDates[0]
-
+      // Sentry.captureException(
+      //   new Error(`selectedDate: ${selectedDate} value: ${value}`),
+      // )
       if (!value && selectedDate) {
-        vp.clear(false)
+        try {
+          vp.clear(false)
+        } catch (error) {
+          Sentry.captureException(new Error('Error clearing value'))
+        }
       } else if (
         value &&
         typeof value === 'string' &&
         (!selectedDate || getDateValue(selectedDate) !== value)
       ) {
-        vp.setDate(value, false)
+        try {
+          vp.setDate(value, false)
+          // vp.setDate('2021-10-07', false)
+        } catch (error) {
+          Sentry.captureException(new Error(`Error setting date: ${value}`))
+        }
       }
     }
+    // } catch (error) {
+    //   Sentry.captureException(error)
+    // }
   }, [getDateValue, value, vpRef])
 }
