@@ -86,7 +86,7 @@ function parseFiles(
   }
 }
 
-const generateDate = ({
+export const generateDate = ({
   daysOffset,
   value,
   dateOnly,

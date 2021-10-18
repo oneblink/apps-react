@@ -5,7 +5,7 @@ import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
 import { FormTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler } from '../types/form'
-import getCorrectDateFromDateOnlyString from '../services/getCorrectDateFromDateOnlyString'
+import { generateDate } from '../services/generate-default-data'
 type Props = {
   element: FormTypes.SummaryElement
   onChange: FormElementValueChangeHandler
@@ -122,12 +122,14 @@ function FormElementSummary({ element, onChange, value }: Props) {
           break
         }
         case 'date': {
-          if (typeof formElementValue !== 'string') return partialSummary
-          partialSummary.push(
-            localisationService.formatDate(
-              getCorrectDateFromDateOnlyString(formElementValue),
-            ),
-          )
+          const date = generateDate({
+            daysOffset: undefined,
+            value: formElementValue,
+            dateOnly: true,
+          })
+          if (date) {
+            partialSummary.push(localisationService.formatDate(date))
+          }
           break
         }
         case 'datetime': {
