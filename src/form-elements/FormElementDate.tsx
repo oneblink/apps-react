@@ -7,9 +7,8 @@ import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import { parseDateValue } from '../services/generate-default-data'
+import { generateDate, parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler } from '../types/form'
-import getCorrectDateFromDateOnlyString from '../services/getCorrectDateFromDateOnlyString'
 
 type Props = {
   id: string
@@ -80,12 +79,17 @@ function FormElementDate({
   )
 
   const text = React.useMemo(() => {
-    if (typeof value !== 'string') {
-      return null
+    if (typeof value === 'string') {
+      const date = generateDate({
+        daysOffset: undefined,
+        value,
+        dateOnly: true,
+      })
+      if (date) {
+        return localisationService.formatDate(date)
+      }
     }
-    return localisationService.formatDate(
-      getCorrectDateFromDateOnlyString(value),
-    )
+    return null
   }, [value])
 
   return (
