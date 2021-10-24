@@ -51,7 +51,7 @@ function LookupNotificationComponent({
     null,
   )
   const formIsReadOnly = useFormIsReadOnly()
-  const model = useFormSubmissionModel()
+  const { formSubmissionModel: model } = useFormSubmissionModel()
 
   const mergeLookupData = React.useCallback(
     (
