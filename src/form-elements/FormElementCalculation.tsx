@@ -21,7 +21,7 @@ const isUnenteredValue = (value: unknown | undefined) => {
 }
 
 function FormElementCalculation({ element, onChange, value }: Props) {
-  const formSubmissionModel = useFormSubmissionModel()
+  const { formSubmissionModel } = useFormSubmissionModel()
 
   const htmlValue = React.useMemo(() => {
     let htmlTemplate

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- summary element not working inside repeatable set
+
 ## [0.4.19] - 2021-10-19
 
 ### Fixed

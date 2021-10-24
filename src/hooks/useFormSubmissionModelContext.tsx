@@ -6,10 +6,14 @@ import {
   FormSubmissionModel,
 } from '../types/form'
 
-export type FormSubmissionModelContextValue = FormSubmissionModel
+export type FormSubmissionModelContextValue = {
+  formSubmissionModel: FormSubmissionModel
+  parent?: FormSubmissionModelContextValue
+}
 
-const FormSubmissionModelContext =
-  React.createContext<FormSubmissionModelContextValue>({})
+const FormSubmissionModelContext = React.createContext<
+  FormSubmissionModelContextValue | undefined
+>(undefined)
 
 export function FormSubmissionModelContextProvider({
   children,
@@ -22,14 +26,25 @@ export function FormSubmissionModelContextProvider({
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   children: React.ReactNode
 }) {
+  const formSubmissionModelContext = React.useContext(
+    FormSubmissionModelContext,
+  )
   const value = React.useMemo(() => {
-    return cleanFormSubmissionModel(
-      model,
-      elements || [],
-      formElementsConditionallyShown,
-      true,
-    ).model
-  }, [formElementsConditionallyShown, elements, model])
+    return {
+      formSubmissionModel: cleanFormSubmissionModel(
+        model,
+        elements || [],
+        formElementsConditionallyShown,
+        true,
+      ).model,
+      parent: formSubmissionModelContext,
+    }
+  }, [
+    model,
+    elements,
+    formElementsConditionallyShown,
+    formSubmissionModelContext,
+  ])
   return (
     <FormSubmissionModelContext.Provider value={value}>
       {children}
@@ -38,5 +53,21 @@ export function FormSubmissionModelContextProvider({
 }
 
 export default function useFormSubmissionModel() {
-  return React.useContext(FormSubmissionModelContext)
+  const formSubmissionModelContext = React.useContext(
+    FormSubmissionModelContext,
+  )
+  if (!formSubmissionModelContext) {
+    throw new Error(
+      '"FormSubmissionModelContext" does not have a value in this context',
+    )
+  }
+  return formSubmissionModelContext
+}
+
+export function useFormSubmissionModelParent() {
+  let formSubmissionModelContext = useFormSubmissionModel()
+  while (formSubmissionModelContext.parent) {
+    formSubmissionModelContext = formSubmissionModelContext.parent
+  }
+  return formSubmissionModelContext
 }

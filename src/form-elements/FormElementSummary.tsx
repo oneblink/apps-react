@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 
-import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
+import { useFormSubmissionModelParent } from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
 import { FormTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler } from '../types/form'
@@ -30,7 +30,7 @@ const arraysAreEqual = (a: unknown[], b: unknown[]) => {
   return true
 }
 function FormElementSummary({ element, onChange, value }: Props) {
-  const formSubmissionModel = useFormSubmissionModel()
+  const { formSubmissionModel } = useFormSubmissionModelParent()
   const flattenedElements = useFlattenElements()
 
   const reducer = React.useCallback(
