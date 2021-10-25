@@ -1,7 +1,7 @@
 import * as React from 'react'
 import useIsMounted from './useIsMounted'
 
-type LoadDataState<T> =
+export type LoadDataState<T> =
   | {
       status: 'SUCCESS'
       result: T
