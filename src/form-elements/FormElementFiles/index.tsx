@@ -17,6 +17,13 @@ interface Props {
   validationMessage: string | undefined
 }
 
+export function stringifyAttachments(value: Attachment[] | undefined): string {
+  if (value?.every((attachment) => !attachment.type)) {
+    return JSON.stringify(value)
+  }
+  return ''
+}
+
 const FormElementFilesController = ({ value, onChange, ...props }: Props) => {
   if (checkIsUsingLegacyStorage(props.element)) {
     return (

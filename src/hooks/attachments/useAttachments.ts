@@ -46,14 +46,16 @@ const useAttachments = (
   const removeAttachment = React.useCallback(
     (id: string) => {
       onChange(element, (currentAttachments) => {
-        if (!currentAttachments) return
-        return currentAttachments.filter((att) => {
+        const newAttachments = currentAttachments?.filter((att) => {
           // Return items that are not the removed id
           if (!att.type) {
             return att.id !== id
           }
           return att._id !== id
         })
+        if (newAttachments?.length) {
+          return newAttachments
+        }
       })
       if (isMounted.current) {
         setIsDirty()

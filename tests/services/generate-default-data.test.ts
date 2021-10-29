@@ -1068,6 +1068,8 @@ describe('generateDefaultData()', () => {
       storageType: 'private',
       readOnly: false,
       restrictFileTypes: false,
+      isDataLookup: false,
+      isElementLookup: false,
     }
 
     test('it should remove invalid pre-fill data', () => {

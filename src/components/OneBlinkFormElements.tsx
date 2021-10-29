@@ -22,7 +22,9 @@ import FormElementAutocomplete from '../form-elements/FormElementAutocomplete'
 import FormElementRepeatableSet from '../form-elements/FormElementRepeatableSet'
 import FormElementSignature from '../form-elements/FormElementSignature'
 import FormElementCheckBoxes from '../form-elements/FormElementCheckBoxes'
-import FormElementFiles from '../form-elements/FormElementFiles'
+import FormElementFiles, {
+  stringifyAttachments,
+} from '../form-elements/FormElementFiles'
 import FormElementForm from '../form-elements/FormElementForm'
 import FormElementSection from '../form-elements/FormElementSection'
 import FormElementCamera from '../form-elements/FormElementCamera'
@@ -516,18 +518,29 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'files': {
       return (
-        <FormElementFiles
-          id={id}
+        <LookupNotification
           element={element}
-          value={value}
-          onChange={
-            onChange as React.ComponentProps<
-              typeof FormElementFiles
-            >['onChange']
+          onLookup={onLookup}
+          autoLookupValue={value}
+          stringifyAutoLookupValue={
+            stringifyAttachments as React.ComponentProps<
+              typeof LookupNotification
+            >['stringifyAutoLookupValue']
           }
-          validationMessage={validationMessage}
-          displayValidationMessage={displayValidationMessage}
-        />
+        >
+          <FormElementFiles
+            id={id}
+            element={element}
+            value={value}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementFiles
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
       )
     }
     case 'infoPage':
