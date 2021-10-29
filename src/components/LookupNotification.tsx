@@ -320,17 +320,13 @@ function LookupNotificationComponent({
   )
 }
 
-const LookupNotificationComponentMemo = React.memo(LookupNotificationComponent)
-
-function LookupNotification(props: Props) {
+export default function LookupNotification(props: Props) {
   if (props.element.isDataLookup || props.element.isElementLookup) {
-    return <LookupNotificationComponentMemo {...props} />
+    return <LookupNotificationComponent {...props} />
   }
 
   return <>{props.children}</>
 }
-
-export default React.memo(LookupNotification)
 
 async function fetchLookup(
   formElementLookupId: number | undefined,
