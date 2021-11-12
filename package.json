@@ -9,7 +9,7 @@
   "dependencies": {
     "@blinkmobile/geolocation": "^2.0.3",
     "@material-ui/core": "^4.12.3",
-    "@oneblink/sdk-core": "^0.1.3",
+    "@oneblink/sdk-core": "^0.2.3",
     "@react-google-maps/api": "^2.4.0",
     "abort-controller": "^3.0.0",
     "blueimp-load-image": "^5.14.0",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
-    "@oneblink/apps": "^0.11.6-beta.2",
+    "@oneblink/apps": "^0.12.0-beta.1",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.4",
@@ -58,10 +58,10 @@
     "@types/react-signature-canvas": "^1.0.2",
     "@types/sanitize-html": "^2.3.2",
     "@types/uuid": "^8.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.31.2",
-    "@typescript-eslint/parser": "^4.31.2",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
     "copyfiles": "^2.4.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.25.3",
@@ -78,8 +78,8 @@
     "typescript": "^4.4.3"
   },
   "engines": {
-    "node": ">=14",
-    "npm": ">=6"
+    "node": ">=16",
+    "npm": ">=8"
   },
   "files": [
     "dist"
@@ -89,7 +89,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.11.6-beta.2",
+    "@oneblink/apps": "^0.12.0-beta.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-router-dom": "^5.2.0"
