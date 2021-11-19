@@ -155,7 +155,9 @@ export function parseDateValue({
           day: '',
         },
       )
-    return `${year}-${month}-${day}`
+    // This is a workaround for an iOS 15 bug where the year was being returned as 2 digits: https://bugs.webkit.org/show_bug.cgi?id=230827
+    const fixedYear = year.length === 2 ? `20${year}` : year
+    return `${fixedYear}-${month}-${day}`
   } else {
     return date.toISOString()
   }
