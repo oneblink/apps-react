@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "0.5.0",
+  "version": "0.5.1-beta.1",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -11,7 +11,6 @@
     "@material-ui/core": "^4.12.3",
     "@oneblink/sdk-core": "^0.2.3",
     "@react-google-maps/api": "^2.4.0",
-    "abort-controller": "^3.0.0",
     "blueimp-load-image": "^5.14.0",
     "bulma": "^0.9.3",
     "bulma-slider": "^2.0.4",
@@ -90,8 +89,8 @@
   "module": "./dist/index.js",
   "peerDependencies": {
     "@oneblink/apps": "^0.12.0-beta.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^16.14.0 || ^17.0.0",
+    "react-dom": "^16.14.0 || ^17.0.0",
     "react-router-dom": "^5.2.0"
   },
   "publishConfig": {
