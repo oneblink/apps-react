@@ -668,6 +668,15 @@ export function checkFileNameIsValid(
   )
 }
 
+export function checkFileNameHasExtension(
+  formElement: FormTypes.FilesElement,
+  fileName: string,
+) {
+  return (
+    formElement.allowExtensionlessAttachments || fileName.split('.').length <= 1
+  )
+}
+
 export function checkSectionValidity(
   element: FormTypes.PageElement | FormTypes.SectionElement,
   formElementsValidation: FormElementsValidation | undefined,

@@ -90,7 +90,7 @@ const conditionallyShowOptionByPredicate = (
   }
 
   const everyOptionIsShowing = predicate.optionIds.every((id) => {
-    const predicateOption = predicateElement.options.find((o) => o.id === id)
+    const predicateOption = predicateElement.options?.find((o) => o.id === id)
     if (!predicateOption) return false
 
     return conditionallyShowOption(

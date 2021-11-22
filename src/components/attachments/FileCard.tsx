@@ -5,7 +5,10 @@ import useClickOutsideElement from '../../hooks/useClickOutsideElement'
 import { FormTypes } from '@oneblink/types'
 import FileCardContent from './FileCardContent'
 import AttachmentStatus from '../../components/attachments/AttachmentStatus'
-import { checkFileNameIsValid } from '../../services/form-validation'
+import {
+  checkFileNameIsValid,
+  checkFileNameHasExtension,
+} from '../../services/form-validation'
 
 type Props = {
   element: FormTypes.FilesElement
@@ -40,6 +43,9 @@ function FileCard({
   const uploadError = React.useMemo(() => {
     if (!checkFileNameIsValid(element, fileName)) {
       return new Error(`${fileName.split('.').pop()} files are not allowed`)
+    }
+    if (!checkFileNameHasExtension(element, fileName)) {
+      return new Error(`${fileName} must have an extension`)
     }
     if (uploadErrorMessage) {
       return new Error(uploadErrorMessage)
