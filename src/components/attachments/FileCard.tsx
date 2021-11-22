@@ -7,7 +7,7 @@ import FileCardContent from './FileCardContent'
 import AttachmentStatus from '../../components/attachments/AttachmentStatus'
 import {
   checkFileNameIsValid,
-  checkFileNameHasExtension,
+  checkFileNameExtensionIsValid,
 } from '../../services/form-validation'
 
 type Props = {
@@ -44,7 +44,7 @@ function FileCard({
     if (!checkFileNameIsValid(element, fileName)) {
       return new Error(`${fileName.split('.').pop()} files are not allowed`)
     }
-    if (!checkFileNameHasExtension(element, fileName)) {
+    if (!checkFileNameExtensionIsValid(element, fileName)) {
       return new Error(`${fileName} must have an extension`)
     }
     if (uploadErrorMessage) {

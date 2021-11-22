@@ -668,7 +668,7 @@ export function checkFileNameIsValid(
   )
 }
 
-export function checkFileNameHasExtension(
+export function checkFileNameExtensionIsValid(
   formElement: FormTypes.FilesElement,
   fileName: string,
 ) {
