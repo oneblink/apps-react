@@ -673,7 +673,7 @@ export function checkFileNameExtensionIsValid(
   fileName: string,
 ) {
   return (
-    formElement.allowExtensionlessAttachments || fileName.split('.').length <= 1
+    formElement.allowExtensionlessAttachments || fileName.split('.').length >= 2
   )
 }
 
