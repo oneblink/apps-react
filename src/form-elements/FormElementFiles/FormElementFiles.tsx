@@ -3,7 +3,10 @@ import { FormTypes } from '@oneblink/types'
 import Files from '../../components/attachments/Files'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../../hooks/attachments/useAttachments'
-import { checkFileNameIsValid } from '../../services/form-validation'
+import {
+  checkFileNameIsValid,
+  checkFileNameExtensionIsValid,
+} from '../../services/form-validation'
 import { Attachment } from '../../types/attachments'
 import { FormElementValueChangeHandler } from '../../types/form'
 type Props = {
@@ -39,7 +42,8 @@ function FormElementFiles({
           onChange={changeAttachment}
           disableUpload={
             (!!element.maxEntries && attachments.length > element.maxEntries) ||
-            !checkFileNameIsValid(element, attachment.fileName)
+            !checkFileNameIsValid(element, attachment.fileName) ||
+            !checkFileNameExtensionIsValid(element, attachment.fileName)
           }
         />
       )
