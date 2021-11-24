@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2021-11-24
+
 ### Added
 
 - Validation for allowing extensionless attachments
@@ -14,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Year being returned from Intl date formatter as only digits in iOS15
+
+### Dependencies
+
+- no longer depend upon [abort-controller](https://www.npmjs.com/package/abort-controller)
 
 ## [0.5.0] - 2021-11-15
 
