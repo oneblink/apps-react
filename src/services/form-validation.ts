@@ -167,6 +167,18 @@ validate.validators.isTrue = function (value: unknown, message?: string) {
   }
 }
 
+validate.validators.needsExtension = function (
+  value: PossibleFileConfiguration[] | undefined,
+  formElement: FormTypes.FilesElement,
+) {
+  const isValid =
+    !Array.isArray(value) ||
+    value.every((file) => {
+      return checkFileNameExtensionIsValid(formElement, file.fileName)
+    })
+  if (!isValid) return 'All files must have extensions'
+}
+
 function getCustomRegexFormatConfig<DefaultValue>(
   formElement: FormTypes.FormElementWithInput<DefaultValue>,
 ) {
@@ -568,6 +580,7 @@ export function generateValidationSchema(
               formElement.restrictedFileTypes || []
             ).join(', ')}`,
           },
+          needsExtension: formElement,
           attachments: !checkIsUsingLegacyStorage(formElement),
         }
         break
