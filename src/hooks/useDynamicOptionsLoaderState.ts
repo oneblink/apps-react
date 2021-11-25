@@ -19,14 +19,14 @@ export default function useDynamicOptionsLoaderState(
       return
     }
 
-    let ignore = false
+    const abortController = new AbortController()
 
     ;(async () => {
       const optionsByElementId = await formService.getFormElementDynamicOptions(
         form,
       )
 
-      if (ignore || !optionsByElementId.length) {
+      if (abortController.signal.aborted || !optionsByElementId.length) {
         return
       }
 
@@ -62,7 +62,7 @@ export default function useDynamicOptionsLoaderState(
     })()
 
     return () => {
-      ignore = true
+      abortController.abort()
     }
   }, [form, setFormSubmission, state])
 

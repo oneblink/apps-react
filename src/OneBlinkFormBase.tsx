@@ -21,7 +21,7 @@ import useLookups from './hooks/useLookups'
 import { FormDefinitionContext } from './hooks/useFormDefinition'
 import { InjectPagesContext } from './hooks/useInjectPages'
 import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
-import useDynamicOptionsLoaderEffect from './hooks/useDynamicOptionsLoaderEffect'
+import useDynamicOptionsLoaderState from './hooks/useDynamicOptionsLoaderState'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
@@ -273,7 +273,7 @@ function OneBlinkFormBase({
   //
   // #region Dynamic Options
 
-  const loadDynamicOptionsState = useDynamicOptionsLoaderEffect(
+  const loadDynamicOptionsState = useDynamicOptionsLoaderState(
     definition,
     setFormSubmission,
   )
