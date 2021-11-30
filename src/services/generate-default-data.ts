@@ -504,7 +504,7 @@ const getOptionsDefaultValue = (el: FormTypes.FormElementWithOptions) => {
     return
   }
   // Cater for dynamic options
-  if (el.optionsType === 'DYNAMIC') {
+  if (el.optionsType === 'DYNAMIC' || el.optionsType === 'FRESHDESK_FIELD') {
     return el.defaultValue
   }
   // Cater for multi-select and checkboxes
