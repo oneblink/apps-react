@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.2] - 2021-12-02
+
 ### Added
 
 - freshdesk fields to dynamic options sets
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.3.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.2.3](https://github.com/oneblink/sdk-core-js/releases/tag/v0.2.3))
 
 ## [0.5.1] - 2021-11-24
 
