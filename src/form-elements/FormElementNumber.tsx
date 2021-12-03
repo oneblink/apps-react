@@ -6,6 +6,7 @@ import LookupButton from '../components/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
+import useIsPageVisible from '../hooks/useIsPageVisible'
 
 type Props = {
   id: string
@@ -24,6 +25,7 @@ function FormElementNumber({
   validationMessage,
   displayValidationMessage,
 }: Props) {
+  const isPageVisible = useIsPageVisible()
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
 
   const [isDirty, setIsDirty] = useBooleanState(false)
@@ -91,7 +93,7 @@ function FormElementNumber({
               validationMessage={validationMessage}
             />
           </div>
-        ) : (
+        ) : isPageVisible ? (
           <SliderControl
             id={id}
             text={text}
@@ -100,7 +102,7 @@ function FormElementNumber({
             onChange={handleChange}
             onBlur={setIsDirty}
           />
-        )}
+        ) : undefined}
 
         {(isDirty || displayValidationMessage) && !!validationMessage && (
           <div role="alert" className="has-margin-top-8">
