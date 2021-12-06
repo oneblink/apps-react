@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.3] - 2021-12-06
+
 ### Fixed
 
 - number slider rendering incorrectly when starting on non-active page
