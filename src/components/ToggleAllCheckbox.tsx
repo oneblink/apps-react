@@ -8,7 +8,7 @@ interface Props {
   options: FormTypes.ChoiceElementOption[]
   selected: string[]
   onChange: FormElementValueChangeHandler<string[]>
-  disabled: boolean
+  disabled?: boolean
 }
 const ToggleAllCheckbox = ({
   id,

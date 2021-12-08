@@ -354,6 +354,7 @@ export function generateValidationSchema(
         }
         break
       }
+      case 'abn':
       case 'geoscapeAddress':
       case 'pointAddress':
       case 'civicaStreetName':

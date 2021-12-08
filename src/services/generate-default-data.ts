@@ -302,6 +302,26 @@ function parsePreFillData(
     case 'boolean': {
       return typeof value === 'boolean' ? value : false
     }
+    case 'abn': {
+      return parseUnknownAsRecord(value, (record) => {
+        const hasABN = parseUnknownAsRecord(record.ABN, (ABN) => {
+          if (parseStringValue(ABN.identifierValue)) {
+            return true
+          }
+        })
+        const hasMainName = parseUnknownAsRecord(
+          record.mainName,
+          (mainName) => {
+            if (parseStringValue(mainName.organisationName)) {
+              return true
+            }
+          },
+        )
+        if (hasABN && hasMainName) {
+          return record
+        }
+      })
+    }
     case 'pointAddress':
     case 'geoscapeAddress': {
       return parseUnknownAsRecord(value, (record) => {
@@ -463,13 +483,13 @@ export default function generateDefaultData(
       case 'pointAddress':
       case 'civicaStreetName':
       case 'camera':
+      case 'abn':
       case 'bsb':
       case 'text':
       case 'barcodeScanner':
       case 'email':
       case 'telephone':
       case 'textarea':
-      case 'file':
       case 'files':
       case 'draw':
       case 'location': {
