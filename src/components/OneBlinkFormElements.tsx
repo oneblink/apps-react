@@ -4,6 +4,7 @@ import LookupNotification from '../components/LookupNotification'
 
 import FormElementBarcodeScanner from '../form-elements/FormElementBarcodeScanner'
 import FormElementEmail from '../form-elements/FormElementEmail'
+import FormElementABN from '../form-elements/FormElementABN'
 import FormElementBSB from '../form-elements/FormElementBSB'
 import FormElementText from '../form-elements/FormElementText'
 import FormElementTextarea from '../form-elements/FormElementTextarea'
@@ -44,6 +45,7 @@ import {
   CivicaTypes,
   FormTypes,
   GeoscapeTypes,
+  MiscTypes,
   PointTypes,
 } from '@oneblink/types'
 
@@ -241,6 +243,24 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementText
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'abn': {
+      return (
+        <LookupNotification element={element} onLookup={onLookup}>
+          <FormElementABN
+            id={id}
+            element={element}
+            value={value as MiscTypes.ABNRecord | undefined}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementABN
               >['onChange']
             }
             validationMessage={validationMessage}

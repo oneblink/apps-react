@@ -23,6 +23,7 @@ import { InjectPagesContext } from './hooks/useInjectPages'
 import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import useDynamicOptionsLoaderState from './hooks/useDynamicOptionsLoaderState'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
+import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenticationGuid'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
@@ -43,6 +44,7 @@ export type BaseProps = {
   disabled?: boolean
   isPreview?: boolean
   googleMapsApiKey?: string
+  abnLookupAuthenticationGuid?: string
   captchaSiteKey?: string
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
@@ -64,6 +66,7 @@ type Props = BaseProps &
 
 function OneBlinkFormBase({
   googleMapsApiKey,
+  abnLookupAuthenticationGuid,
   captchaSiteKey,
   definition,
   disabled,
@@ -673,33 +676,39 @@ function OneBlinkFormBase({
                       <GoogleMapsApiKeyContext.Provider
                         value={googleMapsApiKey}
                       >
-                        <CaptchaSiteKeyContext.Provider value={captchaSiteKey}>
-                          <FormIsReadOnlyContext.Provider value={isReadOnly}>
-                            {visiblePages.map(
-                              (pageElement: FormTypes.PageElement) => (
-                                <PageFormElements
-                                  key={pageElement.id}
-                                  isActive={pageElement.id === currentPage.id}
-                                  formId={definition.id}
-                                  formElementsConditionallyShown={
-                                    formElementsConditionallyShown
-                                  }
-                                  formElementsValidation={
-                                    formElementsValidation
-                                  }
-                                  displayValidationMessages={
-                                    hasAttemptedSubmit ||
-                                    isDisplayingCurrentPageError
-                                  }
-                                  pageElement={pageElement}
-                                  onChange={handleChange}
-                                  model={submission}
-                                  setFormSubmission={setFormSubmission}
-                                />
-                              ),
-                            )}
-                          </FormIsReadOnlyContext.Provider>
-                        </CaptchaSiteKeyContext.Provider>
+                        <AbnLookupAuthenticationGuidContext.Provider
+                          value={abnLookupAuthenticationGuid}
+                        >
+                          <CaptchaSiteKeyContext.Provider
+                            value={captchaSiteKey}
+                          >
+                            <FormIsReadOnlyContext.Provider value={isReadOnly}>
+                              {visiblePages.map(
+                                (pageElement: FormTypes.PageElement) => (
+                                  <PageFormElements
+                                    key={pageElement.id}
+                                    isActive={pageElement.id === currentPage.id}
+                                    formId={definition.id}
+                                    formElementsConditionallyShown={
+                                      formElementsConditionallyShown
+                                    }
+                                    formElementsValidation={
+                                      formElementsValidation
+                                    }
+                                    displayValidationMessages={
+                                      hasAttemptedSubmit ||
+                                      isDisplayingCurrentPageError
+                                    }
+                                    pageElement={pageElement}
+                                    onChange={handleChange}
+                                    model={submission}
+                                    setFormSubmission={setFormSubmission}
+                                  />
+                                ),
+                              )}
+                            </FormIsReadOnlyContext.Provider>
+                          </CaptchaSiteKeyContext.Provider>
+                        </AbnLookupAuthenticationGuidContext.Provider>
                       </GoogleMapsApiKeyContext.Provider>
                     </ExecutedLookupProvider>
                   </InjectPagesContext.Provider>
