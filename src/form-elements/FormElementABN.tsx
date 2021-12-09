@@ -208,6 +208,7 @@ function FormElementABN({
               id={id}
               name={element.name}
               className="input ob-input cypress-abn-control"
+              placeholder={element.placeholderValue}
               value={label}
               onChange={(e) => {
                 setLabel(e.target.value)
