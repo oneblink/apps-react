@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.4] - 2021-12-09
+
 ### Added
 
 - ABN form element
+
+### Dependencies
+
+- depend upon [xml2js](https://www.npmjs.com/package/xml2js) 0.4.23
 
 ## [0.5.3] - 2021-12-06
 
