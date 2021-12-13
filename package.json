@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "0.5.5-beta.1",
+  "version": "0.5.5-beta.2",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
-    "@oneblink/apps": "^0.12.4-beta.1",
+    "@oneblink/apps": "^0.12.5-beta.1",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.4",
@@ -90,7 +90,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.12.4-beta.1",
+    "@oneblink/apps": "^0.12.5-beta.1",
     "react": "^16.14.0 || ^17.0.0",
     "react-dom": "^16.14.0 || ^17.0.0",
     "react-router-dom": "^5.2.0"
