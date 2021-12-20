@@ -28,7 +28,9 @@ function FormElementABN({
   displayValidationMessage,
 }: Props) {
   const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
-  const [label, setLabel] = React.useState(value?.ABN.identifierValue || '')
+  const [label, setLabel] = React.useState(
+    value ? abnService.getABNNumberFromABNRecord(value) || '' : '',
+  )
   const [isFocused, setIsFocused, removeFocus] = useBooleanState(false)
   const [isDirty, setIsDirty] = useBooleanState(false)
   const [{ isLoading, error }, setState] = React.useState<{
@@ -43,7 +45,11 @@ function FormElementABN({
     const searchString = label.replace(/[^\d]/g, '')
     const isSearchStringValid =
       searchString.length === 11 || (searchString.length === 9 && !isFocused)
-    if (!isSearchStringValid || value?.ABN.identifierValue === searchString) {
+
+    const currentABNNumber = value
+      ? abnService.getABNNumberFromABNRecord(value)
+      : ''
+    if (!isSearchStringValid || currentABNNumber === searchString) {
       return
     }
 
@@ -153,14 +159,7 @@ function FormElementABN({
     return () => {
       abortController.abort()
     }
-  }, [
-    abnLookupAuthenticationGuid,
-    element,
-    isFocused,
-    label,
-    onChange,
-    value?.ABN.identifierValue,
-  ])
+  }, [abnLookupAuthenticationGuid, element, isFocused, label, onChange, value])
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
