@@ -9,7 +9,7 @@ import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
 import useAbnLookupAuthenticationGuid from '../hooks/useAbnLookupAuthenticationGuid'
-
+import { abnService } from '@oneblink/sdk-core'
 type Props = {
   id: string
   element: FormTypes.ABNElement
@@ -165,7 +165,11 @@ function FormElementABN({
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (value) {
-      const newLabel = value.ABN.identifierValue
+      const newLabel = abnService.getABNNumberFromABNRecord(value)
+      if (!newLabel) {
+        // Record in value had no ABN Number. This should never happen
+        return
+      }
       if (label !== newLabel) {
         setLabel(
           newLabel.split('').reduce((memo, character, index) => {
@@ -228,7 +232,7 @@ function FormElementABN({
           {value && (
             <div className="control ob-abn__record-control">
               <a className="button is-static ob-abn__record-button">
-                {value.mainName.organisationName}
+                {abnService.displayBusinessNameFromABNRecord(value)}
               </a>
             </div>
           )}
