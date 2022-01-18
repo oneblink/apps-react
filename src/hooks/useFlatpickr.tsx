@@ -3,6 +3,7 @@ import Flatpickr from 'flatpickr'
 import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
 import { Sentry } from '@oneblink/apps'
+import useFlatpickrGuid from '../hooks/useFlatpickrGuid'
 
 export { FlatpickrOptions }
 
@@ -21,6 +22,7 @@ export default function useFlatpickr(
   fpOpts: FlatpickrOptions,
   htmlElement: { current: HTMLElement | null },
 ) {
+  const flatpickrGuid = useFlatpickrGuid()
   const vpRef = React.useRef<FlatpickrInstance | null>(null)
 
   const getDateValue = React.useCallback(
@@ -41,7 +43,7 @@ export default function useFlatpickr(
       appendTo: htmlElement.current || undefined,
     }
     const newVp: FlatpickrInstance = new (Flatpickr as any)(
-      `[id="${id}"]`,
+      `[id="${flatpickrGuid}"] [id="${id}"]`,
       options,
     )
     vpRef.current = newVp
@@ -52,7 +54,7 @@ export default function useFlatpickr(
         newVp.destroy()
       }
     }
-  }, [fpOpts, htmlElement, id, vpRef])
+  }, [flatpickrGuid, fpOpts, htmlElement, id, vpRef])
 
   React.useEffect(() => {
     if (vpRef.current && vpRef.current.config) {
