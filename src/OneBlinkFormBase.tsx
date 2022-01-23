@@ -37,6 +37,7 @@ import {
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
+import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -48,6 +49,7 @@ export type BaseProps = {
   captchaSiteKey?: string
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
+  attachmentRetentionInDays?: number
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
@@ -79,6 +81,7 @@ function OneBlinkFormBase({
   setFormSubmission,
   buttons,
   primaryColour,
+  attachmentRetentionInDays,
 }: Props) {
   const isOffline = useIsOffline()
 
@@ -410,6 +413,29 @@ function OneBlinkFormBase({
         return
       }
 
+      // check if attachments exist
+      const newSubmission = checkIfAttachmentsExist(
+        definition,
+        submissionData.submission,
+        attachmentRetentionInDays,
+      )
+      if (newSubmission) {
+        setFormSubmission((currentFormSubmission) => ({
+          ...currentFormSubmission,
+          submission: newSubmission,
+        }))
+        bulmaToast.toast({
+          message:
+            "You have files that been removed based on your administrator's data retention policy, please remove them and upload them again.",
+          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+          type: 'ob-toast is-danger cypress-invalid-submit-attempt',
+          duration: 4000,
+          pauseOnHover: true,
+          closeOnClick: true,
+        })
+        return
+      }
+
       allowNavigation()
 
       onSubmit({
@@ -419,16 +445,18 @@ function OneBlinkFormBase({
       })
     },
     [
-      allowNavigation,
-      checkAttachmentsCanBeSubmitted,
-      definition,
       disabled,
-      formElementsValidation,
-      getCurrentSubmissionData,
       isReadOnly,
-      onSubmit,
-      checkBsbsCanBeSubmitted,
+      getCurrentSubmissionData,
       checkBsbAreValidating,
+      formElementsValidation,
+      checkAttachmentsCanBeSubmitted,
+      checkBsbsCanBeSubmitted,
+      definition,
+      attachmentRetentionInDays,
+      allowNavigation,
+      onSubmit,
+      setFormSubmission,
     ],
   )
 

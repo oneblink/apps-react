@@ -244,6 +244,7 @@ function FormContainer() {
       onCancel={handleCancel}
       onSubmit={handleSubmit}
       onSaveDraft={handleSaveDraft}
+      attachmentRetentionInDays={1}
     />
   )
 }

@@ -103,7 +103,10 @@ export async function downloadFileLegacy(dataURI: string, fileName: string) {
 export default async function downloadAttachment(attachment: Attachment) {
   try {
     if (attachment.type) {
-      return await downloadFile(attachment.data, attachment.fileName)
+      if (attachment.data) {
+        await downloadFile(attachment.data, attachment.fileName)
+      }
+      return
     }
     if (!attachment.isPrivate) {
       return await downloadFile(attachment.url, attachment.fileName)

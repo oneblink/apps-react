@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.15.6",
-    "@oneblink/apps": "^0.12.5-beta.1",
+    "@oneblink/apps": "^0.12.7-beta.2",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.4",
@@ -90,7 +90,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^0.12.5-beta.1",
+    "@oneblink/apps": "^0.12.7-beta.2",
     "react": "^16.14.0 || ^17.0.0",
     "react-dom": "^16.14.0 || ^17.0.0",
     "react-router-dom": "^5.2.0"
