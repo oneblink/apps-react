@@ -42,12 +42,14 @@ export default function useAttachment(
       !formId ||
       !value ||
       typeof value !== 'object' ||
-      value.type !== 'NEW'
+      value.type !== 'NEW' ||
+      !value.data
     ) {
       return
     }
 
     const newAttachment = value as AttachmentNew
+    const data = value.data
 
     let ignore = false
     const abortController = new AbortController()
@@ -62,8 +64,8 @@ export default function useAttachment(
           {
             formId,
             fileName: newAttachment.fileName,
-            contentType: newAttachment.data.type,
-            data: newAttachment.data,
+            contentType: data.type,
+            data,
             isPrivate,
           },
           abortController.signal,
@@ -117,6 +119,10 @@ export default function useAttachment(
     }
 
     if (value.type) {
+      if (!value.data) {
+        return
+      }
+
       if (!checkIfContentTypeIsImage(value.data.type)) {
         // Not an image which we will represent as null
         setImageUrlState({
@@ -231,13 +237,33 @@ export default function useAttachment(
   }, [value])
 
   const canDownload = React.useMemo(() => {
-    return (
-      !!value &&
-      (typeof value === 'string' ||
-        !!value.type ||
-        !value.isPrivate ||
-        isAuthenticated)
-    )
+    if (!value) {
+      return false
+    }
+
+    // legacy attachment as base64 data
+    if (typeof value === 'string') {
+      return true
+    }
+
+    // attachments still uploading or failed to upload
+    if (value.type) {
+      // can only be downloaded if we still have the data
+      return !!value.data
+    }
+
+    // attachments that have been uploaded
+    // public attachments can always be downloaded
+    if (!value.isPrivate) {
+      return true
+    }
+
+    // private attachments can only be downloaded if user is authenticated
+    if (isAuthenticated) {
+      return true
+    }
+
+    return false
   }, [isAuthenticated, value])
 
   return {

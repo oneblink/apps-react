@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `attachmentRetentionInDays` prop to `<OneBlinkForm />`
+
 ## [0.5.6] - 2022-01-19
 
 ### Fixed

@@ -34,7 +34,7 @@ const FormElementFile = ({
   }, [file])
 
   const handleRetry = React.useMemo(() => {
-    if (file.type === 'ERROR') {
+    if (file.type === 'ERROR' && file.data) {
       return () => {
         onChange(file._id, {
           type: 'NEW',

@@ -5,7 +5,7 @@ type AttachmentSaved =
 
 interface AttachmentBase {
   _id: string
-  data: Blob
+  data?: Blob
   fileName: string
   isPrivate: boolean
 }
