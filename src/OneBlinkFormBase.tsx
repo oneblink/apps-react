@@ -426,7 +426,7 @@ function OneBlinkFormBase({
         }))
         bulmaToast.toast({
           message:
-            "You have files that been removed based on your administrator's data retention policy, please remove them and upload them again.",
+            "Some files that were included in your submission have been removed based on your administrator's data retention policy, please remove them and upload them again.",
           // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
           type: 'ob-toast is-danger cypress-invalid-submit-attempt',
           duration: 4000,
