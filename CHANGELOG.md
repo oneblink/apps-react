@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `attachmentRetentionInDays` prop to `<OneBlinkForm />`
 
+### Changed
+
+- steps to have a scroll bar horizontally on multi-page forms on larger screens
+
 ## [0.5.6] - 2022-01-19
 
 ### Fixed
