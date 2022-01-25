@@ -25,68 +25,8 @@
   margin-left: $size-8;
 }
 
-.ob-steps-navigation__header {
-  display: none;
-}
-
 .ob-form-container {
   position: relative;
-
-  .steps {
-    &.is-small {
-      font-size: $size-6;
-    }
-
-    .step-item {
-      font-size: $size-7;
-      cursor: pointer;
-
-      &:focus {
-        outline: none;
-      }
-
-      &.is-disabled {
-        .step-marker {
-          opacity: 0.2;
-        }
-      }
-
-      &.is-error {
-        .step-marker {
-          background-color: transparent;
-          border-color: transparent;
-
-          .material-icons {
-            background-color: $white;
-          }
-        }
-      }
-    }
-
-    .steps-content {
-      width: 100%;
-
-      .step-content {
-        width: 100%;
-
-        &.is-invisible {
-          position: fixed;
-          top: 0;
-          bottom: 0;
-          overflow: hidden;
-        }
-      }
-
-      &.is-single-step {
-        margin-top: 0;
-        margin-bottom: 0;
-      }
-    }
-
-    .step-progress-mobile {
-      display: none;
-    }
-  }
 
   .field {
     width: 100%;
@@ -105,19 +45,6 @@
   flex: 1;
 }
 
-.steps-header-active-page-icon {
-  color: $primary;
-  border: 0.2em solid $primary;
-  border-radius: 50%;
-  min-height: $size-4;
-  min-width: $size-4;
-  font-size: $size-7;
-  margin-right: $size-8;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
 @media only screen and (max-width: $mobile) {
   .ob-form-container {
     .ob-button {
@@ -134,100 +61,6 @@
       flex: unset;
       min-width: unset;
     }
-  }
-}
-
-@media only screen and (max-width: $tablet) {
-  .ob-steps-navigation {
-    position: relative;
-  }
-
-  .ob-steps-navigation__header {
-    z-index: 30;
-    height: $size-1;
-    display: flex;
-    align-items: center;
-    background-color: $white-ter;
-    box-shadow: $elevation-2;
-    -webkit-transition: box-shadow 0.2s ease;
-    -moz-transition: box-shadow 0.2s ease;
-    -o-transition: box-shadow 0.2s ease;
-    transition: box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-    }
-
-    &.is-active {
-      box-shadow: none;
-
-      & > .dropdown.icon {
-        transform: rotate(180deg);
-      }
-    }
-
-    .steps-header-active-page {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      .icon {
-        margin-right: $size-8;
-      }
-    }
-
-    .steps-header-active-page-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .icon {
-      padding: $size-7;
-      line-height: 1;
-      -webkit-transition: transform 0.2s linear;
-      -moz-transition: transform 0.2s linear;
-      -o-transition: transform 0.2s linear;
-      transition: transform 0.2s linear;
-    }
-  }
-
-  .ob-steps-navigation__steps {
-    z-index: 30;
-    position: absolute;
-    top: $size-1;
-    right: 0;
-    left: 0;
-    background-color: $white;
-    box-shadow: none;
-    max-height: 0;
-    overflow-y: auto;
-    -webkit-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    -moz-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    -o-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    transition: box-shadow 0.2s ease, max-height 0.2s ease;
-
-    &.is-active {
-      box-shadow: $elevation-3;
-      max-height: 40vh;
-    }
-
-    .steps {
-      padding: $size-4;
-    }
-  }
-
-  .ob-steps-navigation__background.is-active {
-    background-color: $black;
-    opacity: 0.2;
-    z-index: 20;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
   }
 }
 

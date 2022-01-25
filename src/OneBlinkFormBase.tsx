@@ -759,11 +759,12 @@ function OneBlinkFormBase({
                     </button>
                   </div>
                   <div className="step-progress-mobile cypress-steps-mobile">
-                    {visiblePages.map((page: FormTypes.PageElement) => (
+                    {visiblePages.map((page: FormTypes.PageElement, index) => (
                       <div
                         key={page.id}
                         className={clsx('step-progress-mobile-dot', {
                           'is-active': currentPage.id === page.id,
+                          'is-completed': currentPageIndex > index,
                           'has-background-danger':
                             currentPage.id !== page.id &&
                             checkDisplayPageError(page),

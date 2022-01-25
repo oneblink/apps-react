@@ -71,12 +71,25 @@ export default function usePages({
       const scrollToTopOfPageHTMLElement =
         scrollToTopOfPageHTMLElementRef.current
       if (isShowingMultiplePages && scrollToTopOfPageHTMLElement) {
-        window.requestAnimationFrame(() => {
-          scrollToTopOfPageHTMLElement.scrollIntoView({
-            block: 'start',
-            behavior: 'smooth',
+        if (scrollToTopOfPageHTMLElement) {
+          window.requestAnimationFrame(() => {
+            scrollToTopOfPageHTMLElement.scrollIntoView({
+              block: 'start',
+              behavior: 'smooth',
+            })
           })
-        })
+        }
+        const stepItemHTMLElement = document.getElementById(
+          `steps-navigation-step-${pageId}`,
+        )
+        if (stepItemHTMLElement) {
+          window.requestAnimationFrame(() => {
+            stepItemHTMLElement.scrollIntoView({
+              block: 'start',
+              behavior: 'smooth',
+            })
+          })
+        }
       }
     },
     [closeStepsNavigation, currentPageId, isShowingMultiplePages],
