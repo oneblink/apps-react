@@ -11,6 +11,7 @@ import {
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
+import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
 
 export type OnChange = (id: string, attachment: Attachment) => void
 
@@ -24,6 +25,8 @@ export default function useAttachment(
   const form = useFormDefinition()
   const isOffline = useIsOffline()
   const { isLoggedIn, isUsingFormsKey } = useAuth()
+  const { storeAttachmentBlobLocally, getAttachmentBlobLocally } =
+    useAttachmentBlobs()
 
   const isAuthenticated = isLoggedIn || isUsingFormsKey
 
@@ -73,6 +76,10 @@ export default function useAttachment(
         if (ignore) {
           return
         }
+        // Store Blob in Context if image is private
+        if (isPrivate) {
+          storeAttachmentBlobLocally({ attachmentId: upload.id, blob: data })
+        }
 
         console.log('Successfully Uploaded attachment!', upload)
 
@@ -102,7 +109,15 @@ export default function useAttachment(
       ignore = true
       abortController.abort()
     }
-  }, [disableUpload, form?.id, isOffline, isPrivate, onChange, value])
+  }, [
+    disableUpload,
+    form?.id,
+    isOffline,
+    isPrivate,
+    onChange,
+    storeAttachmentBlobLocally,
+    value,
+  ])
 
   // TRIGGER DOWNLOAD
   React.useEffect(() => {
@@ -155,13 +170,26 @@ export default function useAttachment(
       return
     }
 
-    // If user is not logged in, we can't download private images.
-    // Luckily, the imageUrl should already be set as the blob
-    // url from when they uploaded it. Same applies if they are offline.
+    // Check for locally stored Blob. Blob should be stored locally for private uploaded images only
+    const locallyStoredAttachment = getAttachmentBlobLocally(value.id)
+    if (locallyStoredAttachment) {
+      const imageUrl = URL.createObjectURL(locallyStoredAttachment.blob)
+      console.log(
+        'Created object url from locally stored Blob for private image attachment',
+        imageUrl,
+      )
+      setImageUrlState({
+        imageUrl,
+      })
+      return
+    }
+
+    // If user is not logged in or is offline, we can't download private images.
+    // If the blob was not stored locally (above) for some reason, the user is SOL
     if (!isAuthenticated || isOffline) {
-      setImageUrlState((currentState) => ({
-        imageUrl: currentState.imageUrl || null,
-      }))
+      setImageUrlState({
+        imageUrl: null,
+      })
       return
     }
 
@@ -179,7 +207,8 @@ export default function useAttachment(
         if (ignore) {
           return
         }
-
+        // Store private image attachment in Context
+        storeAttachmentBlobLocally({ attachmentId: value.id, blob })
         const imageUrl = URL.createObjectURL(blob)
         console.log(
           'Created object url from private attachment for image',
@@ -204,7 +233,13 @@ export default function useAttachment(
       ignore = true
       abortController.abort()
     }
-  }, [isAuthenticated, isOffline, value])
+  }, [
+    getAttachmentBlobLocally,
+    isAuthenticated,
+    isOffline,
+    storeAttachmentBlobLocally,
+    value,
+  ])
 
   React.useEffect(() => {
     return () => {

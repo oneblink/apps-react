@@ -26,6 +26,7 @@ import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenticationGuid'
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
+import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/CustomisableButtonInner'
@@ -710,31 +711,37 @@ function OneBlinkFormBase({
                           <CaptchaSiteKeyContext.Provider
                             value={captchaSiteKey}
                           >
-                            <FormIsReadOnlyContext.Provider value={isReadOnly}>
-                              {visiblePages.map(
-                                (pageElement: FormTypes.PageElement) => (
-                                  <PageFormElements
-                                    key={pageElement.id}
-                                    isActive={pageElement.id === currentPage.id}
-                                    formId={definition.id}
-                                    formElementsConditionallyShown={
-                                      formElementsConditionallyShown
-                                    }
-                                    formElementsValidation={
-                                      formElementsValidation
-                                    }
-                                    displayValidationMessages={
-                                      hasAttemptedSubmit ||
-                                      isDisplayingCurrentPageError
-                                    }
-                                    pageElement={pageElement}
-                                    onChange={handleChange}
-                                    model={submission}
-                                    setFormSubmission={setFormSubmission}
-                                  />
-                                ),
-                              )}
-                            </FormIsReadOnlyContext.Provider>
+                            <AttachmentBlobsProvider>
+                              <FormIsReadOnlyContext.Provider
+                                value={isReadOnly}
+                              >
+                                {visiblePages.map(
+                                  (pageElement: FormTypes.PageElement) => (
+                                    <PageFormElements
+                                      key={pageElement.id}
+                                      isActive={
+                                        pageElement.id === currentPage.id
+                                      }
+                                      formId={definition.id}
+                                      formElementsConditionallyShown={
+                                        formElementsConditionallyShown
+                                      }
+                                      formElementsValidation={
+                                        formElementsValidation
+                                      }
+                                      displayValidationMessages={
+                                        hasAttemptedSubmit ||
+                                        isDisplayingCurrentPageError
+                                      }
+                                      pageElement={pageElement}
+                                      onChange={handleChange}
+                                      model={submission}
+                                      setFormSubmission={setFormSubmission}
+                                    />
+                                  ),
+                                )}
+                              </FormIsReadOnlyContext.Provider>
+                            </AttachmentBlobsProvider>
                           </CaptchaSiteKeyContext.Provider>
                         </AbnLookupAuthenticationGuidContext.Provider>
                       </GoogleMapsApiKeyContext.Provider>
