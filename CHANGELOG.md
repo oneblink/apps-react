@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.7] - 2022-01-27
+
 ### Fixed
 
 - Image Attachments not updating when deleting Repeatable Set Entries
