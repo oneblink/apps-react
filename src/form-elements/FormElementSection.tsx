@@ -11,11 +11,13 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   onLookup,
   displayValidationMessages,
+  onChange,
   ...props
 }: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
+  const [isDirty, setIsDirty] = useBooleanState(false)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
 
   React.useEffect(() => {
@@ -33,6 +35,20 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       checkSectionValidity(element, props.formElementsValidation)
     )
   }, [displayValidationMessage, element, props.formElementsValidation])
+
+  const isValid = React.useMemo(() => {
+    return (
+      isDirty && !checkSectionValidity(element, props.formElementsValidation)
+    )
+  }, [isDirty, element, props.formElementsValidation])
+
+  const handleChange = React.useCallback(
+    (element: FormTypes.FormElement, value: unknown) => {
+      setIsDirty()
+      onChange(element, value)
+    },
+    [setIsDirty, onChange],
+  )
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
@@ -66,6 +82,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     <div
       className={clsx('ob-section', {
         'ob-section__invalid': isInvalid,
+        'ob-section__valid': isDirty && isValid,
       })}
     >
       <div
@@ -118,6 +135,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           displayValidationMessages={displayValidationMessage}
           onLookup={handleLookup}
           elements={element.elements}
+          onChange={handleChange}
         />
       </Collapse>
     </div>
