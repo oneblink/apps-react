@@ -29,7 +29,7 @@ export default function useConditionalLogic(
         submission,
         errorCallback,
       })
-    }, [definition.elements, submission])
+    }, [definition.elements, submission, errorCallback])
 
   return {
     conditionalLogicError,
