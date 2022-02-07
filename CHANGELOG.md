@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - added conditional `ob-section__valid` class to section element
 
+### Changed
+
+- import generateFormElementsConditionallyShown and flattenFormElements from @oneblink/sdk-core
+
 ## [0.5.7] - 2022-01-27
 
 ### Fixed
