@@ -439,6 +439,11 @@ function OneBlinkFormBase({
 
       allowNavigation()
 
+      //Add function to trim all element values. Pass in definition and submission.
+      /* trimWhitespaceFromSubmission({
+        definition,
+        submission: submissionData.submission,
+      }) */
       onSubmit({
         definition,
         submission: submissionData.submission,
