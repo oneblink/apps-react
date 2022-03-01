@@ -438,7 +438,6 @@ function OneBlinkFormBase({
         return
       }
 
-      //Add function to trim all element values. Pass in definition and submission.
       const trimmedSubmission = trimWhitespaceFromSubmission(
         definition.elements,
         submissionData.submission,
