@@ -186,13 +186,19 @@ function cleanElementValue(
         ) {
           break
         }
+        const checklistObject = submission[element.name] as ComplianceValue
+        const notes = checklistObject?.notes?.trim()
         if (stripBinaryData) {
           model[element.name] = {
-            ...(submission[element.name] as ComplianceValue),
+            ...checklistObject,
+            notes: notes,
             files: undefined,
           }
         } else {
-          model[element.name] = submission[element.name]
+          model[element.name] = {
+            ...checklistObject,
+            notes: notes,
+          }
         }
         break
       }
@@ -212,7 +218,20 @@ function cleanElementValue(
       }
       default: {
         if (!formElementsConditionallyShown?.[element.name]?.isHidden) {
-          model[element.name] = submission[element.name]
+          const value = submission[element.name] as string
+          switch (element.type) {
+            case 'text':
+            case 'textarea':
+            case 'email':
+            case 'barcodeScanner':
+            case 'telephone': {
+              model[element.name] = value.trim()
+              break
+            }
+            default: {
+              model[element.name] = value
+            }
+          }
         }
       }
     }
