@@ -187,12 +187,20 @@ function cleanElementValue(
           break
         }
         if (stripBinaryData) {
+          const checklistObject = submission[element.name] as ComplianceValue
+          const value = checklistObject?.notes?.trim()
           model[element.name] = {
             ...(submission[element.name] as ComplianceValue),
+            notes: value,
             files: undefined,
           }
         } else {
-          model[element.name] = submission[element.name]
+          const checklistObject = submission[element.name] as ComplianceValue
+          const value = checklistObject?.notes?.trim()
+          model[element.name] = {
+            ...(submission[element.name] as ComplianceValue),
+            notes: value,
+          }
         }
         break
       }
@@ -208,6 +216,15 @@ function cleanElementValue(
           )
           Object.assign(model, nestedModel)
         }
+        break
+      }
+      case 'text':
+      case 'textarea':
+      case 'email':
+      case 'barcodeScanner':
+      case 'telephone': {
+        const value = submission[element.name] as string
+        model[element.name] = value.trim()
         break
       }
       default: {
