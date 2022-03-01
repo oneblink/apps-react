@@ -1,4 +1,5 @@
 import { FormTypes } from '@oneblink/types'
+import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { FormSubmissionModel } from '../types/form'
 
 export default function trimWhitespaceFromSubmission(
@@ -56,7 +57,6 @@ export default function trimWhitespaceFromSubmission(
         result[formElement.name] = newEntries
         break
       }
-      case 'number':
       case 'text':
       case 'textarea':
       case 'email':
@@ -66,6 +66,19 @@ export default function trimWhitespaceFromSubmission(
         result[formElement.name] = value.trim()
         break
       }
+      case 'compliance': {
+        const checklistObject = result[
+          formElement.name
+        ] as FormElementComplianceValue
+        if (checklistObject.notes) {
+          const value = checklistObject.notes.trim()
+          checklistObject.notes = value
+          result[formElement.name] = checklistObject
+          break
+        }
+        break
+      }
     }
   }
+  return result
 }

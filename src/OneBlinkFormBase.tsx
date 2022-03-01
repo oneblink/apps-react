@@ -39,6 +39,7 @@ import {
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
+import trimWhitespaceFromSubmission from './services/trimWhitespaceFromSubmission'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -437,13 +438,20 @@ function OneBlinkFormBase({
         return
       }
 
+      //Add function to trim all element values. Pass in definition and submission.
+      const trimmedSubmission = trimWhitespaceFromSubmission(
+        definition.elements,
+        submissionData.submission,
+      )
+
+      if (trimmedSubmission) {
+        setFormSubmission((currentFormSubmission) => ({
+          ...currentFormSubmission,
+          submission: trimmedSubmission,
+        }))
+      }
       allowNavigation()
 
-      //Add function to trim all element values. Pass in definition and submission.
-      /* trimWhitespaceFromSubmission({
-        definition,
-        submission: submissionData.submission,
-      }) */
       onSubmit({
         definition,
         submission: submissionData.submission,
