@@ -218,14 +218,15 @@ function cleanElementValue(
       }
       default: {
         if (!formElementsConditionallyShown?.[element.name]?.isHidden) {
-          const value = submission[element.name] as string
+          const value = submission[element.name]
           switch (element.type) {
             case 'text':
             case 'textarea':
             case 'email':
             case 'barcodeScanner':
             case 'telephone': {
-              model[element.name] = value.trim()
+              const stringValue = value ? (value as string) : ''
+              model[element.name] = stringValue.trim()
               break
             }
             default: {
