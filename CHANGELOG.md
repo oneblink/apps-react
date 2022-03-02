@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.8] - 2022-03-02
+
 ### Added
 
 - added conditional `ob-section__valid` class to section element
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - import generateFormElementsConditionallyShown and flattenFormElements from @oneblink/sdk-core
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.3.4-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.3.2-beta.6](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [0.5.7] - 2022-01-27
 
