@@ -225,12 +225,10 @@ function cleanElementValue(
             case 'email':
             case 'barcodeScanner':
             case 'telephone': {
-              if (value) {
-                const stringValue = value ? (value as string) : ''
-                model[element.name] = stringValue.trim()
-                break
-              }
-              model[element.name] = value
+              model[element.name] =
+                typeof value === 'string'
+                  ? value.trim()
+                  : submission[element.name]
               break
             }
             default: {
