@@ -2,7 +2,7 @@ import * as React from 'react'
 import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import { Switch } from '@material-ui/core'
+import { Switch } from '@mui/material'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
