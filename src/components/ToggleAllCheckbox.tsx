@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Checkbox } from '@material-ui/core'
+import { Checkbox } from '@mui/material'
 import { FormTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler } from '../types/form'
 interface Props {

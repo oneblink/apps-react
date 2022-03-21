@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Peer Dependencies
+
+- **[BREAKING]** update [react](https://www.npmjs.com/package/react) to [^17.0.0](https://github.com/facebook/react/blob/main/CHANGELOG.md) (from [^16.14.0](https://github.com/facebook/react/blob/main/CHANGELOG.md))
+- **[BREAKING]** update [react-dom](https://www.npmjs.com/package/react-dom) to [^17.0.0](https://github.com/facebook/react/blob/main/CHANGELOG.md) (from [^16.14.0](https://github.com/facebook/react/blob/main/CHANGELOG.md))
+
+## Dependencies
+
+- no longer depend upon [@material-ui/core](https://www.npmjs.com/package/@material-ui/core)
+- depend upon [@mui/material](https://www.npmjs.com/package/@mui/material) [5.5.1](https://github.com/mui/material-ui/releases/tag/v5.5.1)
+
 ## [0.5.8] - 2022-03-02
 
 ### Added

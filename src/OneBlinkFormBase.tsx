@@ -3,7 +3,7 @@ import {
   createTheme as createMuiTheme,
   ThemeProvider,
   Tooltip,
-} from '@material-ui/core'
+} from '@mui/material'
 import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'

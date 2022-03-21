@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Checkbox } from '@material-ui/core'
+import { Checkbox } from '@mui/material'
 
 import FormElementOptions from '../components/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'

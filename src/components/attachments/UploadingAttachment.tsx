@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Tooltip } from '@material-ui/core'
+import { Tooltip } from '@mui/material'
 import useIsOffline from '../../hooks/useIsOffline'
 import OnLoading from '../OnLoading'
 
