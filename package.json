@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@blinkmobile/geolocation": "^2.0.3",
+    "@emotion/react": "^11.8.2",
+    "@emotion/styled": "^11.8.1",
     "@mui/material": "^5.5.1",
     "@oneblink/sdk-core": "^0.3.4-beta.1",
     "@react-google-maps/api": "^2.4.0",

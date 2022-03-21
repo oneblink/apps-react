@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Dependencies
 
 - no longer depend upon [@material-ui/core](https://www.npmjs.com/package/@material-ui/core)
+- depend upon [@emotion/react](https://www.npmjs.com/package/@emotion/react) 11.8.2
+- depend upon [@emotion/styled](https://www.npmjs.com/package/@emotion/styled) 11.8.1
 - depend upon [@mui/material](https://www.npmjs.com/package/@mui/material) [5.5.1](https://github.com/mui/material-ui/releases/tag/v5.5.1)
 
 ## [0.5.8] - 2022-03-02
