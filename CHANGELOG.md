@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- elements under a section in repeatable sets not being pre-filled
+
 ## Peer Dependencies
 
 - **[BREAKING]** update [react](https://www.npmjs.com/package/react) to [^17.0.0](https://github.com/facebook/react/blob/main/CHANGELOG.md) (from [^16.14.0](https://github.com/facebook/react/blob/main/CHANGELOG.md))
