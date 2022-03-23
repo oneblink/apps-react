@@ -202,7 +202,7 @@ function parseFormSubmissionModel(
       switch (element.type) {
         case 'section':
         case 'page': {
-          const partialModel = parseFormSubmissionModel(element.elements, {})
+          const partialModel = parseFormSubmissionModel(element.elements, model)
           Object.assign(model, partialModel)
           break
         }
