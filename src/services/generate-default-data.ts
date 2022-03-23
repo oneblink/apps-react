@@ -200,13 +200,9 @@ function parseFormSubmissionModel(
   return parseUnknownAsRecord(value, (record) => {
     return elements.reduce<FormSubmissionModel>((model, element) => {
       switch (element.type) {
-        case 'section': {
-          const partialModel = parseFormSubmissionModel(element.elements, model)
-          Object.assign(model, partialModel)
-          break
-        }
+        case 'section':
         case 'page': {
-          const partialModel = parseFormSubmissionModel(element.elements, {})
+          const partialModel = parseFormSubmissionModel(element.elements, model)
           Object.assign(model, partialModel)
           break
         }
