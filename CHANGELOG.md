@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2022-03-29
+
 ### Fixed
 
 - elements under a section in repeatable sets not being pre-filled
