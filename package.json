@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
-    "@oneblink/apps": "^0.12.9",
+    "@oneblink/apps": "^0.12.10-beta.1",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.14.4",
