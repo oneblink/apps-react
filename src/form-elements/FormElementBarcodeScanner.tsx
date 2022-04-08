@@ -150,7 +150,7 @@ function FormElementBarcodeScanner({
               disabled={element.readOnly}
               onClick={openBarcodeScanner}
             >
-              Scan Barcode
+              Local Scan Barcode
             </button>
           </div>
         )}

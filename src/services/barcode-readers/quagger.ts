@@ -1,5 +1,5 @@
 import Quagga from 'quagga'
-
+// import Quagga from '@ericblade/quagga2'
 const BARCODE_TYPES = [
   'code_128_reader',
   'ean_reader',
@@ -14,7 +14,7 @@ const BARCODE_TYPES = [
   'code_93_reader',
 ]
 
-export default function (
+export default async function (
   imgData: string,
   barcodeTypes?: string[],
 ): Promise<string | undefined> {
@@ -39,4 +39,17 @@ export default function (
       },
     )
   })
+
+  // const result = await Quagga.decodeSingle({
+  //   decoder: {
+  //     readers: (barcodeTypes && barcodeTypes.length
+  //       ? barcodeTypes
+  //       : BARCODE_TYPES
+  //     ).filter((type) => type !== 'qr_reader'),
+  //   },
+  //   locate: true, // try to locate the barcode in the image
+  //   src: imgData,
+  // })
+
+  // return result.codeResult?.code || undefined
 }
