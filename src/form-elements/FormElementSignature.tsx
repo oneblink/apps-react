@@ -13,7 +13,7 @@ import {
 } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
-import { urlToBlobAsync } from '../services/blob-utils'
+import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
@@ -102,15 +102,16 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
 
   const handleDone = React.useCallback(async () => {
     if (!canvasRef.current) return
-    const value = canvasRef.current.getTrimmedCanvas().toDataURL()
+    const trimmedCanvas = canvasRef.current.getTrimmedCanvas()
 
     if (checkIsUsingLegacyStorage(element)) {
+      const value = trimmedCanvas.toDataURL()
       onChange(element, value)
       return
     }
 
     // Convert base64 data uri to blob and send it on its way
-    const blob = await urlToBlobAsync(value)
+    const blob = await canvasToBlob(trimmedCanvas)
     onChange(element, prepareNewAttachment(blob, 'signature.png', element))
   }, [element, onChange])
 
