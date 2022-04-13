@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2022-04-13
+
+### Dependencies
+
+- update [@mui/material](https://www.npmjs.com/package/@mui/material) to [5.5.3](https://github.com/mui/material-ui/releases/tag/v5.5.3) (from [5.5.1](https://github.com/mui/material-ui/releases/tag/v5.5.1))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.3.6](https://github.com/oneblink/sdk-core-js/releases/tag/v0.3.6) (from [0.3.4-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.7.0 (from 2.4.0)
+
+- update [blueimp-load-image](https://www.npmjs.com/package/blueimp-load-image) to 5.16.0 (from 5.14.0)
+
+- update [flatpickr](https://www.npmjs.com/package/flatpickr) to [4.6.11](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.11) (from [4.6.9](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.9))
+
+- update [query-string](https://www.npmjs.com/package/query-string) to [7.1.1](https://github.com/sindresorhus/query-string/releases/tag/v7.1.1) (from [7.0.1](https://github.com/sindresorhus/query-string/releases/tag/v7.0.1))
+
+- update [react-signature-canvas](https://www.npmjs.com/package/react-signature-canvas) to [1.0.5](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.0.5) (from [1.0.3](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.0.3))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.7.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.5.1](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
 ## [0.6.0] - 2022-03-29
 
 ### Fixed
