@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2022-04-19
+
+### Dependencies
+
+- update [@emotion/react](https://www.npmjs.com/package/@emotion/react) to 11.9.0 (from 11.8.2)
+
+- update [@mui/material](https://www.npmjs.com/package/@mui/material) to [5.6.1](https://github.com/mui/material-ui/releases/tag/v5.6.1) (from [5.5.3](https://github.com/mui/material-ui/releases/tag/v5.5.3))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.4.0](https://github.com/oneblink/sdk-core-js/releases/tag/v0.4.0) (from [0.3.6](https://github.com/oneblink/sdk-core-js/releases/tag/v0.3.6))
+
 ## [0.6.1] - 2022-04-13
 
 ### Dependencies

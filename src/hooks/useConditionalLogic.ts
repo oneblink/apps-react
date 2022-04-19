@@ -17,7 +17,7 @@ export default function useConditionalLogic(
   >()
 
   const errorCallback = React.useCallback((error: Error) => {
-    console.warn('Error while checking conditional logic')
+    console.warn('Error while checking conditional logic', error)
     Sentry.captureException(error)
     setConditionalLogicError(error)
   }, [])
