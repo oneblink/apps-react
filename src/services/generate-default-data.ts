@@ -136,7 +136,7 @@ export function parseDateValue({
 
   if (dateOnly) {
     const { year, month, day } = new Intl.DateTimeFormat(
-      localisationService.locale,
+      localisationService.getLocale(),
       {
         year: 'numeric',
         month: '2-digit',

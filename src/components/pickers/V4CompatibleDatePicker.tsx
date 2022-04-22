@@ -173,7 +173,7 @@ const V4CompatibleDatePicker = ({
       // This triggers everytime a component of the while date changes within the picker
       onChange={emptyFn}
       onAccept={onAccept}
-      inputFormat={localisationService.dateFnsFormats.shortDateFormat}
+      inputFormat={localisationService.getDateFnsFormats().shortDateTime}
       disabled={disabled}
       {...rest}
     />

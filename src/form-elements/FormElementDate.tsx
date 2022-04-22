@@ -35,7 +35,7 @@ function FormElementDate({
     const opts: FlatpickrOptions = {
       altInput: true,
       dateFormat: 'Y-m-d',
-      altFormat: localisationService.flatpickrDateFormat,
+      altFormat: localisationService.getDateFnsFormats().shortDate,
       allowInput: true,
       altInputClass: 'input ob-input cypress-date-control',
       minDate: parseDateValue({
