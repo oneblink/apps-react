@@ -34,7 +34,7 @@ function FormElementTime({
     const opts: FlatpickrOptions = {
       altInput: true,
       dateFormat: 'H:i',
-      altFormat: localisationService.flatpickrTimeFormat,
+      altFormat: localisationService.getFlatpickrFormats().time,
       allowInput: false,
       altInputClass: 'input ob-input cypress-time-control',
       minDate: undefined,
