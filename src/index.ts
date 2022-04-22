@@ -17,3 +17,7 @@ export { default as useAuth, AuthContextProvider } from './hooks/useAuth'
 export { default as useLoadDataState } from './hooks/useLoadDataState'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
 export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmissionAutoSaveState'
+
+export { default as MuiV4CompatibleDatePicker } from './components/pickers/V4CompatibleDatePicker'
+export { default as MuiV4CompatibleDateTimePicker } from './components/pickers/V4CompatibleDateTimePicker'
+export { default as MuiV4CompatibleTimePicker } from './components/pickers/V4CompatibleTimePicker'

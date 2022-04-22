@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `MuiV4CompatibleDatePicker`
+- `MuiV4CompatibleDateTimePicker`
+- `MuiV4CompatibleTimePicker`
+
 ## [0.6.2] - 2022-04-19
 
 ### Dependencies
