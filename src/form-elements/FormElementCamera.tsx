@@ -4,27 +4,27 @@ import useBooleanState from '../hooks/useBooleanState'
 import downloadAttachment, {
   downloadFileLegacy,
 } from '../services/download-file'
-import OnLoading from '../components/OnLoading'
+import OnLoading from '../components/renderer/OnLoading'
 import { FormTypes } from '@oneblink/types'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import drawTimestampOnCanvas from '../services/drawTimestampOnCanvas'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
-import AnnotationModal from '../components/AnnotationModal'
-import Modal from '../components/Modal'
+import AnnotationModal from '../components/renderer/AnnotationModal'
+import Modal from '../components/renderer/Modal'
 import {
   checkIfContentTypeIsImage,
   checkIsUsingLegacyStorage,
   prepareNewAttachment,
   correctFileOrientation,
 } from '../services/attachments'
-import AttachmentStatus from '../components/attachments/AttachmentStatus'
+import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import {
   blobToCanvas,
   canvasToBlob,
   urlToBlobAsync,
 } from '../services/blob-utils'
-import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
+import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {

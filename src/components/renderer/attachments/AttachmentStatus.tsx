@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import UploadingAttachment from './UploadingAttachment'
 import { FormTypes } from '@oneblink/types'
-import { checkIsUsingLegacyStorage } from '../../services/attachments'
+import { checkIsUsingLegacyStorage } from '../../../services/attachments'
 
 const AttachmentStatus = ({
   element,

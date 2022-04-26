@@ -1,7 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
 
-import useBooleanState from '../hooks/useBooleanState'
+import useBooleanState from '../../hooks/useBooleanState'
 import { Sentry } from '@oneblink/apps'
 
 type AutocompleteOption<T> = {

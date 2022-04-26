@@ -1,45 +1,45 @@
 import * as React from 'react'
 
-import LookupNotification from '../components/LookupNotification'
+import LookupNotification from './LookupNotification'
 
-import FormElementBarcodeScanner from '../form-elements/FormElementBarcodeScanner'
-import FormElementEmail from '../form-elements/FormElementEmail'
-import FormElementABN from '../form-elements/FormElementABN'
-import FormElementBSB from '../form-elements/FormElementBSB'
-import FormElementText from '../form-elements/FormElementText'
-import FormElementTextarea from '../form-elements/FormElementTextarea'
-import FormElementNumber from '../form-elements/FormElementNumber'
-import FormElementHeading from '../form-elements/FormElementHeading'
-import FormElementHTML from '../form-elements/FormElementHTML'
-import FormElementTelephone from '../form-elements/FormElementTelephone'
-import FormElementSelect from '../form-elements/FormElementSelect'
-import FormElementDate from '../form-elements/FormElementDate'
-import FormElementImage from '../form-elements/FormElementImage'
-import FormElementDateTime from '../form-elements/FormElementDateTime'
-import FormElementTime from '../form-elements/FormElementTime'
-import FormElementCalculation from '../form-elements/FormElementCalculation'
-import FormElementRadio from '../form-elements/FormElementRadio'
-import FormElementAutocomplete from '../form-elements/FormElementAutocomplete'
-import FormElementRepeatableSet from '../form-elements/FormElementRepeatableSet'
-import FormElementSignature from '../form-elements/FormElementSignature'
-import FormElementCheckBoxes from '../form-elements/FormElementCheckBoxes'
+import FormElementBarcodeScanner from '../../form-elements/FormElementBarcodeScanner'
+import FormElementEmail from '../../form-elements/FormElementEmail'
+import FormElementABN from '../../form-elements/FormElementABN'
+import FormElementBSB from '../../form-elements/FormElementBSB'
+import FormElementText from '../../form-elements/FormElementText'
+import FormElementTextarea from '../../form-elements/FormElementTextarea'
+import FormElementNumber from '../../form-elements/FormElementNumber'
+import FormElementHeading from '../../form-elements/FormElementHeading'
+import FormElementHTML from '../../form-elements/FormElementHTML'
+import FormElementTelephone from '../../form-elements/FormElementTelephone'
+import FormElementSelect from '../../form-elements/FormElementSelect'
+import FormElementDate from '../../form-elements/FormElementDate'
+import FormElementImage from '../../form-elements/FormElementImage'
+import FormElementDateTime from '../../form-elements/FormElementDateTime'
+import FormElementTime from '../../form-elements/FormElementTime'
+import FormElementCalculation from '../../form-elements/FormElementCalculation'
+import FormElementRadio from '../../form-elements/FormElementRadio'
+import FormElementAutocomplete from '../../form-elements/FormElementAutocomplete'
+import FormElementRepeatableSet from '../../form-elements/FormElementRepeatableSet'
+import FormElementSignature from '../../form-elements/FormElementSignature'
+import FormElementCheckBoxes from '../../form-elements/FormElementCheckBoxes'
 import FormElementFiles, {
   stringifyAttachments,
-} from '../form-elements/FormElementFiles'
-import FormElementForm from '../form-elements/FormElementForm'
-import FormElementSection from '../form-elements/FormElementSection'
-import FormElementCamera from '../form-elements/FormElementCamera'
-import FormElementSummary from '../form-elements/FormElementSummary'
-import FormElementCaptcha from '../form-elements/FormElementCaptcha'
+} from '../../form-elements/FormElementFiles'
+import FormElementForm from '../../form-elements/FormElementForm'
+import FormElementSection from '../../form-elements/FormElementSection'
+import FormElementCamera from '../../form-elements/FormElementCamera'
+import FormElementSummary from '../../form-elements/FormElementSummary'
+import FormElementCaptcha from '../../form-elements/FormElementCaptcha'
 import FormElementLocation, {
   stringifyLocation,
-} from '../form-elements/FormElementLocation'
-import FormElementGeoscapeAddress from '../form-elements/FormElementGeoscapeAddress'
-import FormElementCompliance from '../form-elements/FormElementCompliance'
-import FormElementPointAddress from '../form-elements/FormElementPointAddress'
-import FormElementBoolean from '../form-elements/FormElementBoolean'
-import FormElementCivicaStreetName from '../form-elements/FormElementCivicaStreetName'
-import FormElementCivicaNameRecord from '../form-elements/FormElementCivicaNameRecord'
+} from '../../form-elements/FormElementLocation'
+import FormElementGeoscapeAddress from '../../form-elements/FormElementGeoscapeAddress'
+import FormElementCompliance from '../../form-elements/FormElementCompliance'
+import FormElementPointAddress from '../../form-elements/FormElementPointAddress'
+import FormElementBoolean from '../../form-elements/FormElementBoolean'
+import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
+import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
 
 import {
   CivicaTypes,
@@ -49,8 +49,8 @@ import {
   PointTypes,
 } from '@oneblink/types'
 
-import { FormSubmissionModelContextProvider } from '../hooks/useFormSubmissionModelContext'
-import { FormElementBinaryStorageValue } from '../types/attachments'
+import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
+import { FormElementBinaryStorageValue } from '../../types/attachments'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
@@ -59,7 +59,7 @@ import {
   FormElementValidation,
   FormElementValueChangeHandler,
   FormSubmissionModel,
-} from '../types/form'
+} from '../../types/form'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number

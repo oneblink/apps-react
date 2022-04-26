@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import utilsService from '../services/utils-service'
+import utilsService from '../../services/utils-service'
 
 type Props = {
   text: string

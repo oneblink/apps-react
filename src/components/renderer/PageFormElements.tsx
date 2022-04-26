@@ -2,7 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import OneBlinkFormElements from './OneBlinkFormElements'
-import useFormDefinition from '../hooks/useFormDefinition'
+import useFormDefinition from '../../hooks/useFormDefinition'
 import {
   FormElementLookupHandler,
   FormElementsConditionallyShown,
@@ -10,9 +10,9 @@ import {
   FormElementValueChangeHandler,
   FormSubmissionModel,
   SetFormSubmission,
-} from '../types/form'
-import { IsPageVisibleProvider } from '../hooks/useIsPageVisible'
-import { FlatpickrGuidProvider } from '../hooks/useFlatpickrGuid'
+} from '../../types/form'
+import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
+import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
 
 export type Props = {
   formId: number

@@ -3,18 +3,18 @@ import SignatureCanvas from 'react-signature-canvas'
 import { FormTypes } from '@oneblink/types'
 
 import scrollingService from '../services/scrolling-service'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
-import OnLoading from '../components/OnLoading'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
+import OnLoading from '../components/renderer/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import {
   checkIsUsingLegacyStorage,
   prepareNewAttachment,
 } from '../services/attachments'
-import AttachmentStatus from '../components/attachments/AttachmentStatus'
+import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
 import { urlToBlobAsync } from '../services/blob-utils'
-import ImagePreviewUnavailable from '../components/attachments/ImagePreviewUnavailable'
+import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 

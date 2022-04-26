@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Checkbox } from '@mui/material'
 import { FormTypes } from '@oneblink/types'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler } from '../../types/form'
 interface Props {
   id: string
   element: FormTypes.CheckboxElement | FormTypes.SelectElement

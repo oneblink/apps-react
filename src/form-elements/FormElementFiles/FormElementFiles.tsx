@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
-import Files from '../../components/attachments/Files'
+import Files from '../../components/renderer/attachments/Files'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../../hooks/attachments/useAttachments'
 import {

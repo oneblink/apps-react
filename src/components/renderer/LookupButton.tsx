@@ -1,8 +1,8 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import useLookupNotification from '../hooks/useLookupNotification'
-import { lookupValidationMessage } from '../services/form-validation'
-import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
+import useLookupNotification from '../../hooks/useLookupNotification'
+import { lookupValidationMessage } from '../../services/form-validation'
+import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 type Props = {
   value: unknown | undefined
   validationMessage: string | undefined

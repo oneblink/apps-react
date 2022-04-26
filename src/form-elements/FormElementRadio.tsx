@@ -2,12 +2,12 @@ import * as React from 'react'
 import clsx from 'clsx'
 import { Radio } from '@mui/material'
 
-import FormElementOptions from '../components/FormElementOptions'
+import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {

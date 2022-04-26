@@ -2,10 +2,10 @@ import * as React from 'react'
 import { formElementsService } from '@oneblink/sdk-core'
 import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
-import FormElementOptions from '../components/FormElementOptions'
+import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import AutocompleteDropdown from '../components/AutocompleteDropdown'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler } from '../types/form'
 

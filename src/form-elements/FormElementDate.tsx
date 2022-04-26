@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 
-import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import useBooleanState from '../hooks/useBooleanState'
-import LookupButton from '../components/LookupButton'
+import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { generateDate, parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler } from '../types/form'
 

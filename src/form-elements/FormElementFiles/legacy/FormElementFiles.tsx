@@ -2,10 +2,10 @@ import * as React from 'react'
 
 import useBooleanState from '../../../hooks/useBooleanState'
 import useIsMounted from '../../../hooks/useIsMounted'
-import FileCard from '../../../components/attachments/FileCard'
+import FileCard from '../../../components/renderer/attachments/FileCard'
 import { downloadFileLegacy } from '../../../services/download-file'
 import { FormTypes } from '@oneblink/types'
-import Files from '../../../components/attachments/Files'
+import Files from '../../../components/renderer/attachments/Files'
 import {
   checkIfContentTypeIsImage,
   parseFilesAsAttachmentsLegacy,

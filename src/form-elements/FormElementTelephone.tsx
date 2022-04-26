@@ -1,10 +1,10 @@
 import * as React from 'react'
 
-import CopyToClipboardButton from '../components/CopyToClipboardButton'
+import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
-import LookupButton from '../components/LookupButton'
+import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {

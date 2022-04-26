@@ -1,6 +1,6 @@
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-import OneBlinkFormElements from '../components/OneBlinkFormElements'
+import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
