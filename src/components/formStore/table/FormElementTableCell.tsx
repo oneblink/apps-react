@@ -8,7 +8,7 @@ import {
   FilesElementDataTableCellContent,
   MultiSelectFormElementTableCellContent,
   getSelectedOptionLabel,
-} from '../ElementDisplay'
+} from '../display/ElementDisplay'
 import RepeatableSetCell from './RepeatableSetCell'
 import TableCellCopyButton from './TableCellCopyButton'
 import { format } from 'date-fns'

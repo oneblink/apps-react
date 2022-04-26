@@ -11,7 +11,7 @@ import {
 import { SubmissionTypes } from '@oneblink/types'
 import { IsHoveringProvider } from '../../../hooks/useIsHovering'
 import { NoResourcesYet } from '../../NoResourcesYet'
-import FormStoreIcon from '../FormStoreIcon'
+import FormStoreIcon from '../display/FormStoreIcon'
 import HeaderCellMoreButton from './HeaderCellMoreButton'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 import { formStoreService } from '@oneblink/apps'
