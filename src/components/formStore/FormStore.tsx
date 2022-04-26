@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useHistory } from 'react-router-dom'
-import { ValidatorForm } from 'react-material-ui-form-validator'
 import querystring from 'query-string'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
@@ -14,7 +13,9 @@ import {
   Sync as SyncIcon,
 } from '@mui/icons-material'
 import { Form } from '@oneblink/types/typescript/forms'
-import useSubmissionIdValidationMessage from '../../hooks/useSubmissionIdIsValid'
+import useSubmissionIdValidationMessage, {
+  validateIsUUID,
+} from '../../hooks/useSubmissionIdIsValid'
 import { FormTypes } from '@oneblink/types'
 import DownloadSubmissionDataButton from './DownloadSubmissionDataButton'
 import ColumnsConfigurationButton from './ColumnsConfigurationButton'
@@ -86,11 +87,7 @@ function FormStoreContainer({
     ),
     onValidateFilters: React.useCallback(
       (currentFilters: formStoreService.FormStoreFilters) => {
-        return ValidatorForm.getValidator(
-          'isUUID',
-          currentFilters.submissionId?.$eq,
-          true,
-        )
+        return validateIsUUID(currentFilters.submissionId?.$eq)
       },
       [],
     ),
