@@ -2,7 +2,7 @@ import * as React from 'react'
 
 const submissionIdInvalidMessage = 'Must be a valid Submission Id'
 
-export const UUIDValidatorFn = (value: unknown) => {
+export const validateIsUUID = (value: unknown) => {
   if (value === null || value === undefined || value === '') {
     return true
   }
@@ -15,9 +15,6 @@ export const UUIDValidatorFn = (value: unknown) => {
     value,
   )
 }
-
-export const validateIsUUID = (value: unknown) =>
-  !!value || !UUIDValidatorFn(value)
 
 const useSubmissionIdValidationMessage = (submissionId: string | undefined) => {
   return React.useMemo(() => {
