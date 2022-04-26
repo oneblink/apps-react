@@ -1,10 +1,10 @@
 import * as React from 'react'
 import useBooleanState from '../hooks/useBooleanState'
 import generateDefaultData from '../services/generate-default-data'
-import OneBlinkFormElements from '../components/OneBlinkFormElements'
-import Modal from '../components/Modal'
+import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
+import Modal from '../components/renderer/Modal'
 import { FormTypes } from '@oneblink/types'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,

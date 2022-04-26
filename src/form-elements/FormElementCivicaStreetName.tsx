@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { formService } from '@oneblink/apps'
 
-import AutocompleteDropdown from '../components/AutocompleteDropdown'
-import FormElementLabelContainer from '../components/FormElementLabelContainer'
+import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes, CivicaTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler } from '../types/form'
 

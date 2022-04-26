@@ -1,14 +1,14 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import useBooleanState from '../../hooks/useBooleanState'
-import useClickOutsideElement from '../../hooks/useClickOutsideElement'
+import useBooleanState from '../../../hooks/useBooleanState'
+import useClickOutsideElement from '../../../hooks/useClickOutsideElement'
 import { FormTypes } from '@oneblink/types'
 import FileCardContent from './FileCardContent'
-import AttachmentStatus from '../../components/attachments/AttachmentStatus'
+import AttachmentStatus from './AttachmentStatus'
 import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
-} from '../../services/form-validation'
+} from '../../../services/form-validation'
 
 type Props = {
   element: FormTypes.FilesElement

@@ -2,8 +2,8 @@ import * as React from 'react'
 import clsx from 'clsx'
 import SignatureCanvas from 'react-signature-canvas'
 
-import useBooleanState from '../hooks/useBooleanState'
-import scrollingService from '../services/scrolling-service'
+import useBooleanState from '../../hooks/useBooleanState'
+import scrollingService from '../../services/scrolling-service'
 
 const annotationButtonColours = [
   '#000000',

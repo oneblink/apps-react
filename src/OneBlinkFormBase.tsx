@@ -10,10 +10,10 @@ import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
 import { FormTypes, FormsAppsTypes } from '@oneblink/types'
 
-import Modal from './components/Modal'
-import OneBlinkAppsErrorOriginalMessage from './components/OneBlinkAppsErrorOriginalMessage'
+import Modal from './components/renderer/Modal'
+import OneBlinkAppsErrorOriginalMessage from './components/renderer/OneBlinkAppsErrorOriginalMessage'
 import cleanFormSubmissionModel from './services/cleanFormSubmissionModel'
-import PageFormElements from './components/PageFormElements'
+import PageFormElements from './components/renderer/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
 import useConditionalLogic from './hooks/useConditionalLogic'
 import usePages from './hooks/usePages'
@@ -29,7 +29,7 @@ import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
-import CustomisableButtonInner from './components/CustomisableButtonInner'
+import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
 import {
   FormElementsValidation,
   FormElementValueChangeHandler,

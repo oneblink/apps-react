@@ -2,7 +2,7 @@ import * as React from 'react'
 import downloadAttachment from '../../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../../hooks/attachments/useAttachment'
-import FileCard from '../../components/attachments/FileCard'
+import FileCard from '../../components/renderer/attachments/FileCard'
 import { Attachment } from '../../types/attachments'
 
 type Props = {

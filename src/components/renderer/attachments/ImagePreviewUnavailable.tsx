@@ -1,5 +1,5 @@
 import * as React from 'react'
-import useIsOffline from '../../hooks/useIsOffline'
+import useIsOffline from '../../../hooks/useIsOffline'
 
 function ImagePreviewUnavailable() {
   const isOffline = useIsOffline()

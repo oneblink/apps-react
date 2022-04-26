@@ -1,6 +1,6 @@
 import * as React from 'react'
-import OnLoading from './components/OnLoading'
-import Modal from './components/Modal'
+import OnLoading from './components/renderer/OnLoading'
+import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
