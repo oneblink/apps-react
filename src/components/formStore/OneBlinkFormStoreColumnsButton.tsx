@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { ColumnInstance } from 'react-table'
 import {
   Button,
   Checkbox,
@@ -13,15 +12,13 @@ import {
 } from '@mui/material'
 import { Settings as SettingsIcon } from '@mui/icons-material'
 import useBooleanState from '../../hooks/useBooleanState'
-import { SubmissionTypes } from '@oneblink/types'
+import useFormStoreTableContext from './useFormStoreTableContext'
 
-function ColumnsConfigurationButton({
-  allColumns,
-  getToggleHideAllColumnsProps,
-}: {
-  allColumns: ColumnInstance<SubmissionTypes.FormStoreRecord>[]
-  getToggleHideAllColumnsProps: () => React.ComponentProps<typeof Checkbox>
-}) {
+function OneBlinkFormStoreColumnsButton(
+  props: React.ComponentProps<typeof Button>,
+) {
+  const { getToggleHideAllColumnsProps, allColumns } =
+    useFormStoreTableContext()
   const [
     isConfiguringColumns,
     showColumnConfiguration,
@@ -35,10 +32,10 @@ function ColumnsConfigurationButton({
       <Button
         startIcon={<SettingsIcon />}
         onClick={showColumnConfiguration}
-        variant="outlined"
-      >
-        Columns
-      </Button>
+        // eslint-disable-next-line react/no-children-prop
+        children={<>Columns</>}
+        {...props}
+      />
       <Dialog
         open={isConfiguringColumns}
         maxWidth="sm"
@@ -93,4 +90,4 @@ function ColumnsConfigurationButton({
   )
 }
 
-export default React.memo(ColumnsConfigurationButton)
+export default React.memo(OneBlinkFormStoreColumnsButton)

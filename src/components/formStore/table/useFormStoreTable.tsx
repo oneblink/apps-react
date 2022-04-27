@@ -14,6 +14,7 @@ import TableCellCopyButton from './TableCellCopyButton'
 import { FormTypes } from '@oneblink/types'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 import { formStoreService, localisationService } from '@oneblink/apps'
+import { FormStoreElementsContext } from '../OneBlinkFormStoreProvider'
 
 const defaultColumn = {
   minWidth: 150,
@@ -23,21 +24,22 @@ const defaultColumn = {
 const localStorageKey = (formId: number) =>
   `REACT_TABLE_STATE_FORM_STORE_${formId}`
 
-export default function FormStoreTable({
+export default function useFormStoreTable({
   form,
-  formElements,
   formStoreRecords,
   filters,
   onChangeFilters,
+  onRefresh,
   submissionIdValidationMessage,
 }: {
   formStoreRecords: FormStoreRecord[]
   form: FormTypes.Form
-  formElements: FormTypes.FormElementWithName[]
   filters: formStoreService.FormStoreFilters
   onChangeFilters: OnChangeFilters<formStoreService.FormStoreFilters>
+  onRefresh: () => void
   submissionIdValidationMessage?: string
 }) {
+  const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
     return generateColumns({
       formElements,
@@ -210,5 +212,12 @@ export default function FormStoreTable({
     }
   }, [form.id, table.state])
 
-  return table
+  return {
+    ...table,
+    form,
+    filters,
+    onChangeFilters,
+    onRefresh,
+    submissionIdValidationMessage,
+  }
 }
