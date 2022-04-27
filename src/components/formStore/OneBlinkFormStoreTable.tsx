@@ -56,6 +56,7 @@ const Table = styled('div')(({ theme }) => ({
     position: 'relative',
     fontWeight: theme.typography.fontWeightBold,
     paddingRight: 0,
+    borderBottomWidth: '2px',
     '& .th-content': {
       flex: 1,
       display: 'flex',
