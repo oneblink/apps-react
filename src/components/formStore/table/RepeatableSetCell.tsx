@@ -1,31 +1,32 @@
 import * as React from 'react'
-import { Typography, Divider } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import { Typography, Divider as MuiDivider, styled } from '@mui/material'
 import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../../../hooks/useBooleanState'
 import generateColumns from './generateColumns'
 import { useTable } from 'react-table'
 import RepeatableSetCellAccordion from './RepeatableSetCellAccordion'
 
-export const useRepeatableSetCellStyles = makeStyles((theme) => {
-  return {
-    entriesWrapper: { width: '100%' },
-    cellRowWrapper: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingBottom: theme.spacing(),
-      width: '100%',
-    },
-    cellValueWrapper: {
-      flex: 2,
-      marginLeft: theme.spacing(),
-      textAlign: 'right',
-      width: '100%',
-    },
-    divider: { margin: theme.spacing(1, -2) },
-  }
+const Wrapper = styled('div')({
+  width: '100%',
 })
+const CellRow = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingBottom: theme.spacing(),
+  width: '100%',
+}))
+
+const CellValue = styled('span')(({ theme }) => ({
+  flex: 2,
+  marginLeft: theme.spacing(),
+  textAlign: 'right',
+  width: '100%',
+}))
+
+const Divider = styled(MuiDivider)(({ theme }) => ({
+  margin: theme.spacing(1, -2),
+}))
 
 type Props = {
   value: Array<Record<string, unknown>>
@@ -33,7 +34,6 @@ type Props = {
 }
 
 const RepeatableSetCell = ({ formElement, value }: Props) => {
-  const classes = useRepeatableSetCellStyles()
   const [isVisible, , , toggleVisibility] = useBooleanState(false)
   const hasMultipleEntries = value.length > 1
   const columns = React.useMemo(
@@ -59,7 +59,7 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
       isOpen={isVisible}
       onChange={toggleVisibility}
     >
-      <div className={classes.entriesWrapper}>
+      <Wrapper>
         {rows.map((row, i) => {
           const isLast = i === rows.length - 1
           prepareRow(row)
@@ -69,23 +69,21 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
                 const cellValue = cell.render('Cell')
                 if (!cellValue) return null
                 return (
-                  <div className={classes.cellRowWrapper} key={cell.column.id}>
+                  <CellRow key={cell.column.id}>
                     <span>
                       <Typography color="textSecondary" variant="body2">
                         {cell.column.headerText}:
                       </Typography>
                     </span>
-                    <span className={classes.cellValueWrapper}>
-                      {cellValue}
-                    </span>
-                  </div>
+                    <CellValue>{cellValue}</CellValue>
+                  </CellRow>
                 )
               })}
-              {!isLast && <Divider className={classes.divider} />}
+              {!isLast && <Divider />}
             </React.Fragment>
           )
         })}
-      </div>
+      </Wrapper>
     </RepeatableSetCellAccordion>
   )
 }
