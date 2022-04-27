@@ -298,7 +298,8 @@ const generateColumns = <
               const submission = parentElementNames.reduce<
                 SubmissionTypes.S3SubmissionData['submission']
               >(
-                (memo, elementName) => memo?.[elementName],
+                (memo, elementName) =>
+                  memo?.[elementName] as FormStoreRecord['submission'],
                 formStoreRecord.submission,
               )
               return (
