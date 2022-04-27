@@ -1,83 +1,45 @@
 import * as React from 'react'
-import clsx from 'clsx'
-import { Theme } from '@mui/material/styles'
-import withStyles from '@mui/styles/withStyles'
-import IconButton from '@mui/material/IconButton'
 import Snackbar from '@mui/material/Snackbar'
-import SnackbarContent from '@mui/material/SnackbarContent'
-import ErrorIcon from '@mui/icons-material/Error'
-import CloseIcon from '@mui/icons-material/Close'
+import MuiAlert, { AlertProps } from '@mui/material/Alert'
 
-const styles = (theme: Theme) => ({
-  snackbarContent: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    marginRight: theme.spacing(2),
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 })
 
-type Props = {
+function ErrorSnackbar({
+  open,
+  onClose,
+  children,
+}: {
   open: boolean
   children: React.ReactNode
   onClose: (arg: null) => unknown
+}) {
+  const handleClose = React.useCallback(
+    (e: unknown, reason?: string) => {
+      if (reason !== 'clickaway') {
+        onClose(null)
+      }
+    },
+    [onClose],
+  )
+  return (
+    <Snackbar
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      open={open}
+      onClose={handleClose}
+    >
+      <Alert onClose={handleClose} severity="error">
+        {children}
+      </Alert>
+    </Snackbar>
+  )
 }
 
-class ErrorSnackbar extends React.Component<
-  Props & {
-    classes: Record<string, string>
-  }
-> {
-  handleClose = (e: unknown, reason: string) => {
-    if (reason !== 'clickaway') {
-      this.props.onClose(null)
-    }
-  }
-
-  render() {
-    const { classes, open, children } = this.props
-    return (
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        open={open}
-        onClose={this.handleClose}
-      >
-        <SnackbarContent
-          className={classes.snackbarContent}
-          message={
-            <span className={classes.message}>
-              <ErrorIcon className={clsx(classes.icon, classes.iconVariant)} />
-              {children}
-            </span>
-          }
-          action={[
-            // @ts-expect-error ???
-            <IconButton
-              key="close"
-              aria-label="Close"
-              color="inherit"
-              className={classes.close}
-              onClick={this.handleClose}
-              data-cypress="error-snackbar-close"
-              size="large"
-            >
-              <CloseIcon className={classes.icon} />
-            </IconButton>,
-          ]}
-        />
-      </Snackbar>
-    )
-  }
-}
-
-export default withStyles(styles)(ErrorSnackbar) as React.ComponentType<Props>
+export default React.memo(ErrorSnackbar)

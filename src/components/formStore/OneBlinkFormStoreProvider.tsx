@@ -1,12 +1,24 @@
 import * as React from 'react'
-import LoadingWithMessage from './components/LoadingWithMessage'
-import ErrorMessage from './components/ErrorMessage'
-import FormStore from './components/formStore/FormStore'
+import LoadingWithMessage from '../LoadingWithMessage'
+import ErrorMessage from '../messages/ErrorMessage'
 import { formStoreService } from '@oneblink/apps'
-import useLoadDataState from './hooks/useLoadDataState'
+import useLoadDataState from '../../hooks/useLoadDataState'
 import { FormTypes } from '@oneblink/types'
+import { Box } from '@mui/material'
+import { FormStoreTableProvider } from './FormStoreTableProvider'
 
-function OneBlinkFormStoreView({ form }: { form: FormTypes.Form }) {
+export type FormStoreElementsContextValue = FormTypes.FormElementWithName[]
+
+export const FormStoreElementsContext =
+  React.createContext<FormStoreElementsContextValue>([])
+
+export function OneBlinkFormStoreProvider({
+  form,
+  children,
+}: {
+  form: FormTypes.Form
+  children: React.ReactNode
+}) {
   const fetchFormStoreDefinition = React.useCallback(
     (abortSignal?: AbortSignal) => {
       return formStoreService.getFormStoreDefinition(form.id, abortSignal)
@@ -36,11 +48,12 @@ function OneBlinkFormStoreView({ form }: { form: FormTypes.Form }) {
   }
 
   return (
-    <FormStore
-      form={form}
-      formElements={formStoreDefinitionState.result.formElements}
-    />
+    <FormStoreElementsContext.Provider
+      value={formStoreDefinitionState.result.formElements}
+    >
+      <Box paddingBottom={16}>
+        <FormStoreTableProvider form={form}>{children}</FormStoreTableProvider>
+      </Box>
+    </FormStoreElementsContext.Provider>
   )
 }
-
-export default React.memo(OneBlinkFormStoreView)

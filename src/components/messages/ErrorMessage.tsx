@@ -1,6 +1,6 @@
 import * as React from 'react'
 import ErrorIcon from '@mui/icons-material/Error'
-import LargeIconMessage from './messages/LargeIconMessage'
+import LargeIconMessage from './LargeIconMessage'
 import { Button } from '@mui/material'
 type Props = {
   IconComponent?: React.ComponentType<{

@@ -2,23 +2,16 @@ import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import CsvIcon from '@mui/icons-material/Download'
-import { Form } from '@oneblink/types/typescript/forms'
 import ErrorSnackbar from '../ErrorSnackbar'
 import { ColumnInstance } from 'react-table'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
+import useFormStoreTableContext from './useFormStoreTableContext'
 
-function DownloadSubmissionDataButton({
-  disabled,
-  form,
-  filters,
-  visibleColumns,
-}: {
-  disabled: boolean
-  form: Form
-  filters?: formStoreService.FormStoreFilters
-  visibleColumns: ColumnInstance<FormStoreRecord>[]
-}) {
+function OneBlinkFormStoreDownloadButton(
+  props: React.ComponentProps<typeof LoadingButton>,
+) {
+  const { visibleColumns, filters, form } = useFormStoreTableContext()
   const [{ isDownloadingCsv, downloadingCsvError }, setState] = React.useState<{
     isDownloadingCsv: boolean
     downloadingCsvError: Error | null
@@ -64,12 +57,10 @@ function DownloadSubmissionDataButton({
           loadingPosition="start"
           startIcon={<CsvIcon />}
           onClick={downloadCsv}
-          color="primary"
-          variant="outlined"
-          disabled={disabled}
-        >
-          Download
-        </LoadingButton>
+          // eslint-disable-next-line react/no-children-prop
+          children={<>Download</>}
+          {...props}
+        />
       </Tooltip>
 
       <ErrorSnackbar open={!!downloadingCsvError} onClose={clearError}>
@@ -80,4 +71,4 @@ function DownloadSubmissionDataButton({
     </>
   )
 }
-export default React.memo(DownloadSubmissionDataButton)
+export default React.memo(OneBlinkFormStoreDownloadButton)
