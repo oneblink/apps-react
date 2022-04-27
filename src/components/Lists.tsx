@@ -8,13 +8,14 @@ type ListItemsProps = {
 }
 
 const noPaddingY = {
-  'padding-top': 0,
-  'padding-bottom': 0,
+  paddingTop: 0,
+  paddingBottom: 0,
 }
 
 const getListStyles = (theme: Theme) => ({
   margin: 0,
   padding: theme.spacing(1, 1, 1, 4),
+  listStyle: 'inherit',
   '& > ul, & > ol': noPaddingY,
 })
 
@@ -47,7 +48,7 @@ function Li(props: Omit<React.ComponentProps<typeof Typography>, 'ref'>) {
 
 export const ListItem = styled(Li, {
   shouldForwardProp: (prop) => prop !== 'spaced',
-})<ListProps>(({ theme, spaced }) => {
+})<ListProps>(({ spaced }) => {
   return {
     display: 'list-item',
     ...(spaced
