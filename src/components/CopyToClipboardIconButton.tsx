@@ -1,26 +1,13 @@
 import * as React from 'react'
 import copy from 'copy-to-clipboard'
 import { IconButton, Tooltip, Snackbar } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import FileCopy from '@mui/icons-material/FileCopy'
-import clsx from 'clsx'
 
 type Props = {
   text: string
   large?: boolean
   noMarginY?: boolean
 } & React.ComponentProps<typeof IconButton>
-
-// Styles
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    fontSize: 18,
-  },
-  noMarginY: {
-    marginTop: theme.spacing(-1),
-    marginBottom: theme.spacing(-1),
-  },
-}))
 
 export function CopyToClipBoardIconButton({
   text,
@@ -29,7 +16,10 @@ export function CopyToClipBoardIconButton({
   className,
   ...rest
 }: Props) {
-  const classes = useStyles()
+  const noMarginYProp = {
+    marginTop: -1,
+    marginBottom: -1,
+  }
   const [isCopyToClipboardOpen, setIsCopyToClipboardOpen] =
     React.useState(false)
   const copyToClipboard = React.useCallback(() => {
@@ -48,10 +38,11 @@ export function CopyToClipBoardIconButton({
             copyToClipboard()
           }}
           data-cypress="copy-to-clip-board-button"
-          className={clsx(className, { [classes.noMarginY]: noMarginY })}
+          className={className}
+          sx={noMarginY ? noMarginYProp : undefined}
           {...rest}
         >
-          <FileCopy className={large ? undefined : classes.icon} />
+          <FileCopy sx={large ? undefined : { fontSize: 18 }} />
         </IconButton>
       </Tooltip>
       <Snackbar
