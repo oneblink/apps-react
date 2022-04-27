@@ -49,7 +49,7 @@ export const ListItem = styled(Li, {
   shouldForwardProp: (prop) => prop !== 'spaced',
 })<ListProps>(({ theme, spaced }) => {
   return {
-    ...getListStyles(theme),
+    display: 'list-item',
     ...(spaced
       ? {
           lineHeight: 1.9,
