@@ -100,7 +100,7 @@
   "module": "./dist/index.js",
   "peerDependencies": {
     "@oneblink/apps": "^1.0.0 || ^1.0.0-beta.1",
-    "@mui/x-date-pickers": "^5.0.0 || ^5.0.0-alpha.1",
+    "@mui/x-date-pickers": "^5.0.0 || ^5.0.0-alpha.2",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-router-dom": "^5.2.0"
