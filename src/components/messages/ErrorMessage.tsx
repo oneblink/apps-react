@@ -1,11 +1,11 @@
 import * as React from 'react'
 import ErrorIcon from '@mui/icons-material/Error'
-import LargeIconMessage from './LargeIconMessage'
+import LargeIconMessage, {
+  Props as LargeIconMessageProps,
+} from './LargeIconMessage'
 import { Button } from '@mui/material'
 type Props = {
-  IconComponent?: React.ComponentType<{
-    className: string
-  }>
+  IconComponent?: LargeIconMessageProps['IconComponent']
   title: string
   gutterTop?: boolean
   gutterBottom?: boolean

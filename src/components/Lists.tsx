@@ -1,69 +1,55 @@
 import * as React from 'react'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material'
+import { styled, Theme } from '@mui/material'
 
 type ListItemsProps = {
   children: React.ReactNode
   disablePadding?: boolean
 }
 
-type ListProps = {
-  children: React.ReactNode
-  spaced?: boolean
+const noPaddingY = {
+  'padding-top': 0,
+  'padding-bottom': 0,
 }
 
-function li(props: React.ComponentProps<typeof Typography>) {
-  return (
-    <Typography {...props} component="li" color="inherit" variant="body2" />
-  )
-}
+const getListStyles = (theme: Theme) => ({
+  margin: 0,
+  padding: theme.spacing(1, 1, 1, 4),
+  '& > ul, & > ol': noPaddingY,
+})
 
 export const OrderedList = styled('ol', {
   shouldForwardProp: (prop) => prop !== 'disablePadding',
 })<ListItemsProps>(({ theme, disablePadding }) => {
   return {
-    margin: 0,
-    padding: theme.spacing(1, 1, 1, 4),
-    '& > ul, & > ol': {
-      'padding-top': 0,
-      'padding-bottom': 0,
-    },
-    ...(disablePadding
-      ? {
-          'padding-top': 0,
-          'padding-bottom': 0,
-        }
-      : {}),
+    ...getListStyles(theme),
+    ...(disablePadding ? noPaddingY : {}),
   }
 })
 export const UnorderedList = styled('ul', {
   shouldForwardProp: (prop) => prop !== 'disablePadding',
 })<ListItemsProps>(({ theme, disablePadding }) => {
   return {
-    margin: 0,
-    padding: theme.spacing(1, 1, 1, 4),
-    '& > ul, & > ol': {
-      'padding-top': 0,
-      'padding-bottom': 0,
-    },
-    ...(disablePadding
-      ? {
-          'padding-top': 0,
-          'padding-bottom': 0,
-        }
-      : {}),
+    ...getListStyles(theme),
+    ...(disablePadding ? noPaddingY : {}),
   }
 })
-export const ListItem = styled(li, {
+
+type ListProps = {
+  spaced?: boolean
+}
+
+function Li(props: Omit<React.ComponentProps<typeof Typography>, 'ref'>) {
+  return (
+    <Typography {...props} component="li" color="inherit" variant="body2" />
+  )
+}
+
+export const ListItem = styled(Li, {
   shouldForwardProp: (prop) => prop !== 'spaced',
 })<ListProps>(({ theme, spaced }) => {
   return {
-    margin: 0,
-    padding: theme.spacing(1, 1, 1, 4),
-    '& > ul, & > ol': {
-      'padding-top': 0,
-      'padding-bottom': 0,
-    },
+    ...getListStyles(theme),
     ...(spaced
       ? {
           lineHeight: 1.9,

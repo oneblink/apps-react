@@ -1,6 +1,6 @@
 import * as React from 'react'
 import copy from 'copy-to-clipboard'
-import { IconButton, Tooltip, Snackbar } from '@mui/material'
+import { IconButton, Tooltip, Snackbar, SxProps } from '@mui/material'
 import FileCopy from '@mui/icons-material/FileCopy'
 
 type Props = {
@@ -9,6 +9,10 @@ type Props = {
   noMarginY?: boolean
 } & React.ComponentProps<typeof IconButton>
 
+const noMargin: SxProps = {
+  marginTop: -1,
+  marginBottom: -1,
+}
 export function CopyToClipBoardIconButton({
   text,
   large,
@@ -16,10 +20,6 @@ export function CopyToClipBoardIconButton({
   className,
   ...rest
 }: Props) {
-  const noMarginYProp = {
-    marginTop: -1,
-    marginBottom: -1,
-  }
   const [isCopyToClipboardOpen, setIsCopyToClipboardOpen] =
     React.useState(false)
   const copyToClipboard = React.useCallback(() => {
@@ -39,7 +39,7 @@ export function CopyToClipBoardIconButton({
           }}
           data-cypress="copy-to-clip-board-button"
           className={className}
-          sx={noMarginY ? noMarginYProp : undefined}
+          sx={noMarginY ? noMargin : undefined}
           {...rest}
         >
           <FileCopy sx={large ? undefined : { fontSize: 18 }} />
@@ -68,4 +68,5 @@ export function CopyToClipBoardIconButton({
     </>
   )
 }
+
 export default React.memo(CopyToClipBoardIconButton)
