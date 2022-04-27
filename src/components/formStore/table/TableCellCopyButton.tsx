@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Zoom } from '@mui/material'
 import CopyToClipboardIconButton from '../../CopyToClipboardIconButton'
 import { useIsHovering } from '../../../hooks/useIsHovering'
-import { styled } from '@mui/styles'
+import { styled } from '@mui/material/styles'
 
 function TableCellCopyButton({
   text,

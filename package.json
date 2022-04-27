@@ -13,7 +13,6 @@
     "@mui/icons-material": "^5.6.2",
     "@mui/lab": "^5.0.0-alpha.79",
     "@mui/material": "^5.6.1",
-    "@mui/styles": "^5.6.2",
     "@oneblink/sdk-core": "^0.4.0",
     "@react-google-maps/api": "2.7.0",
     "blueimp-load-image": "^5.16.0",
@@ -47,10 +46,10 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
+    "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "@oneblink/apps": "^1.0.0-beta.1",
     "@oneblink/release-cli": "^1.0.0",
     "@oneblink/types": "github:oneblink/types",
-    "@mui/x-date-pickers": "^5.0.0-alpha.2",
     "@types/blueimp-load-image": "^5.14.4",
     "@types/color": "^3.0.3",
     "@types/file-saver": "^2.0.5",
@@ -99,8 +98,8 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
-    "@oneblink/apps": "^1.0.0 || ^1.0.0-beta.1",
     "@mui/x-date-pickers": "^5.0.0 || ^5.0.0-alpha.2",
+    "@oneblink/apps": "^1.0.0 || ^1.0.0-beta.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-router-dom": "^5.2.0"
