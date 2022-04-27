@@ -1,5 +1,5 @@
 import * as React from 'react'
-import LargeIconMessage from './messages/LargeIconMessage'
+import LargeIconMessage from './LargeIconMessage'
 type Props = {
   IconComponent: React.ComponentType<{
     className: string
