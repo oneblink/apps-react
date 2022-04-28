@@ -18,15 +18,6 @@ const Table = styled('div')(({ theme }) => ({
   display: 'inline-block',
   backgroundColor: theme.palette.background.paper,
   fontSize: theme.typography.body2.fontSize,
-  '& .thead': {
-    backgroundColor: theme.palette.background.paper,
-    position: 'sticky',
-    zIndex: 1,
-    top: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      top: theme.spacing(8),
-    },
-  },
   '& .tc': {
     padding: theme.spacing(1),
     borderBottom: '1px solid',
@@ -107,19 +98,24 @@ function OneBlinkFormStoreTable() {
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups: [headerGroup],
+    headerGroups: [parentHeaderGroup],
     rows,
     prepareRow,
     onChangeFilters,
   } = useFormStoreTableContext()
+
+  if (!parentHeaderGroup) {
+    return null
+  }
+
   return (
     <>
       <Table {...getTableProps()}>
         <div className="thead">
-          <div {...headerGroup.getHeaderGroupProps()} className="tr">
+          <div {...parentHeaderGroup.getHeaderGroupProps()} className="tr">
             {
               // Loop over the headers in each row
-              headerGroup.headers.map((headerGroup) => {
+              parentHeaderGroup.headers.map((headerGroup) => {
                 const sortingProperty = headerGroup.sorting?.property
                 const sortingDirection = headerGroup.sorting?.direction
 
