@@ -6,31 +6,30 @@ import {
 } from '@mui/material'
 
 export const CustomAccordion = styled(Accordion)(({ theme }) => ({
-  '.MuiAccordion-root': {
-    border: `1px solid ${theme.palette.divider}`,
-    boxShadow: 'none',
-    width: '100%',
-    '&:not(:last-of-type)': {
-      borderBottom: 'none',
-    },
-    '&:before': {
-      display: 'none',
-    },
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: 'none',
+  width: '100%',
+  '&:not(:last-of-type)': {
+    borderBottom: 'none',
   },
-  '.Mui-expanded': {
+  '&:before': {
+    display: 'none',
+  },
+  '& .Mui-expanded': {
     margin: 'auto',
   },
 }))
 
 export const CustomAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
-  '.MuiAccordionSummary-root': {
-    backgroundColor: 'rgba(0, 0, 0, .03)',
-  },
-  '.Mui-expanded': {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+  backgroundColor: 'rgba(0, 0, 0, .03)',
+  '&.Mui-expanded': {
     minHeight: theme.spacing(6),
   },
-  '.MuiAccordionSummary-content': {
+  '& .Mui-expanded': {
+    marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
+  },
+  '& .MuiAccordionSummary-content': {
     '.Mui-expanded': {
       margin: theme.spacing(1, 0),
     },
@@ -38,7 +37,6 @@ export const CustomAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
 }))
 
 export const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
-  '.MuiAccordionDetails-root': {
-    padding: theme.spacing(1, 2),
-  },
+  padding: theme.spacing(1, 2),
+  borderTop: `1px solid ${theme.palette.divider}`,
 }))
