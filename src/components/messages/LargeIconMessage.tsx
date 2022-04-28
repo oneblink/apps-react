@@ -1,63 +1,17 @@
 import * as React from 'react'
-import clsx from 'clsx'
-import makeStyles from '@mui/styles/makeStyles'
 import { Typography, Grid, Container } from '@mui/material'
-// import { styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
-type Props = {
-  IconComponent: React.ComponentType<{
-    className: string
-  }>
+type Variant = 'primary' | 'success' | 'error' | 'warning'
+export type Props = {
+  IconComponent: React.ComponentType<{ color: Variant }>
   title: string
-  variant: 'primary' | 'success' | 'error' | 'warning'
+  variant: Variant
   gutterTop?: boolean
   gutterBottom?: boolean
   children?: React.ReactNode
   action?: React.ReactNode
 }
-// Styles
-const useStyles = makeStyles((theme) => ({
-  gutterTop: {
-    paddingTop: theme.spacing(4),
-  },
-  gutterBottom: {
-    marginBottom: theme.spacing(4),
-  },
-  iconContainer: {
-    textAlign: 'center',
-  },
-  icon: {
-    fontSize: theme.spacing(16),
-  },
-  primaryText: {
-    color: theme.palette.primary.main,
-  },
-  successText: {
-    color: theme.palette.success.main,
-  },
-  errorText: {
-    color: theme.palette.error.main,
-  },
-  warningText: {
-    color: theme.palette.warning.main,
-  },
-}))
-
-// TODO: Come back to this
-// interface StyledIconContainerProps {
-//   gutterTop?: boolean
-// }
-
-// const StyledIconContainer = styled('div', {
-//   shouldForwardProp: (prop) => prop !== 'gutterTop',
-// })<StyledIconContainerProps>(({ theme, gutterTop }) => ({
-//   textAlign: 'center',
-//   ...(gutterTop
-//     ? {
-//         paddingTop: theme.spacing(4),
-//       }
-//     : {}),
-// }))
 
 function LargeIconMessage({
   IconComponent,
@@ -68,55 +22,66 @@ function LargeIconMessage({
   children,
   action,
 }: Props) {
-  const classes = useStyles()
-  const textClassName = clsx({
-    [classes.primaryText]: variant === 'primary',
-    [classes.successText]: variant === 'success',
-    [classes.errorText]: variant === 'error',
-    [classes.warningText]: variant === 'warning',
-  })
+  const Icon = React.useMemo(() => {
+    return styled(IconComponent)(({ theme }) => ({
+      fontSize: theme.spacing(16),
+    }))
+  }, [IconComponent])
+
   return (
     <Container maxWidth="sm">
-      <div
-        className={clsx(classes.iconContainer, {
-          [classes.gutterTop]: gutterTop,
-        })}
-      >
-        <IconComponent className={clsx(classes.icon, textClassName)} />
-      </div>
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-        className={textClassName}
-      >
+      <StyledIconContainer gutterTop={gutterTop}>
+        <Icon color={variant} />
+      </StyledIconContainer>
+      <Typography variant="h5" align="center" gutterBottom color={variant}>
         {title}
       </Typography>
       {children ? (
-        <Typography
+        <StyledTypography
           align="center"
           variant="body2"
           paragraph={!!action}
-          className={clsx({
-            [classes.gutterBottom]: !action && gutterBottom,
-          })}
+          gutterBottom={!action && gutterBottom}
         >
           {children}
-        </Typography>
+        </StyledTypography>
       ) : null}
       {action && (
-        <Grid
+        <StyledGrid
           container
           justifyContent="center"
-          className={clsx({
-            [classes.gutterBottom]: gutterBottom,
-          })}
+          gutterBottom={gutterBottom}
         >
           {action}
-        </Grid>
+        </StyledGrid>
       )}
     </Container>
   )
 }
 
 export default React.memo<Props>(LargeIconMessage)
+
+const StyledIconContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'gutterTop',
+})<{
+  gutterTop?: boolean
+}>(({ theme, gutterTop }) => ({
+  textAlign: 'center',
+  ...(gutterTop
+    ? {
+        paddingTop: theme.spacing(4),
+      }
+    : {}),
+}))
+
+const StyledTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'gutterBottom',
+})<React.ComponentProps<typeof Typography>>(({ theme, gutterBottom }) => ({
+  ...(gutterBottom ? { marginBottom: theme.spacing(4) } : {}),
+}))
+
+const StyledGrid = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== 'gutterBottom',
+})<{ gutterBottom?: boolean }>(({ theme, gutterBottom }) => ({
+  ...(gutterBottom ? { marginBottom: theme.spacing(4) } : {}),
+}))

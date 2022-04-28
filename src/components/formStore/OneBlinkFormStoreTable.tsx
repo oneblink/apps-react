@@ -18,15 +18,6 @@ const Table = styled('div')(({ theme }) => ({
   display: 'inline-block',
   backgroundColor: theme.palette.background.paper,
   fontSize: theme.typography.body2.fontSize,
-  '& .thead': {
-    backgroundColor: theme.palette.background.paper,
-    position: 'sticky',
-    zIndex: 1,
-    top: theme.spacing(7),
-    [theme.breakpoints.up('sm')]: {
-      top: theme.spacing(8),
-    },
-  },
   '& .tc': {
     padding: theme.spacing(1),
     borderBottom: '1px solid',
@@ -56,6 +47,7 @@ const Table = styled('div')(({ theme }) => ({
     position: 'relative',
     fontWeight: theme.typography.fontWeightBold,
     paddingRight: 0,
+    borderBottomWidth: '2px',
     '& .th-content': {
       flex: 1,
       display: 'flex',
@@ -106,145 +98,140 @@ function OneBlinkFormStoreTable() {
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
+    headerGroups: [parentHeaderGroup],
     rows,
     prepareRow,
     onChangeFilters,
   } = useFormStoreTableContext()
+
+  if (!parentHeaderGroup) {
+    return null
+  }
+
   return (
     <>
       <Table {...getTableProps()}>
         <div className="thead">
-          {
-            // Loop over the header rows
-            headerGroups.map((headerGroup) => (
-              // Apply the header row props
-              <div
-                {...headerGroup.getHeaderGroupProps()}
-                key={headerGroup.id}
-                className="tr"
-              >
-                {
-                  // Loop over the headers in each row
-                  headerGroup.headers.map((headerGroup) => {
-                    const sortingProperty = headerGroup.sorting?.property
-                    const sortingDirection = headerGroup.sorting?.direction
+          <div {...parentHeaderGroup.getHeaderGroupProps()} className="tr">
+            {
+              // Loop over the headers in each row
+              parentHeaderGroup.headers.map((headerGroup) => {
+                const sortingProperty = headerGroup.sorting?.property
+                const sortingDirection = headerGroup.sorting?.direction
 
-                    return (
-                      <Tooltip
-                        title={headerGroup.tooltip || ''}
-                        arrow
-                        key={headerGroup.id}
-                        PopperProps={{
-                          sx: {
-                            zIndex: 'drawer',
-                          },
-                        }}
-                      >
-                        <div
-                          className={clsx('th tc', {
-                            'is-clickable': !!sortingProperty,
-                          })}
-                          onClick={
-                            sortingProperty
-                              ? () => {
-                                  onChangeFilters((currentFilters) => {
-                                    switch (sortingDirection) {
-                                      case 'ascending': {
-                                        return {
-                                          ...currentFilters,
-                                          sorting: [
-                                            {
-                                              property: sortingProperty,
-                                              direction: 'descending',
-                                            },
-                                          ],
-                                        }
-                                      }
-                                      case 'descending': {
-                                        return {
-                                          ...currentFilters,
-                                          sorting: undefined,
-                                        }
-                                      }
-                                      default: {
-                                        return {
-                                          ...currentFilters,
-                                          sorting: [
-                                            {
-                                              property: sortingProperty,
-                                              direction: 'ascending',
-                                            },
-                                          ],
-                                        }
-                                      }
+                return (
+                  <Tooltip
+                    title={headerGroup.tooltip || ''}
+                    arrow
+                    key={headerGroup.id}
+                    PopperProps={{
+                      sx: {
+                        zIndex: 'drawer',
+                      },
+                    }}
+                  >
+                    <div
+                      className={clsx('th tc', {
+                        'is-clickable': !!sortingProperty,
+                      })}
+                      onClick={
+                        sortingProperty
+                          ? () => {
+                              onChangeFilters((currentFilters) => {
+                                switch (sortingDirection) {
+                                  case 'ascending': {
+                                    return {
+                                      ...currentFilters,
+                                      sorting: [
+                                        {
+                                          property: sortingProperty,
+                                          direction: 'descending',
+                                        },
+                                      ],
                                     }
-                                  }, false)
+                                  }
+                                  case 'descending': {
+                                    return {
+                                      ...currentFilters,
+                                      sorting: undefined,
+                                    }
+                                  }
+                                  default: {
+                                    return {
+                                      ...currentFilters,
+                                      sorting: [
+                                        {
+                                          property: sortingProperty,
+                                          direction: 'ascending',
+                                        },
+                                      ],
+                                    }
+                                  }
                                 }
-                              : undefined
-                          }
-                          // Apply the header cell props
-                          {...headerGroup.getHeaderProps()}
-                        >
-                          <IsHoveringProvider className="th-content">
-                            <div className="th-label">
-                              <span>{headerGroup.headerText}</span>
-                              {sortingDirection && (
-                                <SortingIcon
-                                  fontSize="small"
-                                  color="primary"
-                                  sx={
-                                    sortingDirection === 'descending'
-                                      ? {
-                                          transform: 'rotate(180deg)',
-                                        }
-                                      : undefined
-                                  }
-                                  className="th-icon"
-                                />
-                              )}
-                              {headerGroup.filter?.isInvalid ? (
-                                <Tooltip
-                                  title={
-                                    headerGroup.filter?.validationMessage || ''
-                                  }
-                                >
-                                  <WarningIcon
-                                    fontSize="small"
-                                    color="error"
-                                    className="th-icon"
-                                  />
-                                </Tooltip>
-                              ) : headerGroup.filter?.value ? (
-                                <FilterListIcon
-                                  fontSize="small"
-                                  color="primary"
-                                  className="th-icon"
-                                />
-                              ) : null}
-                            </div>
-                            <HeaderCellMoreButton
-                              headerGroup={headerGroup}
-                              onHide={headerGroup.toggleHidden}
+                              }, false)
+                            }
+                          : undefined
+                      }
+                      // Apply the header cell props
+                      {...headerGroup.getHeaderProps()}
+                    >
+                      <IsHoveringProvider className="th-content">
+                        <div className="th-label">
+                          <span>{headerGroup.headerText}</span>
+                          {sortingDirection && (
+                            <SortingIcon
+                              fontSize="small"
+                              color="primary"
+                              sx={
+                                sortingDirection === 'descending'
+                                  ? {
+                                      transform: 'rotate(180deg)',
+                                    }
+                                  : undefined
+                              }
+                              className="th-icon"
                             />
-                            <div
-                              {...headerGroup.getResizerProps()}
-                              className={clsx('resizer', {
-                                'is-resizing': headerGroup.isResizing,
-                              })}
-                              onClick={(event) => {
-                                event.stopPropagation()
-                              }}
+                          )}
+                          {headerGroup.filter?.isInvalid ? (
+                            <Tooltip
+                              title={
+                                headerGroup.filter?.validationMessage || ''
+                              }
+                            >
+                              <WarningIcon
+                                fontSize="small"
+                                color="error"
+                                className="th-icon"
+                              />
+                            </Tooltip>
+                          ) : headerGroup.filter?.value ? (
+                            <FilterListIcon
+                              fontSize="small"
+                              color="primary"
+                              className="th-icon"
                             />
-                          </IsHoveringProvider>
+                          ) : null}
                         </div>
-                      </Tooltip>
-                    )
-                  })
-                }
-              </div>
-            ))
-          }
+                        <HeaderCellMoreButton
+                          headerGroup={headerGroup}
+                          onHide={headerGroup.toggleHidden}
+                        />
+                        <div
+                          {...headerGroup.getResizerProps()}
+                          className={clsx('resizer', {
+                            'is-resizing': headerGroup.isResizing,
+                          })}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                          }}
+                        />
+                      </IsHoveringProvider>
+                    </div>
+                  </Tooltip>
+                )
+              })
+            }
+          </div>
         </div>
         <div {...getTableBodyProps()} className="tbody">
           {

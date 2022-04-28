@@ -1,43 +1,42 @@
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  styled,
+} from '@mui/material'
 
-import withStyles from '@mui/styles/withStyles'
-
-export const CustomAccordion = withStyles((theme) => ({
-  root: {
-    border: `1px solid ${theme.palette.divider}`,
-    boxShadow: 'none',
-    width: '100%',
-    '&:not(:last-of-type)': {
-      borderBottom: 'none',
-    },
-    '&:before': {
-      display: 'none',
-    },
-    '&$expanded': {
-      margin: 'auto',
-    },
+export const CustomAccordion = styled(Accordion)(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  boxShadow: 'none',
+  width: '100%',
+  '&:not(:last-of-type)': {
+    borderBottom: 'none',
   },
-  expanded: {},
-}))(Accordion)
-
-export const CustomAccordionSummary = withStyles((theme) => ({
-  root: {
-    backgroundColor: 'rgba(0, 0, 0, .03)',
-    '&$expanded': {
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      minHeight: theme.spacing(6),
-    },
+  '&:before': {
+    display: 'none',
   },
-  content: {
-    '&$expanded': {
+  '& .Mui-expanded': {
+    margin: 'auto',
+  },
+}))
+
+export const CustomAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  backgroundColor: 'rgba(0, 0, 0, .03)',
+  '&.Mui-expanded': {
+    minHeight: theme.spacing(6),
+  },
+  '& .Mui-expanded': {
+    marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
+  },
+  '& .MuiAccordionSummary-content': {
+    '.Mui-expanded': {
       margin: theme.spacing(1, 0),
     },
   },
-  expanded: {},
-}))(AccordionSummary)
+}))
 
-export const CustomAccordionDetails = withStyles((theme) => ({
-  root: {
-    padding: theme.spacing(1, 2),
-  },
-}))(AccordionDetails)
+export const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  borderTop: `1px solid ${theme.palette.divider}`,
+}))

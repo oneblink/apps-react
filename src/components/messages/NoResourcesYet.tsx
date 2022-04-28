@@ -1,9 +1,9 @@
 import * as React from 'react'
-import LargeIconMessage from './LargeIconMessage'
+import LargeIconMessage, {
+  Props as LargeIconMessageProps,
+} from './LargeIconMessage'
 type Props = {
-  IconComponent: React.ComponentType<{
-    className: string
-  }>
+  IconComponent: LargeIconMessageProps['IconComponent']
   title: string
   gutterBottom?: boolean
   children?: React.ReactNode
