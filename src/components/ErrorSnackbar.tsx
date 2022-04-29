@@ -1,6 +1,8 @@
 import * as React from 'react'
-import Snackbar from '@mui/material/Snackbar'
+import { Snackbar, IconButton } from '@mui/material'
+import { Close } from '@mui/icons-material'
 import MuiAlert, { AlertProps } from '@mui/material/Alert'
+import { styled } from '@mui/material/styles'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -35,11 +37,29 @@ function ErrorSnackbar({
       open={open}
       onClose={handleClose}
     >
-      <Alert onClose={handleClose} severity="error">
+      <Alert
+        severity="error"
+        action={
+          <IconButton
+            key="close"
+            aria-label="Close"
+            color="inherit"
+            onClick={handleClose}
+            data-cypress="error-snackbar-close"
+            size="large"
+          >
+            <StyledCloseIcon />
+          </IconButton>
+        }
+      >
         {children}
       </Alert>
     </Snackbar>
   )
 }
+
+const StyledCloseIcon = styled(Close)(() => ({
+  fontSize: 20,
+}))
 
 export default React.memo(ErrorSnackbar)
