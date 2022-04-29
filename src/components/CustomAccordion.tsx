@@ -15,6 +15,9 @@ export const CustomAccordion = styled(Accordion)(({ theme }) => ({
   '&:before': {
     display: 'none',
   },
+  '&.Mui-expanded': {
+    margin: 'unset',
+  },
   '& .Mui-expanded': {
     margin: 'auto',
   },
@@ -30,8 +33,8 @@ export const CustomAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
     marginBottom: theme.spacing(1.5),
   },
   '& .MuiAccordionSummary-content': {
-    '.Mui-expanded': {
-      margin: theme.spacing(1, 0),
+    '&.Mui-expanded': {
+      margin: theme.spacing(1.5, 0),
     },
   },
 }))
