@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Typography, Grid, Container } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import { CommonProps } from '@mui/material/OverridableComponent'
 
 type Variant = 'primary' | 'success' | 'error' | 'warning'
 export type Props = {
@@ -11,6 +12,7 @@ export type Props = {
   gutterBottom?: boolean
   children?: React.ReactNode
   action?: React.ReactNode
+  className?: CommonProps['className']
 }
 
 function LargeIconMessage({
@@ -21,6 +23,7 @@ function LargeIconMessage({
   gutterBottom,
   children,
   action,
+  className,
 }: Props) {
   const Icon = React.useMemo(() => {
     return styled(IconComponent)(({ theme }) => ({
@@ -29,7 +32,10 @@ function LargeIconMessage({
   }, [IconComponent])
 
   return (
-    <Container maxWidth="sm">
+    <Container
+      maxWidth="sm"
+      className={className || 'ob-mui-large-icon-message'}
+    >
       <StyledIconContainer gutterTop={gutterTop}>
         <Icon color={variant} />
       </StyledIconContainer>
