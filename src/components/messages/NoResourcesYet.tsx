@@ -21,7 +21,7 @@ export function NoResourcesYet({
       variant="primary"
       gutterBottom={gutterBottom}
       gutterTop
-      className="ob-mui-no-resources-yet-message"
+      className="ob-no-resources-yet-message"
     >
       {children}
     </LargeIconMessage>

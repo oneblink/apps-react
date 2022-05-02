@@ -44,7 +44,7 @@ function ErrorMessage({
             </Button>
           )
         }
-        className="ob-mui-error-snackbar"
+        className="ob-error-snackbar"
       >
         {children}
       </LargeIconMessage>

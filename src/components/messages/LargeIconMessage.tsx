@@ -32,10 +32,7 @@ function LargeIconMessage({
   }, [IconComponent])
 
   return (
-    <Container
-      maxWidth="sm"
-      className={className || 'ob-mui-large-icon-message'}
-    >
+    <Container maxWidth="sm" className={className || 'ob-large-icon-message'}>
       <StyledIconContainer gutterTop={gutterTop}>
         <Icon color={variant} />
       </StyledIconContainer>

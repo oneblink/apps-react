@@ -6,8 +6,8 @@ type Props = {
 
 const Loading = ({ message }: Props) => {
   return (
-    <Box p={2} className="ob-mui-loading-with-message">
-      <Grid container spacing={2} className="ob-mui-loading">
+    <Box p={2} className="ob-loading-with-message">
+      <Grid container spacing={2} className="ob-loading">
         <Grid xs={12} container item justifyContent="center">
           <CircularProgress></CircularProgress>
         </Grid>
@@ -17,7 +17,7 @@ const Loading = ({ message }: Props) => {
             container
             item
             justifyContent="center"
-            className="ob-mui-loading-message"
+            className="ob-loading-message"
           >
             <Typography variant="body2" align="center">
               {message}
