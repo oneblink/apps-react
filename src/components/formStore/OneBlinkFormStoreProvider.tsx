@@ -51,7 +51,7 @@ export function OneBlinkFormStoreProvider({
     <FormStoreElementsContext.Provider
       value={formStoreDefinitionState.result.formElements}
     >
-      <Box paddingBottom={16}>
+      <Box paddingBottom={20}>
         <FormStoreTableProvider form={form}>{children}</FormStoreTableProvider>
       </Box>
     </FormStoreElementsContext.Provider>

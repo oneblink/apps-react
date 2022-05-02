@@ -133,7 +133,17 @@ export function FormStoreTableProvider({
         </NoResourcesYet>
       )}
 
-      {isLoading && <LoadingWithMessage message="Loading more records..." />}
+      {isLoading && (
+        <div
+          className={
+            isLoading === 'INITIAL'
+              ? 'ob-form-store-loading-initial'
+              : 'ob-form-store-loading-more'
+          }
+        >
+          <LoadingWithMessage message="Loading more records..." />
+        </div>
+      )}
 
       {loadError && (
         <>
