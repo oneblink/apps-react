@@ -44,6 +44,7 @@ function ErrorMessage({
             </Button>
           )
         }
+        className="ob-error-snackbar"
       >
         {children}
       </LargeIconMessage>

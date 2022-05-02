@@ -110,9 +110,12 @@ function OneBlinkFormStoreTable() {
 
   return (
     <>
-      <Table {...getTableProps()}>
+      <Table {...getTableProps()} className="ob-form-store-table">
         <div className="thead">
-          <div {...parentHeaderGroup.getHeaderGroupProps()} className="tr">
+          <div
+            {...parentHeaderGroup.getHeaderGroupProps()}
+            className="tr ob-form-store-table-header-row"
+          >
             {
               // Loop over the headers in each row
               parentHeaderGroup.headers.map((headerGroup) => {
@@ -131,7 +134,7 @@ function OneBlinkFormStoreTable() {
                     }}
                   >
                     <div
-                      className={clsx('th tc', {
+                      className={clsx('th tc ob-form-store-table-header-cell', {
                         'is-clickable': !!sortingProperty,
                       })}
                       onClick={
@@ -241,7 +244,11 @@ function OneBlinkFormStoreTable() {
               prepareRow(row)
               return (
                 // Apply the row props
-                <div {...row.getRowProps()} key={row.id} className="tr">
+                <div
+                  {...row.getRowProps()}
+                  key={row.id}
+                  className="tr ob-form-store-table-row"
+                >
                   {
                     // Loop over the rows cells
                     row.cells.map((cell) => {
@@ -250,9 +257,12 @@ function OneBlinkFormStoreTable() {
                         <IsHoveringProvider
                           {...cell.getCellProps()}
                           key={cell.column.id}
-                          className={clsx('td tc', {
-                            'is-resizing': cell.column.isResizing,
-                          })}
+                          className={clsx(
+                            'td tc ob-form-store-table-row-cell',
+                            {
+                              'is-resizing': cell.column.isResizing,
+                            },
+                          )}
                         >
                           {
                             // Render the cell contents

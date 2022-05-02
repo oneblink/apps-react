@@ -10,6 +10,7 @@ function OneBlinkFormStoreRefreshButton(
     useFormStoreTableContext()
   return (
     <Button
+      className="ob-form-store-refresh-button"
       startIcon={<SyncIcon />}
       onClick={onRefresh}
       color="primary"

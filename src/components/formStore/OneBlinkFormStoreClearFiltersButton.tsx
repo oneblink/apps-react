@@ -9,6 +9,7 @@ function OneBlinkFormStoreClearFiltersButton(
   const { onChangeFilters } = useFormStoreTableContext()
   return (
     <Button
+      className="ob-form-store-clear-filters-button"
       startIcon={<FilterIcon />}
       onClick={() => {
         onChangeFilters(

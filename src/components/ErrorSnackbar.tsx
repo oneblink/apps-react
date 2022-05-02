@@ -36,6 +36,7 @@ function ErrorSnackbar({
       }}
       open={open}
       onClose={handleClose}
+      className="ob-error-snackbar"
     >
       <Alert
         severity="error"

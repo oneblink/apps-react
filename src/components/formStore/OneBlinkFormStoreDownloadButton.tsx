@@ -52,6 +52,7 @@ function OneBlinkFormStoreDownloadButton(
     <>
       <Tooltip title="Download submission data as a CSV file">
         <LoadingButton
+          className="ob-form-store-download-csv-button"
           type="button"
           loading={isDownloadingCsv}
           loadingPosition="start"

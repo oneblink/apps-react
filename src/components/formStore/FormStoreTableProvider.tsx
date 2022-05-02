@@ -146,6 +146,7 @@ export function FormStoreTableProvider({
           </ErrorMessage>
           <Grid container justifyContent="center">
             <Button
+              className="ob-form-store-try-again-button"
               variant="outlined"
               color="primary"
               onClick={() => onTryAgain()}
