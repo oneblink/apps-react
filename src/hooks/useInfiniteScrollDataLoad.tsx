@@ -8,6 +8,8 @@ export type OnChangeFilters<T> = (
   shouldDebounce: boolean,
 ) => void
 
+export type LoadingType = 'INITIAL' | 'MORE' | null
+
 export default function useInfiniteScrollDataLoad<Filters, T>({
   limit,
   debounceSearchMs,
@@ -66,19 +68,19 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
   )
 
   const [{ isLoading, records, error, nextOffset }, setState] = React.useState<{
-    isLoading: boolean
+    isLoading: LoadingType
     records: T[]
     error: Error | null
     nextOffset: number
   }>({
-    isLoading: true,
+    isLoading: 'INITIAL',
     records: [],
     error: null,
     nextOffset: 0,
   })
 
   const fetchRecords = React.useCallback(
-    async (abortSignal) => {
+    async (abortSignal: AbortSignal) => {
       if (onValidateFilters) {
         const isValid = onValidateFilters(filters)
         if (!isValid) {
@@ -90,7 +92,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
         ...currentState,
         error: null,
         records: offset === 0 ? [] : currentState.records,
-        isLoading: true,
+        isLoading: offset === 0 ? 'INITIAL' : 'MORE',
       }))
       try {
         const result = await onSearch(
@@ -104,7 +106,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
         setState((currentState) => ({
           error: null,
           records: [...currentState.records, ...result.records],
-          isLoading: false,
+          isLoading: null,
           nextOffset: result.meta.nextOffset || 0,
         }))
       } catch (error) {
@@ -115,7 +117,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
         setState((currentState) => ({
           ...currentState,
           error: error as Error,
-          isLoading: false,
+          isLoading: null,
         }))
       }
     },
