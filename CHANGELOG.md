@@ -7,11 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2022-05-03
+
 ### Added
 
 - `MuiV4CompatibleDatePicker`
 - `MuiV4CompatibleDateTimePicker`
 - `MuiV4CompatibleTimePicker`
+
+### Dependencies
+
+- no longer depend upon [@mui/material](https://www.npmjs.com/package/@mui/material)
+
+- depend upon [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material) [5.6.2](https://github.com/mui/material-ui/releases/tag/v5.6.2)
+
+- depend upon [date-fns](https://www.npmjs.com/package/date-fns) [2.28.0](https://github.com/date-fns/date-fns/releases/tag/v2.28.0)
+
+- depend upon [react-table](https://www.npmjs.com/package/react-table) [7.7.0](https://github.com/TanStack/react-table/releases/tag/v7.7.0)
 
 ## [0.6.2] - 2022-04-19
 
