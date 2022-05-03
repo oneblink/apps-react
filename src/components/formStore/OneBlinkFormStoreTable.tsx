@@ -186,7 +186,7 @@ function OneBlinkFormStoreTable() {
                               fontSize="small"
                               color="primary"
                               sx={
-                                sortingDirection === 'descending'
+                                sortingDirection === 'ascending'
                                   ? {
                                       transform: 'rotate(180deg)',
                                     }
