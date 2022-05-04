@@ -1,11 +1,13 @@
 import * as React from 'react'
-import { Typography, Grid, Container } from '@mui/material'
-import { styled } from '@mui/material/styles'
+import { Typography, Grid, Container, useTheme, styled } from '@mui/material'
 import { CommonProps } from '@mui/material/OverridableComponent'
 
 type Variant = 'primary' | 'success' | 'error' | 'warning'
 export type Props = {
-  IconComponent: React.ComponentType<{ color: Variant }>
+  IconComponent: React.ComponentType<{
+    color: Variant
+    style: React.CSSProperties
+  }>
   title: string
   variant: Variant
   gutterTop?: boolean
@@ -25,18 +27,21 @@ function LargeIconMessage({
   action,
   className,
 }: Props) {
-  const Icon = React.useMemo(() => {
-    return styled(IconComponent)(({ theme }) => ({
-      fontSize: theme.spacing(16),
-    }))
-  }, [IconComponent])
+  const theme = useTheme()
+
+  const fontSize = React.useMemo(() => theme.spacing(16), [theme])
 
   return (
     <Container maxWidth="sm" className={className || 'ob-large-icon-message'}>
       <StyledIconContainer gutterTop={gutterTop}>
-        <Icon color={variant} />
+        <IconComponent color={variant} style={{ fontSize }} />
       </StyledIconContainer>
-      <Typography variant="h5" align="center" gutterBottom color={variant}>
+      <Typography
+        variant="h5"
+        align="center"
+        gutterBottom
+        color={`${variant}.main`}
+      >
         {title}
       </Typography>
       {children ? (
