@@ -8,12 +8,16 @@ import { FormSubmissionModel } from '../types/form'
 export default function useFormSubmissionAutoSaveState({
   form,
   initialSubmission,
+  removeAutoSaveDataBeforeSubmit,
+  removeAutoSaveDataBeforeSaveDraft,
   autoSaveKey,
   onCancel,
   onSubmit,
   onSaveDraft,
 }: {
   form: FormTypes.Form
+  removeAutoSaveDataBeforeSubmit?: boolean
+  removeAutoSaveDataBeforeSaveDraft?: boolean
   autoSaveKey: string
   onCancel: () => unknown
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
@@ -70,23 +74,37 @@ export default function useFormSubmissionAutoSaveState({
   const handleSubmit = React.useCallback(
     (submissionResult) => {
       cancelAutoSave()
-      deleteAutoSaveSubmission()
+      if (removeAutoSaveDataBeforeSubmit !== false) {
+        deleteAutoSaveSubmission()
+      }
       onSubmit(submissionResult)
     },
-    [cancelAutoSave, deleteAutoSaveSubmission, onSubmit],
+    [
+      cancelAutoSave,
+      deleteAutoSaveSubmission,
+      onSubmit,
+      removeAutoSaveDataBeforeSubmit,
+    ],
   )
 
   const handleSaveDraft = React.useMemo(() => {
     if (onSaveDraft) {
       return (newDraftSubmission: submissionService.NewDraftSubmission) => {
         cancelAutoSave()
-        deleteAutoSaveSubmission()
+        if (removeAutoSaveDataBeforeSaveDraft !== false) {
+          deleteAutoSaveSubmission()
+        }
         if (onSaveDraft) {
           onSaveDraft(newDraftSubmission)
         }
       }
     }
-  }, [cancelAutoSave, deleteAutoSaveSubmission, onSaveDraft])
+  }, [
+    cancelAutoSave,
+    deleteAutoSaveSubmission,
+    onSaveDraft,
+    removeAutoSaveDataBeforeSaveDraft,
+  ])
 
   const handleCancel = React.useCallback(() => {
     cancelAutoSave()

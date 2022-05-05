@@ -14,6 +14,8 @@ import { OneBlinkAutoSaveForm } from '@oneblink/apps-react'
 
 Inherits properties from [`<OneBlinkForm />`](./OneBlinkForm.md#props)
 
-| Property      | Type     | Required | Description                                                                          |
-| ------------- | -------- | -------- | ------------------------------------------------------------------------------------ |
-| `autoSaveKey` | `string` | No       | Optionally pass a unique key for this submission e.g. the `externalId` the parameter |
+| Property                            | Type      | Required | Description                                                                                                                                                             |
+| ----------------------------------- | --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autoSaveKey`                       | `string`  | No       | Optionally pass a unique key for this submission e.g. the `externalId` the parameter                                                                                    |
+| `removeAutoSaveDataBeforeSubmit`    | `boolean` | No       | By default, auto save data is removed when the user clicks Submit. If you would like auto save data to persist and clean up the auto save data later, pass `false`.     |
+| `removeAutoSaveDataBeforeSaveDraft` | `boolean` | No       | By default, auto save data is removed when the user clicks Save Draft. If you would like auto save data to persist and clean up the auto save data later, pass `false`. |

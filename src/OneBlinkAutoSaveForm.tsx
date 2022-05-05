@@ -7,12 +7,16 @@ import { OneBlinkFormUncontrolled } from './OneBlinkForm'
 
 type Props = React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
   autoSaveKey: string
+  removeAutoSaveDataBeforeSubmit?: boolean
+  removeAutoSaveDataBeforeSaveDraft?: boolean
 }
 
 function OneBlinkAutoSaveForm({
   form,
   initialSubmission,
   autoSaveKey,
+  removeAutoSaveDataBeforeSubmit,
+  removeAutoSaveDataBeforeSaveDraft,
   onCancel,
   onSubmit,
   onSaveDraft,
@@ -33,6 +37,8 @@ function OneBlinkAutoSaveForm({
     form,
     initialSubmission,
     autoSaveKey,
+    removeAutoSaveDataBeforeSubmit,
+    removeAutoSaveDataBeforeSaveDraft,
     onCancel,
     onSubmit,
     onSaveDraft,
