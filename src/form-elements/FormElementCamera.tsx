@@ -242,6 +242,9 @@ function FormElementCamera({
             if (checkIsUsingLegacyStorage(element)) {
               const base64Data = canvas.toDataURL()
               onChange(element, base64Data)
+              setState({
+                isLoading: false,
+              })
               return
             }
             canvasToBlob(canvas)
