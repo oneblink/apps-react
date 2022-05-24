@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- calculation element not working with compliance element types
+
 ## [1.1.0] - 2022-05-05
 
 ### Added

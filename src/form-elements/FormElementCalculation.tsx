@@ -20,6 +20,10 @@ const isUnenteredValue = (value: unknown | undefined) => {
   return !value && value !== 0
 }
 
+const isObjectWithValue = (obj: unknown): obj is { value: unknown } => {
+  return typeof obj === 'object' && obj !== null && 'value' in obj
+}
+
 function FormElementCalculation({ element, onChange, value }: Props) {
   const { formSubmissionModel } = useFormSubmissionModel()
 
@@ -146,6 +150,14 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                   },
                   0,
                 )
+              }
+
+              // "compliance" form element has an object value with a "value" property.
+              if (
+                isObjectWithValue(elementValue) &&
+                typeof elementValue.value === 'string'
+              ) {
+                return parseFloat(elementValue.value)
               }
 
               // We did not find a number value from the known elements,
