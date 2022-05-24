@@ -239,9 +239,19 @@ function FormElementCamera({
           ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
 
           try {
-            const base64Data = canvas.toDataURL()
-            setBase64DataUri(base64Data, 'photo.png')
-              .then(() => {
+            if (checkIsUsingLegacyStorage(element)) {
+              const base64Data = canvas.toDataURL()
+              onChange(element, base64Data)
+              return
+            }
+            canvasToBlob(canvas)
+              .then((blob) => {
+                const attachment = prepareNewAttachment(
+                  blob,
+                  'photo.png',
+                  element,
+                )
+                onChange(element, attachment)
                 setState({
                   isLoading: false,
                 })
@@ -264,7 +274,7 @@ function FormElementCamera({
       image.setAttribute('crossorigin', 'anonymous')
       image.src = imageUrl
     },
-    [clearIsAnnotating, imageUrl, setBase64DataUri],
+    [clearIsAnnotating, element, imageUrl, onChange],
   )
 
   return (
