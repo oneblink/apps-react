@@ -101,7 +101,7 @@ function OneBlinkFormStoreTable() {
     headerGroups: [parentHeaderGroup],
     rows,
     prepareRow,
-    onChangeFilters,
+    onChangeParameters,
   } = useFormStoreTableContext()
 
   if (!parentHeaderGroup) {
@@ -140,11 +140,11 @@ function OneBlinkFormStoreTable() {
                       onClick={
                         sortingProperty
                           ? () => {
-                              onChangeFilters((currentFilters) => {
+                              onChangeParameters((currentParameters) => {
                                 switch (sortingDirection) {
                                   case 'ascending': {
                                     return {
-                                      ...currentFilters,
+                                      ...currentParameters,
                                       sorting: [
                                         {
                                           property: sortingProperty,
@@ -155,13 +155,13 @@ function OneBlinkFormStoreTable() {
                                   }
                                   case 'descending': {
                                     return {
-                                      ...currentFilters,
+                                      ...currentParameters,
                                       sorting: undefined,
                                     }
                                   }
                                   default: {
                                     return {
-                                      ...currentFilters,
+                                      ...currentParameters,
                                       sorting: [
                                         {
                                           property: sortingProperty,

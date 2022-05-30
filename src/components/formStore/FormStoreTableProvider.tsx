@@ -31,44 +31,45 @@ export function FormStoreTableProvider({
     records: formStoreRecords,
     onTryAgain,
     onRefresh,
-    filters,
-    onChangeFilters,
+    filters: parameters,
+    onChangeFilters: onChangeParameters,
   } = useInfiniteScrollDataLoad<
-    formStoreService.FormStoreFilters,
+    formStoreService.FormStoreParameters,
     FormStoreRecord
   >({
     limit: 50,
     debounceSearchMs: 1000,
     onDefaultFilters: React.useCallback((query) => {
-      let filters: formStoreService.FormStoreFilters = {}
+      let defaultParameters: formStoreService.FormStoreParameters = {}
       try {
-        if (typeof query.filters === 'string') {
-          filters = JSON.parse(query.filters)
+        if (typeof query.parameters === 'string') {
+          defaultParameters = JSON.parse(query.parameters)
         }
       } catch (error) {
         console.warn('Could not parse filter as JSON', error)
       }
-      if (!filters.sorting) {
-        filters.sorting = [
+      if (!defaultParameters.sorting) {
+        defaultParameters.sorting = [
           { property: 'dateTimeSubmitted', direction: 'descending' },
         ]
       }
-      return filters
+      return defaultParameters
     }, []),
     onSearch: React.useCallback(
-      async (filters, paging, abortSignal) => {
+      async (currentParameters, paging, abortSignal) => {
         // Exclude all search parameters if searching
         // for a specific submission using an identifier
-        const searchFilters = filters.submissionId
+        const filters = currentParameters.filters?.submissionId
           ? {
-              submissionId: filters.submissionId,
+              submissionId: currentParameters.filters.submissionId,
             }
-          : filters
+          : currentParameters.filters
         const result = await formStoreService.searchFormStoreRecords(
           {
+            ...currentParameters,
             paging,
             formId: form.id,
-            filters: searchFilters,
+            filters,
           },
           abortSignal,
         )
@@ -80,8 +81,8 @@ export function FormStoreTableProvider({
       [form.id],
     ),
     onValidateFilters: React.useCallback(
-      (currentFilters: formStoreService.FormStoreFilters) => {
-        return validateIsUUID(currentFilters.submissionId?.$eq)
+      (currentParameters: formStoreService.FormStoreParameters) => {
+        return validateIsUUID(currentParameters.filters?.submissionId?.$eq)
       },
       [],
     ),
@@ -90,19 +91,19 @@ export function FormStoreTableProvider({
   React.useEffect(() => {
     history.replace({
       search: querystring.stringify({
-        filters: JSON.stringify(filters),
+        parameters: JSON.stringify(parameters),
       }),
     })
-  }, [filters, history])
+  }, [history, parameters])
 
   const submissionIdValidationMessage = useSubmissionIdValidationMessage(
-    filters.submissionId?.$eq,
+    parameters.filters?.submissionId?.$eq,
   )
 
   const formStoreTable = useFormStoreTable({
     formStoreRecords,
-    filters,
-    onChangeFilters,
+    parameters,
+    onChangeParameters,
     submissionIdValidationMessage,
     form,
     onRefresh,
