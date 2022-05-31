@@ -208,7 +208,11 @@ const generateColumns = <
   parentElementNames: string[]
   initialColumns: Array<ColumnWithCell<T>>
   allowCopy: boolean
-} & formStoreService.FormStoreParameters) => {
+} & {
+  [P in keyof Required<formStoreService.FormStoreParameters>]:
+    | formStoreService.FormStoreParameters[P]
+    | undefined
+}) => {
   return formElements.reduce<Array<ColumnWithCell<T>>>(
     (columns, formElement) => {
       if (unwindRepeatableSets && formElement.type === 'repeatableSet') {
@@ -219,6 +223,8 @@ const generateColumns = <
           initialColumns: columns,
           filters,
           allowCopy,
+          sorting,
+          unwindRepeatableSets,
         })
         return columns
       }
@@ -232,6 +238,8 @@ const generateColumns = <
             filters,
             initialColumns: columns,
             allowCopy,
+            sorting,
+            unwindRepeatableSets,
           })
           break
         }
@@ -244,6 +252,8 @@ const generateColumns = <
               initialColumns: columns,
               filters,
               allowCopy,
+              sorting,
+              unwindRepeatableSets,
             })
           }
           break
@@ -279,6 +289,8 @@ const generateColumns = <
             initialColumns: columns,
             filters,
             allowCopy,
+            sorting,
+            unwindRepeatableSets,
           })
           break
         }

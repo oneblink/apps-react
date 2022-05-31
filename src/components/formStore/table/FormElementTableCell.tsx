@@ -39,12 +39,10 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
 
   switch (formElement.type) {
     case 'repeatableSet': {
-      return (
-        <RepeatableSetCell
-          formElement={formElement}
-          value={unknown as Record<string, unknown>[]}
-        />
-      )
+      if (!Array.isArray(unknown)) {
+        break
+      }
+      return <RepeatableSetCell formElement={formElement} value={unknown} />
     }
 
     case 'location': {
