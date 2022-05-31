@@ -9,11 +9,11 @@ import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 function generateSorting({
   formElement,
   parentElementNames,
-  filters,
+  sorting,
 }: {
   formElement: FormTypes.FormElementWithName
   parentElementNames: string[]
-  filters: formStoreService.FormStoreFilters
+  sorting: formStoreService.FormStoreParameters['sorting']
 }) {
   switch (formElement.type) {
     case 'text':
@@ -33,9 +33,8 @@ function generateSorting({
       ].join('.')
       return {
         property: sortProperty,
-        direction: filters.sorting?.find(
-          ({ property }) => property === sortProperty,
-        )?.direction,
+        direction: sorting?.find(({ property }) => property === sortProperty)
+          ?.direction,
       }
     }
   }
@@ -43,12 +42,12 @@ function generateSorting({
 
 function generateFilter({
   formElement,
-  onChangeFilters,
+  onChangeParameters,
   rootSubmissionFilters,
   parentElementNames,
 }: {
   formElement: FormTypes.FormElementWithName
-  onChangeFilters: OnChangeFilters<formStoreService.FormStoreFilters>
+  onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   rootSubmissionFilters: formStoreService.FormStoreFilters['submission']
   parentElementNames: string[]
 }): ColumnWithCell<Record<string, unknown>>['filter'] {
@@ -56,7 +55,7 @@ function generateFilter({
     newValue: formStoreService.FormStoreFilter<T> | undefined,
     shouldDebounce: boolean,
   ) {
-    onChangeFilters((currentFilters) => {
+    onChangeParameters((currentParameters) => {
       let newSubmission = {
         [formElement.name]: newValue,
       }
@@ -86,12 +85,15 @@ function generateFilter({
       }
 
       return {
-        ...currentFilters,
-        submission: {
-          ...currentFilters.submission,
-          ...newSubmission,
+        ...currentParameters,
+        filters: {
+          ...currentParameters.filters,
+          submission: {
+            ...currentParameters.filters?.submission,
+            ...newSubmission,
+          },
         },
-      } as formStoreService.FormStoreFilters
+      }
     }, shouldDebounce)
   }
 
@@ -193,26 +195,38 @@ const generateColumns = <
   T extends { submission: FormStoreRecord['submission'] },
 >({
   formElements,
-  onChangeFilters,
+  onChangeParameters,
   filters,
+  sorting,
+  unwindRepeatableSets,
   parentElementNames,
   initialColumns,
   allowCopy,
 }: {
   formElements: (FormTypes.FormElement & { tooltip?: string })[]
-  onChangeFilters: OnChangeFilters<formStoreService.FormStoreFilters>
-  filters: formStoreService.FormStoreFilters
+  onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   parentElementNames: string[]
   initialColumns: Array<ColumnWithCell<T>>
   allowCopy: boolean
-}) => {
+} & formStoreService.FormStoreParameters) => {
   return formElements.reduce<Array<ColumnWithCell<T>>>(
     (columns, formElement) => {
+      if (unwindRepeatableSets && formElement.type === 'repeatableSet') {
+        generateColumns({
+          onChangeParameters,
+          formElements: formElement.elements,
+          parentElementNames: [...parentElementNames, formElement.name],
+          initialColumns: columns,
+          filters,
+          allowCopy,
+        })
+        return columns
+      }
       switch (formElement.type) {
         case 'page':
         case 'section': {
           generateColumns({
-            onChangeFilters,
+            onChangeParameters,
             formElements: formElement.elements,
             parentElementNames,
             filters,
@@ -224,7 +238,7 @@ const generateColumns = <
         case 'form': {
           if (formElement.elements) {
             generateColumns({
-              onChangeFilters,
+              onChangeParameters,
               formElements: formElement.elements,
               parentElementNames: [...parentElementNames, formElement.name],
               initialColumns: columns,
@@ -236,7 +250,7 @@ const generateColumns = <
         }
         case 'compliance': {
           generateColumns({
-            onChangeFilters,
+            onChangeParameters,
             formElements: [
               {
                 ...formElement,
@@ -283,7 +297,7 @@ const generateColumns = <
             ),
             sorting: generateSorting({
               formElement,
-              filters,
+              sorting,
               parentElementNames,
             }),
             headerText: formElement.label,
@@ -291,8 +305,8 @@ const generateColumns = <
             filter: generateFilter({
               parentElementNames,
               formElement,
-              onChangeFilters,
-              rootSubmissionFilters: filters.submission,
+              onChangeParameters,
+              rootSubmissionFilters: filters?.submission,
             }),
             Cell: ({ row: { original: formStoreRecord } }: CellProps<T>) => {
               const submission = parentElementNames.reduce<

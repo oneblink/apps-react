@@ -11,7 +11,7 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 function OneBlinkFormStoreDownloadButton(
   props: React.ComponentProps<typeof LoadingButton>,
 ) {
-  const { visibleColumns, filters, form } = useFormStoreTableContext()
+  const { visibleColumns, parameters, form } = useFormStoreTableContext()
   const [{ isDownloadingCsv, downloadingCsvError }, setState] = React.useState<{
     isDownloadingCsv: boolean
     downloadingCsvError: Error | null
@@ -31,10 +31,10 @@ function OneBlinkFormStoreDownloadButton(
     try {
       await formStoreService.exportFormStoreRecords(form.name, {
         formId: form.id,
-        filters,
         includeColumns: visibleColumns.map(
           (visibleColumn: ColumnInstance<FormStoreRecord>) => visibleColumn.id,
         ),
+        ...parameters,
       })
       setState({
         isDownloadingCsv: false,
@@ -46,7 +46,7 @@ function OneBlinkFormStoreDownloadButton(
         downloadingCsvError: error as Error,
       })
     }
-  }, [form, filters, visibleColumns])
+  }, [form, parameters, visibleColumns])
 
   return (
     <>

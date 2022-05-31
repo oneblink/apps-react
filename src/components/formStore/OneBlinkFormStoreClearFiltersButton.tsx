@@ -6,19 +6,20 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 function OneBlinkFormStoreClearFiltersButton(
   props: React.ComponentProps<typeof Button>,
 ) {
-  const { onChangeFilters, filters } = useFormStoreTableContext()
+  const { onChangeParameters, parameters } = useFormStoreTableContext()
   const isDisabled = React.useMemo(() => {
-    return !Object.keys(filters).some((key) => key !== 'sorting')
-  }, [filters])
+    return !parameters.filters || !Object.keys(parameters.filters).length
+  }, [parameters.filters])
   return (
     <Button
       className="ob-form-store-clear-filters-button"
       startIcon={<FilterIcon />}
       disabled={isDisabled}
       onClick={() => {
-        onChangeFilters(
-          (currentFilters) => ({
-            sorting: currentFilters.sorting,
+        onChangeParameters(
+          (currentParameters) => ({
+            ...currentParameters,
+            filters: undefined,
           }),
           false,
         )

@@ -39,7 +39,7 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
   const columns = React.useMemo(
     () =>
       generateColumns({
-        onChangeFilters: () => {},
+        onChangeParameters: () => {},
         formElements: formElement.elements,
         parentElementNames: [],
         initialColumns: [],

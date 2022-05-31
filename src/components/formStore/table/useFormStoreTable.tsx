@@ -27,25 +27,25 @@ const localStorageKey = (formId: number) =>
 export default function useFormStoreTable({
   form,
   formStoreRecords,
-  filters,
-  onChangeFilters,
+  parameters,
+  onChangeParameters,
   onRefresh,
   submissionIdValidationMessage,
 }: {
   formStoreRecords: FormStoreRecord[]
   form: FormTypes.Form
-  filters: formStoreService.FormStoreFilters
-  onChangeFilters: OnChangeFilters<formStoreService.FormStoreFilters>
+  parameters: formStoreService.FormStoreParameters
+  onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   onRefresh: () => void
   submissionIdValidationMessage?: string
 }) {
   const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
     return generateColumns({
+      ...parameters,
       formElements,
-      filters,
       parentElementNames: [],
-      onChangeFilters,
+      onChangeParameters,
       allowCopy: true,
       initialColumns: [
         {
@@ -53,20 +53,23 @@ export default function useFormStoreTable({
           headerText: 'Submission Date Time',
           sorting: {
             property: 'dateTimeSubmitted',
-            direction: filters.sorting?.find(
+            direction: parameters.sorting?.find(
               ({ property }) => property === 'dateTimeSubmitted',
             )?.direction,
           },
           filter: {
             type: 'DATETIME',
-            value: filters.dateTimeSubmitted as
+            value: parameters.filters?.dateTimeSubmitted as
               | { $gte?: string; $lte?: string }
               | undefined,
             onChange: (newValue) => {
-              onChangeFilters(
-                (currentFilters) => ({
-                  ...currentFilters,
-                  dateTimeSubmitted: newValue,
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    dateTimeSubmitted: newValue,
+                  },
                 }),
                 false,
               )
@@ -93,12 +96,17 @@ export default function useFormStoreTable({
           sorting: undefined,
           filter: {
             type: 'TEXT',
-            value: filters.submittedBy as { $regex: string } | undefined,
+            value: parameters.filters?.submittedBy as
+              | { $regex: string }
+              | undefined,
             onChange: (newValue) => {
-              onChangeFilters(
-                (currentFilters) => ({
-                  ...currentFilters,
-                  submittedBy: newValue,
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    submittedBy: newValue,
+                  },
                 }),
                 true,
               )
@@ -120,14 +128,19 @@ export default function useFormStoreTable({
           sorting: undefined,
           filter: {
             type: 'SUBMISSION_ID',
-            value: filters.submissionId as { $eq: string } | undefined,
+            value: parameters.filters?.submissionId as
+              | { $eq: string }
+              | undefined,
             validationMessage: submissionIdValidationMessage,
             isInvalid: !!submissionIdValidationMessage,
             onChange: (newValue) => {
-              onChangeFilters(
-                (currentFilters) => ({
-                  ...currentFilters,
-                  submissionId: newValue,
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    submissionId: newValue,
+                  },
                 }),
                 true,
               )
@@ -147,18 +160,23 @@ export default function useFormStoreTable({
           headerText: 'External Id',
           sorting: {
             property: 'externalId',
-            direction: filters.sorting?.find(
+            direction: parameters.sorting?.find(
               ({ property }) => property === 'externalId',
             )?.direction,
           },
           filter: {
             type: 'TEXT',
-            value: filters.externalId as { $regex: string } | undefined,
+            value: parameters.filters?.externalId as
+              | { $regex: string }
+              | undefined,
             onChange: (newValue) => {
-              onChangeFilters(
-                (currentFilters) => ({
-                  ...currentFilters,
-                  externalId: newValue,
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    externalId: newValue,
+                  },
                 }),
                 true,
               )
@@ -177,7 +195,12 @@ export default function useFormStoreTable({
         },
       ],
     })
-  }, [filters, formElements, onChangeFilters, submissionIdValidationMessage])
+  }, [
+    formElements,
+    onChangeParameters,
+    parameters,
+    submissionIdValidationMessage,
+  ])
 
   const [initialState] = React.useState<Partial<TableState<FormStoreRecord>>>(
     () => {
@@ -215,8 +238,8 @@ export default function useFormStoreTable({
   return {
     ...table,
     form,
-    filters,
-    onChangeFilters,
+    parameters,
+    onChangeParameters,
     onRefresh,
     submissionIdValidationMessage,
   }
