@@ -1,11 +1,13 @@
 import * as React from 'react'
 import {
+  Box,
   Button,
   Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControlLabel,
   FormGroup,
   Typography,
@@ -17,8 +19,12 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 function OneBlinkFormStoreColumnsButton(
   props: React.ComponentProps<typeof Button>,
 ) {
-  const { getToggleHideAllColumnsProps, allColumns } =
-    useFormStoreTableContext()
+  const {
+    getToggleHideAllColumnsProps,
+    allColumns,
+    parameters,
+    onChangeParameters,
+  } = useFormStoreTableContext()
   const [
     isConfiguringColumns,
     showColumnConfiguration,
@@ -45,6 +51,24 @@ function OneBlinkFormStoreColumnsButton(
       >
         <DialogTitle>Column Configuration</DialogTitle>
         <DialogContent dividers>
+          <FormGroup>
+            <FormControlLabel
+              control={<Checkbox checked={!!parameters.unwindRepeatableSets} />}
+              onChange={(e, checked) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    unwindRepeatableSets: checked,
+                  }),
+                  false,
+                )
+              }}
+              label="Flatten repeatable set entries"
+            />
+          </FormGroup>
+          <Box marginY={2}>
+            <Divider />
+          </Box>
           <FormGroup>
             <FormControlLabel
               control={

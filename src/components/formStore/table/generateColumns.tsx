@@ -198,6 +198,7 @@ const generateColumns = <
   onChangeParameters,
   filters,
   sorting,
+  unwindRepeatableSets,
   parentElementNames,
   initialColumns,
   allowCopy,
@@ -210,6 +211,17 @@ const generateColumns = <
 } & formStoreService.FormStoreParameters) => {
   return formElements.reduce<Array<ColumnWithCell<T>>>(
     (columns, formElement) => {
+      if (unwindRepeatableSets && formElement.type === 'repeatableSet') {
+        generateColumns({
+          onChangeParameters,
+          formElements: formElement.elements,
+          parentElementNames: [...parentElementNames, formElement.name],
+          initialColumns: columns,
+          filters,
+          allowCopy,
+        })
+        return columns
+      }
       switch (formElement.type) {
         case 'page':
         case 'section': {
