@@ -44,7 +44,9 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
         parentElementNames: [],
         initialColumns: [],
         allowCopy: false,
-        filters: {},
+        filters: undefined,
+        sorting: undefined,
+        unwindRepeatableSets: undefined,
       }),
     [formElement.elements],
   )

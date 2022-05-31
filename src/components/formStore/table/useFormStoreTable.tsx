@@ -42,7 +42,9 @@ export default function useFormStoreTable({
   const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
     return generateColumns({
-      ...parameters,
+      sorting: parameters.sorting,
+      filters: parameters.filters,
+      unwindRepeatableSets: parameters.unwindRepeatableSets,
       formElements,
       parentElementNames: [],
       onChangeParameters,
