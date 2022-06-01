@@ -1,5 +1,13 @@
 import * as React from 'react'
-import { Tooltip } from '@mui/material'
+import {
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import CsvIcon from '@mui/icons-material/Download'
 import ErrorSnackbar from '../ErrorSnackbar'
@@ -12,22 +20,32 @@ function OneBlinkFormStoreDownloadButton(
   props: React.ComponentProps<typeof LoadingButton>,
 ) {
   const { visibleColumns, parameters, form } = useFormStoreTableContext()
-  const [{ isDownloadingCsv, downloadingCsvError }, setState] = React.useState<{
+  const [
+    { isDownloadingCsv, isPromptingDownloadCsv, downloadingCsvError },
+    setState,
+  ] = React.useState<{
     isDownloadingCsv: boolean
+    isPromptingDownloadCsv: boolean
     downloadingCsvError: Error | null
   }>({
     isDownloadingCsv: false,
+    isPromptingDownloadCsv: false,
     downloadingCsvError: null,
   })
+
   const clearError = React.useCallback(() => {
-    setState({
-      isDownloadingCsv: false,
+    setState((currentState) => ({
+      ...currentState,
       downloadingCsvError: null,
-    })
+    }))
   }, [])
 
   const downloadCsv = React.useCallback(async () => {
-    setState({ isDownloadingCsv: true, downloadingCsvError: null })
+    setState({
+      isPromptingDownloadCsv: false,
+      isDownloadingCsv: true,
+      downloadingCsvError: null,
+    })
     try {
       await formStoreService.exportFormStoreRecords(form.name, {
         formId: form.id,
@@ -36,17 +54,41 @@ function OneBlinkFormStoreDownloadButton(
         ),
         ...parameters,
       })
-      setState({
+      setState((currentState) => ({
+        ...currentState,
         isDownloadingCsv: false,
         downloadingCsvError: null,
-      })
+      }))
     } catch (error) {
-      setState({
+      setState((currentState) => ({
+        ...currentState,
         isDownloadingCsv: false,
         downloadingCsvError: error as Error,
-      })
+      }))
     }
   }, [form, parameters, visibleColumns])
+
+  const promptDownloadCsv = React.useCallback(() => {
+    if (
+      !parameters.unwindRepeatableSets &&
+      visibleColumns.some((c) => c.formElementType === 'repeatableSet')
+    ) {
+      setState((currentState) => ({
+        ...currentState,
+        downloadingCsvError: null,
+        isPromptingDownloadCsv: true,
+      }))
+      return
+    }
+    downloadCsv()
+  }, [downloadCsv, parameters.unwindRepeatableSets, visibleColumns])
+
+  const cancelPromptDownloadCsv = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isPromptingDownloadCsv: false,
+    }))
+  }, [])
 
   return (
     <>
@@ -57,7 +99,7 @@ function OneBlinkFormStoreDownloadButton(
           loading={isDownloadingCsv}
           loadingPosition="start"
           startIcon={<CsvIcon />}
-          onClick={downloadCsv}
+          onClick={promptDownloadCsv}
           // eslint-disable-next-line react/no-children-prop
           children={<>Download</>}
           {...props}
@@ -69,6 +111,35 @@ function OneBlinkFormStoreDownloadButton(
           {downloadingCsvError && downloadingCsvError.message}
         </span>
       </ErrorSnackbar>
+
+      <Dialog
+        open={isPromptingDownloadCsv}
+        maxWidth="sm"
+        fullWidth
+        onClose={cancelPromptDownloadCsv}
+      >
+        <DialogTitle>Column Configuration</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`Repeatable set columns will not be included in the export unless the
+            "Output a row per repeatable set entry" option is turned on under
+            "Column Configuration"`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelPromptDownloadCsv} variant="text">
+            Cancel
+          </Button>
+          <Button
+            onClick={downloadCsv}
+            startIcon={<CsvIcon />}
+            color="primary"
+            variant="contained"
+          >
+            Download
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

@@ -304,6 +304,7 @@ const generateColumns = <
         }
         default: {
           columns.push({
+            formElementType: formElement.type,
             id: ['FORM_ELEMENT', ...parentElementNames, formElement.name].join(
               '_',
             ),
