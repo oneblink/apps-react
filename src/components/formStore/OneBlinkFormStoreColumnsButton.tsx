@@ -69,6 +69,9 @@ function OneBlinkFormStoreColumnsButton(
                     onChangeParameters(
                       (currentParameters) => ({
                         ...currentParameters,
+                        sorting: checked
+                          ? currentParameters.sorting
+                          : undefined,
                         unwindRepeatableSets: checked,
                       }),
                       false,
