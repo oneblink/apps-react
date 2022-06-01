@@ -244,5 +244,5 @@ export default function useFormStoreTable({
     onChangeParameters,
     onRefresh,
     submissionIdValidationMessage,
-  }
+  } as const
 }

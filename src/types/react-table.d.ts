@@ -76,6 +76,7 @@ declare module 'react-table' {
           }
         }
     )
+    formElementType?: FormTypes.FormElementType
   }
 
   export interface ColumnInstance<
