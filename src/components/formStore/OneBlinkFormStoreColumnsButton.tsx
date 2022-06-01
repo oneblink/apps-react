@@ -71,7 +71,12 @@ function OneBlinkFormStoreColumnsButton(
                         ...currentParameters,
                         sorting: checked
                           ? currentParameters.sorting
-                          : undefined,
+                          : [
+                              {
+                                property: 'dateTimeSubmitted',
+                                direction: 'descending',
+                              },
+                            ],
                         unwindRepeatableSets: checked,
                       }),
                       false,
