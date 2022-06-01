@@ -40,6 +40,13 @@ function OneBlinkFormStoreColumnsButton(
 
   const toggleHideAllColumnsProps = getToggleHideAllColumnsProps()
 
+  const hasRepeatableSets = React.useMemo(
+    () =>
+      parameters.unwindRepeatableSets ||
+      allColumns.some((c) => c.formElementType === 'repeatableSet'),
+    [allColumns, parameters.unwindRepeatableSets],
+  )
+
   return (
     <>
       <Button
@@ -58,62 +65,66 @@ function OneBlinkFormStoreColumnsButton(
       >
         <DialogTitle>Column Configuration</DialogTitle>
         <DialogContent dividers>
-          <Grid container>
-            <Grid item>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox checked={!!parameters.unwindRepeatableSets} />
-                  }
-                  onChange={(e, checked) => {
-                    onChangeParameters(
-                      (currentParameters) => ({
-                        ...currentParameters,
-                        sorting: checked
-                          ? currentParameters.sorting
-                          : [
-                              {
-                                property: 'dateTimeSubmitted',
-                                direction: 'descending',
-                              },
-                            ],
-                        unwindRepeatableSets: checked,
-                      }),
-                      false,
-                    )
-                  }}
-                  label="Output a row per repeatable set entry"
-                />
-              </FormGroup>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={toggleHelp}>
-                <Help />
-              </IconButton>
-            </Grid>
-          </Grid>
-          <Collapse in={isHelpOpen}>
-            <Alert severity="info">
-              <AlertTitle>When this setting is enabled:</AlertTitle>
-              <UnorderedList>
-                <ListItem>
-                  Repeatable set columns will be expanded and create duplicate
-                  rows per entry
-                </ListItem>
-                <ListItem>
-                  Columns inside repeatable set entries can be sorted and
-                  filtered
-                </ListItem>
-                <ListItem>
-                  Columns inside repeatable set entries will be included in the
-                  CSV download
-                </ListItem>
-              </UnorderedList>
-            </Alert>
-          </Collapse>
-          <Box marginY={2}>
-            <Divider />
-          </Box>
+          {hasRepeatableSets && (
+            <>
+              <Grid container>
+                <Grid item>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Checkbox checked={!!parameters.unwindRepeatableSets} />
+                      }
+                      onChange={(e, checked) => {
+                        onChangeParameters(
+                          (currentParameters) => ({
+                            ...currentParameters,
+                            sorting: checked
+                              ? currentParameters.sorting
+                              : [
+                                  {
+                                    property: 'dateTimeSubmitted',
+                                    direction: 'descending',
+                                  },
+                                ],
+                            unwindRepeatableSets: checked,
+                          }),
+                          false,
+                        )
+                      }}
+                      label="Output a row per repeatable set entry"
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item>
+                  <IconButton onClick={toggleHelp}>
+                    <Help />
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <Collapse in={isHelpOpen}>
+                <Alert severity="info">
+                  <AlertTitle>When this setting is enabled:</AlertTitle>
+                  <UnorderedList>
+                    <ListItem>
+                      Repeatable set columns will be expanded and create
+                      duplicate rows per entry
+                    </ListItem>
+                    <ListItem>
+                      Columns inside repeatable set entries can be sorted and
+                      filtered
+                    </ListItem>
+                    <ListItem>
+                      Columns inside repeatable set entries will be included in
+                      the CSV download
+                    </ListItem>
+                  </UnorderedList>
+                </Alert>
+              </Collapse>
+              <Box marginY={2}>
+                <Divider />
+              </Box>
+            </>
+          )}
           <FormGroup>
             <FormControlLabel
               control={
