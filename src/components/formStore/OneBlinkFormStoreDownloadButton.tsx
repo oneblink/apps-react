@@ -121,9 +121,9 @@ function OneBlinkFormStoreDownloadButton(
         <DialogTitle>Column Configuration</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {`Repeatable set columns will not be included in the export unless the
-            "Output a row per repeatable set entry" option is turned on under
-            "Column Configuration"`}
+            Repeatable set columns will not be included in the export unless the{' '}
+            <b>Output a row per repeatable set entry</b> option is turned on
+            under <b>Column Configuration</b>.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
