@@ -18,6 +18,9 @@ const Table = styled('div')(({ theme }) => ({
   display: 'inline-block',
   backgroundColor: theme.palette.background.paper,
   fontSize: theme.typography.body2.fontSize,
+  '& .ob-form-store-table-row__alternate': {
+    backgroundColor: theme.palette.action.hover,
+  },
   '& .tc': {
     padding: theme.spacing(1),
     borderBottom: '1px solid',
@@ -107,6 +110,8 @@ function OneBlinkFormStoreTable() {
   if (!parentHeaderGroup) {
     return null
   }
+
+  let alternateBackground = false
 
   return (
     <>
@@ -239,7 +244,13 @@ function OneBlinkFormStoreTable() {
         <div {...getTableBodyProps()} className="tbody">
           {
             // Loop over the table rows
-            rows.map((row) => {
+            rows.map((row, index) => {
+              if (
+                rows[index - 1]?.original.submissionId !==
+                row.original.submissionId
+              ) {
+                alternateBackground = !alternateBackground
+              }
               // Prepare the row for display
               prepareRow(row)
               return (
@@ -247,7 +258,9 @@ function OneBlinkFormStoreTable() {
                 <div
                   {...row.getRowProps()}
                   key={row.id}
-                  className="tr ob-form-store-table-row"
+                  className={clsx('tr ob-form-store-table-row', {
+                    'ob-form-store-table-row__alternate': alternateBackground,
+                  })}
                 >
                   {
                     // Loop over the rows cells
