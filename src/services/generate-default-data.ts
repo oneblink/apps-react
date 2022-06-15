@@ -330,6 +330,17 @@ function parsePreFillData(
         }
       })
     }
+    case 'freshdeskDependentField': {
+      return parseUnknownAsRecord(value, (record) => {
+        if (
+          parseStringValue(record.category) &&
+          parseStringValue(record.subCategory) &&
+          parseStringValue(record.item)
+        ) {
+          return record
+        }
+      })
+    }
     case 'civicaNameRecord': {
       return parseUnknownAsRecord(value, (record) => {
         if (
@@ -479,6 +490,7 @@ export default function generateDefaultData(
         }
         break
       }
+      case 'freshdeskDependentField':
       case 'geoscapeAddress':
       case 'pointAddress':
       case 'civicaStreetName':

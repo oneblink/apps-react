@@ -12,6 +12,7 @@ import {
   FormElementsValidation,
   FormSubmissionModel,
 } from '../types/form'
+import generateFreshdeskDependentFieldElements from './generateFreshdeskDependentFieldElements'
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -629,6 +630,19 @@ export function generateValidationSchema(
               elementIdsWithLookupsExecuted,
             ),
           }
+        }
+        break
+      }
+      case 'freshdeskDependentField': {
+        const nestedElements = generateFreshdeskDependentFieldElements(
+          formElement,
+          undefined,
+        )
+        partialSchema[escapeElementName(formElement.name)] = {
+          nestedElements: generateValidationSchema(
+            nestedElements,
+            elementIdsWithLookupsExecuted,
+          ),
         }
         break
       }

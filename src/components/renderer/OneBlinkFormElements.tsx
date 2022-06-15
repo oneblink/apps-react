@@ -40,6 +40,7 @@ import FormElementPointAddress from '../../form-elements/FormElementPointAddress
 import FormElementBoolean from '../../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
 import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
+import FormElementFreshdeskDependentField from '../../form-elements/FormElementFreshdeskDependentField'
 
 import {
   CivicaTypes,
@@ -699,6 +700,25 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             isEven={isEven}
           />
         </LookupNotification>
+      )
+    }
+    case 'freshdeskDependentField': {
+      return (
+        <FormElementFreshdeskDependentField
+          formId={formId}
+          id={id}
+          element={element}
+          value={value as FormSubmissionModel | undefined}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementFreshdeskDependentField
+            >['onChange']
+          }
+          onLookup={onLookup}
+          displayValidationMessages={displayValidationMessage}
+          formElementValidation={formElementValidation}
+          formElementConditionallyShown={formElementConditionallyShown}
+        />
       )
     }
     case 'pointAddress': {
