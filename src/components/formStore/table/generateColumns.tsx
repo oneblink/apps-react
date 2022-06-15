@@ -5,6 +5,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementTableCell from './FormElementTableCell'
 import { formStoreService } from '@oneblink/apps'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
+import generateFreshdeskDependentFieldElements from '../../../services/generateFreshdeskDependentFieldElements'
 
 function generateSorting({
   formElement,
@@ -283,6 +284,37 @@ const generateColumns = <
                 restrictFileTypes: false,
                 name: 'files',
                 label: `${formElement.label} (Media)`,
+              },
+            ],
+            parentElementNames: [...parentElementNames, formElement.name],
+            initialColumns: columns,
+            filters,
+            allowCopy,
+            sorting,
+            unwindRepeatableSets,
+          })
+          break
+        }
+        case 'freshdeskDependentField': {
+          const [categoryFormElement, subCategoryFormElement, itemFormElement] =
+            generateFreshdeskDependentFieldElements(
+              formElement,
+              formElement.defaultValue,
+            )
+          generateColumns({
+            onChangeParameters,
+            formElements: [
+              {
+                ...categoryFormElement,
+                tooltip: `${formElement.name}_category`,
+              },
+              {
+                ...subCategoryFormElement,
+                tooltip: `${formElement.name}_sub_category`,
+              },
+              {
+                ...itemFormElement,
+                tooltip: `${formElement.name}_item`,
               },
             ],
             parentElementNames: [...parentElementNames, formElement.name],
