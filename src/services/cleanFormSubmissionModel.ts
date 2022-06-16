@@ -179,6 +179,30 @@ function cleanElementValue(
         }
         break
       }
+      case 'freshdeskDependentField': {
+        if (
+          formElementsConditionallyShown?.[element.name]?.isHidden ||
+          !submission[element.name]
+        ) {
+          break
+        }
+        const value = submission[
+          element.name
+        ] as FormTypes.FreshdeskDependentFieldElementValue
+        if (value?.category) {
+          const newValue: FormTypes.FreshdeskDependentFieldElementValue = {
+            category: value.category,
+          }
+          if (value?.subCategory) {
+            newValue.subCategory = value?.subCategory
+            if (value?.item) {
+              newValue.item = value?.item
+            }
+          }
+          model[element.name] = newValue
+        }
+        break
+      }
       case 'compliance': {
         if (
           formElementsConditionallyShown?.[element.name]?.isHidden ||

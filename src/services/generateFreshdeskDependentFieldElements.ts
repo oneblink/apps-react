@@ -50,29 +50,39 @@ export default function generateFreshdeskDependentFieldElements(
     defaultValue: element.defaultValue?.category,
     options: element.options,
   }
+  const formElements = [categoryElement]
 
-  const subCategoryOptions = getNestedOptions(element.options, value?.category)
-  const subCategoryElement: FormTypes.SelectElement = {
-    ...createFormElement(),
-    name: 'subCategory',
-    required: element.required,
-    readOnly: element.readOnly,
-    label: element.subCategoryLabel,
-    hint: element.subCategoryHint,
-    defaultValue: element.defaultValue?.subCategory,
-    options: subCategoryOptions,
+  if (value?.category) {
+    const subCategoryOptions = getNestedOptions(
+      element.options,
+      value?.category,
+    )
+    const subCategoryElement: FormTypes.SelectElement = {
+      ...createFormElement(),
+      name: 'subCategory',
+      required: element.required,
+      readOnly: element.readOnly,
+      label: element.subCategoryLabel,
+      hint: element.subCategoryHint,
+      defaultValue: element.defaultValue?.subCategory,
+      options: subCategoryOptions,
+    }
+    formElements.push(subCategoryElement)
+
+    if (value?.subCategory) {
+      const itemElement: FormTypes.SelectElement = {
+        ...createFormElement(),
+        name: 'item',
+        required: element.required,
+        readOnly: element.readOnly,
+        label: element.itemLabel,
+        hint: element.itemHint,
+        defaultValue: element.defaultValue?.item,
+        options: getNestedOptions(subCategoryOptions, value?.subCategory),
+      }
+      formElements.push(itemElement)
+    }
   }
 
-  const itemElement: FormTypes.SelectElement = {
-    ...createFormElement(),
-    name: 'item',
-    required: element.required,
-    readOnly: element.readOnly,
-    label: element.itemLabel,
-    hint: element.itemHint,
-    defaultValue: element.defaultValue?.item,
-    options: getNestedOptions(subCategoryOptions, value?.subCategory),
-  }
-
-  return [categoryElement, subCategoryElement, itemElement]
+  return formElements
 }
