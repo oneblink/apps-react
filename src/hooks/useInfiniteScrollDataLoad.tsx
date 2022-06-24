@@ -176,6 +176,13 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     onLoad(0)
   }, [onLoad])
 
+  const onReplace = React.useCallback((replacer: (record: T) => T) => {
+    setState((state) => ({
+      ...state,
+      records: state.records.map(replacer),
+    }))
+  }, [])
+
   return {
     isLoading,
     loadError: error,
@@ -184,5 +191,6 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     onTryAgain: onLoad,
     filters,
     onChangeFilters,
+    onReplace,
   }
 }
