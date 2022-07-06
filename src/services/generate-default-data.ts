@@ -309,6 +309,9 @@ function parsePreFillData(
             return true
           }
         })
+        if (!hasABN) {
+          return
+        }
         const hasMainName = parseUnknownAsRecord(
           record.mainName,
           (mainName) => {
@@ -317,7 +320,33 @@ function parsePreFillData(
             }
           },
         )
-        if (hasABN && hasMainName) {
+        if (hasMainName) {
+          return record
+        }
+        const hasLegalName = parseUnknownAsRecord(
+          record.legalName,
+          (legalName) => {
+            if (
+              parseStringValue(legalName.givenName) ||
+              parseStringValue(legalName.familyName) ||
+              parseStringValue(legalName.otherGivenName)
+            ) {
+              return true
+            }
+          },
+        )
+        if (hasLegalName) {
+          return record
+        }
+        const hasMainTradingName = parseUnknownAsRecord(
+          record.mainTradingName,
+          (mainTradingName) => {
+            if (parseStringValue(mainTradingName.organisationName)) {
+              return true
+            }
+          },
+        )
+        if (hasMainTradingName) {
           return record
         }
       })
