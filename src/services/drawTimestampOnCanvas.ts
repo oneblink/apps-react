@@ -1,29 +1,40 @@
 import { localisationService } from '@oneblink/apps'
 
 export default function (file: File, canvas: HTMLCanvasElement): void {
-  const context = canvas.getContext('2d')
-  if (context) {
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
     const now = localisationService.formatDatetime(new Date(file.lastModified))
-    const textHeight = 20
-    context.font = `${textHeight}px Arial`
-    const { width: textWidth } = context.measureText(now)
-    const backgroundMargin = 10
-    const backgroundPadding = backgroundMargin
-    const backgroundWidth = backgroundPadding * 2 + textWidth
-    const backgroundHeight = backgroundPadding * 2 + textHeight
-    context.fillStyle = 'rgba(20, 20, 20, 0.6)'
-    context.fillRect(
+    const imageHeightMultiplierCoefficient = 0.0021
+    const textHeightCoefficient = 20
+    const backgroundMarginCoefficient = 10
+
+    const textHeight =
+      imageHeightMultiplierCoefficient * canvas.height * textHeightCoefficient
+
+    const backgroundMargin =
+      imageHeightMultiplierCoefficient *
+      canvas.height *
+      backgroundMarginCoefficient
+
+    ctx.font = `${textHeight}px Arial`
+    const { width: textWidth } = ctx.measureText(now)
+
+    const backgroundWidth = backgroundMargin * 2 + textWidth
+    const backgroundHeight = backgroundMargin * 2 + textHeight
+
+    ctx.fillStyle = 'rgba(20, 20, 20, 0.6)'
+    ctx.fillRect(
       canvas.width - backgroundWidth - backgroundMargin,
       canvas.height - backgroundHeight - backgroundMargin,
       backgroundWidth,
       backgroundHeight,
     )
 
-    context.fillStyle = '#FFF'
-    context.fillText(
+    ctx.fillStyle = '#FFF'
+    ctx.fillText(
       now,
-      canvas.width - textWidth - backgroundPadding - backgroundMargin,
-      canvas.height - 22,
+      canvas.width - textWidth - backgroundMargin * 2,
+      canvas.height - textHeight - backgroundMargin / 3,
     )
   }
 }
