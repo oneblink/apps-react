@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Camera element timestamp watermark being too small on high resolution images
+
 ## [1.2.3] - 2022-07-10
 
 ### Fixed
