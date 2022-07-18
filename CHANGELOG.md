@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Camera element timestamp watermark being too small on high resolution images
+- Fix BSB Element validation for empty values
 
 ## [1.2.3] - 2022-07-10
 
