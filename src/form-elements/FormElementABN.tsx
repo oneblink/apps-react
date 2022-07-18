@@ -205,7 +205,6 @@ function FormElementABN({
           >
             <InputMask
               mask={isFocused || value ? '99 999 999 999' : '999 999 999'}
-              // @ts-expect-error "maskChar" is not in the types, but it is in the docs
               maskChar=" "
               type="text"
               id={id}

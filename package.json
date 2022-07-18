@@ -60,7 +60,7 @@
     "@types/lodash.throttle": "^4.1.6",
     "@types/react": "^17.0.43",
     "@types/react-google-recaptcha": "^2.1.5",
-    "@types/react-input-mask": "^3.0.1",
+    "@types/react-input-mask": "^2.0.4",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-signature-canvas": "^1.0.2",
     "@types/react-table": "^7.7.11",

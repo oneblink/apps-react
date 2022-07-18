@@ -122,7 +122,6 @@ function FormElementBSB({
           >
             <InputMask
               mask="999-999"
-              // @ts-expect-error "maskChar" is not in the types, but it is in the docs
               maskChar="x"
               type="text"
               placeholder={element.placeholderValue}
@@ -130,10 +129,17 @@ function FormElementBSB({
               name={element.name}
               className="input ob-input cypress-bsb-control"
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value)
+              }}
               required={element.required}
               disabled={element.readOnly}
-              onBlur={setIsDirty}
+              onBlur={() => {
+                if (text === 'xxx-xxx') {
+                  onChange(element, undefined)
+                }
+                setIsDirty()
+              }}
             />
           </div>
           {bsbRecord && (
