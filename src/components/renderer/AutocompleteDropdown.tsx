@@ -330,7 +330,18 @@ export default React.memo(AutocompleteDropdown) as typeof AutocompleteDropdown
 
 function highlightLabel(text: string, phrase: string) {
   if (phrase) {
-    text = text.replace(new RegExp('(' + phrase + ')', 'gi'), '<b>$1</b>')
+    text = text.replace(
+      new RegExp(
+        '(' +
+          phrase.replace(
+            /[`~!@#$%^&*()_|+\-=?;:'",.<>{}[\]\\/]/gi,
+            (char: string) => `\\${char}`,
+          ) +
+          ')',
+        'gi',
+      ),
+      '<b>$1</b>',
+    )
   }
 
   return text
