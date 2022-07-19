@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Camera element timestamp watermark being too small on high resolution images
 - Fix BSB Element validation for empty values
 - Autocomplete Dropdown now handles regex special characters
+- Float repeatable set remove button instead of absolute positioning
 
 ## [1.2.3] - 2022-07-10
 

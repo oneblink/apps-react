@@ -8,12 +8,9 @@
       margin-bottom: $size-8;
 
       @media only screen and (min-width: $desktop) {
-        position: absolute;
-        top: $size-6;
-        right: $size-5;
-        min-width: 0;
-        border: 0;
+        float:right;
         margin-bottom: 0;
+        min-width: 0;
       }
     }
   }
