@@ -305,6 +305,9 @@ function parsePreFillData(
     case 'abn': {
       return parseUnknownAsRecord(value, (record) => {
         const hasABN = parseUnknownAsRecord(record.ABN, (ABN) => {
+          if (Array.isArray(ABN)) {
+            return ABN.some((abn) => !!parseStringValue(abn.identifierValue))
+          }
           if (parseStringValue(ABN.identifierValue)) {
             return true
           }

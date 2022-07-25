@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix BSB Element validation for empty values
 - Autocomplete Dropdown now handles regex special characters
 - Float repeatable set remove button instead of absolute positioning
+- Generation of default data for `ABN` element where ABN is an array
 
 ## [1.2.3] - 2022-07-10
 
