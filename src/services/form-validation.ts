@@ -283,8 +283,10 @@ const clearValidationMessagesForHiddenElements = (
   }
 }
 
-const presence = (required: boolean, message: string) =>
-  required ? { message } : false
+const presence = (
+  { required, requiredMessage }: FormTypes.FormElementRequired,
+  message: string,
+) => (required ? { message: requiredMessage || message } : false)
 
 const escapeElementName = (elementName: string) => {
   const escapedName = elementName.replace(/\./g, '\\.')
@@ -317,26 +319,29 @@ export function generateValidationSchema(
       case 'draw': {
         partialSchema[escapeElementName(formElement.name)] = {
           attachment: !checkIsUsingLegacyStorage(formElement),
-          presence: presence(formElement.required, 'A signature is required'),
+          presence: presence(formElement, 'A signature is required'),
         }
         break
       }
       case 'camera': {
         partialSchema[escapeElementName(formElement.name)] = {
           attachment: !checkIsUsingLegacyStorage(formElement),
-          presence: presence(formElement.required, 'A photo is required'),
+          presence: presence(formElement, 'A photo is required'),
         }
         break
       }
       case 'captcha': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(true, 'Please complete the CAPTCHA successfully'),
+          presence: presence(
+            { ...formElement, required: true },
+            'Please complete the CAPTCHA successfully',
+          ),
         }
         break
       }
       case 'location': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Please select a location'),
+          presence: presence(formElement, 'Please select a location'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -346,7 +351,7 @@ export function generateValidationSchema(
       }
       case 'compliance': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Required'),
+          presence: presence(formElement, 'Required'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -364,7 +369,7 @@ export function generateValidationSchema(
       case 'radio':
       case 'select': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Required'),
+          presence: presence(formElement, 'Required'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -384,7 +389,7 @@ export function generateValidationSchema(
       }
       case 'bsb': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Please enter a BSB number'),
+          presence: presence(formElement, 'Please enter a BSB number'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -399,7 +404,7 @@ export function generateValidationSchema(
       case 'barcodeScanner': {
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
-            formElement.required,
+            formElement,
             'Please scan a barcode or enter a value',
           ),
           lookups: {
@@ -413,7 +418,7 @@ export function generateValidationSchema(
       case 'text':
       case 'textarea': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Please enter a value'),
+          presence: presence(formElement, 'Please enter a value'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -431,10 +436,7 @@ export function generateValidationSchema(
       }
       case 'telephone': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            formElement.required,
-            'Please enter a phone number',
-          ),
+          presence: presence(formElement, 'Please enter a phone number'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -445,10 +447,7 @@ export function generateValidationSchema(
       }
       case 'email': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            formElement.required,
-            'Please enter an email address',
-          ),
+          presence: presence(formElement, 'Please enter an email address'),
           email: {
             message: 'Please enter a valid email for this field',
           },
@@ -462,7 +461,7 @@ export function generateValidationSchema(
       }
       case 'time': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Please select a time'),
+          presence: presence(formElement, 'Please select a time'),
           lookups: {
             formElement,
             elementIdsWithLookupsExecuted,
@@ -472,7 +471,7 @@ export function generateValidationSchema(
       }
       case 'date': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement.required, 'Please select a date'),
+          presence: presence(formElement, 'Please select a date'),
           date: {
             format: (v: Date) => localisationService.formatDate(v),
             earliest: parseDateValue({
@@ -498,10 +497,7 @@ export function generateValidationSchema(
       }
       case 'datetime': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            formElement.required,
-            'Please select a date and time',
-          ),
+          presence: presence(formElement, 'Please select a date and time'),
           datetime: {
             format: (v: Date) => localisationService.formatDatetime(v),
             earliest: parseDateValue({
@@ -540,7 +536,7 @@ export function generateValidationSchema(
 
         partialSchema[escapeElementName(formElement.name)] = {
           type: 'number',
-          presence: presence(formElement.required, 'Please enter a number'),
+          presence: presence(formElement, 'Please enter a number'),
           numericality: {
             greaterThanOrEqualTo: formElement.minNumber,
             notGreaterThanOrEqualTo: minErrorMessage,
@@ -559,10 +555,13 @@ export function generateValidationSchema(
       }
       case 'files': {
         partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            !!formElement.minEntries,
-            `Please upload at least ${formElement.minEntries || 1} file(s)`,
-          ),
+          presence: formElement.minEntries
+            ? {
+                message: `Please upload at least ${
+                  formElement.minEntries
+                } file${formElement.minEntries === 1 ? '' : 's'}`,
+              }
+            : false,
           length: {
             minimum: formElement.minEntries,
             maximum: formElement.maxEntries,
@@ -591,12 +590,13 @@ export function generateValidationSchema(
         partialSchema[escapeElementName(formElement.name)] = {
           entries: {
             setSchema: {
-              presence: presence(
-                !!formElement.minSetEntries,
-                `Must have at least ${
-                  formElement.minSetEntries || 1
-                } entry/entries`,
-              ),
+              presence: formElement.minSetEntries
+                ? {
+                    message: `Must have at least ${formElement.minSetEntries} ${
+                      formElement.minSetEntries === 1 ? 'entry' : 'entries'
+                    }`,
+                  }
+                : false,
               length: {
                 minimum: formElement.minSetEntries,
                 maximum: formElement.maxSetEntries,
