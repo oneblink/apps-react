@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `requireMessage` to form element validation
+- append any `customCssClasses` to `ob-element` container
 
 ## [1.2.4] - 2022-07-29
 
