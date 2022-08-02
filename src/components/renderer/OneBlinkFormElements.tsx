@@ -1,4 +1,5 @@
 import * as React from 'react'
+import clsx from 'clsx'
 
 import LookupNotification from './LookupNotification'
 
@@ -133,7 +134,12 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
         return (
           <div
             key={element.id}
-            className="ob-element cypress-element-container"
+            className={clsx(
+              'ob-element cypress-element-container',
+              element.customCssClasses
+                ? element.customCssClasses.join(' ')
+                : '',
+            )}
             data-cypress-element-name={element.name}
             data-ob-name={element.name}
           >
