@@ -1,7 +1,6 @@
 import { FormTypes } from '@oneblink/types'
 import { Attachment } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
-import { checkIsUsingLegacyStorage } from './attachments'
 import { FormSubmissionModel } from '../types/form'
 
 function checkIfAttachmentsAreUploadingForFormElements(
@@ -46,10 +45,6 @@ function checkIfAttachmentsAreUploadingForFormElements(
       case 'draw':
       case 'compliance':
       case 'files': {
-        if (checkIsUsingLegacyStorage(formElement)) {
-          break
-        }
-
         const value = submission[formElement.name]
         if (!value) {
           break

@@ -7,10 +7,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import OnLoading from '../components/renderer/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
-import {
-  checkIsUsingLegacyStorage,
-  prepareNewAttachment,
-} from '../services/attachments'
+import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import useBooleanState from '../hooks/useBooleanState'
 import { canvasToBlob } from '../services/blob-utils'
@@ -103,12 +100,6 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
   const handleDone = React.useCallback(async () => {
     if (!canvasRef.current) return
     const trimmedCanvas = canvasRef.current.getTrimmedCanvas()
-
-    if (checkIsUsingLegacyStorage(element)) {
-      const value = trimmedCanvas.toDataURL()
-      onChange(element, value)
-      return
-    }
 
     // Convert base64 data uri to blob and send it on its way
     const blob = await canvasToBlob(trimmedCanvas)
@@ -281,7 +272,6 @@ const DisplayImage = React.memo(function DisplayImage({
       <>
         <span className="ob-figure__status">
           <AttachmentStatus
-            element={element}
             isLoadingImageUrl={isLoadingImageUrl}
             loadImageUrlError={loadImageUrlError}
             isUploading={isUploading}

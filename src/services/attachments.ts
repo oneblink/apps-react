@@ -22,12 +22,6 @@ export function checkIfContentTypeIsImage(contentType: string) {
   return contentType.indexOf('image/') === 0
 }
 
-export function checkIsUsingLegacyStorage(
-  element: FormTypes.FormElementBinaryStorage,
-): boolean {
-  return !element.storageType || element.storageType === 'legacy'
-}
-
 export async function parseFilesAsAttachmentsLegacy(
   files: File[],
   onAnnotateCanvas?: (file: File, canvas: HTMLCanvasElement) => void,

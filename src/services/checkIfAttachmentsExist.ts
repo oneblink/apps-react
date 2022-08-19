@@ -3,7 +3,6 @@ import { v4 as uuid } from 'uuid'
 import { Attachment, AttachmentError } from '../types/attachments'
 
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
-import { checkIsUsingLegacyStorage } from './attachments'
 import { FormSubmissionModel } from '../types/form'
 
 export function validateAttachmentExists(
@@ -134,10 +133,6 @@ function checkIfAttachmentsExistForFormElements(
       case 'draw':
       case 'compliance':
       case 'files': {
-        if (checkIsUsingLegacyStorage(formElement)) {
-          break
-        }
-
         const value = submission[formElement.name]
         if (!value) {
           break

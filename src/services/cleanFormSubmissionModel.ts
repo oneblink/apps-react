@@ -4,7 +4,6 @@ import {
   FormElementsConditionallyShown,
   FormSubmissionModel,
 } from '../types/form'
-import { checkIsUsingLegacyStorage } from './attachments'
 
 function cleanElementValue(
   submission: FormSubmissionModel,
@@ -43,9 +42,7 @@ function cleanElementValue(
           | Array<Record<string, unknown>>
           | undefined
         const hasBinaryData =
-          checkIsUsingLegacyStorage(element) ||
-          (Array.isArray(value) &&
-            value.some((attachment) => !!attachment.data))
+          Array.isArray(value) && value.some((attachment) => !!attachment.data)
         if (
           (!stripBinaryData || !hasBinaryData) &&
           !formElementsConditionallyShown?.[element.name]?.isHidden
@@ -59,8 +56,7 @@ function cleanElementValue(
         const value = submission[element.name] as
           | Record<string, unknown>
           | undefined
-        const hasBinaryData =
-          checkIsUsingLegacyStorage(element) || !!value?.data
+        const hasBinaryData = !!value?.data
         if (
           (!stripBinaryData || !hasBinaryData) &&
           !formElementsConditionallyShown?.[element.name]?.isHidden

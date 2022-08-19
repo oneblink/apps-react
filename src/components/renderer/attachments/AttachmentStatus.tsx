@@ -1,11 +1,8 @@
 import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import UploadingAttachment from './UploadingAttachment'
-import { FormTypes } from '@oneblink/types'
-import { checkIsUsingLegacyStorage } from '../../../services/attachments'
 
 const AttachmentStatus = ({
-  element,
   isUploading,
   isUploadPaused,
   uploadError,
@@ -13,7 +10,6 @@ const AttachmentStatus = ({
   isLoadingImageUrl,
   imageUrl,
 }: {
-  element: FormTypes.FormElementBinaryStorage
   isUploading?: boolean
   isUploadPaused?: boolean
   uploadError?: Error
@@ -40,10 +36,6 @@ const AttachmentStatus = ({
         </span>
       </Tooltip>
     )
-  }
-
-  if (checkIsUsingLegacyStorage(element)) {
-    return null
   }
 
   if (isUploading) {
