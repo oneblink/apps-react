@@ -52,7 +52,10 @@ import {
 } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
-import { FormElementBinaryStorageValue } from '../../types/attachments'
+import {
+  Attachment,
+  FormElementBinaryStorageValue,
+} from '../../types/attachments'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
@@ -558,7 +561,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           <FormElementFiles
             id={id}
             element={element}
-            value={value}
+            value={value as Attachment[] | undefined}
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementFiles

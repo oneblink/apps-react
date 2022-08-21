@@ -126,7 +126,6 @@ function FileCard({
         <div className="ob-files__file-name is-size-6">
           <span className="ob-files__file-name-inner">{fileName}</span>
           <AttachmentStatus
-            element={element}
             isUploading={isUploading}
             isUploadPaused={isUploadPaused}
             uploadError={uploadError}
