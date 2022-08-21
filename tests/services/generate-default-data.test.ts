@@ -1008,33 +1008,6 @@ describe('generateDefaultData()', () => {
       })
     })
 
-    test('it should allow legacy files if element storage is legacy', () => {
-      const compliance = {
-        value: 'option-2',
-        files: [
-          {
-            fileName: 'dot.png',
-            data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII=',
-          },
-        ],
-      }
-      const result = generateDefaultData(
-        [
-          {
-            ...element,
-            storageType: 'legacy',
-          },
-        ],
-        {
-          compliance,
-        },
-      )
-
-      expect(result).toEqual({
-        compliance,
-      })
-    })
-
     test('it should prepare files for upload if data is in legacy format, but element storage is not legacy', () => {
       const result = generateDefaultData([element], {
         compliance: {
@@ -1132,30 +1105,6 @@ describe('generateDefaultData()', () => {
           {
             ...element,
             defaultValue: [],
-          },
-        ],
-        {
-          files,
-        },
-      )
-
-      expect(result).toEqual({
-        files,
-      })
-    })
-
-    test('it should allow legacy files if element storage is legacy', () => {
-      const files = [
-        {
-          fileName: 'dot.png',
-          data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII=',
-        },
-      ]
-      const result = generateDefaultData(
-        [
-          {
-            ...element,
-            storageType: 'legacy',
           },
         ],
         {
@@ -1271,27 +1220,6 @@ describe('generateDefaultData()', () => {
       })
     })
 
-    test('it should allow legacy files if element storage is legacy', () => {
-      const camera =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII='
-
-      const result = generateDefaultData(
-        [
-          {
-            ...element,
-            storageType: 'legacy',
-          },
-        ],
-        {
-          camera,
-        },
-      )
-
-      expect(result).toEqual({
-        camera,
-      })
-    })
-
     test('it should prepare files for upload if data is in legacy format, but element storage is not legacy', () => {
       const result = generateDefaultData([element], {
         camera:
@@ -1378,27 +1306,6 @@ describe('generateDefaultData()', () => {
           {
             ...element,
             defaultValue: 'invalid',
-          },
-        ],
-        {
-          draw,
-        },
-      )
-
-      expect(result).toEqual({
-        draw,
-      })
-    })
-
-    test('it should allow legacy files if element storage is legacy', () => {
-      const draw =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII='
-
-      const result = generateDefaultData(
-        [
-          {
-            ...element,
-            storageType: 'legacy',
           },
         ],
         {
