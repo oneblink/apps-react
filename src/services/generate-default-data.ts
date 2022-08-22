@@ -1,9 +1,8 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { localisationService } from '@oneblink/apps'
-import { FilesElementFile } from '../form-elements/FormElementFiles/legacy/FormElementFiles'
 import { Attachment } from '../types/attachments'
 import { FormSubmissionModel } from '../types/form'
-import { checkIsUsingLegacyStorage, prepareNewAttachment } from './attachments'
+import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
@@ -43,43 +42,33 @@ function parseAttachment(value: unknown): Attachment | undefined {
 function parseFile(
   element: FormTypes.FormElementBinaryStorage,
   value: unknown,
-): FilesElementFile | Attachment | undefined {
+): Attachment | undefined {
   return parseUnknownAsRecord(value, (record) => {
-    const isUsingLegacyStorage = checkIsUsingLegacyStorage(element)
     if (
       record.type === undefined &&
       typeof record.fileName === 'string' &&
       typeof record.data === 'string'
     ) {
-      if (isUsingLegacyStorage) {
-        return record as FilesElementFile
-      }
-
       const blob = dataUriToBlobSync(record.data)
       return prepareNewAttachment(blob, record.fileName, element)
     }
 
-    if (!isUsingLegacyStorage) {
-      return parseAttachment(record)
-    }
+    return parseAttachment(record)
   })
 }
 
 function parseFiles(
   element: FormTypes.FormElementBinaryStorage,
   value: unknown,
-): Array<Attachment | FilesElementFile> | undefined {
+): Array<Attachment> | undefined {
   if (Array.isArray(value)) {
-    const files = value.reduce<Array<Attachment | FilesElementFile>>(
-      (files, v) => {
-        const file = parseFile(element, v)
-        if (file) {
-          files.push(file)
-        }
-        return files
-      },
-      [],
-    )
+    const files = value.reduce<Array<Attachment>>((files, v) => {
+      const file = parseFile(element, v)
+      if (file) {
+        files.push(file)
+      }
+      return files
+    }, [])
     if (files.length) {
       return files
     }
@@ -221,21 +210,14 @@ function parsePreFillData(
   value: unknown,
 ): unknown {
   switch (element.type) {
-    // If a form element is pre-filled and the storage type is not "legacy"
-    // but the pre-fill data is in the format for the “legacy” storage type
-    // (base64), the data should be uploaded to S3 and set in the submission
-    // data. The base64 data should not be uploaded with the submission.
-    // This is to cater for instances of pre-fill data being created before
-    // a form element is updated to “public” or “private”.
+    // If a form element is pre-filled with the "legacy" storage type
+    // format (base64), the data should be uploaded to S3 and set in the
+    // submission data. This is to cater for instances of pre-fill data
+    // being created before the "legacy" storage type was removed.
     case 'camera':
     case 'draw': {
       if (!value) {
         break
-      }
-      if (checkIsUsingLegacyStorage(element)) {
-        if (typeof value === 'string') {
-          return value
-        }
       } else if (typeof value === 'string') {
         const blob = dataUriToBlobSync(value)
         return prepareNewAttachment(blob, 'file', element)

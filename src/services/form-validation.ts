@@ -1,10 +1,8 @@
 import validate from 'validate.js'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
-import { FormElementBinaryStorageValue } from '../types/attachments'
-import { PossibleFileConfiguration } from '../form-elements/FormElementFiles'
+import { Attachment, FormElementBinaryStorageValue } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
-import { checkIsUsingLegacyStorage } from './attachments'
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 import {
@@ -169,7 +167,7 @@ validate.validators.isTrue = function (value: unknown, message?: string) {
 }
 
 validate.validators.needsExtension = function (
-  value: PossibleFileConfiguration[] | undefined,
+  value: Attachment[] | undefined,
   formElement: FormTypes.FilesElement,
 ) {
   const isValid =
@@ -318,14 +316,14 @@ export function generateValidationSchema(
       }
       case 'draw': {
         partialSchema[escapeElementName(formElement.name)] = {
-          attachment: !checkIsUsingLegacyStorage(formElement),
+          attachment: true,
           presence: presence(formElement, 'A signature is required'),
         }
         break
       }
       case 'camera': {
         partialSchema[escapeElementName(formElement.name)] = {
-          attachment: !checkIsUsingLegacyStorage(formElement),
+          attachment: true,
           presence: presence(formElement, 'A photo is required'),
         }
         break
@@ -356,7 +354,7 @@ export function generateValidationSchema(
             formElement,
             elementIdsWithLookupsExecuted,
           },
-          attachments: !checkIsUsingLegacyStorage(formElement),
+          attachments: true,
         }
         break
       }
@@ -569,7 +567,7 @@ export function generateValidationSchema(
             tooShort: 'Please upload at least %{count} file(s)',
           },
           type: {
-            type: (files: PossibleFileConfiguration[] | undefined) => {
+            type: (files: Attachment[] | undefined) => {
               return (
                 !Array.isArray(files) ||
                 files.every((file) => {
@@ -582,7 +580,7 @@ export function generateValidationSchema(
             ).join(', ')}`,
           },
           needsExtension: formElement,
-          attachments: !checkIsUsingLegacyStorage(formElement),
+          attachments: true,
         }
         break
       }

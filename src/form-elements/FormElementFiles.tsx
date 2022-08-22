@@ -1,21 +1,20 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
-import Files from '../../components/renderer/attachments/Files'
+import Files from '../components/renderer/attachments/Files'
 import FormElementFile from './FormElementFile'
-import useAttachments from '../../hooks/attachments/useAttachments'
+import useAttachments from '../hooks/attachments/useAttachments'
 import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
-} from '../../services/form-validation'
-import { Attachment } from '../../types/attachments'
-import { FormElementValueChangeHandler } from '../../types/form'
-type Props = {
-  id: string
-  element: FormTypes.FilesElement
-  value?: Attachment[]
-  onChange: FormElementValueChangeHandler<Attachment[]>
-  displayValidationMessage: boolean
-  validationMessage: string | undefined
+} from '../services/form-validation'
+import { Attachment } from '../types/attachments'
+import { FormElementValueChangeHandler } from '../types/form'
+
+export function stringifyAttachments(value: Attachment[] | undefined): string {
+  if (value?.every((attachment) => !attachment.type)) {
+    return JSON.stringify(value)
+  }
+  return ''
 }
 
 function FormElementFiles({
@@ -25,7 +24,14 @@ function FormElementFiles({
   onChange,
   validationMessage,
   displayValidationMessage,
-}: Props) {
+}: {
+  id: string
+  element: FormTypes.FilesElement
+  value?: Attachment[]
+  onChange: FormElementValueChangeHandler<Attachment[]>
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
+}) {
   const { isDirty, addAttachments, removeAttachment, changeAttachment } =
     useAttachments(element, onChange)
 

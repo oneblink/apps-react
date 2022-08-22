@@ -13,19 +13,13 @@ export function prepareNewAttachment(
     _id: uuid(),
     data: blob,
     fileName,
-    isPrivate: element.storageType === 'private',
+    isPrivate: element.storageType !== 'public',
     type: 'NEW',
   }
 }
 
 export function checkIfContentTypeIsImage(contentType: string) {
   return contentType.indexOf('image/') === 0
-}
-
-export function checkIsUsingLegacyStorage(
-  element: FormTypes.FormElementBinaryStorage,
-): boolean {
-  return !element.storageType || element.storageType === 'legacy'
 }
 
 export async function parseFilesAsAttachmentsLegacy(

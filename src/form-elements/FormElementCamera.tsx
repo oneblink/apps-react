@@ -14,16 +14,11 @@ import AnnotationModal from '../components/renderer/AnnotationModal'
 import Modal from '../components/renderer/Modal'
 import {
   checkIfContentTypeIsImage,
-  checkIsUsingLegacyStorage,
   prepareNewAttachment,
   correctFileOrientation,
 } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
-import {
-  blobToCanvas,
-  canvasToBlob,
-  urlToBlobAsync,
-} from '../services/blob-utils'
+import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 
@@ -54,20 +49,6 @@ function FormElementCamera({
   const [isAnnotating, setIsAnnotating, clearIsAnnotating] =
     useBooleanState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
-
-  const setBase64DataUri = React.useCallback(
-    async (dataUri: string, fileName: string) => {
-      if (checkIsUsingLegacyStorage(element)) {
-        onChange(element, dataUri)
-        return
-      }
-
-      // Convert base64 data uri to blob and send it on its way
-      const blob = await urlToBlobAsync(dataUri)
-      onChange(element, prepareNewAttachment(blob, fileName, element))
-    },
-    [element, onChange],
-  )
 
   const clearImage = React.useCallback(() => {
     onChange(element, undefined)
@@ -100,21 +81,11 @@ function FormElementCamera({
           element.includeTimestampWatermark ? drawTimestampOnCanvas : undefined,
         )
 
-        const isUsingLegacyStorage = checkIsUsingLegacyStorage(element)
         if (result instanceof Blob) {
-          if (isUsingLegacyStorage) {
-            const canvas = await blobToCanvas(result)
-            onChange(element, canvas.toDataURL())
-          } else {
-            onChange(element, prepareNewAttachment(result, file.name, element))
-          }
+          onChange(element, prepareNewAttachment(result, file.name, element))
         } else {
-          if (isUsingLegacyStorage) {
-            onChange(element, result.toDataURL())
-          } else {
-            const blob = await canvasToBlob(result)
-            onChange(element, prepareNewAttachment(blob, file.name, element))
-          }
+          const blob = await canvasToBlob(result)
+          onChange(element, prepareNewAttachment(blob, file.name, element))
         }
 
         setIsDirty()
@@ -137,8 +108,12 @@ function FormElementCamera({
       })
       navigator.camera.getPicture(
         (base64Data: string) => {
-          setBase64DataUri(`data:image/jpeg;base64,${base64Data}`, 'photo.jpeg')
-            .then(() => {
+          urlToBlobAsync(`data:image/jpeg;base64,${base64Data}`)
+            .then((blob) => {
+              onChange(
+                element,
+                prepareNewAttachment(blob, 'photo.jpeg', element),
+              )
               setState({
                 isLoading: false,
               })
@@ -181,7 +156,7 @@ function FormElementCamera({
         'Could not find "input" element in Camera component template',
       )
     }
-  }, [setBase64DataUri])
+  }, [element, onChange])
 
   const {
     isUploading,
@@ -239,14 +214,6 @@ function FormElementCamera({
           ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
 
           try {
-            if (checkIsUsingLegacyStorage(element)) {
-              const base64Data = canvas.toDataURL()
-              onChange(element, base64Data)
-              setState({
-                isLoading: false,
-              })
-              return
-            }
             canvasToBlob(canvas)
               .then((blob) => {
                 const attachment = prepareNewAttachment(
@@ -451,7 +418,6 @@ const DisplayImage = React.memo(function DisplayImage({
       <>
         <span className="ob-figure__status">
           <AttachmentStatus
-            element={element}
             isLoadingImageUrl={isLoadingImageUrl}
             loadImageUrlError={loadImageUrlError}
             isUploading={isUploading}

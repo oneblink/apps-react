@@ -9,9 +9,10 @@ import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import ComplianceButton from './ComplianceButton'
-import FormElementFiles, { PossibleFileConfiguration } from './FormElementFiles'
+import FormElementFiles from './FormElementFiles'
 import FormElementTextarea from './FormElementTextarea'
 import { FormElementValueChangeHandler } from '../types/form'
+import { Attachment } from '../types/attachments'
 
 interface Props {
   id: string
@@ -27,7 +28,7 @@ interface Props {
 export interface Value {
   value?: string
   notes?: string
-  files?: PossibleFileConfiguration[]
+  files?: Attachment[]
 }
 
 const baseElement = {
