@@ -21,7 +21,7 @@ export default function useAttachment(
   onChange: OnChange,
   disableUpload?: boolean,
 ) {
-  const isPrivate = element.storageType === 'private'
+  const isPrivate = element.storageType !== 'public'
   const form = useFormDefinition()
   const isOffline = useIsOffline()
   const { isLoggedIn, isUsingFormsKey } = useAuth()
