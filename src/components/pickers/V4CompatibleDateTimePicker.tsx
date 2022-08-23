@@ -7,6 +7,7 @@ import { TextField, InputAdornment, IconButton } from '@mui/material'
 import { AccessTime, DateRange } from '@mui/icons-material'
 import useBooleanState from '../../hooks/useBooleanState'
 import { localisationService } from '@oneblink/apps'
+import { PickersActionBarAction } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
 
 type RemainingPickerProps = Omit<
   MobileDateTimePickerProps<string | Date, Date>,
@@ -26,30 +27,30 @@ type TextFieldProps = React.ComponentProps<typeof TextField>
 type IconButtonProps = React.ComponentProps<typeof IconButton>
 
 type Props = RemainingPickerProps & {
-  name?: string
-  label?: string
+  name?: TextFieldProps['name']
+  label?: TextFieldProps['label']
   maxDate?: string | Date
   maxDateMessage?: string
   minDate?: string | Date
   minDateMessage?: string
   margin?: TextFieldProps['margin']
   size?: TextFieldProps['size']
-  placeholder?: string
+  placeholder?: TextFieldProps['placeholder']
   InputProps?: TextFieldProps['InputProps']
   inputVariant?: TextFieldProps['variant']
+  onBlur?: TextFieldProps['onBlur']
   startIconButton?: boolean
   endIconButton?: boolean
   iconButtonEdge?: IconButtonProps['edge']
   iconButtonSize?: IconButtonProps['size']
-  helperText?: string
-  error?: boolean
-  required?: boolean
+  helperText?: TextFieldProps['helperText']
+  error?: TextFieldProps['error']
+  required?: TextFieldProps['required']
+  showTodayButton?: boolean
+  clearable?: boolean
   'data-cypress'?: string
 }
 
-const emptyFn = () => {
-  //
-}
 const V4CompatibleDateTimePicker = ({
   name,
   label,
@@ -63,6 +64,7 @@ const V4CompatibleDateTimePicker = ({
   InputProps,
   onChange,
   inputVariant,
+  onBlur,
   disabled,
   startIconButton,
   endIconButton,
@@ -71,9 +73,13 @@ const V4CompatibleDateTimePicker = ({
   helperText: helperTextProp,
   error,
   required,
+  showTodayButton,
+  clearable,
+  value: valueProp,
   'data-cypress': dataCypress,
   ...rest
 }: Props) => {
+  const [value, setValue] = React.useState<typeof valueProp>(null)
   const [isOpen, setIsOpen, setIsClosed] = useBooleanState(false)
   const [helperText, setHelperText] = React.useState<string | undefined>(
     undefined,
@@ -115,14 +121,28 @@ const V4CompatibleDateTimePicker = ({
 
   const onAccept = React.useCallback(
     (date: Date | null) => {
-      const currentValue =
-        rest.value instanceof Date ? rest.value.toISOString() : rest.value
+      const currentValue = value instanceof Date ? value.toISOString() : value
       if (currentValue !== (date?.toISOString() || null)) {
         onChange(date)
       }
     },
-    [onChange, rest.value],
+    [onChange, value],
   )
+
+  const actions = React.useMemo(() => {
+    const actions: PickersActionBarAction[] = ['cancel', 'accept']
+    if (showTodayButton) {
+      actions.unshift('today')
+    }
+    if (clearable) {
+      actions.unshift('clear')
+    }
+    return actions
+  }, [clearable, showTodayButton])
+
+  React.useEffect(() => {
+    setValue(valueProp)
+  }, [valueProp])
 
   return (
     <MobileDateTimePicker
@@ -136,12 +156,13 @@ const V4CompatibleDateTimePicker = ({
           label={label}
           required={required}
           helperText={helperTextProp || helperText}
-          {...(error ? { error } : {})}
+          error={error}
           fullWidth
           margin={margin}
           size={size}
           placeholder={placeholder}
           variant={inputVariant}
+          onBlur={onBlur}
           InputProps={{
             startAdornment: startIconButton ? (
               <InputAdornment position="start">
@@ -177,11 +198,16 @@ const V4CompatibleDateTimePicker = ({
       onError={handleError}
       timeIcon={<AccessTime />}
       dateRangeIcon={<DateRange />}
-      // This triggers everytime a component of the while date changes within the picker
-      onChange={emptyFn}
+      onChange={setValue}
+      value={value}
       onAccept={onAccept}
       inputFormat={localisationService.getDateFnsFormats().shortDateTime}
       disabled={disabled}
+      componentsProps={{
+        actionBar: {
+          actions,
+        },
+      }}
       {...rest}
     />
   )

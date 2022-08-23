@@ -3,6 +3,7 @@ import { MobileTimePicker, MobileTimePickerProps } from '@mui/x-date-pickers'
 import { TextField, InputAdornment, IconButton } from '@mui/material'
 import { AccessTime } from '@mui/icons-material'
 import useBooleanState from '../../hooks/useBooleanState'
+import { PickersActionBarAction } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
 
 type RemainingPickerProps = Omit<
   MobileTimePickerProps<string | Date, Date>,
@@ -20,11 +21,11 @@ type TextFieldProps = React.ComponentProps<typeof TextField>
 type IconButtonProps = React.ComponentProps<typeof IconButton>
 
 type Props = RemainingPickerProps & {
-  name?: string
-  label?: string
+  name?: TextFieldProps['name']
+  label?: TextFieldProps['label']
   margin?: TextFieldProps['margin']
   size?: TextFieldProps['size']
-  placeholder?: string
+  placeholder?: TextFieldProps['placeholder']
   InputProps?: TextFieldProps['InputProps']
   inputVariant?: TextFieldProps['variant']
   onBlur?: TextFieldProps['onBlur']
@@ -32,15 +33,14 @@ type Props = RemainingPickerProps & {
   endIconButton?: boolean
   iconButtonEdge?: IconButtonProps['edge']
   iconButtonSize?: IconButtonProps['size']
-  helperText?: string | React.ReactNode
-  error?: boolean
-  required?: boolean
+  helperText?: TextFieldProps['helperText']
+  error?: TextFieldProps['error']
+  required?: TextFieldProps['required']
+  showTodayButton?: boolean
+  clearable?: boolean
   'data-cypress'?: string
 }
 
-const emptyFn = () => {
-  //
-}
 const V4CompatibleTimePicker = ({
   name,
   label,
@@ -59,9 +59,13 @@ const V4CompatibleTimePicker = ({
   helperText: helperTextProp,
   error,
   required,
+  showTodayButton,
+  clearable,
+  value: valueProp,
   'data-cypress': dataCypress,
   ...rest
 }: Props) => {
+  const [value, setValue] = React.useState<typeof valueProp>(null)
   const [isOpen, setIsOpen, setIsClosed] = useBooleanState(false)
   const [helperText, setHelperText] = React.useState<string | undefined>(
     undefined,
@@ -86,15 +90,28 @@ const V4CompatibleTimePicker = ({
 
   const onAccept = React.useCallback(
     (date: Date | null) => {
-      const currentValue =
-        rest.value instanceof Date ? rest.value.toISOString() : rest.value
-
+      const currentValue = value instanceof Date ? value.toISOString() : value
       if (currentValue !== (date?.toISOString() || null)) {
         onChange(date)
       }
     },
-    [onChange, rest.value],
+    [onChange, value],
   )
+
+  const actions = React.useMemo(() => {
+    const actions: PickersActionBarAction[] = ['cancel', 'accept']
+    if (showTodayButton) {
+      actions.unshift('today')
+    }
+    if (clearable) {
+      actions.unshift('clear')
+    }
+    return actions
+  }, [clearable, showTodayButton])
+
+  React.useEffect(() => {
+    setValue(valueProp)
+  }, [valueProp])
 
   return (
     <MobileTimePicker
@@ -108,7 +125,7 @@ const V4CompatibleTimePicker = ({
           label={label}
           required={required}
           helperText={helperTextProp || helperText}
-          {...(error ? { error } : {})}
+          error={error}
           fullWidth
           margin={margin}
           size={size}
@@ -146,10 +163,15 @@ const V4CompatibleTimePicker = ({
         />
       )}
       onError={handleError}
-      // This triggers everytime a component of the while date changes within the picker
-      onChange={emptyFn}
+      onChange={setValue}
+      value={value}
       onAccept={onAccept}
       disabled={disabled}
+      componentsProps={{
+        actionBar: {
+          actions,
+        },
+      }}
       {...rest}
     />
   )
