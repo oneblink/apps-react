@@ -146,7 +146,6 @@ function ColumnFilters({ filter }: Props) {
           <Grid item xs={6}>
             <V4CompatibleDatePicker
               label="After"
-              // @ts-expect-error ???
               showTodayButton
               clearable
               margin="dense"
@@ -182,7 +181,6 @@ function ColumnFilters({ filter }: Props) {
           <Grid item xs={6}>
             <V4CompatibleDatePicker
               label="Before"
-              // @ts-expect-error ???
               showTodayButton
               clearable
               margin="dense"
@@ -224,7 +222,6 @@ function ColumnFilters({ filter }: Props) {
           <Grid item xs={6}>
             <V4CompatibleDateTimePicker
               label="After"
-              // @ts-expect-error ???
               showTodayButton
               clearable
               margin="dense"
@@ -258,7 +255,6 @@ function ColumnFilters({ filter }: Props) {
           <Grid item xs={6}>
             <V4CompatibleDateTimePicker
               label="Before"
-              // @ts-expect-error ???
               showTodayButton
               clearable
               margin="dense"
