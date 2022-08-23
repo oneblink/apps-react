@@ -214,7 +214,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     <>
       <figure className="ob-figure">
         <div className="figure-content">
-          <DisplayImage element={element} {...result} />
+          <DisplayImage {...result} />
         </div>
       </figure>
 
@@ -233,15 +233,12 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
 })
 
 const DisplayImage = React.memo(function DisplayImage({
-  element,
   uploadErrorMessage,
   isUploading,
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
-}: ReturnType<typeof useAttachment> & {
-  element: FormTypes.DrawElement
-}) {
+}: ReturnType<typeof useAttachment>) {
   if (uploadErrorMessage) {
     return (
       <>

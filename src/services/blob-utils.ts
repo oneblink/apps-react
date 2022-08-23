@@ -91,7 +91,6 @@ export async function canvasToBlob(canvas: HTMLCanvasElement) {
 export async function getBlobOrientation(
   blob: Blob,
 ): Promise<number | undefined> {
-  // @ts-expect-error For some reason, the types do not include this function returning a promise
   const imageMetaData: loadImage.MetaData = await loadImage.parseMetaData(blob)
   const orientation = imageMetaData.exif?.get('Orientation')
   return orientation as number | undefined
