@@ -9,7 +9,7 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { localisationService } from '@oneblink/apps'
 
 type RemainingPickerProps = Omit<
-  MobileDateTimePickerProps<Date>,
+  MobileDateTimePickerProps<string | Date, Date>,
   | 'onError'
   | 'renderInput'
   | 'toolbarFormat'
@@ -79,7 +79,11 @@ const V4CompatibleDateTimePicker = ({
     undefined,
   )
   const handleError = React.useCallback(
-    (error: Parameters<Required<MobileDateTimePickerProps>['onError']>[0]) => {
+    (
+      error: Parameters<
+        Required<MobileDateTimePickerProps<string | Date, Date>>['onError']
+      >[0],
+    ) => {
       switch (error) {
         case 'invalidDate': {
           return setHelperText('Invalid Date Time')

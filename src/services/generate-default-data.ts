@@ -224,7 +224,6 @@ function parsePreFillData(
       } else {
         return parseAttachment(value)
       }
-      break
     }
     case 'files': {
       return parseFiles(element, value)
@@ -504,11 +503,16 @@ export default function generateDefaultData(
         }
         break
       }
+      case 'camera':
+      case 'draw':
+      case 'files': {
+        m[el.name] = parsePreFillData(el, el.defaultValue)
+        break
+      }
       case 'freshdeskDependentField':
       case 'geoscapeAddress':
       case 'pointAddress':
       case 'civicaStreetName':
-      case 'camera':
       case 'abn':
       case 'bsb':
       case 'text':
@@ -516,8 +520,6 @@ export default function generateDefaultData(
       case 'email':
       case 'telephone':
       case 'textarea':
-      case 'files':
-      case 'draw':
       case 'location': {
         if (el.defaultValue) {
           m[el.name] = el.defaultValue

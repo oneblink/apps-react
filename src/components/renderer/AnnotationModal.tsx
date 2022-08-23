@@ -141,7 +141,6 @@ function AnnotationModal({
             <SignatureCanvas
               ref={signatureCanvasRef}
               clearOnResize={false}
-              // @ts-expect-error ???
               onEnd={setDirty}
               penColor={penColour}
             />

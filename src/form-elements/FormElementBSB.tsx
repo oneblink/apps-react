@@ -122,6 +122,7 @@ function FormElementBSB({
           >
             <InputMask
               mask="999-999"
+              // @ts-expect-error "react-input-mask" types do not match code
               maskChar="x"
               type="text"
               placeholder={element.placeholderValue}

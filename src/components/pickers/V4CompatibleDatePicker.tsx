@@ -6,7 +6,7 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { localisationService } from '@oneblink/apps'
 
 type RemainingPickerProps = Omit<
-  MobileDatePickerProps<Date>,
+  MobileDatePickerProps<string | Date, Date>,
   | 'onError'
   | 'renderInput'
   | 'toolbarFormat'
@@ -76,7 +76,11 @@ const V4CompatibleDatePicker = ({
     undefined,
   )
   const handleError = React.useCallback(
-    (error: Parameters<Required<MobileDatePickerProps>['onError']>[0]) => {
+    (
+      error: Parameters<
+        Required<MobileDatePickerProps<string | Date, Date>>['onError']
+      >[0],
+    ) => {
       switch (error) {
         case 'invalidDate': {
           return setHelperText('Invalid Date Time')
@@ -170,7 +174,7 @@ const V4CompatibleDatePicker = ({
       maxDate={convertedMaxDate}
       minDate={convertedMinDate}
       onError={handleError}
-      // This triggers everytime a component of the while date changes within the picker
+      // This triggers every time a component of the while date changes within the picker
       onChange={emptyFn}
       onAccept={onAccept}
       inputFormat={localisationService.getDateFnsFormats().shortDateTime}

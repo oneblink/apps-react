@@ -5,7 +5,7 @@ import { AccessTime } from '@mui/icons-material'
 import useBooleanState from '../../hooks/useBooleanState'
 
 type RemainingPickerProps = Omit<
-  MobileTimePickerProps<Date>,
+  MobileTimePickerProps<string | Date, Date>,
   | 'onError'
   | 'renderInput'
   | 'toolbarFormat'
@@ -67,7 +67,11 @@ const V4CompatibleTimePicker = ({
     undefined,
   )
   const handleError = React.useCallback(
-    (error: Parameters<Required<MobileTimePickerProps>['onError']>[0]) => {
+    (
+      error: Parameters<
+        Required<MobileTimePickerProps<string | Date, Date>>['onError']
+      >[0],
+    ) => {
       switch (error) {
         case 'invalidDate': {
           return setHelperText('Invalid Date Time')
