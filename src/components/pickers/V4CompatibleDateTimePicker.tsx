@@ -121,12 +121,13 @@ const V4CompatibleDateTimePicker = ({
 
   const onAccept = React.useCallback(
     (date: Date | null) => {
-      const currentValue = value instanceof Date ? value.toISOString() : value
+      const currentValue =
+        valueProp instanceof Date ? valueProp.toISOString() : valueProp
       if (currentValue !== (date?.toISOString() || null)) {
         onChange(date)
       }
     },
-    [onChange, value],
+    [onChange, valueProp],
   )
 
   const actions = React.useMemo(() => {
