@@ -7,9 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-08-26
+
 ### Removed
 
 - legacy storage type for form elements
+
+### Dependencies
+
+- update [@emotion/react](https://www.npmjs.com/package/@emotion/react) to [11.10.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.9.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@emotion/styled](https://www.npmjs.com/package/@emotion/styled) to [11.10.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.8.1](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material) to [5.8.4](https://github.com/mui/material-ui/releases/tag/v5.8.4) (from [5.6.2](https://github.com/mui/material-ui/releases/tag/v5.6.2))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.4.2](https://github.com/oneblink/sdk-core-js/releases/tag/v0.4.2) (from [0.4.2-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.12.1 (from 2.7.0)
+
+- update [clsx](https://www.npmjs.com/package/clsx) to [1.2.1](https://github.com/lukeed/clsx/releases/tag/v1.2.1) (from [1.1.1](https://github.com/lukeed/clsx/releases/tag/v1.1.1))
+
+- update [color](https://www.npmjs.com/package/color) to [4.2.3](https://github.com/Qix-/color/releases/tag/4.2.3) (from [3.2.1](https://github.com/Qix-/color/releases/tag/3.2.1))
+
+- update [copy-to-clipboard](https://www.npmjs.com/package/copy-to-clipboard) to [3.3.2](https://github.com/sudodoki/copy-to-clipboard/releases/tag/v3.3.2) (from [3.3.1](https://github.com/sudodoki/copy-to-clipboard/releases/tag/v3.3.1))
+
+- update [date-fns](https://www.npmjs.com/package/date-fns) to [2.29.2](https://github.com/date-fns/date-fns/releases/tag/v2.29.2) (from [2.28.0](https://github.com/date-fns/date-fns/releases/tag/v2.28.0))
+
+- update [flatpickr](https://www.npmjs.com/package/flatpickr) to [4.6.13](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.13) (from [4.6.11](https://github.com/flatpickr/flatpickr/releases/tag/v4.6.11))
+
+- update [react-signature-canvas](https://www.npmjs.com/package/react-signature-canvas) to [1.0.6](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.0.6) (from [1.0.5](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.0.5))
+
+- update [react-table](https://www.npmjs.com/package/react-table) to 7.8.0 (from [7.7.0](https://github.com/TanStack/table/releases/tag/v7.7.0))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.7.1](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.7.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- no longer depend upon [signature_pad](https://www.npmjs.com/package/signature_pad)
 
 ## [1.2.5] - 2022-08-16
 
