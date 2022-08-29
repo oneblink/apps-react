@@ -1,3 +1,4 @@
+import { Tooltip } from '@mui/material'
 import * as React from 'react'
 
 import utilsService from '../../services/utils-service'
@@ -5,23 +6,20 @@ import utilsService from '../../services/utils-service'
 type Props = {
   text: string
   className?: string
-  isInputButton?: boolean
 }
 
-function CopyToClipboardButton({ className, text, isInputButton }: Props) {
+function CopyToClipboardButton({ className, text }: Props) {
   const copy = React.useCallback(() => {
     utilsService.copyToClipboard(text)
   }, [text])
   return (
-    <button onClick={copy} className={className} type="button">
-      <span></span>
-      <span className="icon">
-        <i className="material-icons">file_copy</i>
-      </span>
-      <span className={isInputButton ? 'is-hidden-mobile' : undefined}>
-        &nbsp;Copy
-      </span>
-    </button>
+    <Tooltip title="Copy to clipboard">
+      <button onClick={copy} className={className} type="button">
+        <span className="icon">
+          <i className="material-icons">file_copy</i>
+        </span>
+      </button>
+    </Tooltip>
   )
 }
 
