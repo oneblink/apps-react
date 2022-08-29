@@ -153,8 +153,7 @@ function FormElementBSB({
           {!!element.readOnly && !!value && (
             <div className="control">
               <CopyToClipboardButton
-                className="button is-input-addon cypress-copy-to-clipboard-button"
-                isInputButton
+                className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
                 text={text}
               />
             </div>
