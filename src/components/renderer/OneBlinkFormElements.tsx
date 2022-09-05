@@ -109,7 +109,10 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
           return (
             <div
               key={element.id}
-              className="ob-element cypress-element-container"
+              className={clsx(
+                'ob-element cypress-element-container',
+                element.customCssClasses,
+              )}
             >
               <FormElementSection
                 formId={formId}
