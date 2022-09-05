@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Section element's custom css class names not showing
+
 ### Changed
 
 - Copy Button on read only elements
