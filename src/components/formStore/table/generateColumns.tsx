@@ -299,7 +299,12 @@ const generateColumns = <
           const [categoryFormElement, subCategoryFormElement, itemFormElement] =
             generateFreshdeskDependentFieldElements(
               formElement,
-              formElement.defaultValue,
+              // Setting this, because we need all 3 elements to be returned and each will only be returned if the preceding field had a value
+              {
+                category: 'category',
+                subCategory: 'subCategory',
+                item: 'item',
+              },
             )
           generateColumns({
             onChangeParameters,

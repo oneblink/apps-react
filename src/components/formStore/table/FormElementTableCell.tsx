@@ -37,6 +37,22 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     return null
   }
 
+  if (
+    // If the value is an array of objects and the element type is not a repeatable set,
+    // we assume the element was previously a repeatable set, and render the stringified value
+    Array.isArray(unknown) &&
+    typeof unknown[0] === 'object' &&
+    formElement.type !== 'repeatableSet'
+  ) {
+    const stringifiedSetValue = JSON.stringify(unknown)
+    return (
+      <>
+        {stringifiedSetValue}
+        <TableCellCopyButton isHidden={!allowCopy} text={stringifiedSetValue} />
+      </>
+    )
+  }
+
   switch (formElement.type) {
     case 'repeatableSet': {
       if (!Array.isArray(unknown)) {
