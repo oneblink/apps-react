@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Tooltip } from '@mui/material'
-import UploadingAttachment from './UploadingAttachment'
+import useIsOffline from '../../../hooks/useIsOffline'
 
 const AttachmentStatus = ({
   isUploading,
@@ -17,6 +17,8 @@ const AttachmentStatus = ({
   isLoadingImageUrl?: boolean
   imageUrl: string | null | undefined
 }) => {
+  const isOffline = useIsOffline()
+
   const tooltip = React.useMemo(() => {
     if (isLoadingImageUrl && !imageUrl) {
       return 'Attempting to load file preview. File is synced with submission.'
@@ -46,7 +48,16 @@ const AttachmentStatus = ({
         </span>
       )
     }
-    return <UploadingAttachment />
+    if (isOffline) {
+      return (
+        <Tooltip title="Upload will start when you connect to the internet">
+          <div className="cypress-attachment-uploading">
+            <i className="material-icons has-text-warning">wifi_off</i>
+          </div>
+        </Tooltip>
+      )
+    }
+    return null
   }
 
   return (

@@ -60,6 +60,7 @@ const FormElementFile = ({
       onDownload={attachmentResult.canDownload ? handleDownload : undefined}
       onRemove={handleRemove}
       onRetry={handleRetry}
+      progress={attachmentResult.progress}
     />
   )
 }

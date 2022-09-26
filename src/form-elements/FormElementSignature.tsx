@@ -14,6 +14,8 @@ import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
+import { Fade } from '@mui/material'
+import ProgressBar from '../components/renderer/attachments/ProgressBar'
 
 type Props = {
   id: string
@@ -238,6 +240,7 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
+  progress,
 }: ReturnType<typeof useAttachment>) {
   if (uploadErrorMessage) {
     return (
@@ -279,6 +282,13 @@ const DisplayImage = React.memo(function DisplayImage({
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
         />
+        {
+          <Fade in={isUploading}>
+            <span>
+              <ProgressBar progress={progress} />
+            </span>
+          </Fade>
+        }
       </>
     )
   }
