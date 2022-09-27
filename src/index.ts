@@ -28,3 +28,4 @@ export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmis
 export { default as MuiV4CompatibleDatePicker } from './components/pickers/V4CompatibleDatePicker'
 export { default as MuiV4CompatibleDateTimePicker } from './components/pickers/V4CompatibleDateTimePicker'
 export { default as MuiV4CompatibleTimePicker } from './components/pickers/V4CompatibleTimePicker'
+export { default as ProgressBar } from './components/renderer/ProgressBar'
