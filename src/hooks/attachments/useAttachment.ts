@@ -34,6 +34,11 @@ export default function useAttachment(
     imageUrl?: string | null
     loadImageUrlError?: Error
   }>({})
+  const [progressState, setProgressState] = React.useState<number | undefined>()
+
+  const onProgress = React.useCallback(({ progress }: { progress: number }) => {
+    setProgressState(progress)
+  }, [])
 
   // TRIGGER UPLOAD
   React.useEffect(() => {
@@ -70,6 +75,7 @@ export default function useAttachment(
             contentType: data.type,
             data,
             isPrivate,
+            onProgress,
           },
           abortController.signal,
         )
@@ -115,6 +121,7 @@ export default function useAttachment(
     isOffline,
     isPrivate,
     onChange,
+    onProgress,
     storeAttachmentBlobLocally,
     value,
   ])
@@ -307,5 +314,6 @@ export default function useAttachment(
     isLoadingImageUrl: imageUrlState.imageUrl === undefined,
     ...imageUrlState,
     canDownload,
+    progress: progressState,
   }
 }

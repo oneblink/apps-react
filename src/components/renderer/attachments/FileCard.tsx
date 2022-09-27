@@ -9,6 +9,7 @@ import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
 } from '../../../services/form-validation'
+import ProgressBar from './ProgressBar'
 
 type Props = {
   element: FormTypes.FilesElement
@@ -22,6 +23,7 @@ type Props = {
   onRemove: () => void
   onDownload?: () => void
   onRetry?: () => void
+  progress: undefined | number
 }
 
 function FileCard({
@@ -36,6 +38,7 @@ function FileCard({
   onDownload,
   onRemove,
   onRetry,
+  progress,
 }: Props) {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
@@ -133,6 +136,7 @@ function FileCard({
             isLoadingImageUrl={isLoadingImageUrl}
             imageUrl={imageUrl}
           />
+          {isUploading && <ProgressBar progress={progress} />}
         </div>
       </div>
     </div>

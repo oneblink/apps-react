@@ -21,6 +21,8 @@ import AttachmentStatus from '../components/renderer/attachments/AttachmentStatu
 import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
+import ProgressBar from '../components/renderer/attachments/ProgressBar'
+import { Fade } from '@mui/material'
 
 type Props = {
   id: string
@@ -165,6 +167,7 @@ function FormElementCamera({
     imageUrl,
     loadImageUrlError,
     canDownload,
+    progress,
   } = useAttachment(
     value,
     element,
@@ -257,19 +260,29 @@ function FormElementCamera({
       >
         <div className="control">
           {(value || isLoading) && (
-            <figure className="ob-figure">
-              <DisplayImage
-                isUploading={isUploading}
-                uploadErrorMessage={uploadErrorMessage}
-                isLoadingImageUrl={isLoadingImageUrl}
-                imageUrl={imageUrl}
-                loadImageUrlError={loadImageUrlError}
-                isLoading={isLoading}
-                element={element}
-                onAnnotate={setIsAnnotating}
-                canDownload={canDownload}
-              />
-            </figure>
+            <>
+              <figure className="ob-figure">
+                <DisplayImage
+                  isUploading={isUploading}
+                  uploadErrorMessage={uploadErrorMessage}
+                  isLoadingImageUrl={isLoadingImageUrl}
+                  imageUrl={imageUrl}
+                  loadImageUrlError={loadImageUrlError}
+                  isLoading={isLoading}
+                  element={element}
+                  onAnnotate={setIsAnnotating}
+                  canDownload={canDownload}
+                  progress={progress}
+                />
+                {
+                  <Fade in={isUploading}>
+                    <span>
+                      <ProgressBar progress={progress} />
+                    </span>
+                  </Fade>
+                }
+              </figure>
+            </>
           )}
 
           <input
