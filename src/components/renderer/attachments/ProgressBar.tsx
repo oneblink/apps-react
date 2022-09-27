@@ -1,11 +1,12 @@
 import * as React from 'react'
-import { LinearProgress, Tooltip } from '@mui/material'
+import { Tooltip } from '@mui/material'
+import ProgressBar from '../ProgressBar'
 
 interface Props {
   progress: number | undefined
 }
 
-const ProgressBar = ({ progress }: Props) => {
+const AttachmentProgressBar = ({ progress }: Props) => {
   return (
     <div className="ob-progress__attachment-wrapper">
       <Tooltip
@@ -17,13 +18,12 @@ const ProgressBar = ({ progress }: Props) => {
       >
         <span className="ob-progress__attachment-tooltip-element" />
       </Tooltip>
-      <LinearProgress
+      <ProgressBar
         className="ob-progress__attachment-bar"
-        variant="determinate"
-        value={progress || 0}
+        progress={progress || 0}
       />
     </div>
   )
 }
 
-export default React.memo<Props>(ProgressBar)
+export default React.memo<Props>(AttachmentProgressBar)
