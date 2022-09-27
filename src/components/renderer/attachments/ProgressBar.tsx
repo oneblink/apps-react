@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { LinearProgress } from '@mui/material'
+import { LinearProgress, Tooltip } from '@mui/material'
 
 interface Props {
   progress: number | undefined
@@ -7,16 +7,22 @@ interface Props {
 
 const ProgressBar = ({ progress }: Props) => {
   return (
-    <LinearProgress
-      sx={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '100%',
-      }}
-      variant="determinate"
-      value={progress || 0}
-    />
+    <div className="ob-progress__attachment-wrapper">
+      <Tooltip
+        title={
+          typeof progress === 'number'
+            ? `Attachment upload progress: ${Math.round(progress)}%`
+            : ''
+        }
+      >
+        <span className="ob-progress__attachment-tooltip-element" />
+      </Tooltip>
+      <LinearProgress
+        className="ob-progress__attachment-bar"
+        variant="determinate"
+        value={progress || 0}
+      />
+    </div>
   )
 }
 
