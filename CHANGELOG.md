@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Progress Bar to Attachment uploads
 
+## [2.2.0] - 2022-09-27
+
 ### Fixed
 
 - Former Repeatable Set elements crashing Data Manager
