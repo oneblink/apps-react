@@ -51,6 +51,7 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   attachmentRetentionInDays?: number
+  continueWithUploadingAttachments?: boolean
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
@@ -83,6 +84,7 @@ function OneBlinkFormBase({
   buttons,
   primaryColour,
   attachmentRetentionInDays,
+  continueWithUploadingAttachments,
 }: Props) {
   const isOffline = useIsOffline()
 
@@ -338,6 +340,11 @@ function OneBlinkFormBase({
         return true
       }
 
+      // consumer has signaled to continue with submission whilst attachments still uploading
+      if (continueWithUploadingAttachments) {
+        return true
+      }
+
       if (checkIfAttachmentsAreUploading(definition, submission)) {
         bulmaToast.toast({
           message:
@@ -353,7 +360,7 @@ function OneBlinkFormBase({
 
       return true
     },
-    [definition, isOffline],
+    [definition, isOffline, continueWithUploadingAttachments],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
