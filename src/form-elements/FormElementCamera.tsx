@@ -250,6 +250,7 @@ function FormElementCamera({
     [clearIsAnnotating, element, imageUrl, onChange],
   )
 
+  const progressTooltipRef = React.useRef<HTMLDivElement>(null)
   return (
     <>
       <FormElementLabelContainer
@@ -261,7 +262,7 @@ function FormElementCamera({
         <div className="control">
           {(value || isLoading) && (
             <>
-              <figure className="ob-figure">
+              <figure className="ob-figure" ref={progressTooltipRef}>
                 <DisplayImage
                   isUploading={isUploading}
                   uploadErrorMessage={uploadErrorMessage}
@@ -274,13 +275,17 @@ function FormElementCamera({
                   canDownload={canDownload}
                   progress={progress}
                 />
-                {
+                {progressTooltipRef.current && (
                   <Fade in={isUploading}>
                     <span>
-                      <ProgressBar progress={progress} />
+                      <ProgressBar
+                        isShowing={isUploading}
+                        progress={progress}
+                        tooltipAnchorEl={progressTooltipRef.current}
+                      />
                     </span>
                   </Fade>
-                }
+                )}
               </figure>
             </>
           )}
