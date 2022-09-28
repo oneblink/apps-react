@@ -14,7 +14,6 @@ import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
-import { Fade } from '@mui/material'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 
 type Props = {
@@ -212,11 +211,13 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     ),
   )
 
+  const progressTooltipRef = React.useRef<HTMLDivElement>(null)
+
   return (
     <>
-      <figure className="ob-figure">
+      <figure className="ob-figure" ref={progressTooltipRef}>
         <div className="figure-content">
-          <DisplayImage {...result} />
+          <DisplayImage {...result} progressTooltipRef={progressTooltipRef} />
         </div>
       </figure>
 
@@ -241,7 +242,10 @@ const DisplayImage = React.memo(function DisplayImage({
   imageUrl,
   loadImageUrlError,
   progress,
-}: ReturnType<typeof useAttachment>) {
+  progressTooltipRef,
+}: ReturnType<typeof useAttachment> & {
+  progressTooltipRef: React.RefObject<HTMLDivElement>
+}) {
   if (uploadErrorMessage) {
     return (
       <>
@@ -282,13 +286,13 @@ const DisplayImage = React.memo(function DisplayImage({
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
         />
-        {
-          <Fade in={isUploading}>
-            <span>
-              <ProgressBar progress={progress} />
-            </span>
-          </Fade>
-        }
+        {progressTooltipRef.current && (
+          <ProgressBar
+            progress={progress}
+            isShowing={isUploading}
+            tooltipAnchorEl={progressTooltipRef.current}
+          />
+        )}
       </>
     )
   }

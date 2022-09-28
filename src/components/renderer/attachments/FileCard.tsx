@@ -64,6 +64,7 @@ function FileCard({
     }, [hideMore, isShowingMore]),
   )
 
+  const progressTooltipRef = React.useRef<HTMLDivElement>(null)
   return (
     <div className="column is-one-quarter">
       <div className="ob-files__box">
@@ -126,7 +127,7 @@ function FileCard({
           </div>
         </div>
 
-        <div className="ob-files__file-name is-size-6">
+        <div className="ob-files__file-name is-size-6" ref={progressTooltipRef}>
           <span className="ob-files__file-name-inner">{fileName}</span>
           <AttachmentStatus
             isUploading={isUploading}
@@ -136,7 +137,13 @@ function FileCard({
             isLoadingImageUrl={isLoadingImageUrl}
             imageUrl={imageUrl}
           />
-          {isUploading && <ProgressBar progress={progress} />}
+          {progressTooltipRef.current && (
+            <ProgressBar
+              progress={progress}
+              isShowing={!!isUploading}
+              tooltipAnchorEl={progressTooltipRef.current}
+            />
+          )}
         </div>
       </div>
     </div>
