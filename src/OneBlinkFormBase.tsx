@@ -95,6 +95,9 @@ function OneBlinkFormBase({
           primary: {
             main: primaryColour || '#4c8da7',
           },
+          success: {
+            main: '#4caf50',
+          },
         },
       }),
     [primaryColour],
