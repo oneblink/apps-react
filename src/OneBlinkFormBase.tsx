@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
 import { FormTypes, FormsAppsTypes } from '@oneblink/types'
+import { attachmentsService } from '@oneblink/apps'
 
 import Modal from './components/renderer/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/renderer/OneBlinkAppsErrorOriginalMessage'
@@ -27,7 +28,6 @@ import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenti
 import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
-import checkIfAttachmentsAreUploading from './services/checkIfAttachmentsAreUploading'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
 import {
@@ -345,7 +345,12 @@ function OneBlinkFormBase({
         return true
       }
 
-      if (checkIfAttachmentsAreUploading(definition, submission)) {
+      if (
+        attachmentsService.checkIfAttachmentsAreUploading(
+          definition,
+          submission,
+        )
+      ) {
         bulmaToast.toast({
           message:
             'Attachments are still uploading, please wait for them to finish before trying again.',
