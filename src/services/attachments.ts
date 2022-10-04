@@ -1,14 +1,13 @@
 import { FormTypes } from '@oneblink/types'
-import { Sentry } from '@oneblink/apps'
+import { Sentry, attachmentsService } from '@oneblink/apps'
 import { v4 as uuid } from 'uuid'
-import { AttachmentNew } from '../types/attachments'
 import { blobToCanvas, getBlobOrientation } from './blob-utils'
 
 export function prepareNewAttachment(
   blob: Blob,
   fileName: string,
   element: FormTypes.FormElementBinaryStorage,
-): AttachmentNew {
+): attachmentsService.AttachmentNew {
   return {
     _id: uuid(),
     data: blob,

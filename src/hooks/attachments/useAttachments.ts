@@ -4,7 +4,7 @@ import {
   prepareNewAttachment,
   correctFileOrientation,
 } from '../../services/attachments'
-import { Attachment, AttachmentNew } from '../../types/attachments'
+import { attachmentsService } from '@oneblink/apps'
 import { canvasToBlob } from '../../services/blob-utils'
 import useBooleanState from '../useBooleanState'
 import useIsMounted from '../useIsMounted'
@@ -12,7 +12,7 @@ import { FormElementValueChangeHandler } from '../../types/form'
 
 const useAttachments = (
   element: FormTypes.FilesElement,
-  onChange: FormElementValueChangeHandler<Attachment[]>,
+  onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>,
 ) => {
   const isMounted = useIsMounted()
   const [isDirty, setIsDirty] = useBooleanState(false)
@@ -20,17 +20,18 @@ const useAttachments = (
   const addAttachments = React.useCallback(
     async (files: File[]): Promise<void> => {
       if (!files.length) return
-      const newAttachments: AttachmentNew[] = await Promise.all(
-        files.map(async (file) => {
-          const result = await correctFileOrientation(file)
-          if (result instanceof Blob) {
-            return prepareNewAttachment(result, file.name, element)
-          }
+      const newAttachments: attachmentsService.AttachmentNew[] =
+        await Promise.all(
+          files.map(async (file) => {
+            const result = await correctFileOrientation(file)
+            if (result instanceof Blob) {
+              return prepareNewAttachment(result, file.name, element)
+            }
 
-          const blob = await canvasToBlob(result)
-          return prepareNewAttachment(blob, file.name, element)
-        }),
-      )
+            const blob = await canvasToBlob(result)
+            return prepareNewAttachment(blob, file.name, element)
+          }),
+        )
 
       onChange(element, (currentAttachments) => {
         if (!currentAttachments) return newAttachments
@@ -65,7 +66,7 @@ const useAttachments = (
   )
 
   const changeAttachment = React.useCallback(
-    (id: string, attachment: Attachment) => {
+    (id: string, attachment: attachmentsService.Attachment) => {
       onChange(element, (currentAttachments) => {
         if (!currentAttachments) return
         return currentAttachments.map((att) => {

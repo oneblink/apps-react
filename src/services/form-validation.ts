@@ -1,7 +1,7 @@
 import validate from 'validate.js'
-import { localisationService } from '@oneblink/apps'
+import { attachmentsService, localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
-import { Attachment, FormElementBinaryStorageValue } from '../types/attachments'
+import { FormElementBinaryStorageValue } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
@@ -167,7 +167,7 @@ validate.validators.isTrue = function (value: unknown, message?: string) {
 }
 
 validate.validators.needsExtension = function (
-  value: Attachment[] | undefined,
+  value: attachmentsService.Attachment[] | undefined,
   formElement: FormTypes.FilesElement,
 ) {
   const isValid =
@@ -567,7 +567,7 @@ export function generateValidationSchema(
             tooShort: 'Please upload at least %{count} file(s)',
           },
           type: {
-            type: (files: Attachment[] | undefined) => {
+            type: (files: attachmentsService.Attachment[] | undefined) => {
               return (
                 !Array.isArray(files) ||
                 files.every((file) => {

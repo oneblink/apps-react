@@ -7,10 +7,12 @@ import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
 } from '../services/form-validation'
-import { Attachment } from '../types/attachments'
+import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 
-export function stringifyAttachments(value: Attachment[] | undefined): string {
+export function stringifyAttachments(
+  value: attachmentsService.Attachment[] | undefined,
+): string {
   if (value?.every((attachment) => !attachment.type)) {
     return JSON.stringify(value)
   }
@@ -27,8 +29,8 @@ function FormElementFiles({
 }: {
   id: string
   element: FormTypes.FilesElement
-  value?: Attachment[]
-  onChange: FormElementValueChangeHandler<Attachment[]>
+  value?: attachmentsService.Attachment[]
+  onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }) {
