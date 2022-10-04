@@ -1,14 +1,14 @@
 import { FormTypes } from '@oneblink/types'
 import { v4 as uuid } from 'uuid'
-import { Attachment, AttachmentError } from '../types/attachments'
+import { attachmentsService } from '@oneblink/apps'
 
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { FormSubmissionModel } from '../types/form'
 
 export function validateAttachmentExists(
-  attachment: Attachment,
+  attachment: attachmentsService.Attachment,
   attachmentRetentionInDays: number | undefined,
-): AttachmentError | void {
+): attachmentsService.AttachmentError | void {
   if (attachment.type || !attachment.uploadedAt || !attachmentRetentionInDays) {
     return
   }
@@ -27,7 +27,7 @@ export function validateAttachmentExists(
     return
   }
 
-  const attachmentError: AttachmentError = {
+  const attachmentError: attachmentsService.AttachmentError = {
     type: 'ERROR',
     errorMessage:
       "This attachment has been removed based on your administrator's data retention policy, please remove it and upload it again.",
@@ -41,7 +41,7 @@ export function validateAttachmentExists(
 function validateAttachmentsExists(
   attachments: unknown,
   attachmentRetentionInDays: number | undefined,
-): Attachment[] | void {
+): attachmentsService.Attachment[] | void {
   if (!Array.isArray(attachments)) {
     return
   }
@@ -49,7 +49,7 @@ function validateAttachmentsExists(
   let hasChanges = false
   for (let index = 0; index < newAttachments.length; index++) {
     const attachmentError = validateAttachmentExists(
-      newAttachments[index] as Attachment,
+      newAttachments[index] as attachmentsService.Attachment,
       attachmentRetentionInDays,
     )
     if (attachmentError) {
@@ -143,7 +143,7 @@ function checkIfAttachmentsExistForFormElements(
           case 'camera':
           case 'draw': {
             const attachmentError = validateAttachmentExists(
-              value as Attachment,
+              value as attachmentsService.Attachment,
               attachmentRetentionInDays,
             )
             if (attachmentError) {

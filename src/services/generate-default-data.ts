@@ -1,12 +1,13 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { localisationService } from '@oneblink/apps'
-import { Attachment } from '../types/attachments'
+import { attachmentsService, localisationService } from '@oneblink/apps'
 import { FormSubmissionModel } from '../types/form'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
-function parseAttachment(value: unknown): Attachment | undefined {
+function parseAttachment(
+  value: unknown,
+): attachmentsService.Attachment | undefined {
   return parseUnknownAsRecord(value, (record) => {
     // Check for attachments that have not been uploaded yet
     if (
@@ -16,7 +17,7 @@ function parseAttachment(value: unknown): Attachment | undefined {
       typeof record.fileName === 'string' &&
       typeof record.isPrivate === 'boolean'
     ) {
-      return record as Attachment
+      return record as attachmentsService.Attachment
     }
 
     // Check for attachments that have been uploaded already
@@ -42,7 +43,7 @@ function parseAttachment(value: unknown): Attachment | undefined {
 function parseFile(
   element: FormTypes.FormElementBinaryStorage,
   value: unknown,
-): Attachment | undefined {
+): attachmentsService.Attachment | undefined {
   return parseUnknownAsRecord(value, (record) => {
     if (
       record.type === undefined &&
@@ -60,15 +61,18 @@ function parseFile(
 function parseFiles(
   element: FormTypes.FormElementBinaryStorage,
   value: unknown,
-): Array<Attachment> | undefined {
+): Array<attachmentsService.Attachment> | undefined {
   if (Array.isArray(value)) {
-    const files = value.reduce<Array<Attachment>>((files, v) => {
-      const file = parseFile(element, v)
-      if (file) {
-        files.push(file)
-      }
-      return files
-    }, [])
+    const files = value.reduce<Array<attachmentsService.Attachment>>(
+      (files, v) => {
+        const file = parseFile(element, v)
+        if (file) {
+          files.push(file)
+        }
+        return files
+      },
+      [],
+    )
     if (files.length) {
       return files
     }

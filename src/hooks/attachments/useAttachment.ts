@@ -1,19 +1,18 @@
 import * as React from 'react'
-import { submissionService } from '@oneblink/apps'
+import { attachmentsService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
-import {
-  Attachment,
-  AttachmentNew,
-  FormElementBinaryStorageValue,
-} from '../../types/attachments'
+import { FormElementBinaryStorageValue } from '../../types/attachments'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
 
-export type OnChange = (id: string, attachment: Attachment) => void
+export type OnChange = (
+  id: string,
+  attachment: attachmentsService.Attachment,
+) => void
 
 export default function useAttachment(
   value: FormElementBinaryStorageValue,
@@ -56,7 +55,7 @@ export default function useAttachment(
       return
     }
 
-    const newAttachment = value as AttachmentNew
+    const newAttachment = value as attachmentsService.AttachmentNew
     const data = value.data
 
     let ignore = false
@@ -68,7 +67,7 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = await submissionService.uploadAttachment(
+        const upload = await attachmentsService.uploadAttachment(
           {
             formId,
             fileName: newAttachment.fileName,

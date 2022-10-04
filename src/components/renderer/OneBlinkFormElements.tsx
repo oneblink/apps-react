@@ -52,10 +52,7 @@ import {
 } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
-import {
-  Attachment,
-  FormElementBinaryStorageValue,
-} from '../../types/attachments'
+import { FormElementBinaryStorageValue } from '../../types/attachments'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
@@ -65,6 +62,7 @@ import {
   FormElementValueChangeHandler,
   FormSubmissionModel,
 } from '../../types/form'
+import { attachmentsService } from '@oneblink/apps'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -564,7 +562,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           <FormElementFiles
             id={id}
             element={element}
-            value={value as Attachment[] | undefined}
+            value={value as attachmentsService.Attachment[] | undefined}
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementFiles

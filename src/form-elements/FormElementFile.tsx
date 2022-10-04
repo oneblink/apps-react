@@ -3,12 +3,12 @@ import downloadAttachment from '../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../hooks/attachments/useAttachment'
 import FileCard from '../components/renderer/attachments/FileCard'
-import { Attachment } from '../types/attachments'
+import { attachmentsService } from '@oneblink/apps'
 
 type Props = {
   element: FormTypes.FilesElement
   onRemove: (id: string) => void
-  file: Attachment
+  file: attachmentsService.Attachment
   disableUpload: boolean
   onChange: OnChange
 }

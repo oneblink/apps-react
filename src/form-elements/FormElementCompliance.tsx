@@ -12,7 +12,7 @@ import ComplianceButton from './ComplianceButton'
 import FormElementFiles from './FormElementFiles'
 import FormElementTextarea from './FormElementTextarea'
 import { FormElementValueChangeHandler } from '../types/form'
-import { Attachment } from '../types/attachments'
+import { attachmentsService } from '@oneblink/apps'
 
 interface Props {
   id: string
@@ -28,7 +28,7 @@ interface Props {
 export interface Value {
   value?: string
   notes?: string
-  files?: Attachment[]
+  files?: attachmentsService.Attachment[]
 }
 
 const baseElement = {
