@@ -37,22 +37,6 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     return null
   }
 
-  if (
-    // If the value is an array of objects and the element type is not a repeatable set,
-    // we assume the element was previously a repeatable set, and render the stringified value
-    Array.isArray(unknown) &&
-    typeof unknown[0] === 'object' &&
-    formElement.type !== 'repeatableSet'
-  ) {
-    const stringifiedSetValue = JSON.stringify(unknown)
-    return (
-      <>
-        {stringifiedSetValue}
-        <TableCellCopyButton isHidden={!allowCopy} text={stringifiedSetValue} />
-      </>
-    )
-  }
-
   switch (formElement.type) {
     case 'repeatableSet': {
       if (!Array.isArray(unknown)) {
@@ -105,7 +89,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'textarea': {
-      const value = unknown as string
+      if (typeof unknown !== 'string') {
+        break
+      }
       return (
         <>
           <span
@@ -113,16 +99,22 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
               whiteSpace: 'pre-line',
             }}
           >
-            {value}
+            {unknown}
           </span>
-          <TableCellCopyButton isHidden={!allowCopy} text={value} />
+          <TableCellCopyButton isHidden={!allowCopy} text={unknown} />
         </>
       )
     }
 
     case 'date': {
-      const value = unknown as string
-      const text = format(new Date(value), shortDateFormat)
+      if (typeof unknown !== 'string') {
+        break
+      }
+      const date = new Date(unknown)
+      if (isNaN(date.getTime())) {
+        break
+      }
+      const text = format(date, shortDateFormat)
       return (
         <>
           {text}
@@ -132,8 +124,14 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'time': {
-      const value = unknown as string
-      const text = format(new Date(value), timeFormat)
+      if (typeof unknown !== 'string') {
+        break
+      }
+      const date = new Date(unknown)
+      if (isNaN(date.getTime())) {
+        break
+      }
+      const text = format(date, timeFormat)
       return (
         <>
           {text}
@@ -143,8 +141,14 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'datetime': {
-      const value = unknown as string
-      const text = format(new Date(value), shortDateTimeFormat)
+      if (typeof unknown !== 'string') {
+        break
+      }
+      const date = new Date(unknown)
+      if (isNaN(date.getTime())) {
+        break
+      }
+      const text = format(date, shortDateTimeFormat)
       return (
         <>
           {text}
@@ -154,8 +158,10 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'number': {
-      const value = unknown as number
-      const text = localisationService.formatNumber(value)
+      if (typeof unknown !== 'number') {
+        break
+      }
+      const text = localisationService.formatNumber(unknown)
       return (
         <>
           {text}
@@ -172,25 +178,26 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
         formElement.type === 'checkboxes' ||
         (formElement.type === 'select' && formElement.multi)
       ) {
-        const value = unknown as string
-        if (!Array.isArray(value) || !value.length) {
+        if (!Array.isArray(unknown) || !unknown.length) {
           break
         }
-        const text = value
+        const text = (unknown as string[])
           .map((selection) => getSelectedOptionLabel(formElement, selection))
           .join(', ')
         return (
           <>
             <MultiSelectFormElementTableCellContent
-              value={value}
+              value={unknown}
               formElement={formElement}
             />
             <TableCellCopyButton isHidden={!allowCopy} text={text} />
           </>
         )
       } else {
-        const value = unknown as string
-        const text = getSelectedOptionLabel(formElement, value)
+        if (typeof unknown !== 'string') {
+          break
+        }
+        const text = getSelectedOptionLabel(formElement, unknown)
         return (
           <>
             {text}
@@ -201,39 +208,49 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'email': {
-      const value = unknown as string
+      if (typeof unknown !== 'string') {
+        break
+      }
       return (
         <>
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            href={`mailto:${value}`}
+            href={`mailto:${unknown}`}
           >
-            {value}
+            {unknown}
           </Link>
-          <TableCellCopyButton isHidden={!allowCopy} text={value} />
+          <TableCellCopyButton isHidden={!allowCopy} text={unknown} />
         </>
       )
     }
     case 'telephone': {
-      const value = unknown as string
+      if (typeof unknown !== 'string') {
+        break
+      }
       return (
         <>
-          <Link target="_blank" rel="noopener noreferrer" href={`tel:${value}`}>
-            {value}
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`tel:${unknown}`}
+          >
+            {unknown}
           </Link>
-          <TableCellCopyButton isHidden={!allowCopy} text={value} />
+          <TableCellCopyButton isHidden={!allowCopy} text={unknown} />
         </>
       )
     }
     case 'text':
     case 'bsb':
     case 'barcodeScanner': {
-      const value = unknown as string
+      if (typeof unknown !== 'string') {
+        break
+      }
       return (
         <>
-          {value}
-          <TableCellCopyButton isHidden={!allowCopy} text={value} />
+          {unknown}
+          <TableCellCopyButton isHidden={!allowCopy} text={unknown} />
         </>
       )
     }
@@ -249,35 +266,29 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'calculation': {
-      const value = unknown as number
-      if (formElement.displayAsCurrency) {
-        const text = localisationService.formatCurrency(value)
-        return (
-          <>
-            {text}
-            <TableCellCopyButton
-              isHidden={!allowCopy}
-              text={value.toString()}
-            />
-          </>
-        )
-      } else {
-        const text = localisationService.formatNumber(value)
-        return (
-          <>
-            {text}
-            <TableCellCopyButton
-              isHidden={!allowCopy}
-              text={value.toString()}
-            />
-          </>
-        )
+      if (typeof unknown !== 'number') {
+        break
       }
+      const text = formElement.displayAsCurrency
+        ? localisationService.formatCurrency(unknown)
+        : localisationService.formatNumber(unknown)
+      return (
+        <>
+          {text}
+          <TableCellCopyButton
+            isHidden={!allowCopy}
+            text={unknown.toString()}
+          />
+        </>
+      )
     }
 
     case 'civicaStreetName': {
       const value = unknown as {
         formattedStreet: string
+      }
+      if (typeof value?.formattedStreet !== 'string') {
+        break
       }
       return (
         <>
@@ -297,6 +308,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
         familyName?: string
         emailAddress: string
       }
+      if (typeof value?.emailAddress !== 'string') {
+        break
+      }
       const text =
         [value?.title, value?.givenName1, value?.familyName]
           .filter((t) => t)
@@ -311,6 +325,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
 
     case 'geoscapeAddress': {
       const value = unknown as GeoscapeAddress
+      if (typeof value.addressId !== 'string') {
+        break
+      }
       const fullAddress = value?.addressDetails?.formattedAddress || (
         <>
           Geoscape Address ID: <i>{value.addressId}</i>
@@ -329,6 +346,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
 
     case 'pointAddress': {
       const value = unknown as PointAddress
+      if (typeof value.addressId !== 'string') {
+        break
+      }
       const fullAddress = value?.addressDetails?.formattedAddress || (
         <>
           NSW Point Address ID: <i>{value.addressId}</i>
@@ -346,8 +366,10 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'boolean': {
-      const value = unknown as boolean
-      const text = value ? 'Yes' : 'No'
+      if (typeof unknown !== 'boolean') {
+        break
+      }
+      const text = unknown ? 'Yes' : 'No'
       return (
         <>
           {text}
@@ -358,6 +380,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
 
     case 'abn': {
       const value = unknown as ABNRecord
+      if (!value.ABN || !value.entityType) {
+        break
+      }
       const abnNumber = abnService.displayABNNumberFromABNRecord(value)
       return (
         <>
@@ -389,10 +414,11 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
         'Unsupported element type in Submission Data rendering',
         formElement,
       )
+      return null
     }
   }
 
-  return null
+  return <>{JSON.stringify(unknown)}</>
 }
 
 export default React.memo(FormElementTableCell)

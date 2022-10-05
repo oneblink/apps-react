@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Progress Bar to Attachment uploads
 - `continueWithUploadingAttachments` prop to `<OneBlinkForm />`
 
+### Fixed
+
+- Data Manager crashing if submission data does not match form element
+
 ## [2.2.0] - 2022-09-27
 
 ### Fixed
