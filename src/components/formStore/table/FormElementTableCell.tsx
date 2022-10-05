@@ -406,7 +406,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     case 'image':
     case 'heading':
     case 'summary': {
-      break
+      return null
     }
 
     default: {
