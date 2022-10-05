@@ -124,7 +124,7 @@ export function MultiSelectFormElementTableCellContent({
     <UnorderedList disablePadding>
       {value.map((selection, index) => {
         const label = getSelectedOptionLabel(formElement, selection)
-        return <ListItem key={index}>{label}</ListItem>
+        return <ListItem key={index}>{label?.toString()}</ListItem>
       })}
     </UnorderedList>
   )

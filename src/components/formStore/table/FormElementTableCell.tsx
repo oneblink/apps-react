@@ -178,7 +178,11 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
         formElement.type === 'checkboxes' ||
         (formElement.type === 'select' && formElement.multi)
       ) {
-        if (!Array.isArray(unknown) || !unknown.length) {
+        if (
+          !Array.isArray(unknown) ||
+          !unknown.length ||
+          typeof unknown[0] !== 'string'
+        ) {
           break
         }
         const text = (unknown as string[])
@@ -259,7 +263,11 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       const value = unknown as React.ComponentProps<
         typeof FilesElementDataTableCellContent
       >['value']
-      if (!Array.isArray(value) || !value.length) {
+      if (
+        !Array.isArray(value) ||
+        !value.length ||
+        typeof value[0]?.fileName !== 'string'
+      ) {
         break
       }
       return <FilesElementDataTableCellContent value={value} />
