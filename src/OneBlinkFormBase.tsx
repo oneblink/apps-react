@@ -938,14 +938,14 @@ function OneBlinkFormBase({
                     className="button ob-button is-light cypress-attachments-confirm-wait"
                     onClick={handleWaitForAttachments}
                   >
-                    <CustomisableButtonInner label={'Wait'} />
+                    Wait
                   </button>
                   <button
                     type="button"
                     className="button ob-button is-primary cypress-attachments-confirm-continue"
                     onClick={handleContinueWithAttachments}
                   >
-                    <CustomisableButtonInner label={'Continue'} />
+                    Continue
                   </button>
                 </>
               }
