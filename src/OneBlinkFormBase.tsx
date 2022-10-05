@@ -51,7 +51,6 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   attachmentRetentionInDays?: number
-  continueWithUploadingAttachments?: boolean
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
@@ -84,7 +83,6 @@ function OneBlinkFormBase({
   buttons,
   primaryColour,
   attachmentRetentionInDays,
-  continueWithUploadingAttachments,
 }: Props) {
   const isOffline = useIsOffline()
 
@@ -164,6 +162,8 @@ function OneBlinkFormBase({
     hasConfirmedNavigation: null,
     goToLocation: null,
   })
+  const [promptUploadingAttachments, setPromptUploadingAttachments] =
+    React.useState<boolean>(false)
   const handleBlockedNavigation = React.useCallback((location) => {
     setUnsavedChangesState((current) => ({
       ...current,
@@ -342,33 +342,20 @@ function OneBlinkFormBase({
       if (isOffline) {
         return true
       }
-
-      // consumer has signaled to continue with submission whilst attachments still uploading
-      if (continueWithUploadingAttachments) {
-        return true
-      }
-
-      if (
+      const attachmentsAreUploading =
         attachmentsService.checkIfAttachmentsAreUploading(
           definition,
           submission,
         )
-      ) {
-        bulmaToast.toast({
-          message:
-            'Attachments are still uploading, please wait for them to finish before trying again.',
-          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-          type: 'ob-toast is-primary cypress-still-uploading-toast',
-          duration: 4000,
-          pauseOnHover: true,
-          closeOnClick: true,
-        })
+
+      if (attachmentsAreUploading) {
+        setPromptUploadingAttachments(true)
         return false
       }
 
       return true
     },
-    [definition, isOffline, continueWithUploadingAttachments],
+    [definition, isOffline],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
@@ -399,7 +386,7 @@ function OneBlinkFormBase({
   )
 
   const handleSubmit = React.useCallback(
-    (event) => {
+    (event, continueWhilstAttachmentsAreUploading) => {
       event.preventDefault()
       if (disabled || isReadOnly) return
       setHasAttemptedSubmit(true)
@@ -420,15 +407,14 @@ function OneBlinkFormBase({
         })
         return
       }
-
-      if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
-        return
-      }
-
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
         return
       }
-
+      if (!continueWhilstAttachmentsAreUploading) {
+        if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
+          return
+        }
+      }
       // check if attachments exist
       const newSubmission = checkIfAttachmentsExist(
         definition,
@@ -476,35 +462,59 @@ function OneBlinkFormBase({
     ],
   )
 
-  const handleSaveDraft = React.useCallback(() => {
-    if (disabled) return
-    if (onSaveDraft) {
-      allowNavigation()
+  const handleSaveDraft = React.useCallback(
+    (continueWhilstAttachmentsAreUploading) => {
+      if (disabled) return
+      if (onSaveDraft) {
+        allowNavigation()
 
-      // For drafts we don't need to save the captcha tokens,
-      // they will need to prove they are not robot again
-      const { submission } = getCurrentSubmissionData(false)
-      if (!checkBsbAreValidating(submission)) {
-        return
+        // For drafts we don't need to save the captcha tokens,
+        // they will need to prove they are not robot again
+        const { submission } = getCurrentSubmissionData(false)
+        if (!checkBsbAreValidating(submission)) {
+          return
+        }
+        if (!continueWhilstAttachmentsAreUploading) {
+          if (!checkAttachmentsCanBeSubmitted(submission)) {
+            return
+          }
+        }
+        onSaveDraft({
+          definition,
+          submission,
+        })
       }
-      if (!checkAttachmentsCanBeSubmitted(submission)) {
-        return
-      }
+    },
+    [
+      allowNavigation,
+      checkAttachmentsCanBeSubmitted,
+      definition,
+      disabled,
+      getCurrentSubmissionData,
+      onSaveDraft,
+      checkBsbAreValidating,
+    ],
+  )
 
-      onSaveDraft({
-        definition,
-        submission,
-      })
-    }
-  }, [
-    allowNavigation,
-    checkAttachmentsCanBeSubmitted,
-    definition,
-    disabled,
-    getCurrentSubmissionData,
-    onSaveDraft,
-    checkBsbAreValidating,
-  ])
+  const handleContinueWithAttachments = React.useCallback(
+    (e) => {
+      setPromptUploadingAttachments(false)
+      if (hasAttemptedSubmit) {
+        handleSubmit(e, true)
+      } else {
+        handleSaveDraft(true)
+      }
+    },
+    [
+      handleSubmit,
+      setPromptUploadingAttachments,
+      hasAttemptedSubmit,
+      handleSaveDraft,
+    ],
+  )
+  const handleWaitForAttachments = React.useCallback(() => {
+    setPromptUploadingAttachments(false)
+  }, [setPromptUploadingAttachments])
 
   // #endregion
   //
@@ -601,7 +611,7 @@ function OneBlinkFormBase({
             currentPageIndex + 1
           }`}
           noValidate
-          onSubmit={handleSubmit}
+          onSubmit={(e) => handleSubmit(e, false)}
         >
           <div>
             <div ref={scrollToTopOfPageHTMLElementRef} />
@@ -816,7 +826,7 @@ function OneBlinkFormBase({
                   <button
                     type="button"
                     className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
-                    onClick={handleSaveDraft}
+                    onClick={() => handleSaveDraft(false)}
                     disabled={isPreview || disabled}
                   >
                     <CustomisableButtonInner
@@ -878,7 +888,7 @@ function OneBlinkFormBase({
                     <button
                       type="button"
                       className="button ob-button is-success cypress-cancel-confirm-save-draft"
-                      onClick={handleSaveDraft}
+                      onClick={() => handleSaveDraft(false)}
                     >
                       <CustomisableButtonInner
                         label={buttons?.saveDraft?.label || 'Save Draft'}
@@ -912,6 +922,39 @@ function OneBlinkFormBase({
             >
               <p>
                 You have unsaved changes, are you sure you want discard them?
+              </p>
+            </Modal>
+            <Modal
+              isOpen={promptUploadingAttachments === true}
+              title="Attachment upload in progress"
+              cardClassName="cypress-attachments-wait-continue"
+              titleClassName="cypress-attachments-confirm-wait-title"
+              bodyClassName="cypress-attachments-confirm-wait-body"
+              actions={
+                <>
+                  <span style={{ flex: 1 }}></span>
+                  <button
+                    type="button"
+                    className="button ob-button is-light cypress-attachments-confirm-wait"
+                    onClick={handleWaitForAttachments}
+                  >
+                    Wait
+                  </button>
+                  <button
+                    type="button"
+                    className="button ob-button is-primary cypress-attachments-confirm-continue"
+                    onClick={handleContinueWithAttachments}
+                  >
+                    Continue
+                  </button>
+                </>
+              }
+            >
+              <p>
+                Attachments are still uploading,{' '}
+                {hasAttemptedSubmit
+                  ? 'do you want to continue with form submission?'
+                  : 'do you want to continue saving a draft?'}
               </p>
             </Modal>
           </React.Fragment>
