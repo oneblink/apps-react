@@ -39,6 +39,7 @@ import {
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
+import useAuth from './hooks/useAuth'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -85,6 +86,7 @@ function OneBlinkFormBase({
   attachmentRetentionInDays,
 }: Props) {
   const isOffline = useIsOffline()
+  const { isUsingFormsKey } = useAuth()
 
   const theme = React.useMemo(
     () =>
@@ -348,14 +350,14 @@ function OneBlinkFormBase({
           submission,
         )
 
-      if (attachmentsAreUploading) {
+      if (attachmentsAreUploading && !isUsingFormsKey) {
         setPromptUploadingAttachments(true)
         return false
       }
 
       return true
     },
-    [definition, isOffline],
+    [definition, isOffline, isUsingFormsKey],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
