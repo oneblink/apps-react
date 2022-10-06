@@ -482,6 +482,7 @@ function OneBlinkFormBase({
         onSaveDraft({
           definition,
           submission,
+          backgroundUpload: continueWhilstAttachmentsAreUploading,
         })
       }
     },
