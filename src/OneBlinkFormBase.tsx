@@ -53,6 +53,7 @@ export type BaseProps = {
   attachmentRetentionInDays?: number
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
+    backgroundUpload?: boolean,
   ) => unknown
 }
 
@@ -479,10 +480,13 @@ function OneBlinkFormBase({
             return
           }
         }
-        onSaveDraft({
-          definition,
-          submission,
-        })
+        onSaveDraft(
+          {
+            definition,
+            submission,
+          },
+          continueWhilstAttachmentsAreUploading,
+        )
       }
     },
     [
