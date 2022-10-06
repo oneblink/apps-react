@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
 import { FormTypes, FormsAppsTypes } from '@oneblink/types'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService, authService } from '@oneblink/apps'
 
 import Modal from './components/renderer/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/renderer/OneBlinkAppsErrorOriginalMessage'
@@ -147,6 +147,10 @@ function OneBlinkFormBase({
   // #region Unsaved Changed
 
   const history = useHistory()
+  const isKeyUser = React.useMemo(() => {
+    const token = authService.getUserToken()
+    return !!token
+  }, [])
 
   const [
     { isDirty, isNavigationAllowed, hasConfirmedNavigation, goToLocation },
@@ -348,14 +352,14 @@ function OneBlinkFormBase({
           submission,
         )
 
-      if (attachmentsAreUploading) {
+      if (attachmentsAreUploading && !isKeyUser) {
         setPromptUploadingAttachments(true)
         return false
       }
 
       return true
     },
-    [definition, isOffline],
+    [definition, isOffline, isKeyUser],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
