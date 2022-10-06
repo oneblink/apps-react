@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
 import { FormTypes, FormsAppsTypes } from '@oneblink/types'
-import { attachmentsService, authService } from '@oneblink/apps'
+import { attachmentsService } from '@oneblink/apps'
 
 import Modal from './components/renderer/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/renderer/OneBlinkAppsErrorOriginalMessage'
@@ -39,6 +39,7 @@ import {
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
+import useAuth from './hooks/useAuth'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -85,6 +86,7 @@ function OneBlinkFormBase({
   attachmentRetentionInDays,
 }: Props) {
   const isOffline = useIsOffline()
+  const { isUsingFormsKey } = useAuth()
 
   const theme = React.useMemo(
     () =>
@@ -147,10 +149,6 @@ function OneBlinkFormBase({
   // #region Unsaved Changed
 
   const history = useHistory()
-  const isKeyUser = React.useMemo(() => {
-    const token = authService.getUserToken()
-    return !!token
-  }, [])
 
   const [
     { isDirty, isNavigationAllowed, hasConfirmedNavigation, goToLocation },
@@ -352,14 +350,14 @@ function OneBlinkFormBase({
           submission,
         )
 
-      if (attachmentsAreUploading && !isKeyUser) {
+      if (attachmentsAreUploading && !isUsingFormsKey) {
         setPromptUploadingAttachments(true)
         return false
       }
 
       return true
     },
-    [definition, isOffline, isKeyUser],
+    [definition, isOffline, isUsingFormsKey],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
