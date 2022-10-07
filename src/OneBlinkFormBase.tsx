@@ -350,9 +350,22 @@ function OneBlinkFormBase({
           submission,
         )
 
-      if (attachmentsAreUploading && !isUsingFormsKey) {
-        setPromptUploadingAttachments(true)
-        return false
+      if (attachmentsAreUploading) {
+        if (isUsingFormsKey) {
+          bulmaToast.toast({
+            message:
+              'Attachments are still uploading, please wait for them to finish before trying again.',
+            // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
+            type: 'ob-toast is-primary cypress-still-uploading-toast',
+            duration: 4000,
+            pauseOnHover: true,
+            closeOnClick: true,
+          })
+          return false
+        } else {
+          setPromptUploadingAttachments(true)
+          return false
+        }
       }
 
       return true
