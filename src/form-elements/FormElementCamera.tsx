@@ -22,7 +22,6 @@ import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
-import { Fade } from '@mui/material'
 
 type Props = {
   id: string
@@ -275,17 +274,7 @@ function FormElementCamera({
                   canDownload={canDownload}
                   progress={progress}
                 />
-                {progressTooltipRef.current && (
-                  <Fade in={isUploading}>
-                    <span>
-                      <ProgressBar
-                        isShowing={isUploading}
-                        progress={progress}
-                        tooltipAnchorEl={progressTooltipRef.current}
-                      />
-                    </span>
-                  </Fade>
-                )}
+                <ProgressBar isShowing={isUploading} progress={progress} />
               </figure>
             </>
           )}
@@ -397,10 +386,12 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoading,
   element,
   onAnnotate,
+  progress,
 }: ReturnType<typeof useAttachment> & {
   element: FormTypes.CameraElement
   isLoading: boolean
   onAnnotate: () => void
+  progress: number | undefined
 }) {
   if (uploadErrorMessage) {
     return (
@@ -440,6 +431,7 @@ const DisplayImage = React.memo(function DisplayImage({
             loadImageUrlError={loadImageUrlError}
             isUploading={isUploading}
             imageUrl={imageUrl}
+            progress={progress}
           />
         </span>
         <img
