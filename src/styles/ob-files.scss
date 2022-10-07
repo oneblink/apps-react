@@ -48,6 +48,7 @@
 .ob-files__file-name-inner {
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
 }
 
 .ob-files__add-new-button {

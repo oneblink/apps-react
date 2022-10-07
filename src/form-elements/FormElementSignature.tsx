@@ -211,13 +211,11 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     ),
   )
 
-  const progressTooltipRef = React.useRef<HTMLDivElement>(null)
-
   return (
     <>
-      <figure className="ob-figure" ref={progressTooltipRef}>
+      <figure className="ob-figure">
         <div className="figure-content">
-          <DisplayImage {...result} progressTooltipRef={progressTooltipRef} />
+          <DisplayImage {...result} />
         </div>
       </figure>
 
@@ -242,10 +240,7 @@ const DisplayImage = React.memo(function DisplayImage({
   imageUrl,
   loadImageUrlError,
   progress,
-  progressTooltipRef,
-}: ReturnType<typeof useAttachment> & {
-  progressTooltipRef: React.RefObject<HTMLDivElement>
-}) {
+}: ReturnType<typeof useAttachment>) {
   if (uploadErrorMessage) {
     return (
       <>
@@ -280,19 +275,14 @@ const DisplayImage = React.memo(function DisplayImage({
             loadImageUrlError={loadImageUrlError}
             isUploading={isUploading}
             imageUrl={imageUrl}
+            progress={progress}
           />
         </span>
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
         />
-        {progressTooltipRef.current && (
-          <ProgressBar
-            progress={progress}
-            isShowing={isUploading}
-            tooltipAnchorEl={progressTooltipRef.current}
-          />
-        )}
+        <ProgressBar progress={progress} isShowing={isUploading} />
       </>
     )
   }

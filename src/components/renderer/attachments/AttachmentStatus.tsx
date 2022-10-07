@@ -9,6 +9,7 @@ const AttachmentStatus = ({
   loadImageUrlError,
   isLoadingImageUrl,
   imageUrl,
+  progress,
 }: {
   isUploading?: boolean
   isUploadPaused?: boolean
@@ -16,6 +17,7 @@ const AttachmentStatus = ({
   loadImageUrlError?: Error
   isLoadingImageUrl?: boolean
   imageUrl: string | null | undefined
+  progress: number | undefined
 }) => {
   const isOffline = useIsOffline()
 
@@ -57,7 +59,13 @@ const AttachmentStatus = ({
         </Tooltip>
       )
     }
-    return null
+    return (
+      <Tooltip title="Uploading">
+        <div className="cypress-attachment-uploading">
+          {Math.round(progress || 0)}%
+        </div>
+      </Tooltip>
+    )
   }
 
   return (
