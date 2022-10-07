@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { CircularProgress, Tooltip } from '@mui/material'
+import { Tooltip } from '@mui/material'
 import useIsOffline from '../../../hooks/useIsOffline'
 
 const AttachmentStatus = ({
