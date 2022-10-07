@@ -1,7 +1,6 @@
 import * as React from 'react'
-import { Tooltip } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 import useIsOffline from '../../../hooks/useIsOffline'
-import OnLoading from '../OnLoading'
 
 const AttachmentStatus = ({
   isUploading,
@@ -61,15 +60,9 @@ const AttachmentStatus = ({
       )
     }
     return (
-      <Tooltip
-        title={
-          typeof progress === 'number'
-            ? `Attachment upload progress: ${Math.round(progress)}%`
-            : 'Preparing attachment for upload'
-        }
-      >
+      <Tooltip title="Uploading">
         <div className="cypress-attachment-uploading">
-          <OnLoading tiny />
+          {Math.round(progress || 0)}%
         </div>
       </Tooltip>
     )
