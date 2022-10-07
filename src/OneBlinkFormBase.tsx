@@ -954,10 +954,10 @@ function OneBlinkFormBase({
               }
             >
               <p>
-                Attachments are still uploading,{' '}
-                {hasAttemptedSubmit
-                  ? 'do you want to continue with form submission?'
-                  : 'do you want to continue saving a draft?'}
+                Your attachments are still uploading, do you want to wait for
+                the uploads to complete or continue using the app? If you click
+                continue the attachments will upload in the background. Do not
+                close the app until the upload has been completed.
               </p>
             </Modal>
           </React.Fragment>
