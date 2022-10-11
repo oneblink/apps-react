@@ -211,6 +211,22 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     ),
   )
 
+  const handleRetry = React.useMemo(() => {
+    if (!value || typeof value !== 'object') return
+
+    if (value.type === 'ERROR' && value.data) {
+      return () => {
+        onChange(element, {
+          type: 'NEW',
+          _id: value._id,
+          data: value.data,
+          fileName: value.fileName,
+          isPrivate: value.isPrivate,
+        })
+      }
+    }
+  }, [element, onChange, value])
+
   return (
     <>
       <figure className="ob-figure">
@@ -220,6 +236,15 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
       </figure>
 
       <div className="buttons ob-buttons">
+        {result.uploadErrorMessage && handleRetry && (
+          <button
+            type="button"
+            className="button ob-button ob-button__retry is-light cypress-retry-file-button"
+            onClick={handleRetry}
+          >
+            Retry
+          </button>
+        )}
         <button
           type="button"
           className="button ob-button is-light ob-button__clear cypress-clear-signature"
@@ -246,8 +271,8 @@ const DisplayImage = React.memo(function DisplayImage({
       <>
         <h3 className="title is-3">Upload Failed</h3>
         <p>
-          Your signature failed to upload, please press the <b>Clear</b> button
-          and try again.
+          Your signature failed to upload, please use the <b>Retry</b> or{' '}
+          <b>Clear</b> buttons below.
         </p>
       </>
     )

@@ -178,6 +178,22 @@ function FormElementCamera({
     ),
   )
 
+  const handleRetry = React.useMemo(() => {
+    if (!value || typeof value !== 'object') return
+
+    if (value.type === 'ERROR' && value.data) {
+      return () => {
+        onChange(element, {
+          type: 'NEW',
+          _id: value._id,
+          data: value.data,
+          fileName: value.fileName,
+          isPrivate: value.isPrivate,
+        })
+      }
+    }
+  }, [element, onChange, value])
+
   const handleDownload = React.useCallback(async () => {
     if (typeof value === 'string') {
       await downloadFileLegacy(value, id)
@@ -294,6 +310,15 @@ function FormElementCamera({
           <div className="buttons ob-buttons">
             {value ? (
               <>
+                {uploadErrorMessage && handleRetry && (
+                  <button
+                    type="button"
+                    className="button ob-button ob-button__retry is-light cypress-retry-file-button"
+                    onClick={handleRetry}
+                  >
+                    Retry
+                  </button>
+                )}
                 <button
                   type="button"
                   className="button ob-button ob-button__clear is-light cypress-clear-camera"
@@ -398,8 +423,8 @@ const DisplayImage = React.memo(function DisplayImage({
       <div className="figure-content">
         <h3 className="title is-3">Upload Failed</h3>
         <p>
-          Your photo failed to upload, please press the <b>Clear</b> button and
-          try again.
+          Your photo failed to upload, please use the <b>Retry</b> or{' '}
+          <b>Clear</b> buttons below.
         </p>
       </div>
     )
