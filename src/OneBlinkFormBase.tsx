@@ -52,6 +52,7 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   attachmentRetentionInDays?: number
+  allowSubmitWithPendingAttachments?: boolean
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
@@ -84,6 +85,7 @@ function OneBlinkFormBase({
   buttons,
   primaryColour,
   attachmentRetentionInDays,
+  allowSubmitWithPendingAttachments,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -351,7 +353,7 @@ function OneBlinkFormBase({
         )
 
       if (attachmentsAreUploading) {
-        if (isUsingFormsKey) {
+        if (isUsingFormsKey || !allowSubmitWithPendingAttachments) {
           bulmaToast.toast({
             message:
               'Attachments are still uploading, please wait for them to finish before trying again.',
@@ -370,7 +372,7 @@ function OneBlinkFormBase({
 
       return true
     },
-    [definition, isOffline, isUsingFormsKey],
+    [definition, isOffline, isUsingFormsKey, allowSubmitWithPendingAttachments],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
