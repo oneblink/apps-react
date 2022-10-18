@@ -184,7 +184,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
           onClick={handleDone}
           disabled={element.readOnly || isEmpty}
         >
-          Done
+          Save Signature
         </button>
       </div>
     </>

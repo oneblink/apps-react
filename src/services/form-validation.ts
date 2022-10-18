@@ -317,7 +317,7 @@ export function generateValidationSchema(
       case 'draw': {
         partialSchema[escapeElementName(formElement.name)] = {
           attachment: true,
-          presence: presence(formElement, 'A signature is required'),
+          presence: presence(formElement, 'A saved signature is required'),
         }
         break
       }
