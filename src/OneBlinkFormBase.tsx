@@ -247,8 +247,11 @@ function OneBlinkFormBase({
   const formElementsValidation = React.useMemo<
     FormElementsValidation | undefined
   >(
-    () => validate(submission, formElementsConditionallyShown),
-    [formElementsConditionallyShown, submission, validate],
+    () =>
+      !isReadOnly
+        ? validate(submission, formElementsConditionallyShown)
+        : undefined,
+    [formElementsConditionallyShown, isReadOnly, submission, validate],
   )
 
   // #endregion
