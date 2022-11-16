@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Form Store table to load results from a button instead of scrolling to the bottom of the window
+
+### Added
+
+- `isManual` option to `useInfiniteScrollDataLoad()`
 - Disabled validation for read only forms
 
 ## [2.4.0] - 2022-10-19

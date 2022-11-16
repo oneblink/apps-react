@@ -12,12 +12,14 @@ export type LoadingType = 'INITIAL' | 'MORE' | null
 
 export default function useInfiniteScrollDataLoad<Filters, T>({
   limit,
+  isManual,
   debounceSearchMs,
   onDefaultFilters,
   onSearch,
   onValidateFilters,
 }: {
   limit: number
+  isManual?: boolean
   debounceSearchMs?: number
   onDefaultFilters: (query: ReturnType<typeof useQuery>) => Filters
   onSearch: (
@@ -150,6 +152,9 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
   }, [])
 
   React.useEffect(() => {
+    if (isManual) {
+      return
+    }
     const scrollEventListener = () => {
       // Bails early if we have not fetched data yet and:
       // - there's an error
@@ -170,7 +175,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     return () => {
       window.removeEventListener('scroll', scrollEventListener)
     }
-  }, [error, isLoading, nextOffset, onLoad])
+  }, [error, isLoading, isManual, nextOffset, onLoad])
 
   const onRefresh = React.useCallback(() => {
     onLoad(0)
@@ -192,5 +197,6 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     filters,
     onChangeFilters,
     onReplace,
+    nextOffset,
   }
 }
