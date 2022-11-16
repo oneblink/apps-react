@@ -5,7 +5,7 @@ import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
 import useInfiniteScrollDataLoad from '../../hooks/useInfiniteScrollDataLoad'
 import useFormStoreTable from './table/useFormStoreTable'
-import { Button, Grid } from '@mui/material'
+import { Button, Collapse, Grid } from '@mui/material'
 import { Settings as SettingsIcon } from '@mui/icons-material'
 import { FormTypes } from '@oneblink/types'
 import useSubmissionIdValidationMessage, {
@@ -33,11 +33,13 @@ export function FormStoreTableProvider({
     onRefresh,
     filters: parameters,
     onChangeFilters: onChangeParameters,
+    nextOffset,
   } = useInfiniteScrollDataLoad<
     formStoreService.FormStoreParameters,
     FormStoreRecord
   >({
     limit: 50,
+    isManual: true,
     debounceSearchMs: 1000,
     onDefaultFilters: React.useCallback((query) => {
       let defaultParameters: formStoreService.FormStoreParameters = {}
@@ -134,7 +136,7 @@ export function FormStoreTableProvider({
         </NoResourcesYet>
       )}
 
-      {isLoading && (
+      <Collapse in={!!isLoading}>
         <div
           className={
             isLoading === 'INITIAL'
@@ -144,7 +146,7 @@ export function FormStoreTableProvider({
         >
           <LoadingWithMessage message="Loading more records..." />
         </div>
-      )}
+      </Collapse>
 
       {loadError && (
         <>
@@ -155,17 +157,21 @@ export function FormStoreTableProvider({
           >
             {loadError.message}
           </ErrorMessage>
-          <Grid container justifyContent="center">
-            <Button
-              className="ob-form-store-try-again-button"
-              variant="outlined"
-              color="primary"
-              onClick={() => onTryAgain()}
-            >
-              Try Again
-            </Button>
-          </Grid>
         </>
+      )}
+
+      {!!nextOffset && (
+        <Grid container justifyContent="center">
+          <Button
+            className="ob-form-store-try-again-button"
+            variant="outlined"
+            color="primary"
+            disabled={!!isLoading}
+            onClick={() => onTryAgain(nextOffset)}
+          >
+            {loadError ? 'Try Again' : 'Load More'}
+          </Button>
+        </Grid>
       )}
     </FormStoreTableContext.Provider>
   )

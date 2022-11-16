@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Form Store table to load results from a button instead of scrolling to the bottom of the window
+
 ### Added
 
 - `isManual` option to `useInfiniteScrollDataLoad()`
