@@ -5,8 +5,12 @@ import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
 import useInfiniteScrollDataLoad from '../../hooks/useInfiniteScrollDataLoad'
 import useFormStoreTable from './table/useFormStoreTable'
-import { Button, Collapse, Grid } from '@mui/material'
-import { Settings as SettingsIcon } from '@mui/icons-material'
+import { Box, Button, Grid } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
+import {
+  Settings as SettingsIcon,
+  ReadMore as LoadMoreIcon,
+} from '@mui/icons-material'
 import { FormTypes } from '@oneblink/types'
 import useSubmissionIdValidationMessage, {
   validateIsUUID,
@@ -136,17 +140,11 @@ export function FormStoreTableProvider({
         </NoResourcesYet>
       )}
 
-      <Collapse in={!!isLoading}>
-        <div
-          className={
-            isLoading === 'INITIAL'
-              ? 'ob-form-store-loading-initial'
-              : 'ob-form-store-loading-more'
-          }
-        >
-          <LoadingWithMessage message="Loading more records..." />
+      {isLoading === 'INITIAL' && (
+        <div className="ob-form-store-loading-initial">
+          <LoadingWithMessage message="Loading initial records..." />
         </div>
-      </Collapse>
+      )}
 
       {loadError && (
         <>
@@ -157,21 +155,39 @@ export function FormStoreTableProvider({
           >
             {loadError.message}
           </ErrorMessage>
+          <Grid container justifyContent="center">
+            <Button
+              className="ob-form-store-try-again-button"
+              variant="outlined"
+              color="primary"
+              onClick={() => onTryAgain()}
+            >
+              Try Again
+            </Button>
+          </Grid>
         </>
       )}
 
-      {!!nextOffset && (
-        <Grid container justifyContent="center">
-          <Button
-            className="ob-form-store-try-again-button"
-            variant="outlined"
-            color="primary"
-            disabled={!!isLoading}
-            onClick={() => onTryAgain(nextOffset)}
-          >
-            {loadError ? 'Try Again' : 'Load More'}
-          </Button>
-        </Grid>
+      {!!nextOffset && !loadError && isLoading !== 'INITIAL' && (
+        <Box padding={4} className="ob-form-store-load-more-button-container">
+          <Grid container justifyContent="center">
+            <LoadingButton
+              className="ob-form-store-load-more-button"
+              variant="outlined"
+              color="primary"
+              onClick={() => onTryAgain(nextOffset)}
+              loading={isLoading === 'MORE'}
+              size="large"
+              loadingPosition="start"
+              startIcon={<LoadMoreIcon />}
+              classes={{
+                loadingIndicator: 'ob-form-store-loading-more-indicator',
+              }}
+            >
+              Load More
+            </LoadingButton>
+          </Grid>
+        </Box>
       )}
     </FormStoreTableContext.Provider>
   )

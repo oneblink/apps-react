@@ -4,7 +4,6 @@ import ErrorMessage from '../messages/ErrorMessage'
 import { formStoreService } from '@oneblink/apps'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import { FormTypes } from '@oneblink/types'
-import { Box } from '@mui/material'
 import { FormStoreTableProvider } from './FormStoreTableProvider'
 
 export type FormStoreElementsContextValue = FormTypes.FormElementWithName[]
@@ -51,9 +50,7 @@ export function OneBlinkFormStoreProvider({
     <FormStoreElementsContext.Provider
       value={formStoreDefinitionState.result.formElements}
     >
-      <Box paddingBottom={20}>
-        <FormStoreTableProvider form={form}>{children}</FormStoreTableProvider>
-      </Box>
+      <FormStoreTableProvider form={form}>{children}</FormStoreTableProvider>
     </FormStoreElementsContext.Provider>
   )
 }
