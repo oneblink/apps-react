@@ -81,10 +81,8 @@ export default function useAttachment(
         if (ignore) {
           return
         }
-        // Store Blob in Context if image is private
-        if (isPrivate) {
-          storeAttachmentBlobLocally({ attachmentId: upload.id, blob: data })
-        }
+
+        storeAttachmentBlobLocally({ attachmentId: upload.id, blob: data })
 
         console.log('Successfully Uploaded attachment!', upload)
 
@@ -168,14 +166,6 @@ export default function useAttachment(
       return
     }
 
-    // If the file is a public url we can finish here and just use that
-    if (!value.isPrivate) {
-      setImageUrlState({
-        imageUrl: value.url,
-      })
-      return
-    }
-
     // Check for locally stored Blob. Blob should be stored locally for private uploaded images only
     const locallyStoredAttachment = getAttachmentBlobLocally(value.id)
     if (locallyStoredAttachment) {
@@ -207,7 +197,6 @@ export default function useAttachment(
       try {
         const blob = await urlToBlobAsync(
           privateImageUrl,
-          true,
           abortController.signal,
         )
         if (ignore) {
@@ -291,12 +280,6 @@ export default function useAttachment(
     if (value.type) {
       // can only be downloaded if we still have the data
       return !!value.data
-    }
-
-    // attachments that have been uploaded
-    // public attachments can always be downloaded
-    if (!value.isPrivate) {
-      return true
     }
 
     // private attachments can only be downloaded if user is authenticated

@@ -25,7 +25,7 @@ async function fetchFile(url: string) {
 }
 
 export function FileChip({
-  file: { fileName, url, isPrivate, data },
+  file: { fileName, url, data },
 }: {
   file: {
     fileName: string
@@ -52,12 +52,8 @@ export function FileChip({
       })
 
       if (url) {
-        if (isPrivate) {
-          const blob = await fetchFile(url)
-          saveAs(blob, fileName)
-        } else {
-          saveAs(url, fileName)
-        }
+        const blob = await fetchFile(url)
+        saveAs(blob, fileName)
       } else if (data) {
         saveAs(data, fileName)
       }
@@ -71,7 +67,7 @@ export function FileChip({
         error: error as Error,
       })
     }
-  }, [data, fileName, isPrivate, url])
+  }, [data, fileName, url])
   return (
     <>
       <Chip

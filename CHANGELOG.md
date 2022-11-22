@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Form Store table to load results from a button instead of scrolling to the bottom of the window
+- Treat all attachment downloads as private storage type
 
 ### Added
 

@@ -109,10 +109,7 @@ export default async function downloadAttachment(
       }
       return
     }
-    if (!attachment.isPrivate) {
-      return await downloadFile(attachment.url, attachment.fileName)
-    }
-    const blob = await urlToBlobAsync(attachment.url, attachment.isPrivate)
+    const blob = await urlToBlobAsync(attachment.url)
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
     handleError(error as Error)
