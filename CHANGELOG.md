@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- number input clearing when entering a decimal point on iOS 16
+
 ## [2.5.0] - 2022-11-24
 
 ### Changed
