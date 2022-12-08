@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { localisationService } from '@oneblink/apps'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
 import useBooleanState from '../hooks/useBooleanState'
@@ -8,6 +7,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
+import parser from 'ua-parser-js'
 
 type Props = {
   id: string
@@ -18,8 +18,15 @@ type Props = {
   validationMessage: string | undefined
 }
 
-const iOSVersion = localisationService.getIOSVersion()
-const legacyIOSNumberInput = typeof iOSVersion === 'number' && iOSVersion < 16
+let legacyAppleNumberInput = false
+const parsedUserAgent = parser(window.navigator.userAgent)
+if (
+  parsedUserAgent.browser.name?.toLowerCase().includes('safari') &&
+  typeof parsedUserAgent.browser.version === 'string'
+) {
+  const safariVersion = parseFloat(parsedUserAgent.browser.version)
+  legacyAppleNumberInput = !Number.isNaN(safariVersion) && safariVersion < 16
+}
 
 function FormElementNumber({
   id,
@@ -63,7 +70,7 @@ function FormElementNumber({
   )
 
   React.useEffect(() => {
-    if (legacyIOSNumberInput && htmlInputElementRef.current) {
+    if (legacyAppleNumberInput && htmlInputElementRef.current) {
       htmlInputElementRef.current.value = text
     }
   }, [htmlInputElementRef, text])
@@ -84,7 +91,7 @@ function FormElementNumber({
                 type="number"
                 placeholder={element.placeholderValue}
                 id={id}
-                value={legacyIOSNumberInput ? undefined : text}
+                value={legacyAppleNumberInput ? undefined : text}
                 name={element.name}
                 className="input ob-input cypress-number-control"
                 onChange={handleChange}
