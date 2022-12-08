@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { localisationService } from '@oneblink/apps'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
 import useBooleanState from '../hooks/useBooleanState'
@@ -16,6 +17,9 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
 }
+
+const iOSVersion = localisationService.getIOSVersion()
+const legacyIOSNumberInput = typeof iOSVersion === 'number' && iOSVersion < 16
 
 function FormElementNumber({
   id,
@@ -58,6 +62,12 @@ function FormElementNumber({
     [setIsDirty],
   )
 
+  React.useEffect(() => {
+    if (legacyIOSNumberInput && htmlInputElementRef.current) {
+      htmlInputElementRef.current.value = text
+    }
+  }, [htmlInputElementRef, text])
+
   return (
     <div className="cypress-number-element">
       <FormElementLabelContainer
@@ -74,7 +84,7 @@ function FormElementNumber({
                 type="number"
                 placeholder={element.placeholderValue}
                 id={id}
-                value={text}
+                value={legacyIOSNumberInput ? undefined : text}
                 name={element.name}
                 className="input ob-input cypress-number-control"
                 onChange={handleChange}
