@@ -15,7 +15,8 @@ export default function useFormElementOptions<T>({
   conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
   onFilter?: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
 }) {
-  const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
+  //options that are shown due to conditional logic
+  const shownOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
     if (!element.options) {
       return []
     }
@@ -24,12 +25,17 @@ export default function useFormElementOptions<T>({
     }
     return element.options.filter((option) => {
       return (
-        (!conditionallyShownOptions ||
-          conditionallyShownOptions.some(({ id }) => id === option.id)) &&
-        (!onFilter || onFilter(option))
+        !conditionallyShownOptions ||
+        conditionallyShownOptions.some(({ id }) => id === option.id)
       )
     })
   }, [conditionallyShownOptions, element.options, onFilter])
+
+  //options that are shown based on conditional logic and user input
+  const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(
+    () => shownOptions.filter((option) => !onFilter || onFilter(option)),
+    [shownOptions, onFilter],
+  )
 
   React.useEffect(() => {
     if (!element.options) {
@@ -39,7 +45,7 @@ export default function useFormElementOptions<T>({
     if (
       typeof value === 'string' &&
       value &&
-      !filteredOptions.some((option) => value === option.value)
+      !shownOptions.some((option) => value === option.value)
     ) {
       onChange(element, undefined)
       return
@@ -47,14 +53,14 @@ export default function useFormElementOptions<T>({
 
     if (Array.isArray(value)) {
       const newValue = value.filter((selectedValue) =>
-        filteredOptions.some((option) => selectedValue === option.value),
+        shownOptions.some((option) => selectedValue === option.value),
       )
       if (newValue.length !== value.length) {
         const newValueArray = newValue.length ? newValue : undefined
         onChange(element, newValueArray as T | undefined)
       }
     }
-  }, [element, filteredOptions, onChange, value])
+  }, [element, shownOptions, onChange, value])
 
   return filteredOptions
 }

@@ -62,10 +62,16 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     [label],
   )
 
+  const handleChange = React.useCallback(
+    //useFormElementOptions expects the first arg to be the element
+    (element: FormTypes.FormElement, newValue: unknown) => onChange(newValue),
+    [onChange],
+  )
+
   const filteredOptions = useFormElementOptions({
     element,
     value,
-    onChange,
+    onChange: handleChange,
     conditionallyShownOptions,
     onFilter,
   })

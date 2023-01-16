@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- passed the correct function signature to useFormElementOptions in FormElementAutocomplete.tsx
+
 ## [2.5.1] - 2022-12-12
 
 ### Fixed
