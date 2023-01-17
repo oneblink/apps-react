@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import querystring from 'query-string'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
@@ -29,6 +29,7 @@ export function FormStoreTableProvider({
   children: React.ReactNode
 }) {
   const history = useHistory()
+  const location = useLocation()
   const {
     isLoading,
     loadError,
@@ -95,12 +96,14 @@ export function FormStoreTableProvider({
   })
 
   React.useEffect(() => {
+    const currentSearch = querystring.parse(location.search)
     history.replace({
       search: querystring.stringify({
+        ...currentSearch,
         parameters: JSON.stringify(parameters),
       }),
     })
-  }, [history, parameters])
+  }, [history, location.search, parameters])
 
   const submissionIdValidationMessage = useSubmissionIdValidationMessage(
     parameters.filters?.submissionId?.$eq,
