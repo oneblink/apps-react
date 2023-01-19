@@ -40,6 +40,7 @@ import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
+import determineIsInfoPage from './services/determineIsInfoPage'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -56,6 +57,7 @@ export type BaseProps = {
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
+  isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
 }
 
 export type ControlledProps = {
@@ -86,6 +88,7 @@ function OneBlinkFormBase({
   primaryColour,
   attachmentRetentionInDays,
   allowSubmitWithPendingAttachments,
+  isInfoPage: isInfoPageProp,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -104,6 +107,13 @@ function OneBlinkFormBase({
       }),
     [primaryColour],
   )
+
+  const isInfoPage = React.useMemo(() => {
+    if (!!isInfoPageProp && isInfoPageProp !== 'CALCULATED') {
+      return isInfoPageProp === 'YES'
+    }
+    return determineIsInfoPage(definition)
+  }, [definition, isInfoPageProp])
 
   //
   //
@@ -843,7 +853,7 @@ function OneBlinkFormBase({
             </div>
             {!isReadOnly && (
               <div className="buttons ob-buttons ob-buttons-submit">
-                {onSaveDraft && !definition.isInfoPage && (
+                {onSaveDraft && !isInfoPage && (
                   <button
                     type="button"
                     className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
@@ -857,7 +867,7 @@ function OneBlinkFormBase({
                   </button>
                 )}
                 <span className="ob-buttons-submit__spacer"></span>
-                {!definition.isInfoPage && (
+                {!isInfoPage && (
                   <button
                     type="button"
                     className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
@@ -878,9 +888,7 @@ function OneBlinkFormBase({
                   >
                     <CustomisableButtonInner
                       label={
-                        definition.isInfoPage
-                          ? 'Done'
-                          : buttons?.submit?.label || 'Submit'
+                        isInfoPage ? 'Done' : buttons?.submit?.label || 'Submit'
                       }
                       icon={buttons?.submit?.icon}
                     />
