@@ -571,9 +571,9 @@ function OneBlinkFormBase({
   const handleChange = React.useCallback<FormElementValueChangeHandler>(
     (element, value) => {
       if (
-        //This will ensure on a read only form that the summary element can still be
-        //displayed as it needs handleChange so it can render due to the dynamic
-        //nature of the summary element.
+        //This will ensure on a read only form that the summary and calculation elements
+        //can still be displayed as it needs handleChange so it can render
+        //due to the dynamic nature of the summary element.
         (disabled &&
           element.type !== 'summary' &&
           element.type !== 'calculation') ||
