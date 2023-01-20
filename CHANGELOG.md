@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+`isInfoPage` prop
+
 ### Changed
 
 - Data Manager query string management to merge instead of replace
