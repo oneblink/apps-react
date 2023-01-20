@@ -56,6 +56,7 @@ export type BaseProps = {
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
+  handleNavigateAway?: () => unknown
 }
 
 export type ControlledProps = {
@@ -86,6 +87,7 @@ function OneBlinkFormBase({
   primaryColour,
   attachmentRetentionInDays,
   allowSubmitWithPendingAttachments,
+  handleNavigateAway,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -198,11 +200,20 @@ function OneBlinkFormBase({
       // Navigate to the previous blocked location with your navigate function
       if (goToLocation) {
         history.push(`${goToLocation.pathname}${goToLocation.search}`)
+        if (handleNavigateAway) {
+          handleNavigateAway()
+        }
       } else {
         onCancel()
       }
     }
-  }, [goToLocation, hasConfirmedNavigation, history, onCancel])
+  }, [
+    goToLocation,
+    handleNavigateAway,
+    hasConfirmedNavigation,
+    history,
+    onCancel,
+  ])
 
   const handleCancel = React.useCallback(() => {
     if (isDirty) {
