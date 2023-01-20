@@ -28,6 +28,8 @@ import '@oneblink/apps-react/dist/styles.css'
 | `primaryColour`                      | `string`                                        | No          | Hex colour value for certain inputs (defaults to `#4c8da7`) .                                                                                                                                                             |
 | `attachmentRetentionInDays`          | `number`                                        | No          | Number of days attachments are retained for.                                                                                                                                                                              |
 | `allowSubmitWithPendingAttachments ` | `boolean`                                       | No          | Prompt the user to allow them to continue with attachments uploading if true. False by default.                                                                                                                           |
+| `isInfoPage `                        | `"YES" \| "NO" \| "CALCULATED"`                 | No          | Determines whether the form is submittable or not. Info page type forms show a "Done" button instead of a "Submit" button. Defaults to "CALCULATED"                                                                       |
+| `handleNavigateAway `                | `boolean`                                       | No          | The function to call when the user tries to navigate away from the form                                                                                                                                                   |
 
 ### ButtonsConfiguration
 
