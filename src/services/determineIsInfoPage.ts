@@ -8,8 +8,11 @@ const infoPageElements: FormTypes.FormElementType[] = [
   'section',
 ]
 export default function determineIsInfoPage(form: FormTypes.Form) {
-  formElementsService.forEachFormElement(form.elements, (e) => {
-    if (!infoPageElements.includes(e.type)) return false
-  })
-  return true
+  const foundInputElement = formElementsService.findFormElement(
+    form.elements,
+    (e) => {
+      return !infoPageElements.includes(e.type)
+    },
+  )
+  return !foundInputElement
 }
