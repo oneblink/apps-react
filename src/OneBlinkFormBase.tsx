@@ -564,7 +564,9 @@ function OneBlinkFormBase({
         //This will ensure on a read only form that the summary element can still be
         //displayed as it needs handleChange so it can render due to the dynamic
         //nature of the summary element.
-        (disabled && element.type !== 'summary') ||
+        (disabled &&
+          element.type !== 'summary' &&
+          element.type !== 'calculation') ||
         element.type === 'page' ||
         element.type === 'section'
       ) {
