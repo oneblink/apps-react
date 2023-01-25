@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Autosave form not discarding autosave
 - Summary and Calculation Elements not showing on read only forms
 
 ## [2.5.2] - 2023-01-16

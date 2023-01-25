@@ -106,6 +106,11 @@ export default function useFormSubmissionAutoSaveState({
     removeAutoSaveDataBeforeSaveDraft,
   ])
 
+  const handleNavigateAway = React.useCallback(() => {
+    cancelAutoSave()
+    deleteAutoSaveSubmission()
+  }, [cancelAutoSave, deleteAutoSaveSubmission])
+
   const handleCancel = React.useCallback(() => {
     cancelAutoSave()
     deleteAutoSaveSubmission()
@@ -198,6 +203,7 @@ export default function useFormSubmissionAutoSaveState({
     handleSubmit,
     handleCancel,
     handleSaveDraft,
+    handleNavigateAway,
     setFormSubmission: setFormSubmissionAutoSave,
   }
 }

@@ -57,6 +57,7 @@ export type BaseProps = {
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
+  handleNavigateAway?: () => unknown
   isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
 }
 
@@ -88,6 +89,7 @@ function OneBlinkFormBase({
   primaryColour,
   attachmentRetentionInDays,
   allowSubmitWithPendingAttachments,
+  handleNavigateAway,
   isInfoPage: isInfoPageProp,
 }: Props) {
   const isOffline = useIsOffline()
@@ -208,11 +210,20 @@ function OneBlinkFormBase({
       // Navigate to the previous blocked location with your navigate function
       if (goToLocation) {
         history.push(`${goToLocation.pathname}${goToLocation.search}`)
+        if (handleNavigateAway) {
+          handleNavigateAway()
+        }
       } else {
         onCancel()
       }
     }
-  }, [goToLocation, hasConfirmedNavigation, history, onCancel])
+  }, [
+    goToLocation,
+    handleNavigateAway,
+    hasConfirmedNavigation,
+    history,
+    onCancel,
+  ])
 
   const handleCancel = React.useCallback(() => {
     if (isDirty) {
