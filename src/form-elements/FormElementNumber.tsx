@@ -7,7 +7,6 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
-import parser from 'ua-parser-js'
 
 type Props = {
   id: string
@@ -16,16 +15,6 @@ type Props = {
   onChange: FormElementValueChangeHandler<number>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
-
-let legacyAppleNumberInput = false
-const parsedUserAgent = parser(window.navigator.userAgent)
-if (
-  parsedUserAgent.browser.name?.toLowerCase().includes('safari') &&
-  typeof parsedUserAgent.browser.version === 'string'
-) {
-  const safariVersion = parseFloat(parsedUserAgent.browser.version)
-  legacyAppleNumberInput = !Number.isNaN(safariVersion) && safariVersion < 16
 }
 
 function FormElementNumber({
@@ -37,7 +26,6 @@ function FormElementNumber({
   displayValidationMessage,
 }: Props) {
   const isPageVisible = useIsPageVisible()
-  const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
 
   const [isDirty, setIsDirty] = useBooleanState(false)
   const text = React.useMemo(
@@ -47,33 +35,11 @@ function FormElementNumber({
 
   const handleChange = React.useCallback(
     (event) => {
-      onChange(
-        element,
-        // e.target.value is a string so '0' becomes true
-        event.target.value ? parseFloat(event.target.value) : undefined,
-      )
+      const newValue = parseFloat(event.target.value)
+      onChange(element, isNaN(newValue) ? undefined : newValue)
     },
     [element, onChange],
   )
-
-  const handleBlur = React.useCallback(
-    (event) => {
-      if (htmlInputElementRef.current) {
-        const newValue = parseFloat(event.target.value)
-        if (Number.isNaN(newValue)) {
-          htmlInputElementRef.current.value = ''
-        }
-      }
-      setIsDirty()
-    },
-    [setIsDirty],
-  )
-
-  React.useEffect(() => {
-    if (legacyAppleNumberInput && htmlInputElementRef.current) {
-      htmlInputElementRef.current.value = text
-    }
-  }, [htmlInputElementRef, text])
 
   return (
     <div className="cypress-number-element">
@@ -87,17 +53,16 @@ function FormElementNumber({
           <div className="field has-addons">
             <div className="control is-expanded has-icons-right">
               <input
-                ref={htmlInputElementRef}
                 type="number"
                 placeholder={element.placeholderValue}
                 id={id}
-                value={legacyAppleNumberInput ? undefined : text}
+                value={typeof value === 'number' ? value : ''}
                 name={element.name}
                 className="input ob-input cypress-number-control"
                 onChange={handleChange}
                 required={element.required}
                 disabled={element.readOnly}
-                onBlur={handleBlur}
+                onBlur={setIsDirty}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <i className="material-icons is-size-5">tag</i>
