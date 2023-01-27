@@ -6,6 +6,9 @@ const infoPageElements: FormTypes.FormElementType[] = [
   'html',
   'image',
   'section',
+  'page',
+  'infoPage',
+  'form',
 ]
 export default function determineIsInfoPage(form: FormTypes.Form) {
   const foundInputElement = formElementsService.findFormElement(
