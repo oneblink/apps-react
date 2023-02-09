@@ -8,6 +8,7 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 - [OneBlinkForm](./OneBlinkForm.md)
 - [OneBlinkFormControlled](./OneBlinkFormControlled.md)
 - [OneBlinkReadOnlyForm](./OneBlinkReadOnlyForm.md)
+- [PaymentReceipt](./PaymentReceipt.md)
 
 ## Hooks
 
