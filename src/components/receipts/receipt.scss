@@ -1,0 +1,24 @@
+$lighterWarning: hsl(38, 100%, 50%);
+
+.ob-receipt {
+  max-width: 400px;
+  margin: auto;
+}
+
+.ob-receipt__button {
+  flex: 1;
+}
+
+.ob-payment-receipt__warning .ob-list__text-secondary {
+  color: $black;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.ob-payment-receipt__warning .ob-list__content-wrapper {
+  padding: 1rem;
+}
+
+.ob-payment-receipt__warning {
+  background-color: $lighterWarning;
+}
