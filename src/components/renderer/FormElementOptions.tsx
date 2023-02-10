@@ -2,14 +2,22 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import OnLoading from './OnLoading'
+import { FormElementConditionallyShownElement } from '../../types/form'
 
 type Props = {
   options: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
   children: React.ReactNode
 }
 
-function FormElementOptions({ options, children }: Props) {
-  if (!options) {
+function FormElementOptions({
+  options,
+  children,
+  conditionallyShownOptionsElement,
+}: Props) {
+  if (!options || conditionallyShownOptionsElement?.dependencyIsLoading) {
     return (
       <div>
         <OnLoading className="has-text-centered" small></OnLoading>

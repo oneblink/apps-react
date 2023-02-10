@@ -193,9 +193,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onChange: FormElementValueChangeHandler
   onLookup: FormElementLookupHandler
 }) {
-  const conditionallyShownOptions =
+  const conditionallyShownOptionsElement =
     formElementConditionallyShown?.type === 'formElement'
-      ? formElementConditionallyShown?.options
+      ? formElementConditionallyShown
       : undefined
   const validationMessage =
     typeof formElementValidation === 'string'
@@ -389,7 +389,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            conditionallyShownOptions={conditionallyShownOptions}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
           />
         </LookupNotification>
       )
@@ -412,7 +412,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            conditionallyShownOptions={conditionallyShownOptions}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
           />
         </LookupNotification>
       )
@@ -435,7 +435,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            conditionallyShownOptions={conditionallyShownOptions}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
           />
         </LookupNotification>
       )
@@ -542,7 +542,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            conditionallyShownOptions={conditionallyShownOptions}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
           />
         </LookupNotification>
       )
@@ -706,7 +706,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
-            conditionallyShownOptions={conditionallyShownOptions}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
             isEven={isEven}
           />
         </LookupNotification>

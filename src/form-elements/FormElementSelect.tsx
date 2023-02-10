@@ -7,7 +7,10 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import ToggleAllCheckbox from '../components/renderer/ToggleAllCheckbox'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 
 type Props = {
   id: string
@@ -16,7 +19,9 @@ type Props = {
   onChange: FormElementValueChangeHandler<string | string[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
 }
 
 function FormElementSelect({
@@ -26,7 +31,7 @@ function FormElementSelect({
   onChange,
   validationMessage,
   displayValidationMessage,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
 }: Props) {
   const [isDirty, setIsDirty] = useBooleanState(false)
 
@@ -34,7 +39,7 @@ function FormElementSelect({
     element,
     value,
     onChange,
-    conditionallyShownOptions,
+    conditionallyShownOptionsElement,
   })
 
   const selectedValuesAsArray = React.useMemo(() => {
@@ -51,7 +56,10 @@ function FormElementSelect({
         element={element}
         required={element.required}
       >
-        <FormElementOptions options={element.options}>
+        <FormElementOptions
+          options={element.options}
+          conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+        >
           {element.multi && element.canToggleAll && (
             <ToggleAllCheckbox
               id={id}
