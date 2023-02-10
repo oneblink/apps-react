@@ -1,20 +1,26 @@
 import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 
 export default function useFormElementOptions<T>({
   element,
   value,
   onChange,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
   onFilter,
 }: {
   element: FormTypes.FormElementWithOptions
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<T>
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
   onFilter?: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
 }) {
+  const conditionallyShownOptions = conditionallyShownOptionsElement?.options
   //options that are shown due to conditional logic
   const shownOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
     if (!element.options) {
@@ -38,7 +44,10 @@ export default function useFormElementOptions<T>({
   )
 
   React.useEffect(() => {
-    if (!element.options) {
+    if (
+      !element.options ||
+      conditionallyShownOptionsElement?.dependencyIsLoading
+    ) {
       return
     }
 
@@ -60,7 +69,13 @@ export default function useFormElementOptions<T>({
         onChange(element, newValueArray as T | undefined)
       }
     }
-  }, [element, shownOptions, onChange, value])
+  }, [
+    element,
+    shownOptions,
+    onChange,
+    value,
+    conditionallyShownOptionsElement?.dependencyIsLoading,
+  ])
 
   return filteredOptions
 }

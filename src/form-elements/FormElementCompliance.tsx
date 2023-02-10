@@ -11,7 +11,10 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import ComplianceButton from './ComplianceButton'
 import FormElementFiles from './FormElementFiles'
 import FormElementTextarea from './FormElementTextarea'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
 interface Props {
@@ -21,7 +24,9 @@ interface Props {
   onChange: FormElementValueChangeHandler<Value>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
   isEven?: boolean
 }
 
@@ -44,7 +49,7 @@ function FormElementCompliance({
   element,
   value,
   onChange,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
   isEven,
@@ -162,7 +167,7 @@ function FormElementCompliance({
     element,
     value: typedValue?.value,
     onChange: handleValueChange,
-    conditionallyShownOptions,
+    conditionallyShownOptionsElement,
   })
 
   return (
@@ -174,7 +179,10 @@ function FormElementCompliance({
         required={element.required}
       >
         <div className="ob-compliance__container">
-          <FormElementOptions options={element.options}>
+          <FormElementOptions
+            options={element.options}
+            conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+          >
             <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
               {filteredOptions.map((option) => {
                 const isSelected = typedValue?.value === option.value

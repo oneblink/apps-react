@@ -8,7 +8,10 @@ import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 
 type Props = {
   id: string
@@ -17,7 +20,9 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
 }
 
 function FormElementRadio({
@@ -25,7 +30,7 @@ function FormElementRadio({
   element,
   value,
   onChange,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
 }: Props) {
@@ -34,7 +39,7 @@ function FormElementRadio({
     element,
     value,
     onChange,
-    conditionallyShownOptions,
+    conditionallyShownOptionsElement,
   })
 
   return (
@@ -45,7 +50,10 @@ function FormElementRadio({
         element={element}
         required={element.required}
       >
-        <FormElementOptions options={element.options}>
+        <FormElementOptions
+          options={element.options}
+          conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+        >
           {!element.buttons ? (
             <div>
               {filteredOptions.map((option) => (

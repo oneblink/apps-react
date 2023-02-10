@@ -31,13 +31,15 @@ export type FormElementsConditionallyShown = Record<
   FormElementConditionallyShown
 >
 
+export type FormElementConditionallyShownElement = {
+  type: 'formElement'
+  isHidden: boolean
+  options?: import('@oneblink/types').FormTypes.ChoiceElementOption[]
+  dependencyIsLoading?: boolean
+}
 export type FormElementConditionallyShown =
   | undefined
-  | {
-      type: 'formElement'
-      isHidden: boolean
-      options?: import('@oneblink/types').FormTypes.ChoiceElementOption[]
-    }
+  | FormElementConditionallyShownElement
   | {
       type: 'formElements'
       isHidden: boolean

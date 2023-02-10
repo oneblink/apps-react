@@ -9,7 +9,10 @@ import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import ToggleAllCheckbox from '../components/renderer/ToggleAllCheckbox'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 
 type Props = {
   id: string
@@ -18,7 +21,9 @@ type Props = {
   onChange: FormElementValueChangeHandler<string[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
 }
 
 function FormElementCheckboxes({
@@ -28,7 +33,7 @@ function FormElementCheckboxes({
   onChange,
   validationMessage,
   displayValidationMessage,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
 }: Props) {
   const selectedValues = React.useMemo(() => {
     if (!Array.isArray(value)) return []
@@ -61,7 +66,7 @@ function FormElementCheckboxes({
     element,
     value,
     onChange,
-    conditionallyShownOptions,
+    conditionallyShownOptionsElement,
   })
 
   return (
@@ -72,7 +77,10 @@ function FormElementCheckboxes({
         element={element}
         required={element.required}
       >
-        <FormElementOptions options={element.options}>
+        <FormElementOptions
+          options={element.options}
+          conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+        >
           {element.canToggleAll && (
             <ToggleAllCheckbox
               id={id}

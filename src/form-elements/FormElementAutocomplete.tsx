@@ -7,7 +7,10 @@ import useFormElementOptions from '../hooks/useFormElementOptions'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes } from '@oneblink/types'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormElementConditionallyShownElement,
+} from '../types/form'
 
 type _BaseProps = {
   id: string
@@ -22,7 +25,9 @@ type _AutocompleteChangeHandlerProps = _BaseProps & {
 }
 
 type _AutocompleteConditionallyShowOptionProps = {
-  conditionallyShownOptions: FormTypes.ChoiceElementOption[] | undefined
+  conditionallyShownOptionsElement:
+    | FormElementConditionallyShownElement
+    | undefined
 }
 
 type AutocompleteFilterProps = _AutocompleteChangeHandlerProps &
@@ -42,7 +47,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   element,
   value,
   onChange,
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
 }: AutocompleteFilterProps) {
@@ -72,7 +77,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     element,
     value,
     onChange: handleChange,
-    conditionallyShownOptions,
+    conditionallyShownOptionsElement,
     onFilter,
   })
 
@@ -101,7 +106,10 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
         id={id}
         required={element.required}
       >
-        <FormElementOptions options={element.options}>
+        <FormElementOptions
+          options={element.options}
+          conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+        >
           <AutocompleteDropdown
             id={id}
             label={label}
@@ -192,7 +200,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
 })
 
 function FormElementAutocomplete({
-  conditionallyShownOptions,
+  conditionallyShownOptionsElement,
   onChange,
   ...props
 }: Props) {
@@ -216,7 +224,7 @@ function FormElementAutocomplete({
     <AutocompleteFilter
       {...props}
       onChange={handleChange}
-      conditionallyShownOptions={conditionallyShownOptions}
+      conditionallyShownOptionsElement={conditionallyShownOptionsElement}
     />
   )
 }
