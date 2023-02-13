@@ -71,6 +71,10 @@ $modal-background-background-color: $secondary;
 @import 'bulma-steps/dist/css/bulma-steps.sass';
 @import 'bulma-slider/src/sass/index.sass';
 
+$section-padding-mobile-y: $size-5;
+$section-padding-mobile-x: $size-8;
+$section-padding-mobile: $section-padding-mobile-y $section-padding-mobile-x;
+
 //
 // Our Styles
 //
@@ -104,6 +108,8 @@ $modal-background-background-color: $secondary;
 @import './styles/section.scss';
 @import './styles/bsb.scss';
 @import './styles/progress.scss';
+@import './styles/list.scss';
+@import './styles/receipt.scss';
 
 //
 // Third Party
