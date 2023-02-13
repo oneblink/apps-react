@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Prefill of option elements that depend on a dynamic option element
+- V4DateTimePicker not using minDate or maxDate passed in
 
 ### Added
 
