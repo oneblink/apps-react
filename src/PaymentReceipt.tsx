@@ -21,7 +21,13 @@ import {
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
 
-function PaymentReceipt({ onDone }: { onDone: () => void | Promise<void> }) {
+function PaymentReceipt({
+  onDone,
+}: {
+  onDone: (
+    submissionResult?: submissionService.FormSubmissionResult,
+  ) => void | Promise<void>
+}) {
   const isMounted = useIsMounted()
   const query = useQuery()
   const history = useHistory()
@@ -114,7 +120,7 @@ function PaymentReceipt({ onDone }: { onDone: () => void | Promise<void> }) {
 
     let newError = null
     try {
-      await onDone()
+      await onDone(submissionResult)
     } catch (error) {
       console.warn('Error while running post submission action', error)
       newError = error as OneBlinkAppsError
