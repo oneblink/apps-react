@@ -112,11 +112,13 @@ const V4CompatibleDateTimePicker = ({
     if (typeof maxDate === 'string') {
       return new Date(maxDate)
     }
+    return maxDate
   }, [maxDate])
   const convertedMinDate = React.useMemo(() => {
     if (typeof minDate === 'string') {
       return new Date(minDate)
     }
+    return minDate
   }, [minDate])
 
   const onAccept = React.useCallback(
