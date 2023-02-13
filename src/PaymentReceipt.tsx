@@ -26,7 +26,7 @@ function PaymentReceipt({
 }: {
   onDone: (
     submissionResult: submissionService.FormSubmissionResult,
-  ) => void | Promise<void>
+  ) => Promise<void>
 }) {
   const isMounted = useIsMounted()
   const query = useQuery()
