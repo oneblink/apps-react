@@ -25,7 +25,7 @@ function PaymentReceipt({
   onDone,
 }: {
   onDone: (
-    submissionResult?: submissionService.FormSubmissionResult,
+    submissionResult: submissionService.FormSubmissionResult,
   ) => void | Promise<void>
 }) {
   const isMounted = useIsMounted()
@@ -120,7 +120,7 @@ function PaymentReceipt({
 
     let newError = null
     try {
-      await onDone(submissionResult)
+      await onDone({ ...submissionResult, payment: null })
     } catch (error) {
       console.warn('Error while running post submission action', error)
       newError = error as OneBlinkAppsError

@@ -13,9 +13,9 @@ import '@oneblink/apps-react/dist/styles.css'
 
 ### Props
 
-| Property | Type     | Required | Description                                      |
-| -------- | -------- | -------- | ------------------------------------------------ |
-| onDone   | function | Yes      | The function to call when the user clicks 'Done' |
+| Property | Type                                              | Required | Description                                                                                                                                                                                          |
+| -------- | ------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| onDone   | `(FormSubmissionResult) => void \| Promise<void>` | Yes      | The function to call when the user clicks 'Done'. See [FormSubmissionResult](https://oneblink.github.io/apps/modules/submissionService.html#FormSubmissionResult) for the structure of the argument. |
 
 ```tsx
 import React from 'react'
