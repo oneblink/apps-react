@@ -28,7 +28,9 @@ function PaymentReceipt({
   onDone: (
     submissionResult: submissionService.FormSubmissionResult,
   ) => Promise<void>
-  onCancel: () => void
+  onCancel: (
+    submissionResult: submissionService.FormSubmissionResult,
+  ) => Promise<void>
 }) {
   const isMounted = useIsMounted()
   const query = useQuery()
@@ -110,33 +112,48 @@ function PaymentReceipt({
     }
   }, [query])
 
-  const executePostSubmissionAction = React.useCallback(async () => {
-    if (!submissionResult || !isMounted.current) {
-      return
-    }
+  const executePostSubmissionAction = React.useCallback(
+    async (
+      action: (
+        submissionRresult: submissionService.FormSubmissionResult,
+      ) => Promise<void>,
+    ) => {
+      if (!submissionResult || !isMounted.current) {
+        return
+      }
 
-    setPostSubmissionState({
-      isRunningPostSubmissionAction: true,
-      postSubmissionError: null,
-    })
-
-    let newError = null
-    try {
-      await onDone({ ...submissionResult, payment: null })
-    } catch (error) {
-      console.warn('Error while running post submission action', error)
-      newError = error as OneBlinkAppsError
-    }
-
-    if (isMounted.current) {
       setPostSubmissionState({
-        isRunningPostSubmissionAction: false,
-        postSubmissionError: newError,
+        isRunningPostSubmissionAction: true,
+        postSubmissionError: null,
       })
-    }
-  }, [isMounted, submissionResult, onDone])
 
-  const tryAgain = React.useCallback(async () => {
+      let newError = null
+      try {
+        await action({ ...submissionResult, payment: null })
+      } catch (error) {
+        console.warn('Error while running post submission action', error)
+        newError = error as OneBlinkAppsError
+      }
+
+      if (isMounted.current) {
+        setPostSubmissionState({
+          isRunningPostSubmissionAction: false,
+          postSubmissionError: newError,
+        })
+      }
+    },
+    [isMounted, submissionResult],
+  )
+
+  const handleDone = React.useCallback(async () => {
+    executePostSubmissionAction(onDone)
+  }, [executePostSubmissionAction, onDone])
+
+  const handleCancel = React.useCallback(() => {
+    executePostSubmissionAction(onCancel)
+  }, [executePostSubmissionAction, onCancel])
+
+  const handleTryAgain = React.useCallback(async () => {
     if (!submissionResult || !submissionResult.payment) {
       return
     }
@@ -255,7 +272,7 @@ function PaymentReceipt({
                 className="is-primary ob-payment-receipt__button ob-payment-receipt__okay-button cypress-payment-receipt-okay-button"
                 label="Done"
                 isLoading={isRunningPostSubmissionAction}
-                onClick={executePostSubmissionAction}
+                onClick={handleDone}
               />
             ) : (
               <>
@@ -264,14 +281,14 @@ function PaymentReceipt({
                   label="Cancel"
                   isDisabled={isRetrying}
                   isLoading={isRunningPostSubmissionAction}
-                  onClick={onCancel}
+                  onClick={handleCancel}
                 />
                 <ReceiptButton
                   className="is-primary ob-payment-receipt__button ob-payment-receipt__try-again-button cypress-payment-receipt-try-again-button"
                   label="Try Again"
                   isDisabled={isRunningPostSubmissionAction}
                   isLoading={isRetrying}
-                  onClick={tryAgain}
+                  onClick={handleTryAgain}
                 />
               </>
             )}
