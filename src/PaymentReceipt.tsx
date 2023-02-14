@@ -23,10 +23,12 @@ const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
 
 function PaymentReceipt({
   onDone,
+  onCancel,
 }: {
   onDone: (
     submissionResult: submissionService.FormSubmissionResult,
   ) => Promise<void>
+  onCancel: () => void
 }) {
   const isMounted = useIsMounted()
   const query = useQuery()
@@ -262,7 +264,7 @@ function PaymentReceipt({
                   label="Cancel"
                   isDisabled={isRetrying}
                   isLoading={isRunningPostSubmissionAction}
-                  onClick={executePostSubmissionAction}
+                  onClick={onCancel}
                 />
                 <ReceiptButton
                   className="is-primary ob-payment-receipt__button ob-payment-receipt__try-again-button cypress-payment-receipt-try-again-button"

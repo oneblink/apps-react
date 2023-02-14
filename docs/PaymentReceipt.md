@@ -27,8 +27,11 @@ function ReceiptContainer() {
   const handleDone = React.useCallback(async () => {
     console.log('All done!')
   }, [])
+  const handleCancel = React.useCallback(async () => {
+    console.log('Cancelled!')
+  }, [])
 
-  return <PaymentReceipt onDone={handleDone} />
+  return <PaymentReceipt onDone={handleDone} onCancel={handleCancel} />
 }
 
 function App() {
