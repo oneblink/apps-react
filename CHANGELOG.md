@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2023-02-16
+
 ### Fixed
 
 - Prefill of option elements that depend on a dynamic option element
@@ -26,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Autosave form not discarding autosave
 - Summary and Calculation Elements not showing on read only forms
 - number input not allowing zeros
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.4.5](https://github.com/oneblink/sdk-core-js/releases/tag/v0.4.5) (from [0.4.4-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [2.5.2] - 2023-01-16
 
