@@ -55,7 +55,7 @@ function FormElementRadio({
           conditionallyShownOptionsElement={conditionallyShownOptionsElement}
         >
           {!element.buttons ? (
-            <div>
+            <div className="ob-radio-container">
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
                   <label

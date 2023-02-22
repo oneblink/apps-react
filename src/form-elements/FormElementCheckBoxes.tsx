@@ -116,7 +116,7 @@ function FormElementCheckboxes({
               </div>
             </div>
           ) : (
-            <div>
+            <div className="ob-checkbox-container">
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value)
                 return (

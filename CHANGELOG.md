@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- CSS Classes for Radio/Checkbox containers
+
 ## [2.6.0] - 2023-02-16
 
 ### Fixed
