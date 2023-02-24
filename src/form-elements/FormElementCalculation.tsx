@@ -10,8 +10,7 @@ import {
   FormElementValueChangeHandler,
   FormSubmissionModel,
 } from '../types/form'
-import matchElementsRegex from '../services/WYSIWYGRegexMatching'
-
+import { formElementsService } from '@oneblink/sdk-core'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -195,9 +194,12 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     try {
       if (!element.calculation) throw new Error('Element has no calculation.')
       const elementNames: string[] = []
-      matchElementsRegex(element.calculation, (elementName) => {
-        elementNames.push(elementName)
-      })
+      formElementsService.matchElementsTagRegex(
+        element.calculation,
+        (elementName) => {
+          elementNames.push(elementName)
+        },
+      )
 
       const code = elementNames.reduce((code, elementName, index) => {
         const regex = new RegExp(escapeString(`{ELEMENT:${elementName}}`), 'g')
