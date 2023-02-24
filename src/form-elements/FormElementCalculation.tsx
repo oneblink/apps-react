@@ -196,7 +196,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       const elementNames: string[] = []
       formElementsService.matchElementsTagRegex(
         element.calculation,
-        (elementName) => {
+        ({ elementName }) => {
           elementNames.push(elementName)
         },
       )

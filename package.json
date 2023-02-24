@@ -11,7 +11,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.8.4",
-    "@oneblink/sdk-core": "^0.4.6-beta.2",
+    "@oneblink/sdk-core": "^0.4.6-beta.3",
     "@react-google-maps/api": "2.12.1",
     "blueimp-load-image": "^5.16.0",
     "bulma": "^0.9.3",
