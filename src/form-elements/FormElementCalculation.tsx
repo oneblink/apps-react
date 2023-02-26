@@ -10,6 +10,7 @@ import {
   FormElementValueChangeHandler,
   FormSubmissionModel,
 } from '../types/form'
+import { formElementsService } from '@oneblink/sdk-core'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -192,15 +193,13 @@ function FormElementCalculation({ element, onChange, value }: Props) {
 
     try {
       if (!element.calculation) throw new Error('Element has no calculation.')
-      let matches
-      const elementNames = []
-      const re = /({ELEMENT:)([^}]+)(})/g
-
-      while ((matches = re.exec(element.calculation)) !== null) {
-        if (matches) {
-          elementNames.push(matches[2])
-        }
-      }
+      const elementNames: string[] = []
+      formElementsService.matchElementsTagRegex(
+        element.calculation,
+        ({ elementName }) => {
+          elementNames.push(elementName)
+        },
+      )
 
       const code = elementNames.reduce((code, elementName, index) => {
         const regex = new RegExp(escapeString(`{ELEMENT:${elementName}}`), 'g')

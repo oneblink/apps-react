@@ -1,4 +1,5 @@
 import { FormTypes } from '@oneblink/types'
+import { FormElement } from '@oneblink/types/typescript/forms'
 import * as React from 'react'
 import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
 import {
@@ -9,6 +10,7 @@ import {
 export type FormSubmissionModelContextValue = {
   formSubmissionModel: FormSubmissionModel
   parent?: FormSubmissionModelContextValue
+  elements: FormElement[]
 }
 
 const FormSubmissionModelContext = React.createContext<
@@ -22,7 +24,7 @@ export function FormSubmissionModelContextProvider({
   formElementsConditionallyShown,
 }: {
   model: FormSubmissionModel
-  elements: FormTypes.FormElement[] | undefined
+  elements: FormTypes.FormElement[]
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   children: React.ReactNode
 }) {
@@ -33,11 +35,12 @@ export function FormSubmissionModelContextProvider({
     return {
       formSubmissionModel: cleanFormSubmissionModel(
         model,
-        elements || [],
+        elements,
         formElementsConditionallyShown,
         true,
       ).model,
       parent: formSubmissionModelContext,
+      elements,
     }
   }, [
     model,
