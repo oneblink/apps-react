@@ -12,7 +12,7 @@ import {
 export type Props = {
   formId: number
   id: string
-  element: FormTypes.FormFormElement | FormTypes.InfoPageElement
+  element: FormTypes.FormFormElement
   value: FormSubmissionModel | undefined
   onChange: FormElementValueChangeHandler<FormSubmissionModel>
   onLookup: FormElementLookupHandler
