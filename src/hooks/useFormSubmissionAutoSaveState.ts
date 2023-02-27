@@ -156,7 +156,7 @@ export default function useFormSubmissionAutoSaveState({
     }
   }, [cancelAutoSave])
 
-  const setFormSubmissionAutoSave = React.useCallback(
+  const setFormSubmissionAutoSave: typeof setFormSubmission = React.useCallback(
     (formSubmission) => {
       setFormSubmission((currentFormSubmission) => {
         const newFormSubmission =

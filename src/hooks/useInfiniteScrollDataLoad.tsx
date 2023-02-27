@@ -50,7 +50,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     }>(() => {
       return {
         forceReload: false,
-        shouldDebounce: true,
+        shouldDebounce: false,
         offset: 0,
         filters: onDefaultFilters(query),
       }
