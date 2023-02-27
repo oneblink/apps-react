@@ -300,43 +300,7 @@ function parsePreFillData(
         if (!hasABN) {
           return
         }
-        const hasMainName = parseUnknownAsRecord(
-          record.mainName,
-          (mainName) => {
-            if (parseStringValue(mainName.organisationName)) {
-              return true
-            }
-          },
-        )
-        if (hasMainName) {
-          return record
-        }
-        const hasLegalName = parseUnknownAsRecord(
-          record.legalName,
-          (legalName) => {
-            if (
-              parseStringValue(legalName.givenName) ||
-              parseStringValue(legalName.familyName) ||
-              parseStringValue(legalName.otherGivenName)
-            ) {
-              return true
-            }
-          },
-        )
-        if (hasLegalName) {
-          return record
-        }
-        const hasMainTradingName = parseUnknownAsRecord(
-          record.mainTradingName,
-          (mainTradingName) => {
-            if (parseStringValue(mainTradingName.organisationName)) {
-              return true
-            }
-          },
-        )
-        if (hasMainTradingName) {
-          return record
-        }
+        return record
       })
     }
     case 'pointAddress':
