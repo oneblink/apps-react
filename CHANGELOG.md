@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSS Classes for Radio/Checkbox containers
 - Mustache rendering to Info Elements
 
+### Changed
+
+- ABN prefill to no longer require a name
+
 ## [2.6.0] - 2023-02-16
 
 ### Fixed
