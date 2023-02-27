@@ -36,7 +36,7 @@ function FormElementOptions({
     )
   }
 
-  return <div>{children}</div>
+  return <div className="ob-form-element-options">{children}</div>
 }
 
 export default React.memo(FormElementOptions)
