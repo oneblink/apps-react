@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2023-03-03
+
 ### Added
 
 - CSS Classes for Radio/Checkbox containers
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ABN prefill to no longer require a name
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [0.4.6-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.4.5](https://github.com/oneblink/sdk-core-js/releases/tag/v0.4.5))
 
 ## [2.6.0] - 2023-02-16
 
