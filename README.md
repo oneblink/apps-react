@@ -5,7 +5,7 @@ Helpers for OneBlink apps in ReactJS.
 ## Installation
 
 ```sh
-npm install @oneblink/apps @oneblink/apps-react --save
+npm install @oneblink/apps @oneblink/apps-react react@^17 react-dom@^17 react-router-dom@^5 @mui/lab@>=5 @mui/material@^5 @mui/x-date-pickers@^5 --save
 ```
 
 ## Usage
