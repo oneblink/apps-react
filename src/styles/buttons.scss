@@ -1,0 +1,7 @@
+.buttons {
+  gap: 0 0.5rem;
+}
+
+.buttons .button:not(:last-child):not(.is-fullwidth) {
+  margin-right: 0;
+}
