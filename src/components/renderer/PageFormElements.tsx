@@ -43,6 +43,7 @@ function PageFormElements({
         const { submission, elements } = mergeLookupResults({
           elements: pageElement.elements,
           submission: currentFormSubmission.submission,
+          lastElementUpdated: currentFormSubmission.lastElementUpdated,
         })
 
         const definition = {
@@ -71,6 +72,7 @@ function PageFormElements({
         return {
           submission,
           definition,
+          lastElementUpdated: currentFormSubmission.lastElementUpdated,
         }
       })
     },
