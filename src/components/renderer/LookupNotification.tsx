@@ -286,7 +286,6 @@ function LookupNotificationComponent({
                       dangerouslySetInnerHTML={{
                         __html: lookupErrorHTML || '',
                       }}
-                      ng-bind-html="$ctrl.obLookupCtrl.lookupErrorMessage"
                     />
                   </div>
                 )}
