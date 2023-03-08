@@ -139,6 +139,7 @@ function LookupNotificationComponent({
       }, 5000)
 
       const payload = {
+        element,
         definition,
         submission: {
           ...model,
