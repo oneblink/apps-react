@@ -365,7 +365,7 @@ export function generateValidationSchema(
               ...formElement,
               required: formElement.required || !!formElement.requiredAll,
             },
-            'Required',
+            formElement.requiredAll ? 'All options are required' : 'Required',
           ),
           length: formElement.requiredAll
             ? {
