@@ -11,10 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Margin on buttons from CSS
 
-### Changed
-
-- Set focused element to last element updated when auto save is continued or draft is resumed
-
 ### Added
 
 - `element` to lookup payload

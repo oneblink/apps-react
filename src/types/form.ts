@@ -63,9 +63,6 @@ export type FormElementLookupHandler = (
   setter: (data: {
     submission: FormSubmissionModel
     elements: import('@oneblink/types').FormTypes.FormElement[]
-    lastElementUpdated:
-      | import('@oneblink/types').FormTypes.FormElement
-      | undefined
   }) => {
     submission: FormSubmissionModel
     elements: import('@oneblink/types').FormTypes.FormElement[]
@@ -76,8 +73,5 @@ export type SetFormSubmission = React.Dispatch<
   React.SetStateAction<{
     definition: import('@oneblink/types').FormTypes.Form
     submission: FormSubmissionModel
-    lastElementUpdated:
-      | import('@oneblink/types').FormTypes.FormElement
-      | undefined
   }>
 >
