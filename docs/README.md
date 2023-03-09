@@ -5,7 +5,7 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 ## Peer Dependencies
 
 - [@oneblink/apps](https://www.npmjs.com/package/@oneblink/apps)
-- [react@](https://www.npmjs.com/package/react)
+- [react](https://www.npmjs.com/package/react)
 - [react-dom](https://www.npmjs.com/package/react-dom)
 - [react-router-dom](https://www.npmjs.com/package/react-router-dom)
 - [@mui/lab](https://www.npmjs.com/package/@mui/lab)
