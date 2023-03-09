@@ -2,6 +2,16 @@
 
 This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/package/@oneblink/apps). Please ensure you have read the usage documentation on [Tenants](https://github.com/oneblink/apps/blob/master/docs/README.md#tenants) before starting to use this library.
 
+## Peer Dependencies
+
+- [@oneblink/apps](https://www.npmjs.com/package/@oneblink/apps)
+- [react@^17](https://www.npmjs.com/package/react)
+- [react-dom@^17](https://www.npmjs.com/package/react-dom)
+- [react-router-dom@^5](https://www.npmjs.com/package/react-router-dom)
+- [@mui/lab@>=5](https://www.npmjs.com/package/@mui/lab)
+- [@mui/material@^5](https://www.npmjs.com/package/@mui/material)
+- [@mui/x-date-pickers@^5](https://www.npmjs.com/package/@mui/x-date-pickers)
+
 ## Components
 
 - [OneBlinkAutoSaveForm](./OneBlinkAutoSaveForm.md)

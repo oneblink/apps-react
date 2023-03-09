@@ -5,7 +5,7 @@ Helpers for OneBlink apps in ReactJS.
 ## Installation
 
 ```sh
-npm install @oneblink/apps @oneblink/apps-react --save
+npm install @oneblink/apps-react --save
 ```
 
 ## Usage
