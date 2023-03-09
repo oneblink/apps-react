@@ -358,12 +358,34 @@ export function generateValidationSchema(
         }
         break
       }
+      case 'checkboxes': {
+        partialSchema[escapeElementName(formElement.name)] = {
+          presence: presence(
+            {
+              ...formElement,
+              required: formElement.required || !!formElement.requiredAll,
+            },
+            'Required',
+          ),
+          length: formElement.requiredAll
+            ? {
+                is: formElement.options?.length,
+                message:
+                  formElement.requiredMessage || 'All options are required',
+              }
+            : undefined,
+          lookups: {
+            formElement,
+            elementIdsWithLookupsExecuted,
+          },
+        }
+        break
+      }
       case 'abn':
       case 'geoscapeAddress':
       case 'pointAddress':
       case 'civicaStreetName':
       case 'autocomplete':
-      case 'checkboxes':
       case 'radio':
       case 'select': {
         partialSchema[escapeElementName(formElement.name)] = {
