@@ -359,19 +359,20 @@ export function generateValidationSchema(
         break
       }
       case 'checkboxes': {
+        const requiredAllDefaultMessage = 'All options are required'
         partialSchema[escapeElementName(formElement.name)] = {
           presence: presence(
             {
               ...formElement,
               required: formElement.required || !!formElement.requiredAll,
             },
-            formElement.requiredAll ? 'All options are required' : 'Required',
+            formElement.requiredAll ? requiredAllDefaultMessage : 'Required',
           ),
           length: formElement.requiredAll
             ? {
                 is: formElement.options?.length,
                 message:
-                  formElement.requiredMessage || 'All options are required',
+                  formElement.requiredMessage || requiredAllDefaultMessage,
               }
             : undefined,
           lookups: {
