@@ -598,6 +598,7 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
+
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
         submission: {
@@ -607,7 +608,6 @@ function OneBlinkFormBase({
               ? value(currentFormSubmission.submission[element.name])
               : value,
         },
-        lastElementUpdated: element,
       }))
     },
     [disabled, setFormSubmission],

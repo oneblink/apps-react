@@ -63,7 +63,6 @@ function FormElementForm({
             const { elements, submission } = mergeLookupResults({
               elements: formElement.elements,
               submission: model,
-              lastElementUpdated: currentFormSubmission.lastElementUpdated,
             })
             model = submission
             return {
@@ -82,7 +81,6 @@ function FormElementForm({
         return {
           elements,
           submission,
-          lastElementUpdated: currentFormSubmission.lastElementUpdated,
         }
       })
     },
