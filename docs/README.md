@@ -5,12 +5,12 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 ## Peer Dependencies
 
 - [@oneblink/apps](https://www.npmjs.com/package/@oneblink/apps)
-- [react@^17](https://www.npmjs.com/package/react)
-- [react-dom@^17](https://www.npmjs.com/package/react-dom)
-- [react-router-dom@^5](https://www.npmjs.com/package/react-router-dom)
-- [@mui/lab@>=5](https://www.npmjs.com/package/@mui/lab)
-- [@mui/material@^5](https://www.npmjs.com/package/@mui/material)
-- [@mui/x-date-pickers@^5](https://www.npmjs.com/package/@mui/x-date-pickers)
+- [react](https://www.npmjs.com/package/react)
+- [react-dom](https://www.npmjs.com/package/react-dom)
+- [react-router-dom](https://www.npmjs.com/package/react-router-dom)
+- [@mui/lab](https://www.npmjs.com/package/@mui/lab)
+- [@mui/material](https://www.npmjs.com/package/@mui/material)
+- [@mui/x-date-pickers](https://www.npmjs.com/package/@mui/x-date-pickers)
 
 ## Components
 
