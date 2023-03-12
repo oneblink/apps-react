@@ -49,6 +49,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             const { elements, submission } = mergeLookupResults({
               elements: formElement.elements,
               submission: currentFormSubmission.submission,
+              lastElementUpdated: currentFormSubmission.lastElementUpdated,
             })
             model = submission
             return {
@@ -62,6 +63,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         return {
           elements,
           submission: model,
+          lastElemenetUpdated: currentFormSubmission.lastElementUpdated,
         }
       })
     },

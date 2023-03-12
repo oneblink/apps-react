@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Peer dependencies to documentation
 - `requiredAll` to checkbox form elements
 
+### Changed
+
+- Set focused element to last element updated when auto save is continued or draft is resumed
+
 ## [2.7.0] - 2023-03-03
 
 ### Added
