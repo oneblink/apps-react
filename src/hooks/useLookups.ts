@@ -78,6 +78,7 @@ export default function useLookups(
         return {
           submission,
           definition,
+          lastElementUpdated: currentFormSubmission.lastElementUpdated,
         }
       })
     },
