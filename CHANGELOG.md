@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `title` prop to optional for `<Modal />` component
+- Set focused element to last element updated when auto save is continued or draft is resumed
 
 ## [2.8.0] - 2023-03-13
 
@@ -22,10 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `element` to lookup payload
 - Peer dependencies to documentation
 - `requiredAll` to checkbox form elements
-
-### Changed
-
-- Set focused element to last element updated when auto save is continued or draft is resumed
 
 ## [2.7.0] - 2023-03-03
 
