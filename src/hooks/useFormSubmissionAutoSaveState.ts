@@ -51,7 +51,7 @@ export default function useFormSubmissionAutoSaveState({
           .upsertAutoSaveData(definition.id, autoSaveKey, model)
           .then(() => {
             if (lastElementUpdated) {
-              autoSaveService.upsertAutoSaveData<FormElement>(
+              return autoSaveService.upsertAutoSaveData<FormElement>(
                 definition.id,
                 `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
                 lastElementUpdated,
