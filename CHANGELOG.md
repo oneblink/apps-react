@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `title` prop to optional for `<Modal />` component
+- store and retrieve `lastElementUpdated` in local storage when autosave runs
 
 ## [2.8.0] - 2023-03-13
 
