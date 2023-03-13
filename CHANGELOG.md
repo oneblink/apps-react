@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `title` prop to optional for `<Modal />` component
+
 ## [2.8.0] - 2023-03-13
 
 ### Fixed
