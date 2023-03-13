@@ -49,9 +49,15 @@ export default function useFormSubmissionAutoSaveState({
       (model: FormSubmissionModel, lastElementUpdated?: FormElement) => {
         console.log('Auto saving...')
         autoSaveService
-          .upsertAutoSaveData(definition.id, autoSaveKey, {
-            model,
-            lastElementUpdated,
+          .upsertAutoSaveData(definition.id, autoSaveKey, model)
+          .then(() => {
+            if (lastElementUpdated) {
+              autoSaveService.upsertAutoSaveData<FormElement>(
+                definition.id,
+                `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+                lastElementUpdated,
+              )
+            }
           })
           .catch((error) => {
             console.warn('Error while auto saving', error)
@@ -128,23 +134,27 @@ export default function useFormSubmissionAutoSaveState({
     let ignore = false
     const loadAutoSaveData = async () => {
       try {
-        const autoSaveData = await autoSaveService.getAutoSaveData<{
-          model: FormSubmissionModel
-          lastElementUpdated: FormElement | undefined
-        }>(definition.id, autoSaveKey)
+        const model =
+          await autoSaveService.getAutoSaveData<FormSubmissionModel>(
+            definition.id,
+            autoSaveKey,
+          )
+        const lastUpdatedElement =
+          await autoSaveService.getAutoSaveData<FormElement>(
+            definition.id,
+            `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+          )
         if (!ignore) {
           let data: {
             model: FormSubmissionModel
             lastElementUpdated: FormElement | undefined
           } | null = null
-          if (autoSaveData !== null) {
-            if (autoSaveData.model) {
-              data = autoSaveData as {
-                model: FormSubmissionModel
-                lastElementUpdated: FormElement | undefined
-              }
-            } else {
-              data = { model: autoSaveData, lastElementUpdated: undefined }
+          if (model) {
+            data = {
+              model,
+              lastElementUpdated: lastUpdatedElement
+                ? lastUpdatedElement
+                : undefined,
             }
           }
           setAutoSaveState({
