@@ -3,7 +3,7 @@ import clsx from 'clsx'
 
 type Props = {
   isOpen: boolean
-  title: string
+  title?: string
   children: React.ReactNode
   actions: React.ReactNode | null
   className?: string
@@ -30,9 +30,11 @@ function Modal({
     >
       <div className="modal-background-faded"></div>
       <div className={clsx('modal-card', cardClassName)}>
-        <header className="modal-card-head">
-          <p className={clsx('modal-card-title', titleClassName)}>{title}</p>
-        </header>
+        {title && (
+          <header className="modal-card-head">
+            <p className={clsx('modal-card-title', titleClassName)}>{title}</p>
+          </header>
+        )}
         <section className={clsx('modal-card-body', bodyClassName)}>
           {children}
         </section>
