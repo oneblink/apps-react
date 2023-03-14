@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Multiple positions for Hint text to render
+
 ### Changed
 
 - `title` prop to optional for `<Modal />` component

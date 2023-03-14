@@ -78,3 +78,11 @@
   display: flex;
   gap: $size-8;
 }
+
+.ob-hint-text {
+  font-size: 14px;
+}
+
+.ob-hint-text__container {
+  margin-bottom: 0.25rem;
+}

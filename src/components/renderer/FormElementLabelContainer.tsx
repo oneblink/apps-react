@@ -30,19 +30,25 @@ function FormElementLabelContainer({
         >
           {element.label}
         </label>
-        {element.hint && (
-          <Tooltip
-            title={element.hint}
-            arrow
-            enterTouchDelay={0}
-            leaveTouchDelay={10000}
-          >
-            <i className="material-icons has-text-grey-light ob-label__hint">
-              info
-            </i>
-          </Tooltip>
-        )}
+        {element.hint &&
+          (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
+            <Tooltip
+              title={element.hint}
+              arrow
+              enterTouchDelay={0}
+              leaveTouchDelay={10000}
+            >
+              <i className="material-icons has-text-grey-light ob-label__hint">
+                info
+              </i>
+            </Tooltip>
+          )}
       </div>
+      {element.hint && element.hintPosition === 'BELOW_LABEL' && (
+        <div className="hint-text ob-hint-text__container">
+          <div className="ob-hint-text">{element.hint}</div>
+        </div>
+      )}
       {children}
     </div>
   )
