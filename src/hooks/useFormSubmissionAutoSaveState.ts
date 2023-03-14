@@ -4,6 +4,7 @@ import { autoSaveService, submissionService, Sentry } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
 import { FormSubmissionModel } from '../types/form'
+import { FormElement } from '@oneblink/types/typescript/forms'
 
 export default function useFormSubmissionAutoSaveState({
   form,
@@ -26,7 +27,7 @@ export default function useFormSubmissionAutoSaveState({
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
 }) {
-  const [{ definition, submission }, setFormSubmission] =
+  const [{ definition, submission, lastElementUpdated }, setFormSubmission] =
     useFormSubmissionState(form, initialSubmission)
 
   const [
@@ -35,17 +36,28 @@ export default function useFormSubmissionAutoSaveState({
   ] = React.useState<{
     isLoadingAutoSaveSubmission: boolean
     autoSaveSubmission: FormSubmissionModel | null
+    lastElementUpdated: FormElement | null
   }>({
     isLoadingAutoSaveSubmission: true,
     autoSaveSubmission: null,
+    lastElementUpdated: null,
   })
 
   const throttledAutoSave = React.useMemo(() => {
     return _throttle(
-      (model: FormSubmissionModel) => {
+      (model: FormSubmissionModel, lastElementUpdated?: FormElement) => {
         console.log('Auto saving...')
         autoSaveService
           .upsertAutoSaveData(definition.id, autoSaveKey, model)
+          .then(() => {
+            if (lastElementUpdated) {
+              return autoSaveService.upsertAutoSaveData<FormElement>(
+                definition.id,
+                `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+                lastElementUpdated,
+              )
+            }
+          })
           .catch((error) => {
             console.warn('Error while auto saving', error)
             Sentry.captureException(error)
@@ -121,15 +133,21 @@ export default function useFormSubmissionAutoSaveState({
     let ignore = false
     const loadAutoSaveData = async () => {
       try {
-        const autoSaveData =
+        const autoSaveSubmission =
           await autoSaveService.getAutoSaveData<FormSubmissionModel>(
             definition.id,
             autoSaveKey,
           )
+        const lastElementUpdated =
+          await autoSaveService.getAutoSaveData<FormElement>(
+            definition.id,
+            `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+          )
         if (!ignore) {
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
-            autoSaveSubmission: autoSaveData,
+            autoSaveSubmission,
+            lastElementUpdated,
           })
         }
       } catch (error) {
@@ -139,6 +157,7 @@ export default function useFormSubmissionAutoSaveState({
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
             autoSaveSubmission: null,
+            lastElementUpdated: null,
           })
         }
       }
@@ -164,7 +183,10 @@ export default function useFormSubmissionAutoSaveState({
             ? formSubmission(currentFormSubmission)
             : formSubmission
 
-        throttledAutoSave(newFormSubmission.submission)
+        throttledAutoSave(
+          newFormSubmission.submission,
+          newFormSubmission.lastElementUpdated,
+        )
 
         return newFormSubmission
       })
@@ -177,6 +199,7 @@ export default function useFormSubmissionAutoSaveState({
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
+      lastElementUpdated: null,
     })
   }, [deleteAutoSaveSubmission])
 
@@ -185,17 +208,20 @@ export default function useFormSubmissionAutoSaveState({
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
         submission: autoSaveSubmission,
+        lastElementUpdated: lastElementUpdated,
       }))
     }
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
+      lastElementUpdated: null,
     })
-  }, [autoSaveSubmission, setFormSubmission])
+  }, [autoSaveSubmission, setFormSubmission, lastElementUpdated])
 
   return {
     definition,
     submission,
+    lastElementUpdated,
     isLoadingAutoSaveSubmission,
     isAutoSaveSubmissionAvailable: autoSaveSubmission !== null,
     startNewSubmission,

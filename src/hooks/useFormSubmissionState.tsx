@@ -7,6 +7,7 @@ import { FormSubmissionModel } from '../types/form'
 export default function useFormSubmissionState(
   form: FormTypes.Form,
   initialSubmission?: FormSubmissionModel,
+  lastElementUpdated?: FormTypes.FormElement,
 ) {
   return React.useState(() => {
     const definition = _cloneDeep(form)
@@ -17,6 +18,7 @@ export default function useFormSubmissionState(
     return {
       definition,
       submission: defaultData,
+      lastElementUpdated,
     }
   })
 }
