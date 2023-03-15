@@ -94,11 +94,6 @@
     "dist"
   ],
   "homepage": "https://github.com/oneblink/apps-react#readme",
-  "jest": {
-    "moduleNameMapper": {
-      "^.*nanoid/non-secure.*$": "<rootDir>/test/fixtures/nanoid/non-secure.js"
-    }
-  },
   "license": "GPL-3.0-only",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

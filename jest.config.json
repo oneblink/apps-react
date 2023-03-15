@@ -1,20 +1,15 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "jsdom",
-  "moduleDirectories": [
-    "src",
-    "node_modules"
-  ],
-  "roots": [
-    ".",
-    "src"
-  ],
+  "moduleDirectories": ["src", "node_modules"],
+  "roots": [".", "src"],
   "transform": {
     "^.+\\.jsx?$": "babel-jest"
   },
-  "transformIgnorePatterns": [
-    "/node_modules/(?!@oneblink/apps)"
-  ],
+  "transformIgnorePatterns": ["/node_modules/(?!@oneblink/apps)"],
+  "moduleNameMapper": {
+    "^.*nanoid/non-secure.*$": "<rootDir>/tests/fixtures/nanoid/non-secure.js"
+  },
   "globals": {
     "ts-jest": {
       "isolatedModules": true
