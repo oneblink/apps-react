@@ -41,6 +41,7 @@ import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import determineIsInfoPage from './services/determineIsInfoPage'
+import { FormElement } from '@oneblink/types/typescript/forms'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -94,6 +95,9 @@ function OneBlinkFormBase({
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
+  const [lastElementUpdated, setLastElementUpdated] = React.useState<
+    FormElement | undefined
+  >(undefined)
 
   const theme = React.useMemo(
     () =>
@@ -524,6 +528,7 @@ function OneBlinkFormBase({
           definition,
           submission,
           backgroundUpload: continueWhilstAttachmentsAreUploading,
+          lastElementUpdated,
         })
       }
     },
@@ -535,6 +540,7 @@ function OneBlinkFormBase({
       getCurrentSubmissionData,
       onSaveDraft,
       checkBsbAreValidating,
+      lastElementUpdated,
     ],
   )
 
@@ -598,7 +604,7 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
-
+      setLastElementUpdated(element)
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
         submission: {
@@ -611,7 +617,7 @@ function OneBlinkFormBase({
         lastElementUpdated: element,
       }))
     },
-    [disabled, setFormSubmission],
+    [disabled, setFormSubmission, setLastElementUpdated],
   )
 
   // #endregion
