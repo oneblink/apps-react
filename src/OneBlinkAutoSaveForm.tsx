@@ -34,6 +34,7 @@ function OneBlinkAutoSaveForm({
     handleSaveDraft,
     setFormSubmission,
     handleNavigateAway,
+    lastElementUpdated,
   } = useFormSubmissionAutoSaveState({
     form,
     initialSubmission,
@@ -95,6 +96,7 @@ function OneBlinkAutoSaveForm({
       onSaveDraft={handleSaveDraft}
       setFormSubmission={setFormSubmission}
       handleNavigateAway={handleNavigateAway}
+      lastElementUpdated={lastElementUpdated}
     />
   )
 }

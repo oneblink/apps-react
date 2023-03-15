@@ -31,16 +31,16 @@ export default function useFormSubmissionAutoSaveState({
     useFormSubmissionState(form, initialSubmission)
 
   const [
-    { isLoadingAutoSaveSubmission, autoSaveSubmission },
+    { isLoadingAutoSaveSubmission, autoSaveSubmission, autoSaveElement },
     setAutoSaveState,
   ] = React.useState<{
     isLoadingAutoSaveSubmission: boolean
     autoSaveSubmission: FormSubmissionModel | null
-    lastElementUpdated: FormElement | null
+    autoSaveElement: FormElement | null
   }>({
     isLoadingAutoSaveSubmission: true,
     autoSaveSubmission: null,
-    lastElementUpdated: null,
+    autoSaveElement: null,
   })
 
   const throttledAutoSave = React.useMemo(() => {
@@ -138,7 +138,7 @@ export default function useFormSubmissionAutoSaveState({
             definition.id,
             autoSaveKey,
           )
-        const lastElementUpdated =
+        const autoSaveElement =
           await autoSaveService.getAutoSaveData<FormElement>(
             definition.id,
             `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
@@ -147,7 +147,7 @@ export default function useFormSubmissionAutoSaveState({
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
             autoSaveSubmission,
-            lastElementUpdated,
+            autoSaveElement,
           })
         }
       } catch (error) {
@@ -157,7 +157,7 @@ export default function useFormSubmissionAutoSaveState({
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
             autoSaveSubmission: null,
-            lastElementUpdated: null,
+            autoSaveElement: null,
           })
         }
       }
@@ -199,7 +199,7 @@ export default function useFormSubmissionAutoSaveState({
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
-      lastElementUpdated: null,
+      autoSaveElement: null,
     })
   }, [deleteAutoSaveSubmission])
 
@@ -208,15 +208,17 @@ export default function useFormSubmissionAutoSaveState({
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
         submission: autoSaveSubmission,
-        lastElementUpdated: lastElementUpdated,
+        lastElementUpdated: autoSaveElement
+          ? autoSaveElement
+          : undefined,
       }))
     }
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
-      lastElementUpdated: null,
+      autoSaveElement: null,
     })
-  }, [autoSaveSubmission, setFormSubmission, lastElementUpdated])
+  }, [autoSaveSubmission, setFormSubmission, autoSaveElement])
 
   return {
     definition,

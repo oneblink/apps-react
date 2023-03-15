@@ -41,7 +41,7 @@ import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import determineIsInfoPage from './services/determineIsInfoPage'
-import { FormElement } from '@oneblink/types/typescript/forms'
+import { formElementsService } from '@oneblink/sdk-core'
 
 export type BaseProps = {
   onCancel: () => unknown
@@ -66,6 +66,7 @@ export type ControlledProps = {
   definition: FormTypes.Form
   submission: FormSubmissionModel
   setFormSubmission: SetFormSubmission
+  lastElementUpdated?: FormTypes.FormElement
 }
 
 type Props = BaseProps &
@@ -92,12 +93,10 @@ function OneBlinkFormBase({
   allowSubmitWithPendingAttachments,
   handleNavigateAway,
   isInfoPage: isInfoPageProp,
+  lastElementUpdated,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
-  const [lastElementUpdated, setLastElementUpdated] = React.useState<
-    FormElement | undefined
-  >(undefined)
 
   const theme = React.useMemo(
     () =>
@@ -604,7 +603,6 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
-      setLastElementUpdated(element)
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
         submission: {
@@ -617,12 +615,45 @@ function OneBlinkFormBase({
         lastElementUpdated: element,
       }))
     },
-    [disabled, setFormSubmission, setLastElementUpdated],
+    [disabled, setFormSubmission],
   )
 
   // #endregion
   //
   //
+
+  const lastElementUpdatedPage = React.useMemo(() => {
+    return definition.elements.find((pageElement: FormTypes.FormElement) => {
+      if (pageElement.type === 'page') {
+        return formElementsService.findFormElement(
+          pageElement.elements,
+          (el) => el.id === lastElementUpdated?.id,
+        )
+      }
+    })
+  }, [lastElementUpdated, definition])
+
+  const [hasResumed, setHasResumed] = React.useState(false)
+  React.useEffect(() => {
+    if (lastElementUpdated && lastElementUpdatedPage && !hasResumed) {
+      if (currentPage.id !== lastElementUpdatedPage.id) {
+        setPageId(lastElementUpdatedPage.id)
+      } else {
+        const element = document.getElementById(lastElementUpdated.id)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+        setHasResumed(true)
+      }
+    }
+  }, [
+    lastElementUpdatedPage,
+    currentPage,
+    definition,
+    lastElementUpdated,
+    hasResumed,
+    setPageId,
+  ])
 
   if (conditionalLogicError) {
     return (
