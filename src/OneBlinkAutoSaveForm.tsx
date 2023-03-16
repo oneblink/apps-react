@@ -10,13 +10,13 @@ type Props = React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
   autoSaveKey: string
   removeAutoSaveDataBeforeSubmit?: boolean
   removeAutoSaveDataBeforeSaveDraft?: boolean
-  initialLastElementUpdated?: FormTypes.FormElement
+  resumeAtElement?: FormTypes.FormElement
 }
 
 function OneBlinkAutoSaveForm({
   form,
   initialSubmission,
-  initialLastElementUpdated,
+  resumeAtElement,
   autoSaveKey,
   removeAutoSaveDataBeforeSubmit,
   removeAutoSaveDataBeforeSaveDraft,
@@ -41,7 +41,7 @@ function OneBlinkAutoSaveForm({
   } = useFormSubmissionAutoSaveState({
     form,
     initialSubmission,
-    initialLastElementUpdated,
+    resumeAtElement,
     autoSaveKey,
     removeAutoSaveDataBeforeSubmit,
     removeAutoSaveDataBeforeSaveDraft,

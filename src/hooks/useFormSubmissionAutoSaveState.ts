@@ -9,7 +9,7 @@ import { FormElement } from '@oneblink/types/typescript/forms'
 export default function useFormSubmissionAutoSaveState({
   form,
   initialSubmission,
-  initialLastElementUpdated,
+  resumeAtElement,
   removeAutoSaveDataBeforeSubmit,
   removeAutoSaveDataBeforeSaveDraft,
   autoSaveKey,
@@ -24,13 +24,13 @@ export default function useFormSubmissionAutoSaveState({
   onCancel: () => unknown
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
   initialSubmission?: FormSubmissionModel
-  initialLastElementUpdated?: FormTypes.FormElement
+  resumeAtElement?: FormTypes.FormElement
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
 }) {
   const [{ definition, submission, lastElementUpdated }, setFormSubmission] =
-    useFormSubmissionState(form, initialSubmission, initialLastElementUpdated)
+    useFormSubmissionState(form, initialSubmission, resumeAtElement)
 
   const [
     { isLoadingAutoSaveSubmission, autoSaveSubmission, autoSaveElement },
