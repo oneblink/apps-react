@@ -4,16 +4,19 @@ import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
+import { FormTypes } from '@oneblink/types'
 
 type Props = React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
   autoSaveKey: string
   removeAutoSaveDataBeforeSubmit?: boolean
   removeAutoSaveDataBeforeSaveDraft?: boolean
+  initialLastElementUpdated?: FormTypes.FormElement
 }
 
 function OneBlinkAutoSaveForm({
   form,
   initialSubmission,
+  initialLastElementUpdated,
   autoSaveKey,
   removeAutoSaveDataBeforeSubmit,
   removeAutoSaveDataBeforeSaveDraft,
@@ -38,6 +41,7 @@ function OneBlinkAutoSaveForm({
   } = useFormSubmissionAutoSaveState({
     form,
     initialSubmission,
+    initialLastElementUpdated,
     autoSaveKey,
     removeAutoSaveDataBeforeSubmit,
     removeAutoSaveDataBeforeSaveDraft,

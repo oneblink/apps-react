@@ -16,15 +16,17 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
 type UncontrolledProps = {
   form: FormTypes.Form
   initialSubmission?: FormSubmissionModel
+  initialLastElementUpdated?: FormTypes.FormElement
 }
 
 const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
   form,
   initialSubmission,
+  initialLastElementUpdated,
   ...props
 }: BaseProps & UncontrolledProps) {
-  const [{ definition, submission }, setFormSubmission] =
-    useFormSubmissionState(form, initialSubmission)
+  const [{ definition, submission, lastElementUpdated }, setFormSubmission] =
+    useFormSubmissionState(form, initialSubmission, initialLastElementUpdated)
   return (
     <OneBlinkFormBase
       {...props}
@@ -32,6 +34,7 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
       definition={definition}
       submission={submission}
       setFormSubmission={setFormSubmission}
+      lastElementUpdated={lastElementUpdated}
     />
   )
 })
