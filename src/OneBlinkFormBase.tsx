@@ -635,25 +635,19 @@ function OneBlinkFormBase({
 
   const [hasResumed, setHasResumed] = React.useState(false)
   React.useEffect(() => {
-    if (lastElementUpdated && lastElementUpdatedPage && !hasResumed) {
-      if (currentPage.id !== lastElementUpdatedPage.id) {
+    if (!hasResumed) {
+      if (lastElementUpdated && lastElementUpdatedPage) {
         setPageId(lastElementUpdatedPage.id)
-      } else {
         const element = document.getElementById(lastElementUpdated.id)
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
+          window.requestAnimationFrame(() => {
+            element.scrollIntoView({ behavior: 'smooth' })
+          })
         }
-        setHasResumed(true)
       }
+      setHasResumed(true)
     }
-  }, [
-    lastElementUpdatedPage,
-    currentPage,
-    definition,
-    lastElementUpdated,
-    hasResumed,
-    setPageId,
-  ])
+  }, [lastElementUpdated, hasResumed, lastElementUpdatedPage, setPageId])
 
   if (conditionalLogicError) {
     return (
