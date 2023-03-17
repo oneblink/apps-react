@@ -621,6 +621,12 @@ function OneBlinkFormBase({
   // #endregion
   //
   //
+  const lastElementUpdatedExistsOnForm = React.useMemo(() => {
+    return !!formElementsService.findFormElement(
+      definition.elements,
+      (el) => el.id === lastElementUpdated?.id,
+    )
+  }, [definition.elements, lastElementUpdated])
 
   const lastElementUpdatedPage = React.useMemo(() => {
     return definition.elements.find((pageElement: FormTypes.FormElement) => {
@@ -636,8 +642,10 @@ function OneBlinkFormBase({
   const [hasResumed, setHasResumed] = React.useState(false)
   React.useEffect(() => {
     if (!hasResumed) {
-      if (lastElementUpdated && lastElementUpdatedPage) {
-        setPageId(lastElementUpdatedPage.id)
+      if (lastElementUpdated && lastElementUpdatedExistsOnForm) {
+        if (lastElementUpdatedPage) {
+          setPageId(lastElementUpdatedPage.id)
+        }
         const element = document.getElementById(lastElementUpdated.id)
         if (element) {
           window.requestAnimationFrame(() => {
@@ -647,7 +655,13 @@ function OneBlinkFormBase({
       }
       setHasResumed(true)
     }
-  }, [lastElementUpdated, hasResumed, lastElementUpdatedPage, setPageId])
+  }, [
+    lastElementUpdated,
+    hasResumed,
+    lastElementUpdatedPage,
+    lastElementUpdatedExistsOnForm,
+    setPageId,
+  ])
 
   if (conditionalLogicError) {
     return (
