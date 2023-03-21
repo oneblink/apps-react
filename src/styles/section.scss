@@ -4,15 +4,7 @@
   gap: $size-6;
   cursor: pointer;
   padding: $size-6 $size-8;
-
-  &:hover {
-    background-color: $white-ter;
-  }
-}
-
-.ob-section__header-below-label {
-  cursor: pointer;
-  padding: $size-6 $size-8;
+  flex-wrap: wrap;
 
   &:hover {
     background-color: $white-ter;
@@ -50,13 +42,6 @@
   margin: 0 0 $size-6;
 }
 
-.ob-hint-text-summary__container {
-  margin-top: 1rem;
-}
-
-.ob-section-header-container {
+.ob-section__hint-text-container {
   width: 100%;
-  display: flex;
-  gap: $size-6;
-  align-items: center;
 }

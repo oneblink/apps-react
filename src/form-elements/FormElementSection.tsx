@@ -77,14 +77,14 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         'ob-section__valid': isValid,
       })}
     >
-      {element.hintPosition === 'TOOLTIP' || !element.hintPosition ? (
-        <div
-          className="ob-section__header cypress-section-header"
-          onClick={toggle}
-        >
-          <h3 className="ob-section__header-text title is-3">
-            {element.label}
-            {element.hint && (
+      <div
+        className="ob-section__header cypress-section-header"
+        onClick={toggle}
+      >
+        <h3 className="ob-section__header-text title is-3">
+          {element.label}
+          {element.hint &&
+            (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
               <Tooltip
                 title={element.hint}
                 arrow
@@ -96,57 +96,29 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
                 </i>
               </Tooltip>
             )}
-          </h3>
-          <div className="ob-section__header-icon-container">
-            {isInvalid && (
-              <Tooltip title="Section has errors">
-                <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
-                  warning
-                </i>
-              </Tooltip>
-            )}
-            <i
-              className={clsx('ob-section__header-icon material-icons', {
-                'is-rotated': !isCollapsed,
-              })}
-            >
-              expand_more
-            </i>
-          </div>
-        </div>
-      ) : (
-        <div
-          className="ob-section__header-below-label cypress-section-header"
-          onClick={toggle}
-        >
-          <div className="ob-section-header-container">
-            <h3 className="ob-section__header-text title is-3">
-              {element.label}
-            </h3>
-            <div className="ob-section__header-icon-container">
-              {isInvalid && (
-                <Tooltip title="Section has errors">
-                  <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
-                    warning
-                  </i>
-                </Tooltip>
-              )}
-              <i
-                className={clsx('ob-section__header-icon material-icons', {
-                  'is-rotated': !isCollapsed,
-                })}
-              >
-                expand_more
+        </h3>
+        <div className="ob-section__header-icon-container">
+          {isInvalid && (
+            <Tooltip title="Section has errors">
+              <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
+                warning
               </i>
-            </div>
-          </div>
-          {element.hint && element.hintPosition === 'BELOW_LABEL' && (
-            <div className="hint-text ob-hint-text-summary__container">
-              <div className="ob-hint-text">{element.hint}</div>
-            </div>
+            </Tooltip>
           )}
+          <i
+            className={clsx('ob-section__header-icon material-icons', {
+              'is-rotated': !isCollapsed,
+            })}
+          >
+            expand_more
+          </i>
         </div>
-      )}
+        {element.hint && element.hintPosition === 'BELOW_LABEL' && (
+          <div className="ob-section__hint-text-container">
+            <div className="ob-hint-text">{element.hint}</div>
+          </div>
+        )}
+      </div>
       <hr className="ob-section__divider" />
       <Collapse
         in={!isCollapsed}

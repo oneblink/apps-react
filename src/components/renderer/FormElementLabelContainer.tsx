@@ -45,7 +45,7 @@ function FormElementLabelContainer({
           )}
       </div>
       {element.hint && element.hintPosition === 'BELOW_LABEL' && (
-        <div className="hint-text ob-hint-text__container">
+        <div className="ob-hint-text__container">
           <div className="ob-hint-text">{element.hint}</div>
         </div>
       )}
