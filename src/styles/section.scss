@@ -10,6 +10,15 @@
   }
 }
 
+.ob-section__header-below-label {
+  cursor: pointer;
+  padding: $size-6 $size-8;
+
+  &:hover {
+    background-color: $white-ter;
+  }
+}
+
 .ob-section__header-text {
   flex: 1;
 
@@ -39,4 +48,15 @@
 
 .ob-section__divider {
   margin: 0 0 $size-6;
+}
+
+.ob-hint-text-summary__container {
+  margin-top: 1rem;
+}
+
+.ob-section-header-container {
+  width: 100%;
+  display: flex;
+  gap: $size-6;
+  align-items: center;
 }
