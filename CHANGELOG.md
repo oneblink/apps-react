@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add class to elements for validation css
+
 ## [2.9.0] - 2023-03-26
 
 ### Added

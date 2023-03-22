@@ -135,6 +135,13 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
           return null
         }
 
+        let validationClass = ''
+        if (displayValidationMessages && !('elements' in element)) {
+          validationClass = formElementsValidation?.[element.name]
+            ? 'ob-element__invalid'
+            : 'ob-element__valid'
+        }
+
         return (
           <div
             key={element.id}
@@ -144,6 +151,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
               element.customCssClasses
                 ? element.customCssClasses.join(' ')
                 : '',
+              validationClass,
             )}
             data-cypress-element-name={element.name}
             data-ob-name={element.name}
