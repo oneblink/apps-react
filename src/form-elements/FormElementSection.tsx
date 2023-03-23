@@ -8,6 +8,7 @@ import OneBlinkFormElements, {
 } from '../components/renderer/OneBlinkFormElements'
 import { checkSectionValidity } from '../services/form-validation'
 import { FormElementLookupHandler } from '../types/form'
+import useHint from '../hooks/useHint'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
@@ -19,6 +20,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
+  const hint = useHint(element.hint)
 
   React.useEffect(() => {
     if (isCollapsed && !isDisplayingError) {
@@ -83,10 +85,10 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       >
         <h3 className="ob-section__header-text title is-3">
           {element.label}
-          {element.hint &&
+          {hint &&
             (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
               <Tooltip
-                title={element.hint}
+                title={hint}
                 arrow
                 enterTouchDelay={0}
                 leaveTouchDelay={10000}
@@ -113,9 +115,9 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             expand_more
           </i>
         </div>
-        {element.hint && element.hintPosition === 'BELOW_LABEL' && (
+        {hint && element.hintPosition === 'BELOW_LABEL' && (
           <div className="ob-section__hint-text-container">
-            <div className="ob-hint-text">{element.hint}</div>
+            <div className="ob-hint-text">{hint}</div>
           </div>
         )}
       </div>
