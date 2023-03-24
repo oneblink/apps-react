@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
+import useHint from '../../hooks/useHint'
 
 function FormElementLabelContainer({
   className,
@@ -18,6 +19,8 @@ function FormElementLabelContainer({
   children: React.ReactNode
   leading?: React.ReactNode
 }) {
+  const hint = useHint(element.hint)
+
   return (
     <div className={clsx('ob-form__element', className)}>
       <div className="label ob-label__container">
@@ -30,23 +33,22 @@ function FormElementLabelContainer({
         >
           {element.label}
         </label>
-        {element.hint &&
-          (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
-            <Tooltip
-              title={element.hint}
-              arrow
-              enterTouchDelay={0}
-              leaveTouchDelay={10000}
-            >
-              <i className="material-icons has-text-grey-light ob-label__hint">
-                info
-              </i>
-            </Tooltip>
-          )}
+        {hint && (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
+          <Tooltip
+            title={hint}
+            arrow
+            enterTouchDelay={0}
+            leaveTouchDelay={10000}
+          >
+            <i className="material-icons has-text-grey-light ob-label__hint">
+              info
+            </i>
+          </Tooltip>
+        )}
       </div>
-      {element.hint && element.hintPosition === 'BELOW_LABEL' && (
+      {hint && element.hintPosition === 'BELOW_LABEL' && (
         <div className="ob-hint-text__container">
-          <div className="ob-hint-text">{element.hint}</div>
+          <div className="ob-hint-text">{hint}</div>
         </div>
       )}
       {children}
