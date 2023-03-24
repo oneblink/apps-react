@@ -3,6 +3,7 @@ import { Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import useHint from '../../hooks/useHint'
+import QuillHTML from '../QuillHTML'
 
 function FormElementLabelContainer({
   className,
@@ -51,13 +52,7 @@ export function HintTooltip({ hint }: { hint: string }) {
 
   return (
     <Tooltip
-      title={
-        <div
-          dangerouslySetInnerHTML={{
-            __html: html,
-          }}
-        />
-      }
+      title={<QuillHTML html={html} className="ob-hint-tooltip" />}
       arrow
       enterTouchDelay={0}
       leaveTouchDelay={10000}
@@ -70,14 +65,7 @@ export function HintTooltip({ hint }: { hint: string }) {
 export function HintBelowLabel({ hint }: { hint: string }) {
   const html = useHint(hint)
 
-  return (
-    <div
-      className="ob-hint-text"
-      dangerouslySetInnerHTML={{
-        __html: html,
-      }}
-    />
-  )
+  return <QuillHTML html={html} className="ob-hint-text" />
 }
 
 export default React.memo(FormElementLabelContainer)
