@@ -5,11 +5,10 @@ import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { submissionService } from '@oneblink/sdk-core'
 import { localisationService } from '@oneblink/apps'
 
-const useHint = (elementHint: string | undefined) => {
+const useHint = (elementHint: string) => {
   const { formSubmissionModel, elements } = useFormSubmissionModel()
   const index = React.useContext(RepeatableSetIndexContext)
   return React.useMemo(() => {
-    if (!elementHint) return
     let html = elementHint
     html = html.replace('{INDEX}', (index + 1).toString())
 
