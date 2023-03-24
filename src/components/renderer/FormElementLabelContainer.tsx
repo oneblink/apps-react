@@ -19,8 +19,6 @@ function FormElementLabelContainer({
   children: React.ReactNode
   leading?: React.ReactNode
 }) {
-  const hint = useHint(element.hint)
-
   return (
     <div className={clsx('ob-form__element', className)}>
       <div className="label ob-label__container">
@@ -33,26 +31,52 @@ function FormElementLabelContainer({
         >
           {element.label}
         </label>
-        {hint && (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
-          <Tooltip
-            title={hint}
-            arrow
-            enterTouchDelay={0}
-            leaveTouchDelay={10000}
-          >
-            <i className="material-icons has-text-grey-light ob-label__hint">
-              info
-            </i>
-          </Tooltip>
-        )}
+        {element.hint &&
+          (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
+            <HintTooltip hint={element.hint} />
+          )}
       </div>
-      {hint && element.hintPosition === 'BELOW_LABEL' && (
+      {element.hint && element.hintPosition === 'BELOW_LABEL' && (
         <div className="ob-hint-text__container">
-          <div className="ob-hint-text">{hint}</div>
+          <HintBelowLabel hint={element.hint} />
         </div>
       )}
       {children}
     </div>
+  )
+}
+
+export function HintTooltip({ hint }: { hint: string }) {
+  const html = useHint(hint)
+
+  return (
+    <Tooltip
+      title={
+        <div
+          dangerouslySetInnerHTML={{
+            __html: html,
+          }}
+        />
+      }
+      arrow
+      enterTouchDelay={0}
+      leaveTouchDelay={10000}
+    >
+      <i className="material-icons has-text-grey-light ob-label__hint">info</i>
+    </Tooltip>
+  )
+}
+
+export function HintBelowLabel({ hint }: { hint: string }) {
+  const html = useHint(hint)
+
+  return (
+    <div
+      className="ob-hint-text"
+      dangerouslySetInnerHTML={{
+        __html: html,
+      }}
+    />
   )
 }
 

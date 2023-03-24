@@ -8,7 +8,10 @@ import OneBlinkFormElements, {
 } from '../components/renderer/OneBlinkFormElements'
 import { checkSectionValidity } from '../services/form-validation'
 import { FormElementLookupHandler } from '../types/form'
-import useHint from '../hooks/useHint'
+import {
+  HintBelowLabel,
+  HintTooltip,
+} from '../components/renderer/FormElementLabelContainer'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
@@ -20,7 +23,6 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
-  const hint = useHint(element.hint)
 
   React.useEffect(() => {
     if (isCollapsed && !isDisplayingError) {
@@ -85,18 +87,9 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       >
         <h3 className="ob-section__header-text title is-3">
           {element.label}
-          {hint &&
+          {element.hint &&
             (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
-              <Tooltip
-                title={hint}
-                arrow
-                enterTouchDelay={0}
-                leaveTouchDelay={10000}
-              >
-                <i className="material-icons has-text-grey-light ob-label__hint">
-                  info
-                </i>
-              </Tooltip>
+              <HintTooltip hint={element.hint} />
             )}
         </h3>
         <div className="ob-section__header-icon-container">
@@ -115,9 +108,9 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             expand_more
           </i>
         </div>
-        {hint && element.hintPosition === 'BELOW_LABEL' && (
+        {element.hint && element.hintPosition === 'BELOW_LABEL' && (
           <div className="ob-section__hint-text-container">
-            <div className="ob-hint-text">{hint}</div>
+            <HintBelowLabel hint={element.hint} />
           </div>
         )}
       </div>
