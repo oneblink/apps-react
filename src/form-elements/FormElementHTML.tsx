@@ -5,6 +5,7 @@ import { RepeatableSetIndexContext } from './FormElementRepeatableSet'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { submissionService } from '@oneblink/sdk-core'
 import { localisationService } from '@oneblink/apps'
+import QuillHTML from '../components/QuillHTML'
 
 type Props = {
   element: FormTypes.HtmlElement
@@ -32,11 +33,9 @@ function FormElementHTML({ element }: Props) {
   return (
     <div className="cypress-html-element">
       <div className="ob-form__element ob-information cypress-html-element">
-        <div
-          className="cypress-html-element-content ob-information__content ql-editor"
-          dangerouslySetInnerHTML={{
-            __html: html,
-          }}
+        <QuillHTML
+          html={html}
+          className="cypress-html-element-content ob-information__content"
         />
       </div>
     </div>

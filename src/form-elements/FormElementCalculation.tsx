@@ -11,6 +11,7 @@ import {
   FormSubmissionModel,
 } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
+import QuillHTML from '../components/QuillHTML'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -246,10 +247,10 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   return (
     <div className="cypress-calculation-element">
       <div className="ob-form__element ob-calculation">
-        <div
-          className="cypress-calculation-result ob-calculation__content ql-editor"
-          dangerouslySetInnerHTML={{ __html: htmlValue }}
-        ></div>
+        <QuillHTML
+          html={htmlValue}
+          className="cypress-calculation-result ob-calculation__content"
+        />
         {hasError && (
           <div
             className="notification cypress-calculation-is-invalid"
