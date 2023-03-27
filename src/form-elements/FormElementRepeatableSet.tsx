@@ -1,4 +1,5 @@
 import * as React from 'react'
+import clsx from 'clsx'
 import useBooleanState from '../hooks/useBooleanState'
 import generateDefaultData from '../services/generate-default-data'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
@@ -259,6 +260,13 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       [element.name, index, onLookup],
     )
 
+    let validationClass = ''
+    if (displayValidationMessages) {
+      validationClass = formElementsValidation
+        ? 'ob-repeatable-set__invalid'
+        : 'ob-repeatable-set__valid'
+    }
+
     return (
       <RepeatableSetIndexContext.Provider value={index}>
         <Modal
@@ -293,7 +301,10 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
         <div
           key={index}
-          className="ob-repeatable-set__container cypress-repeatable-set-container"
+          className={clsx(
+            'ob-repeatable-set__container cypress-repeatable-set-container',
+            validationClass,
+          )}
         >
           <button
             type="button"
