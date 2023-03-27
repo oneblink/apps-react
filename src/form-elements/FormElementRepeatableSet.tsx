@@ -109,8 +109,16 @@ function FormElementRepeatableSet({
     formElementConditionallyShown.type === 'repeatableSet'
       ? formElementConditionallyShown.entries
       : {}
+
+  let validationClass = ''
+  if (displayValidationMessage) {
+    validationClass = formElementValidation
+      ? 'ob-repeatable-set-element__invalid'
+      : 'ob-repeatable-set-element__valid'
+  }
+
   return (
-    <div className="cypress-repeatable-set-element">
+    <div className={clsx('cypress-repeatable-set-element', validationClass)}>
       <FormElementLabelContainer
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
         element={element}
