@@ -75,11 +75,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   )
 
   return (
-    <div
-      className={clsx('ob-section', {
-        validationClassName,
-      })}
-    >
+    <div className={clsx('ob-section', validationClassName)}>
       <div
         className="ob-section__header cypress-section-header"
         onClick={toggle}
