@@ -136,10 +136,13 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
         }
 
         let validationClass = ''
-        if (displayValidationMessages && !('elements' in element)) {
-          validationClass = formElementsValidation?.[element.name]
-            ? 'ob-element__invalid'
-            : 'ob-element__valid'
+        if (!('elements' in element)) {
+          if (!formElementsValidation?.[element.name]) {
+            validationClass = 'ob-element__valid'
+          }
+          if (displayValidationMessages) {
+            validationClass = 'ob-element__invalid'
+          }
         }
 
         return (

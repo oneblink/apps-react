@@ -6,6 +6,7 @@ import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import Modal from '../components/renderer/Modal'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
+import useValidationClass from '../hooks/useValidationClass'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
@@ -97,12 +98,15 @@ function FormElementRepeatableSet({
     [element, onChange],
   )
 
-  const repeatableSetValidation =
-    !formElementValidation ||
-    typeof formElementValidation === 'string' ||
-    formElementValidation.type !== 'repeatableSet'
-      ? undefined
-      : formElementValidation
+  const repeatableSetValidation = React.useMemo(
+    () =>
+      !formElementValidation ||
+      typeof formElementValidation === 'string' ||
+      formElementValidation.type !== 'repeatableSet'
+        ? undefined
+        : formElementValidation,
+    [formElementValidation],
+  )
 
   const repeatableSetEntriesConditionallyShown =
     formElementConditionallyShown &&
@@ -110,15 +114,17 @@ function FormElementRepeatableSet({
       ? formElementConditionallyShown.entries
       : {}
 
-  let validationClass = ''
-  if (displayValidationMessage) {
-    validationClass = formElementValidation
-      ? 'ob-repeatable-set-element__invalid'
-      : 'ob-repeatable-set-element__valid'
-  }
+  const { validationClassName } = useValidationClass({
+    formElementsValid: !repeatableSetValidation,
+    displayValidationMessage,
+    validClassName: 'ob-repeatable-set-element__valid',
+    invalidClassName: 'ob-repeatable-set-element__invalid',
+  })
 
   return (
-    <div className={clsx('cypress-repeatable-set-element', validationClass)}>
+    <div
+      className={clsx('cypress-repeatable-set-element', validationClassName)}
+    >
       <FormElementLabelContainer
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
         element={element}
@@ -268,12 +274,12 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       [element.name, index, onLookup],
     )
 
-    let validationClass = ''
-    if (displayValidationMessages) {
-      validationClass = formElementsValidation
-        ? 'ob-repeatable-set__invalid'
-        : 'ob-repeatable-set__valid'
-    }
+    const { validationClassName } = useValidationClass({
+      formElementsValid: !formElementsValidation,
+      displayValidationMessage: displayValidationMessages,
+      validClassName: 'ob-repeatable-set__valid',
+      invalidClassName: 'ob-repeatable-set__invalid',
+    })
 
     return (
       <RepeatableSetIndexContext.Provider value={index}>
@@ -311,7 +317,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           key={index}
           className={clsx(
             'ob-repeatable-set__container cypress-repeatable-set-container',
-            validationClass,
+            validationClassName,
           )}
         >
           <button

@@ -12,6 +12,7 @@ import {
   HintBelowLabel,
   HintTooltip,
 } from '../components/renderer/FormElementLabelContainer'
+import useValidationClass from '../hooks/useValidationClass'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
@@ -33,16 +34,15 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   const displayValidationMessage =
     displayValidationMessages || isDisplayingError
 
-  const isInvalid = React.useMemo(() => {
-    return (
-      displayValidationMessage &&
-      checkSectionValidity(element, props.formElementsValidation)
-    )
-  }, [displayValidationMessage, element, props.formElementsValidation])
-
-  const isValid = React.useMemo(() => {
-    return !checkSectionValidity(element, props.formElementsValidation)
-  }, [element, props.formElementsValidation])
+  const { validationClassName, valid } = useValidationClass({
+    formElementsValid: checkSectionValidity(
+      element,
+      props.formElementsValidation,
+    ),
+    displayValidationMessage,
+    validClassName: 'ob-section__valid',
+    invalidClassName: 'ob-section__invalid',
+  })
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
@@ -77,8 +77,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   return (
     <div
       className={clsx('ob-section', {
-        'ob-section__invalid': isInvalid,
-        'ob-section__valid': isValid,
+        validationClassName,
       })}
     >
       <div
@@ -93,7 +92,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             )}
         </h3>
         <div className="ob-section__header-icon-container">
-          {isInvalid && (
+          {!valid && displayValidationMessage && (
             <Tooltip title="Section has errors">
               <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
                 warning
