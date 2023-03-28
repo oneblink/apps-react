@@ -35,7 +35,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     displayValidationMessages || isDisplayingError
 
   const { validationClassName, valid } = useValidationClass({
-    formElementsValid: checkSectionValidity(
+    formElementsValid: !checkSectionValidity(
       element,
       props.formElementsValidation,
     ),

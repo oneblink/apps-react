@@ -15,7 +15,7 @@ export default function useValidationClass({
   valid: boolean
 } {
   return React.useMemo(() => {
-    if (!formElementsValid) {
+    if (formElementsValid) {
       return { validationClassName: validClassName, valid: true }
     }
     if (displayValidationMessage) {
