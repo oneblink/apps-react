@@ -34,11 +34,13 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   const displayValidationMessage =
     displayValidationMessages || isDisplayingError
 
+  const isValid = React.useMemo(
+    () => !checkSectionValidity(element, props.formElementsValidation),
+    [element, props.formElementsValidation],
+  )
+
   const { validationClassName, valid } = useValidationClass({
-    formElementsValid: !checkSectionValidity(
-      element,
-      props.formElementsValidation,
-    ),
+    formElementsValid: isValid,
     displayValidationMessage,
     validClassName: 'ob-section__valid',
     invalidClassName: 'ob-section__invalid',
