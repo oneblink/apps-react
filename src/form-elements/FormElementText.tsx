@@ -29,7 +29,6 @@ function FormElementText({
   const text = typeof value === 'string' ? value : ''
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage
-
   return (
     <div className="cypress-text-element">
       <FormElementLabelContainer
