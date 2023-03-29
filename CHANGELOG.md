@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Unvisited pages not display validation when clicking submit
+
 ### Added
 
 - add class to elements for validation css
