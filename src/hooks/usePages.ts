@@ -13,12 +13,10 @@ export default function usePages({
   pages,
   formElementsValidation,
   formElementsConditionallyShown,
-  hasAttemptedSubmit,
 }: {
   pages: FormTypes.PageElement[]
   formElementsValidation: FormElementsValidation | undefined
   formElementsConditionallyShown: FormElementsConditionallyShown
-  hasAttemptedSubmit: boolean
 }) {
   const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
@@ -126,13 +124,13 @@ export default function usePages({
   const checkDisplayPageError = React.useCallback(
     (page: FormTypes.PageElement) => {
       // If we have not visited the page yet, we will not display errors
-      if (!visitedPageIds.includes(page.id) && !hasAttemptedSubmit) {
+      if (!visitedPageIds.includes(page.id)) {
         return false
       }
 
       return checkSectionValidity(page, formElementsValidation)
     },
-    [formElementsValidation, hasAttemptedSubmit, visitedPageIds],
+    [formElementsValidation, visitedPageIds],
   )
 
   React.useEffect(() => {

@@ -284,6 +284,36 @@ function OneBlinkFormBase({
 
   //
   //
+  // #region Pages
+
+  const {
+    visiblePages,
+    isFirstVisiblePage,
+    isLastVisiblePage,
+    isDisplayingCurrentPageError,
+    isShowingMultiplePages,
+    isStepsHeaderActive,
+    toggleStepsNavigation,
+    currentPageIndex,
+    currentPage,
+    currentPageNumber,
+    checkDisplayPageError,
+    setPageId,
+    goToPreviousPage,
+    goToNextPage,
+    scrollToTopOfPageHTMLElementRef,
+  } = usePages({
+    pages,
+    formElementsValidation,
+    formElementsConditionallyShown,
+  })
+
+  // #endregion
+  //
+  //
+
+  //
+  //
   // #region Dynamic Options
 
   const loadDynamicOptionsState = useDynamicOptionsLoaderState(
@@ -532,37 +562,6 @@ function OneBlinkFormBase({
   const handleWaitForAttachments = React.useCallback(() => {
     setPromptUploadingAttachments(false)
   }, [setPromptUploadingAttachments])
-
-  // #endregion
-  //
-  //
-
-  //
-  //
-  // #region Pages
-
-  const {
-    visiblePages,
-    isFirstVisiblePage,
-    isLastVisiblePage,
-    isDisplayingCurrentPageError,
-    isShowingMultiplePages,
-    isStepsHeaderActive,
-    toggleStepsNavigation,
-    currentPageIndex,
-    currentPage,
-    currentPageNumber,
-    checkDisplayPageError,
-    setPageId,
-    goToPreviousPage,
-    goToNextPage,
-    scrollToTopOfPageHTMLElementRef,
-  } = usePages({
-    pages,
-    formElementsValidation,
-    formElementsConditionallyShown,
-    hasAttemptedSubmit,
-  })
 
   // #endregion
   //
