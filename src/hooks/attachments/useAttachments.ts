@@ -6,16 +6,15 @@ import {
 } from '../../services/attachments'
 import { attachmentsService } from '@oneblink/apps'
 import { canvasToBlob } from '../../services/blob-utils'
-import useBooleanState from '../useBooleanState'
 import useIsMounted from '../useIsMounted'
-import { FormElementValueChangeHandler } from '../../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../../types/form'
 
 const useAttachments = (
   element: FormTypes.FilesElement,
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>,
+  setIsDirty: IsDirtyProps['setIsDirty'],
 ) => {
   const isMounted = useIsMounted()
-  const [isDirty, setIsDirty] = useBooleanState(false)
 
   const addAttachments = React.useCallback(
     async (files: File[]): Promise<void> => {
@@ -85,7 +84,6 @@ const useAttachments = (
   )
 
   return {
-    isDirty,
     addAttachments,
     removeAttachment,
     changeAttachment,

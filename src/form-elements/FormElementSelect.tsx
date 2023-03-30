@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import useBooleanState from '../hooks/useBooleanState'
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import LookupButton from '../components/renderer/LookupButton'
@@ -10,6 +9,7 @@ import ToggleAllCheckbox from '../components/renderer/ToggleAllCheckbox'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
-}
+} & IsDirtyProps
 
 function FormElementSelect({
   id,
@@ -32,9 +32,9 @@ function FormElementSelect({
   validationMessage,
   displayValidationMessage,
   conditionallyShownOptionsElement,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
-
   const filteredOptions = useFormElementOptions({
     element,
     value,

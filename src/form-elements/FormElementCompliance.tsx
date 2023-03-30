@@ -3,7 +3,6 @@ import clsx from 'clsx'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import useBooleanState from '../hooks/useBooleanState'
 import useToggleComplianceChildren from '../hooks/useToggleComplianceChildren'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
@@ -14,10 +13,11 @@ import FormElementTextarea from './FormElementTextarea'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
-interface Props {
+interface Props extends IsDirtyProps {
   id: string
   element: FormTypes.ComplianceElement
   value: unknown
@@ -53,6 +53,8 @@ function FormElementCompliance({
   validationMessage,
   displayValidationMessage,
   isEven,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const typedValue = value as Value | undefined
 
@@ -161,8 +163,6 @@ function FormElementCompliance({
     handleFilesChange,
   )
 
-  const [isDirty, setIsDirty] = useBooleanState(false)
-
   const filteredOptions = useFormElementOptions({
     element,
     value: typedValue?.value,
@@ -243,6 +243,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.notes}
                 element={notesElement}
+                isDirty={isDirty}
+                setIsDirty={setIsDirty}
               />
             </div>
           )}
@@ -255,6 +257,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.files}
                 element={filesElement}
+                isDirty={isDirty}
+                setIsDirty={setIsDirty}
               />
             </div>
           )}

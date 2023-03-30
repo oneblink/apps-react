@@ -10,6 +10,7 @@ import { FormTypes } from '@oneblink/types'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 
 type _BaseProps = {
@@ -18,7 +19,7 @@ type _BaseProps = {
   value: unknown | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 type _AutocompleteChangeHandlerProps = _BaseProps & {
   onChange: (newValue: unknown | undefined) => void
@@ -50,6 +51,8 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: AutocompleteFilterProps) {
   const [label, setLabel] = React.useState('')
 
@@ -124,6 +127,8 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             onSearch={handleSearch}
             searchDebounceMs={0}
             searchMinCharacters={0}
+            isDirty={isDirty}
+            setIsDirty={setIsDirty}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -139,6 +144,8 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   validationMessage,
   displayValidationMessage,
   searchUrl,
+  isDirty,
+  setIsDirty,
 }: AutocompleteFetchProps) {
   const [label, setLabel] = React.useState('')
 
@@ -193,6 +200,8 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           searchDebounceMs={750}
           searchMinCharacters={1}
           onSearch={handleSearch}
+          isDirty={isDirty}
+          setIsDirty={setIsDirty}
         />
       </FormElementLabelContainer>
     </div>

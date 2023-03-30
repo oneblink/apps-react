@@ -10,7 +10,7 @@ import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   id: string
@@ -19,7 +19,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<Coords>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 type Coords = {
   latitude: number
@@ -60,8 +60,9 @@ function FormElementLocation({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const [isLocationPickerOpen, showLocationPicker, hideLocationPicker] =
     useBooleanState(false)
 

@@ -1,11 +1,10 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
-import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   id: string
@@ -14,7 +13,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementText({
   id,
@@ -23,9 +22,9 @@ function FormElementText({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
-
   const text = typeof value === 'string' ? value : ''
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage

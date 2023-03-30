@@ -3,11 +3,10 @@ import { localisationService } from '@oneblink/apps'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
-import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   id: string
@@ -16,7 +15,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementTime({
   id,
@@ -25,10 +24,10 @@ function FormElementTime({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
-
-  const [isDirty, setIsDirty] = useBooleanState(false)
 
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {

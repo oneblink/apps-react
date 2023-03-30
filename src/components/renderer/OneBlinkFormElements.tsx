@@ -52,6 +52,7 @@ import {
 } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
+import useBooleanState from '../../hooks/useBooleanState'
 import { FormElementBinaryStorageValue } from '../../types/attachments'
 import {
   FormElementConditionallyShown,
@@ -61,6 +62,7 @@ import {
   FormElementValidation,
   FormElementValueChangeHandler,
   FormSubmissionModel,
+  IsDirtyProps,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
@@ -77,6 +79,19 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: FormSubmissionModel
   parentElement: T
+}
+
+interface FormElementSwitchProps extends IsDirtyProps {
+  formId: number
+  element: FormTypes.FormElement
+  value: unknown | undefined
+  formElementValidation: FormElementValidation | undefined
+  displayValidationMessage: boolean
+  formElementConditionallyShown: FormElementConditionallyShown | undefined
+  id: string
+  isEven: boolean | undefined
+  onChange: FormElementValueChangeHandler
+  onLookup: FormElementLookupHandler
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -135,47 +150,22 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
           return null
         }
 
-        const getValidationClass = () => {
-          if (!('elements' in element)) {
-            if (!formElementsValidation?.[element.name]) {
-              return 'ob-element__valid'
-            }
-            if (displayValidationMessages) {
-              return 'ob-element__invalid'
-            }
-          }
-        }
-        const validationClassName = getValidationClass()
-
         return (
-          <div
+          <FormElementSwitchContainer
             key={element.id}
-            id={element.id}
-            className={clsx(
-              'ob-element cypress-element-container',
-              element.customCssClasses
-                ? element.customCssClasses.join(' ')
-                : '',
-              validationClassName,
-            )}
-            data-cypress-element-name={element.name}
-            data-ob-name={element.name}
-          >
-            <FormElementSwitch
-              formId={formId}
-              element={element}
-              value={model[element.name]}
-              displayValidationMessage={displayValidationMessages}
-              isEven={isEven}
-              id={`${idPrefix}${element.name}`}
-              formElementConditionallyShown={
-                formElementsConditionallyShown?.[element.name]
-              }
-              formElementValidation={formElementsValidation?.[element.name]}
-              onChange={onChange}
-              onLookup={onLookup}
-            />
-          </div>
+            formId={formId}
+            element={element}
+            value={model[element.name]}
+            displayValidationMessage={displayValidationMessages}
+            isEven={isEven}
+            id={`${idPrefix}${element.name}`}
+            formElementConditionallyShown={
+              formElementsConditionallyShown?.[element.name]
+            }
+            formElementValidation={formElementsValidation?.[element.name]}
+            onChange={onChange}
+            onLookup={onLookup}
+          />
         )
       })}
     </FormSubmissionModelContextProvider>
@@ -183,6 +173,44 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
 }
 
 export default React.memo(OneBlinkFormElements)
+
+function FormElementSwitchContainer(
+  props: Omit<FormElementSwitchProps, 'isDirty' | 'setIsDirty'>,
+) {
+  const { element, formElementValidation, displayValidationMessage } = props
+  const [isDirty, setIsDirty] = useBooleanState(false)
+
+  const getValidationClass = () => {
+    if (!('elements' in element)) {
+      if (!formElementValidation) {
+        return 'ob-element__valid'
+      }
+      if (isDirty || displayValidationMessage) {
+        return 'ob-element__invalid'
+      }
+    }
+  }
+  const validationClassName = getValidationClass()
+
+  if (element.type === 'page' || element.type === 'section') {
+    return null
+  }
+
+  return (
+    <div
+      id={element.id}
+      className={clsx(
+        'ob-element cypress-element-container',
+        element.customCssClasses ? element.customCssClasses.join(' ') : '',
+        validationClassName,
+      )}
+      data-cypress-element-name={element.name}
+      data-ob-name={element.name}
+    >
+      <FormElementSwitch {...props} isDirty={isDirty} setIsDirty={setIsDirty} />
+    </div>
+  )
+}
 
 const FormElementSwitch = React.memo(function OneBlinkFormElement({
   formId,
@@ -195,18 +223,13 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   id,
   onChange,
   onLookup,
-}: {
-  formId: number
-  element: FormTypes.FormElement
-  value: unknown | undefined
-  formElementValidation: FormElementValidation | undefined
-  displayValidationMessage: boolean
-  formElementConditionallyShown: FormElementConditionallyShown | undefined
-  id: string
-  isEven: boolean | undefined
-  onChange: FormElementValueChangeHandler
-  onLookup: FormElementLookupHandler
-}) {
+  isDirty,
+  setIsDirty,
+}: FormElementSwitchProps & IsDirtyProps) {
+  const dirtyProps = React.useMemo(
+    () => ({ isDirty, setIsDirty }),
+    [isDirty, setIsDirty],
+  )
   const conditionallyShownOptionsElement =
     formElementConditionallyShown?.type === 'formElement'
       ? formElementConditionallyShown
@@ -236,6 +259,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -254,6 +278,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -272,6 +297,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -290,6 +316,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -309,6 +336,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -327,6 +355,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -345,6 +374,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -363,6 +393,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -381,6 +412,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -404,6 +436,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -427,6 +460,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -450,6 +484,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -467,6 +502,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
+          {...dirtyProps}
         />
       )
     }
@@ -500,6 +536,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementConditionallyShown={formElementConditionallyShown}
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
+          {...dirtyProps}
         />
       )
     }
@@ -520,6 +557,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -538,6 +576,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -584,6 +623,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -619,6 +659,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
+          {...dirtyProps}
         />
       )
     }
@@ -646,6 +687,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
+          {...dirtyProps}
         />
       )
     }
@@ -672,6 +714,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -696,6 +739,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -722,6 +766,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
             isEven={isEven}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -765,6 +810,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -787,6 +833,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
@@ -811,6 +858,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )

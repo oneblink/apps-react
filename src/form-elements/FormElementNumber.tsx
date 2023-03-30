@@ -1,11 +1,10 @@
 import * as React from 'react'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
-import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 
 type Props = {
@@ -15,7 +14,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<number>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementNumber({
   id,
@@ -24,10 +23,11 @@ function FormElementNumber({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const isPageVisible = useIsPageVisible()
 
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const text = React.useMemo(
     () => (typeof value === 'number' ? value.toString() : ''),
     [value],
