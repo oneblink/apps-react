@@ -2,11 +2,10 @@ import * as React from 'react'
 import InputMask from 'react-input-mask'
 import clsx from 'clsx'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
-import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { formService } from '@oneblink/apps'
 
 type Props = {
@@ -19,7 +18,7 @@ type Props = {
   >
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementBSB({
   id,
@@ -29,11 +28,12 @@ function FormElementBSB({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const [{ isLoading, errorMessage, bsbRecord }, setState] = React.useState<{
     isLoading: boolean
     errorMessage: string | null

@@ -14,10 +14,11 @@ import FormElementTextarea from './FormElementTextarea'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
-interface Props {
+interface Props extends IsDirtyProps {
   id: string
   element: FormTypes.ComplianceElement
   value: unknown
@@ -53,6 +54,8 @@ function FormElementCompliance({
   validationMessage,
   displayValidationMessage,
   isEven,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const typedValue = value as Value | undefined
 
@@ -161,14 +164,15 @@ function FormElementCompliance({
     handleFilesChange,
   )
 
-  const [isDirty, setIsDirty] = useBooleanState(false)
-
   const filteredOptions = useFormElementOptions({
     element,
     value: typedValue?.value,
     onChange: handleValueChange,
     conditionallyShownOptionsElement,
   })
+
+  const [isTextDirty, setTextDirty] = useBooleanState(false)
+  const [isFilesDirty, setFilesDirty] = useBooleanState(false)
 
   return (
     <div className="cypress-compliance-element">
@@ -243,6 +247,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.notes}
                 element={notesElement}
+                isDirty={isTextDirty}
+                setIsDirty={setTextDirty}
               />
             </div>
           )}
@@ -255,6 +261,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.files}
                 element={filesElement}
+                isDirty={isFilesDirty}
+                setIsDirty={setFilesDirty}
               />
             </div>
           )}

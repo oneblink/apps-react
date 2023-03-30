@@ -4,13 +4,13 @@ import { Radio } from '@mui/material'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 
 type Props = {
@@ -23,7 +23,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
-}
+} & IsDirtyProps
 
 function FormElementRadio({
   id,
@@ -33,8 +33,9 @@ function FormElementRadio({
   conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const filteredOptions = useFormElementOptions({
     element,
     value,

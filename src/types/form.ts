@@ -81,3 +81,8 @@ export type SetFormSubmission = React.Dispatch<
       | undefined
   }>
 >
+
+export type IsDirtyProps = {
+  isDirty: boolean
+  setIsDirty: () => void
+}

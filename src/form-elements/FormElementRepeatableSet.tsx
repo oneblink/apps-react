@@ -15,6 +15,7 @@ import {
   FormElementValidation,
   FormElementValueChangeHandler,
   FormSubmissionModel,
+  IsDirtyProps,
 } from '../types/form'
 
 type Props = {
@@ -28,7 +29,7 @@ type Props = {
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
-}
+} & IsDirtyProps
 
 export const RepeatableSetIndexContext = React.createContext<number>(0)
 
@@ -43,9 +44,9 @@ function FormElementRepeatableSet({
   formElementConditionallyShown,
   onChange,
   onLookup,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
-
   const entries = React.useMemo(
     () => (Array.isArray(value) ? value : []),
     [value],

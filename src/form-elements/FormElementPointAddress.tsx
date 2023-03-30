@@ -5,7 +5,7 @@ import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   formId: number
@@ -15,7 +15,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<PointTypes.PointAddress>
-}
+} & IsDirtyProps
 
 type AddressType = 'all' | 'physical' | 'mailing'
 
@@ -27,6 +27,8 @@ function FormElementPointAddress({
   displayValidationMessage,
   validationMessage,
   onChange,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const isMounted = useIsMounted()
   const [label, setLabel] = React.useState('')
@@ -131,6 +133,8 @@ function FormElementPointAddress({
           searchDebounceMs={750}
           searchMinCharacters={4}
           onSearch={handleSearch}
+          isDirty={isDirty}
+          setIsDirty={setIsDirty}
         />
       </FormElementLabelContainer>
 

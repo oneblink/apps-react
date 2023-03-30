@@ -1,9 +1,8 @@
 import * as React from 'react'
-import useBooleanState from '../hooks/useBooleanState'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { Switch } from '@mui/material'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   id: string
@@ -12,7 +11,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<boolean>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementBoolean({
   id,
@@ -21,8 +20,9 @@ function FormElementBoolean({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
   return (
     <div className="cypress-boolean-element">
       <FormElementLabelContainer

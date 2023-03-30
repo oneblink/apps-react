@@ -88,7 +88,9 @@ function FormElementCheckboxes({
               options={filteredOptions}
               selected={selectedValues}
               disabled={element.readOnly}
-              onChange={onChange}
+              onChange={(element, value) => {
+                onChange(element, value)
+              }}
             />
           )}
           {element.buttons ? (
@@ -102,7 +104,9 @@ function FormElementCheckboxes({
                       element={element}
                       option={option}
                       isSelected={isSelected}
-                      onClick={() => changeValues(option.value, isSelected)}
+                      onClick={() => {
+                        changeValues(option.value, isSelected)
+                      }}
                       className={clsx(
                         'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
                         {
@@ -135,7 +139,9 @@ function FormElementCheckboxes({
                         value={option.value}
                         id={`${id}_${option.value}`}
                         checked={isSelected}
-                        onChange={() => changeValues(option.value, isSelected)}
+                        onChange={() => {
+                          changeValues(option.value, isSelected)
+                        }}
                         disabled={element.readOnly}
                       />{' '}
                       {option.label}

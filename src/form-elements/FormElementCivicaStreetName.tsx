@@ -4,7 +4,7 @@ import { formService } from '@oneblink/apps'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes, CivicaTypes } from '@oneblink/types'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 type Props = {
   formId: number
@@ -14,7 +14,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<CivicaTypes.CivicaStreetName>
-}
+} & IsDirtyProps
 
 function FormElementCivicaStreetName({
   formId,
@@ -24,6 +24,8 @@ function FormElementCivicaStreetName({
   displayValidationMessage,
   validationMessage,
   onChange,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const [label, setLabel] = React.useState('')
   const [error, setError] = React.useState<Error | undefined>()
@@ -91,6 +93,8 @@ function FormElementCivicaStreetName({
           searchDebounceMs={750}
           searchMinCharacters={4}
           onSearch={handleSearch}
+          isDirty={isDirty}
+          setIsDirty={setIsDirty}
         />
       </FormElementLabelContainer>
 

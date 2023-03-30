@@ -1,8 +1,9 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { Sentry } from '@oneblink/apps'
 
 import useBooleanState from '../../hooks/useBooleanState'
-import { Sentry } from '@oneblink/apps'
+import { IsDirtyProps } from '../../types/form'
 
 type AutocompleteOption<T> = {
   label: string
@@ -32,7 +33,7 @@ type Props<T> = {
     label: string,
     abortSignal: AbortSignal,
   ) => Promise<AutocompleteOption<T>[]>
-}
+} & IsDirtyProps
 
 function AutocompleteDropdown<T>({
   id,
@@ -50,9 +51,10 @@ function AutocompleteDropdown<T>({
   onChangeValue,
   onChangeLabel,
   onSearch,
+  isDirty,
+  setIsDirty,
 }: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
-  const [isDirty, setIsDirty] = React.useState(false)
   const [currentFocusedOptionIndex, setCurrentFocusedOptionIndex] =
     React.useState(0)
   const [options, setOptions] = React.useState<AutocompleteOption<T>[]>([])
@@ -89,7 +91,7 @@ function AutocompleteDropdown<T>({
   // When moving away from the input, if this is no value remove
   // the label to show the user they have not selected a value
   const handleBlur = React.useCallback(() => {
-    setIsDirty(true)
+    setIsDirty()
     setError(null)
     onClose()
 
@@ -110,7 +112,15 @@ function AutocompleteDropdown<T>({
       console.log('Removing label after blurring away from autocomplete')
       onChangeLabel('')
     }
-  }, [label, onChangeLabel, onClose, onSelectOption, options, value])
+  }, [
+    label,
+    onChangeLabel,
+    onClose,
+    onSelectOption,
+    options,
+    value,
+    setIsDirty,
+  ])
 
   const onKeyDown = React.useCallback(
     (event) => {

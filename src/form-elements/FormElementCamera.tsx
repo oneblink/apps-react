@@ -20,7 +20,7 @@ import {
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 
 type Props = {
@@ -30,7 +30,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementCamera({
   id,
@@ -39,6 +39,8 @@ function FormElementCamera({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const [{ cameraError, isLoading }, setState] = React.useState<{
     isLoading: boolean
@@ -46,7 +48,6 @@ function FormElementCamera({
   }>({
     isLoading: false,
   })
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const [isAnnotating, setIsAnnotating, clearIsAnnotating] =
     useBooleanState(false)
   const fileInputRef = React.useRef<HTMLInputElement>(null)

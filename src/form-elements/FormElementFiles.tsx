@@ -8,7 +8,7 @@ import {
   checkFileNameExtensionIsValid,
 } from '../services/form-validation'
 import { attachmentsService } from '@oneblink/apps'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 export function stringifyAttachments(
   value: attachmentsService.Attachment[] | undefined,
@@ -26,6 +26,8 @@ function FormElementFiles({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: {
   id: string
   element: FormTypes.FilesElement
@@ -33,9 +35,12 @@ function FormElementFiles({
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}) {
-  const { isDirty, addAttachments, removeAttachment, changeAttachment } =
-    useAttachments(element, onChange)
+} & IsDirtyProps) {
+  const { addAttachments, removeAttachment, changeAttachment } = useAttachments(
+    element,
+    onChange,
+    setIsDirty,
+  )
 
   const inputRef = React.useRef<HTMLInputElement>(null)
 

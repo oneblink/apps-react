@@ -11,7 +11,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
 import useLookupNotification from '../hooks/useLookupNotification'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
 const fadedSquareWidthInPixels = 200
@@ -25,7 +25,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementBarcodeScanner({
   id,
@@ -34,8 +34,9 @@ function FormElementBarcodeScanner({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const [isCameraOpen, startBarcodeScanner, stopBarcodeScanner] =
     useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)

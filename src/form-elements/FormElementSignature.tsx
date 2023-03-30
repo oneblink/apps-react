@@ -9,12 +9,12 @@ import useAttachment from '../hooks/attachments/useAttachment'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
-import useBooleanState from '../hooks/useBooleanState'
 import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
+import { IsDirtyProps } from '../types/form'
 
 type Props = {
   id: string
@@ -23,7 +23,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementSignature({
   id,
@@ -32,8 +32,9 @@ function FormElementSignature({
   onChange,
   validationMessage,
   displayValidationMessage,
+  setIsDirty,
+  isDirty,
 }: Props) {
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const isPageVisible = useIsPageVisible()
 
   const handleChange = React.useCallback(

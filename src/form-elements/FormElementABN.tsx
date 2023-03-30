@@ -7,7 +7,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useAbnLookupAuthenticationGuid from '../hooks/useAbnLookupAuthenticationGuid'
 import { abnService } from '@oneblink/sdk-core'
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<MiscTypes.ABNRecord>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-}
+} & IsDirtyProps
 
 function FormElementABN({
   id,
@@ -26,13 +26,14 @@ function FormElementABN({
   onChange,
   validationMessage,
   displayValidationMessage,
+  isDirty,
+  setIsDirty,
 }: Props) {
   const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
   const [label, setLabel] = React.useState(
     value ? abnService.getABNNumberFromABNRecord(value) || '' : '',
   )
   const [isFocused, setIsFocused, removeFocus] = useBooleanState(false)
-  const [isDirty, setIsDirty] = useBooleanState(false)
   const [{ isLoading, error }, setState] = React.useState<{
     isLoading: boolean
     error: Error | null
