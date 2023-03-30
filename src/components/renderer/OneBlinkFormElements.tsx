@@ -226,7 +226,10 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   isDirty,
   setIsDirty,
 }: FormElementSwitchProps & IsDirtyProps) {
-  const dirtyProps = { isDirty, setIsDirty }
+  const dirtyProps = React.useMemo(
+    () => ({ isDirty, setIsDirty }),
+    [isDirty, setIsDirty],
+  )
   const conditionallyShownOptionsElement =
     formElementConditionallyShown?.type === 'formElement'
       ? formElementConditionallyShown

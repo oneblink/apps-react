@@ -7,12 +7,12 @@ import {
 import { attachmentsService } from '@oneblink/apps'
 import { canvasToBlob } from '../../services/blob-utils'
 import useIsMounted from '../useIsMounted'
-import { FormElementValueChangeHandler } from '../../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../../types/form'
 
 const useAttachments = (
   element: FormTypes.FilesElement,
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>,
-  setIsDirty: () => void,
+  setIsDirty: IsDirtyProps['setIsDirty'],
 ) => {
   const isMounted = useIsMounted()
 

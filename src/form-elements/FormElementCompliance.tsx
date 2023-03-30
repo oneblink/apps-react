@@ -3,7 +3,6 @@ import clsx from 'clsx'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
-import useBooleanState from '../hooks/useBooleanState'
 import useToggleComplianceChildren from '../hooks/useToggleComplianceChildren'
 import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
@@ -171,9 +170,6 @@ function FormElementCompliance({
     conditionallyShownOptionsElement,
   })
 
-  const [isTextDirty, setTextDirty] = useBooleanState(false)
-  const [isFilesDirty, setFilesDirty] = useBooleanState(false)
-
   return (
     <div className="cypress-compliance-element">
       <FormElementLabelContainer
@@ -247,8 +243,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.notes}
                 element={notesElement}
-                isDirty={isTextDirty}
-                setIsDirty={setTextDirty}
+                isDirty={isDirty}
+                setIsDirty={setIsDirty}
               />
             </div>
           )}
@@ -261,8 +257,8 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.files}
                 element={filesElement}
-                isDirty={isFilesDirty}
-                setIsDirty={setFilesDirty}
+                isDirty={isDirty}
+                setIsDirty={setIsDirty}
               />
             </div>
           )}

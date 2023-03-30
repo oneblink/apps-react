@@ -88,9 +88,7 @@ function FormElementCheckboxes({
               options={filteredOptions}
               selected={selectedValues}
               disabled={element.readOnly}
-              onChange={(element, value) => {
-                onChange(element, value)
-              }}
+              onChange={onChange}
             />
           )}
           {element.buttons ? (
@@ -139,9 +137,7 @@ function FormElementCheckboxes({
                         value={option.value}
                         id={`${id}_${option.value}`}
                         checked={isSelected}
-                        onChange={() => {
-                          changeValues(option.value, isSelected)
-                        }}
+                        onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
                       />{' '}
                       {option.label}
