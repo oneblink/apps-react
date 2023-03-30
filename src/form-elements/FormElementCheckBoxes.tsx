@@ -102,9 +102,7 @@ function FormElementCheckboxes({
                       element={element}
                       option={option}
                       isSelected={isSelected}
-                      onClick={() => {
-                        changeValues(option.value, isSelected)
-                      }}
+                      onClick={() => changeValues(option.value, isSelected)}
                       className={clsx(
                         'button ob-button ob-button__input ob-checkbox__button cypress-checkbox-button-control',
                         {
