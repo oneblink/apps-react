@@ -8,6 +8,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { generateDate, parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 
 type Props = {
   id: string
@@ -30,6 +31,8 @@ function FormElementDate({
 }: Props) {
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
+  const { fromDate, toDate } = useFormElementDateFromTo(element)
+
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {
       altInput: true,
@@ -40,12 +43,12 @@ function FormElementDate({
       minDate: parseDateValue({
         dateOnly: false,
         daysOffset: element.fromDateDaysOffset,
-        value: element.fromDate,
+        value: fromDate,
       }),
       maxDate: parseDateValue({
         dateOnly: false,
         daysOffset: element.toDateDaysOffset,
-        value: element.toDate,
+        value: toDate,
       }),
       defaultDate: undefined,
       allowInvalidPreload: true,
@@ -54,11 +57,11 @@ function FormElementDate({
 
     return opts
   }, [
-    element.fromDate,
     element.fromDateDaysOffset,
-    element.toDate,
     element.toDateDaysOffset,
+    fromDate,
     setIsDirty,
+    toDate,
   ])
 
   const handleChange = React.useCallback(
