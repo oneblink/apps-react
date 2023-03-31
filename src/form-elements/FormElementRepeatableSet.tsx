@@ -117,7 +117,7 @@ function FormElementRepeatableSet({
 
   const { validationClassName } = useValidationClass({
     formElementsValid: !repeatableSetValidation,
-    displayValidationMessage,
+    displayValidationMessage: isDirty || displayValidationMessage,
     validClassName: 'ob-repeatable-set-element__valid',
     invalidClassName: 'ob-repeatable-set-element__invalid',
   })
