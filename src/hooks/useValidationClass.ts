@@ -2,12 +2,12 @@ import * as React from 'react'
 
 export default function useValidationClass({
   formElementsValid,
-  displayValidationMessage,
+  displayInvalidClassName,
   validClassName,
   invalidClassName,
 }: {
   formElementsValid: boolean
-  displayValidationMessage: boolean
+  displayInvalidClassName: boolean
   validClassName: string
   invalidClassName: string
 }): {
@@ -18,13 +18,13 @@ export default function useValidationClass({
     if (formElementsValid) {
       return { validationClassName: validClassName, valid: true }
     }
-    if (displayValidationMessage) {
+    if (displayInvalidClassName) {
       return { validationClassName: invalidClassName, valid: false }
     }
     return { validationClassName: '', valid: false }
   }, [
     formElementsValid,
-    displayValidationMessage,
+    displayInvalidClassName,
     validClassName,
     invalidClassName,
   ])
