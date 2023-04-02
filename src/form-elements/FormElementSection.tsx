@@ -41,7 +41,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 
   const { validationClassName, valid } = useValidationClass({
     formElementsValid: isValid,
-    displayValidationMessage,
+    displayInvalidClassName: displayValidationMessage,
     validClassName: 'ob-section__valid',
     invalidClassName: 'ob-section__invalid',
   })

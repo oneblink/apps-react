@@ -117,7 +117,7 @@ function FormElementRepeatableSet({
 
   const { validationClassName } = useValidationClass({
     formElementsValid: !repeatableSetValidation,
-    displayValidationMessage: isDirty || displayValidationMessage,
+    displayInvalidClassName: isDirty || displayValidationMessage,
     validClassName: 'ob-repeatable-set-element__valid',
     invalidClassName: 'ob-repeatable-set-element__invalid',
   })
@@ -277,7 +277,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
     const { validationClassName } = useValidationClass({
       formElementsValid: !formElementsValidation,
-      displayValidationMessage: displayValidationMessages,
+      displayInvalidClassName: displayValidationMessages,
       validClassName: 'ob-repeatable-set__valid',
       invalidClassName: 'ob-repeatable-set__invalid',
     })
