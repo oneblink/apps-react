@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- date validation based on another form element
+
 ### Fixed
 
 - Unvisited pages not displaying validation when clicking submit
