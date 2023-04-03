@@ -286,6 +286,8 @@ function OneBlinkFormBase({
   //
   // #region Pages
 
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
+
   const {
     visiblePages,
     isFirstVisiblePage,
@@ -303,6 +305,7 @@ function OneBlinkFormBase({
     goToNextPage,
     scrollToTopOfPageHTMLElementRef,
   } = usePages({
+    hasAttemptedSubmit,
     pages,
     formElementsValidation,
     formElementsConditionallyShown,
@@ -329,7 +332,6 @@ function OneBlinkFormBase({
   //
   // #region Submissions
 
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = React.useState(false)
   const getCurrentSubmissionData = React.useCallback(
     (stripBinaryData) => {
       const { model, captchaTokens } = cleanFormSubmissionModel(
