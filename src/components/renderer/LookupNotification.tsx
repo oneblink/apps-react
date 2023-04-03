@@ -54,8 +54,8 @@ function LookupNotificationComponent({
 
   const mergeLookupData = React.useCallback(
     (
-      newValue,
-      dataLookupResult,
+      newValue: unknown,
+      dataLookupResult: FormSubmissionModel,
       elementLookupResult: FormTypes.FormElement[],
     ) => {
       if (elementLookupResult) {
@@ -109,7 +109,7 @@ function LookupNotificationComponent({
   )
 
   const triggerLookup = React.useCallback(
-    async (newValue) => {
+    async (newValue: unknown) => {
       // No lookups for read only forms
       if (formIsReadOnly) return
       // if the element triggering the lookup has no value..

@@ -377,7 +377,7 @@ const LocationPicker = React.memo(function SummaryResult({
           onZoomChanged={onZoomChanged}
         >
           <Marker
-            animation={2} // DOCUMENTATION IS POOR, THIS IS DROP ANIMATION
+            animation={google.maps.Animation.DROP}
             position={center}
             draggable
             onDragEnd={(e) => {

@@ -33,8 +33,8 @@ function FormElementForm({
   onLookup,
 }: Props) {
   const handleNestedChange = React.useCallback(
-    (nestedElement, nestedElementValue) => {
-      if (nestedElement.type === 'page') return
+    (nestedElement: FormTypes.FormElement, nestedElementValue: unknown) => {
+      if (!('name' in nestedElement)) return
       onChange(element, (existingValue) => ({
         ...existingValue,
         [nestedElement.name]:

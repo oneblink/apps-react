@@ -10,6 +10,7 @@ import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
 import { FormTypes, FormsAppsTypes } from '@oneblink/types'
 import { attachmentsService } from '@oneblink/apps'
+import * as H from 'history'
 
 import Modal from './components/renderer/Modal'
 import OneBlinkAppsErrorOriginalMessage from './components/renderer/OneBlinkAppsErrorOriginalMessage'
@@ -174,7 +175,7 @@ function OneBlinkFormBase({
     isDirty: boolean
     isNavigationAllowed: boolean
     hasConfirmedNavigation: boolean | null
-    goToLocation: Location | null
+    goToLocation: H.Location | null
   }>({
     isDirty: false,
     isNavigationAllowed: false,
@@ -183,7 +184,9 @@ function OneBlinkFormBase({
   })
   const [promptUploadingAttachments, setPromptUploadingAttachments] =
     React.useState<boolean>(false)
-  const handleBlockedNavigation = React.useCallback((location) => {
+  const handleBlockedNavigation = React.useCallback<
+    (location: H.Location, action: H.Action) => string | boolean
+  >((location) => {
     setUnsavedChangesState((current) => ({
       ...current,
       goToLocation: location,
@@ -333,7 +336,7 @@ function OneBlinkFormBase({
   // #region Submissions
 
   const getCurrentSubmissionData = React.useCallback(
-    (stripBinaryData) => {
+    (stripBinaryData: boolean) => {
       const { model, captchaTokens } = cleanFormSubmissionModel(
         submission,
         definition.elements,
@@ -432,7 +435,12 @@ function OneBlinkFormBase({
   )
 
   const handleSubmit = React.useCallback(
-    (event, continueWhilstAttachmentsAreUploading) => {
+    (
+      event:
+        | React.FormEvent<HTMLFormElement>
+        | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      continueWhilstAttachmentsAreUploading: boolean,
+    ) => {
       event.preventDefault()
       if (disabled || isReadOnly) return
       setHasAttemptedSubmit(true)
@@ -509,7 +517,7 @@ function OneBlinkFormBase({
   )
 
   const handleSaveDraft = React.useCallback(
-    (continueWhilstAttachmentsAreUploading) => {
+    (continueWhilstAttachmentsAreUploading: boolean) => {
       if (disabled) return
       if (onSaveDraft) {
         allowNavigation()
@@ -546,7 +554,7 @@ function OneBlinkFormBase({
   )
 
   const handleContinueWithAttachments = React.useCallback(
-    (e) => {
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setPromptUploadingAttachments(false)
       if (hasAttemptedSubmit) {
         handleSubmit(e, true)

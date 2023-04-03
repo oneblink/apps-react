@@ -202,7 +202,17 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
   // Create timeout using $timeout outside of the scan function so
   // so that we can cancel it when navigating away from screen
   const scanImageForBarcode = React.useCallback(
-    (videoElement, waitInMS, options, checkStop) => {
+    (
+      videoElement: HTMLVideoElement,
+      waitInMS: number,
+      options: {
+        sourceX: number
+        sourceY: number
+        sourceWidth: number
+        sourceHeight: number
+      },
+      checkStop: () => boolean,
+    ) => {
       const restrictedBarcodeTypes = element.restrictedBarcodeTypes || []
       // Using $timeout here instead of $interval as we dont know
       // exactly how long each processing of the image will take.

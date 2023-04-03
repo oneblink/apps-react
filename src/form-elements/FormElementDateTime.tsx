@@ -66,7 +66,7 @@ function FormElementDateTime({
   ])
 
   const handleChange = React.useCallback(
-    (newValue) => onChange(element, newValue),
+    (newValue: string | undefined) => onChange(element, newValue),
     [element, onChange],
   )
 

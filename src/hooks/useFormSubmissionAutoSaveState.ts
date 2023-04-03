@@ -86,7 +86,7 @@ export default function useFormSubmissionAutoSaveState({
   }, [autoSaveKey, definition.id])
 
   const handleSubmit = React.useCallback(
-    (submissionResult) => {
+    (submissionResult: submissionService.NewFormSubmission) => {
       cancelAutoSave()
       if (removeAutoSaveDataBeforeSubmit !== false) {
         deleteAutoSaveSubmission()

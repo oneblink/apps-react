@@ -37,7 +37,7 @@ function FormElementPointAddress({
     React.useState(false)
 
   const handleSearch = React.useCallback(
-    async (address, abortSignal) => {
+    async (address: string, abortSignal: AbortSignal) => {
       setError(undefined)
 
       const params: {

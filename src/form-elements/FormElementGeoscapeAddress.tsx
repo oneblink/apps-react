@@ -35,7 +35,7 @@ function FormElementGeoscapeAddress({
     React.useState(false)
 
   const handleSearch = React.useCallback(
-    async (query, abortSignal) => {
+    async (query: string, abortSignal: AbortSignal) => {
       setError(undefined)
 
       const params: {

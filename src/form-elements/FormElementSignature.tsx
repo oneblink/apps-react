@@ -37,7 +37,9 @@ function FormElementSignature({
 }: Props) {
   const isPageVisible = useIsPageVisible()
 
-  const handleChange = React.useCallback(
+  const handleChange = React.useCallback<
+    FormElementValueChangeHandler<FormElementBinaryStorageValue>
+  >(
     (formElement, newValue) => {
       setIsDirty()
       onChange(formElement, newValue)

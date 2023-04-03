@@ -69,7 +69,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         return {
           elements,
           submission: model,
-          lastElemenetUpdated: currentFormSubmission.lastElementUpdated,
+          lastElementUpdated: currentFormSubmission.lastElementUpdated,
         }
       })
     },

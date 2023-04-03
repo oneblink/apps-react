@@ -41,7 +41,7 @@ function FormElementCheckboxes({
   }, [value])
 
   const changeValues = React.useCallback(
-    (toggledValue, hasSelectedValue) => {
+    (toggledValue: string, hasSelectedValue: boolean) => {
       onChange(element, (existingValue) => {
         if (hasSelectedValue) {
           const newValue = (existingValue || []).filter(

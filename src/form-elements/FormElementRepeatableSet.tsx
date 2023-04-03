@@ -63,7 +63,7 @@ function FormElementRepeatableSet({
   }, [element, onChange, setIsDirty])
 
   const handleRemoveEntry = React.useCallback(
-    (index) => {
+    (index: number) => {
       onChange(element, (existingEntries) => {
         const newEntries = [...(existingEntries || [])]
         newEntries.splice(index, 1)
@@ -75,8 +75,8 @@ function FormElementRepeatableSet({
   )
 
   const handleNestedChange = React.useCallback(
-    (index, nestedElement, value) => {
-      if (nestedElement.type === 'page') {
+    (index: number, nestedElement: FormTypes.FormElement, value: unknown) => {
+      if (!('name' in nestedElement)) {
         return
       }
       onChange(element, (existingEntries) => {
@@ -225,13 +225,13 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       useBooleanState(false)
 
     const handleChange = React.useCallback(
-      (element, value) => {
+      (element: FormTypes.FormElement, value: unknown) => {
         onChange(index, element, value)
       },
       [index, onChange],
     )
 
-    const handleLookup = React.useCallback(
+    const handleLookup = React.useCallback<FormElementLookupHandler>(
       (mergeLookupResults) => {
         onLookup((currentFormSubmission) => {
           let newEntry = {}
@@ -246,6 +246,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
               const { elements, submission } = mergeLookupResults({
                 elements: formElement.elements,
                 submission: entries[index],
+                lastElementUpdated: currentFormSubmission.lastElementUpdated,
               })
               newEntry = submission
               return {
