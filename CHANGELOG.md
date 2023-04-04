@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Unvisited pages not displaying validation when clicking submit
+- `styles.css` source map file pointing to `../src` directory
 
 ## [2.10.0] - 2023-04-02
 
