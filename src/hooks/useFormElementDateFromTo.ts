@@ -8,6 +8,11 @@ export default function useFormElementDateFromTo(
 ) {
   const { formSubmissionModel, elements } = useFormSubmissionModel()
 
+  const [fromDateElementIdUsed, setFromDateElementIdUsed] =
+    React.useState(false)
+
+  const [toDateElementIdUsed, setToDateElementIdUsed] = React.useState(false)
+
   const fromDate = React.useMemo(() => {
     if (element.fromDateElementId) {
       const fromDateValue = submissionService.getRootElementValueById(
@@ -16,9 +21,11 @@ export default function useFormElementDateFromTo(
         formSubmissionModel,
       )
       if (fromDateValue) {
+        setFromDateElementIdUsed(true)
         return fromDateValue
       }
     }
+    setFromDateElementIdUsed(false)
     return element.fromDate
   }, [
     element.fromDate,
@@ -35,14 +42,18 @@ export default function useFormElementDateFromTo(
         formSubmissionModel,
       )
       if (toDateValue) {
+        setToDateElementIdUsed(true)
         return toDateValue
       }
     }
+    setToDateElementIdUsed(false)
     return element.toDate
   }, [element.toDate, element.toDateElementId, elements, formSubmissionModel])
 
   return {
     fromDate,
     toDate,
+    fromDateElementIdUsed,
+    toDateElementIdUsed,
   }
 }

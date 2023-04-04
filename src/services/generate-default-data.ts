@@ -83,10 +83,12 @@ export const generateDate = ({
   daysOffset,
   value,
   dateOnly,
+  dateElementIdUsed,
 }: {
   daysOffset: number | undefined
   value: string
   dateOnly: boolean
+  dateElementIdUsed: boolean
 }): Date | undefined => {
   if (value === 'NOW') {
     const date = new Date()
@@ -104,6 +106,9 @@ export const generateDate = ({
         const offset = date.getTimezoneOffset()
         return new Date(date.getTime() + offset * 60000)
       }
+      if (dateElementIdUsed && daysOffset !== undefined) {
+        date.setDate(date.getDate() + daysOffset)
+      }
       return date
     }
   }
@@ -113,16 +118,18 @@ export function parseDateValue({
   dateOnly,
   daysOffset,
   value,
+  dateElementIdUsed,
 }: {
   dateOnly: boolean
   daysOffset: number | undefined
   value: unknown
+  dateElementIdUsed: boolean
 }): string | undefined {
   if (typeof value !== 'string') {
     return
   }
 
-  const date = generateDate({ daysOffset, value, dateOnly })
+  const date = generateDate({ daysOffset, value, dateOnly, dateElementIdUsed })
   if (!date) {
     return
   }
@@ -252,6 +259,7 @@ function parsePreFillData(
         dateOnly: element.type === 'date',
         daysOffset: undefined,
         value,
+        dateElementIdUsed: false,
       })
     }
     case 'bsb': {
@@ -467,6 +475,7 @@ export default function generateDefaultData(
             dateOnly: el.type === 'date',
             daysOffset: el.defaultValueDaysOffset,
             value: el.defaultValue,
+            dateElementIdUsed: false,
           })
         }
         break
