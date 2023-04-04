@@ -115,7 +115,7 @@
   },
   "scripts": {
     "build": "tsc && npm run build:css",
-    "build:css": "npm run copy:sass && npm run copy:styles && sass ./dist/styles.scss ./dist/styles.css --load-path ./node_modules",
+    "build:css": "npm run copy:sass && npm run copy:styles && sass ./dist/styles.scss ./dist/styles.css --load-path ./node_modules --no-source-map",
     "copy:sass": "copyfiles -u 1 ./src/styles.scss ./dist",
     "copy:styles": "copyfiles -u 1 ./src/styles/* ./dist",
     "eslint": "eslint src/**/*.{ts,tsx} --fix --cache",
