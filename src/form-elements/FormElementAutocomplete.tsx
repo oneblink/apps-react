@@ -57,7 +57,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   const [label, setLabel] = React.useState('')
 
   const onFilter = React.useCallback(
-    (option) => {
+    (option: FormTypes.ChoiceElementOption) => {
       // If the user has typed nothing in, display all options
       if (!label) {
         return true
@@ -150,7 +150,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   const [label, setLabel] = React.useState('')
 
   const handleSearch = React.useCallback(
-    async (search, abortSignal) => {
+    async (search: string, abortSignal: AbortSignal) => {
       const headers = await generateHeaders()
       const url = new URL(searchUrl)
       url.searchParams.append('value', search)
@@ -214,8 +214,8 @@ function FormElementAutocomplete({
   ...props
 }: Props) {
   const handleChange = React.useCallback(
-    (newValue) => {
-      onChange(props.element, newValue)
+    (newValue: unknown) => {
+      onChange(props.element, newValue as string | undefined)
     },
     [onChange, props.element],
   )

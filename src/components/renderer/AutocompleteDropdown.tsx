@@ -72,7 +72,10 @@ function AutocompleteDropdown<T>({
   )
 
   const handleClickOption = React.useCallback(
-    (event, option: AutocompleteOption<T>) => {
+    (
+      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      option: AutocompleteOption<T>,
+    ) => {
       console.log('Selected element option in autocomplete', option)
 
       event.preventDefault()
@@ -122,7 +125,9 @@ function AutocompleteDropdown<T>({
     setIsDirty,
   ])
 
-  const onKeyDown = React.useCallback(
+  const onKeyDown = React.useCallback<
+    React.KeyboardEventHandler<HTMLInputElement>
+  >(
     (event) => {
       if (!options) {
         return
@@ -173,7 +178,9 @@ function AutocompleteDropdown<T>({
     [currentFocusedOptionIndex, options, onSelectOption],
   )
 
-  const handleChangeLabel = React.useCallback(
+  const handleChangeLabel = React.useCallback<
+    React.ChangeEventHandler<HTMLInputElement>
+  >(
     (e) => {
       const newLabel = e.target.value
       onOpen()

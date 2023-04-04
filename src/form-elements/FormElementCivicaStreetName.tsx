@@ -31,7 +31,7 @@ function FormElementCivicaStreetName({
   const [error, setError] = React.useState<Error | undefined>()
 
   const handleSearch = React.useCallback(
-    async (searchTerm: string, abortSignal) => {
+    async (searchTerm: string, abortSignal: AbortSignal) => {
       setError(undefined)
       const results = await formService.searchCivicaStreetNames(
         formId,

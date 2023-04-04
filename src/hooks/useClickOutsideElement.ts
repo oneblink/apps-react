@@ -5,8 +5,8 @@ export default function useClickOutsideElement(
   callback: () => void,
 ) {
   const handleClickOutside = React.useCallback(
-    (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+    (event: Event) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         callback()
       }
     },

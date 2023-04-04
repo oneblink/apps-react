@@ -54,7 +54,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
 
   const registerProperty = React.useCallback(
     (
-      exprParser,
+      exprParser: typeof ExpressionParser,
       {
         replacement,
         nestedElementNames,

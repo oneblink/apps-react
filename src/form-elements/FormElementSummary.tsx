@@ -4,7 +4,10 @@ import { localisationService } from '@oneblink/apps'
 import { useFormSubmissionModelParent } from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
 import { FormTypes } from '@oneblink/types'
-import { FormElementValueChangeHandler } from '../types/form'
+import {
+  FormElementValueChangeHandler,
+  FormSubmissionModel,
+} from '../types/form'
 import { generateDate } from '../services/generate-default-data'
 type Props = {
   element: FormTypes.SummaryElement
@@ -21,7 +24,7 @@ const arraysAreEqual = (a: unknown[], b: unknown[]) => {
 
   for (let i = 0; i < a.length; i++) {
     if (Array.isArray(a[i]) && Array.isArray(b[i])) {
-      const areEqual = arraysAreEqual(a[i], b[i])
+      const areEqual = arraysAreEqual(a[i] as unknown[], b[i] as unknown[])
       if (!areEqual) return false
       continue
     }
@@ -34,8 +37,12 @@ function FormElementSummary({ element, onChange, value }: Props) {
   const flattenedElements = useFlattenElements()
 
   const reducer = React.useCallback(
-    (partialSummary, formElement, submission) => {
-      if (formElement.type === 'page') return partialSummary
+    (
+      partialSummary: FormElementSummaryResults,
+      formElement: FormTypes.FormElement,
+      submission: FormSubmissionModel,
+    ) => {
+      if (!('name' in formElement)) return partialSummary
       if (
         formElement.type !== 'repeatableSet' &&
         formElement.type !== 'form' &&
@@ -84,7 +91,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
               reducer(
                 partialSummary,
                 formElement,
-                // Pleasing TypeScript
+                // @ts-expect-error Pleasing TypeScript
                 formElementValue instanceof Object ? formElementValue : {},
               ),
             [],
@@ -108,7 +115,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
           if (Array.isArray(formElement.options)) {
             partialSummary.push(
               ...optionValues.reduce((optionLabels, optionValue) => {
-                const option = formElement.options.find(
+                const option = formElement.options?.find(
                   ({ value }: FormTypes.ChoiceElementOption) =>
                     optionValue === value,
                 )
@@ -124,7 +131,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
         case 'date': {
           const date = generateDate({
             daysOffset: undefined,
-            value: formElementValue,
+            value: formElementValue as string,
             dateOnly: true,
           })
           if (date) {
@@ -168,7 +175,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
 
   // MODEL LISTENER
   React.useEffect(() => {
-    const summary = flattenedElements.reduce(
+    const summary = flattenedElements.reduce<FormElementSummaryResults>(
       (partialSummary, formElement) => {
         return reducer(partialSummary, formElement, formSubmissionModel)
       },
