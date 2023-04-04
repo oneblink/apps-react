@@ -104,6 +104,9 @@ export const generateDate = ({
         const offset = date.getTimezoneOffset()
         return new Date(date.getTime() + offset * 60000)
       }
+      if (daysOffset !== undefined) {
+        date.setDate(date.getDate() + daysOffset)
+      }
       return date
     }
   }
