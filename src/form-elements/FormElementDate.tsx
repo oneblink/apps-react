@@ -31,8 +31,7 @@ function FormElementDate({
 }: Props) {
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
-  const { fromDate, toDate, fromDateElementIdUsed, toDateElementIdUsed } =
-    useFormElementDateFromTo(element)
+  const { fromDate, toDate } = useFormElementDateFromTo(element)
 
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {
@@ -45,13 +44,11 @@ function FormElementDate({
         dateOnly: false,
         daysOffset: element.fromDateDaysOffset,
         value: fromDate,
-        dateElementIdUsed: fromDateElementIdUsed,
       }),
       maxDate: parseDateValue({
         dateOnly: false,
         daysOffset: element.toDateDaysOffset,
         value: toDate,
-        dateElementIdUsed: toDateElementIdUsed,
       }),
       defaultDate: undefined,
       allowInvalidPreload: true,
@@ -63,10 +60,8 @@ function FormElementDate({
     element.fromDateDaysOffset,
     element.toDateDaysOffset,
     fromDate,
-    fromDateElementIdUsed,
     setIsDirty,
     toDate,
-    toDateElementIdUsed,
   ])
 
   const handleChange = React.useCallback(
@@ -91,7 +86,6 @@ function FormElementDate({
         daysOffset: undefined,
         value,
         dateOnly: true,
-        dateElementIdUsed: false,
       })
       if (date) {
         return localisationService.formatDate(date)
