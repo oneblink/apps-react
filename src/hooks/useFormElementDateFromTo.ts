@@ -8,7 +8,7 @@ export default function useFormElementDateFromTo(
 ) {
   const { formSubmissionModel, elements } = useFormSubmissionModel()
 
-  const fromDate = React.useMemo(() => {
+  const { fromDate, fromDaysOffset } = React.useMemo(() => {
     if (element.fromDateElementId) {
       const fromDateValue = submissionService.getRootElementValueById(
         element.fromDateElementId,
@@ -16,18 +16,20 @@ export default function useFormElementDateFromTo(
         formSubmissionModel,
       )
       if (fromDateValue) {
-        return fromDateValue
+        return {
+          fromDate: fromDateValue,
+          fromDaysOffset: element.fromDateDaysOffset,
+        }
       }
     }
-    return element.fromDate
-  }, [
-    element.fromDate,
-    element.fromDateElementId,
-    elements,
-    formSubmissionModel,
-  ])
+    return {
+      fromDate: element.fromDate,
+      fromDaysOffset:
+        element.fromDate === 'NOW' ? element.fromDateDaysOffset : undefined,
+    }
+  }, [element, elements, formSubmissionModel])
 
-  const toDate = React.useMemo(() => {
+  const { toDate, toDaysOffset } = React.useMemo(() => {
     if (element.toDateElementId) {
       const toDateValue = submissionService.getRootElementValueById(
         element.toDateElementId,
@@ -35,14 +37,26 @@ export default function useFormElementDateFromTo(
         formSubmissionModel,
       )
       if (toDateValue) {
-        return toDateValue
+        return { toDate: toDateValue, toDaysOffset: element.toDateDaysOffset }
       }
     }
-    return element.toDate
-  }, [element.toDate, element.toDateElementId, elements, formSubmissionModel])
+    return {
+      toDate: element.toDate,
+      toDaysOffset:
+        element.toDate === 'NOW' ? element.toDateDaysOffset : undefined,
+    }
+  }, [
+    element.toDate,
+    element.toDateDaysOffset,
+    element.toDateElementId,
+    elements,
+    formSubmissionModel,
+  ])
 
   return {
     fromDate,
+    fromDaysOffset,
     toDate,
+    toDaysOffset,
   }
 }
