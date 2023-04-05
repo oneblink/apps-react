@@ -31,7 +31,8 @@ function FormElementDate({
 }: Props) {
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
-  const { fromDate, toDate } = useFormElementDateFromTo(element)
+  const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
+    useFormElementDateFromTo(element)
 
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {
@@ -42,12 +43,12 @@ function FormElementDate({
       altInputClass: 'input ob-input cypress-date-control',
       minDate: parseDateValue({
         dateOnly: false,
-        daysOffset: element.fromDateDaysOffset,
+        daysOffset: fromDaysOffset,
         value: fromDate,
       }),
       maxDate: parseDateValue({
         dateOnly: false,
-        daysOffset: element.toDateDaysOffset,
+        daysOffset: toDaysOffset,
         value: toDate,
       }),
       defaultDate: undefined,
@@ -56,13 +57,7 @@ function FormElementDate({
     }
 
     return opts
-  }, [
-    element.fromDateDaysOffset,
-    element.toDateDaysOffset,
-    fromDate,
-    setIsDirty,
-    toDate,
-  ])
+  }, [fromDate, fromDaysOffset, setIsDirty, toDate, toDaysOffset])
 
   const handleChange = React.useCallback(
     (newValue: string | undefined) => onChange(element, newValue),
