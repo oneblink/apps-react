@@ -10,6 +10,28 @@ import {
   FormSubmissionModel,
 } from '../types/form'
 
+function stripFormElementsWithoutName(
+  formElements: FormTypes.FormElement[],
+): FormTypes.FormElementWithName[] {
+  return formElements.reduce<FormTypes.FormElementWithName[]>(
+    (memo, formElement) => {
+      switch (formElement.type) {
+        case 'page':
+        case 'section': {
+          return [
+            ...memo,
+            ...stripFormElementsWithoutName(formElement.elements),
+          ]
+        }
+        default: {
+          return [...memo, formElement]
+        }
+      }
+    },
+    [],
+  )
+}
+
 export default function useFormValidation(pages: FormTypes.PageElement[]) {
   const [elementIdsWithLookupsExecuted, setElementIdsWithLookupsExecuted] =
     React.useState<string[]>([])
@@ -40,9 +62,16 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
     [],
   )
 
+  const formElementsWithoutName = React.useMemo(() => {
+    return stripFormElementsWithoutName(pages)
+  }, [pages])
+
   const validationSchema = React.useMemo(() => {
-    return generateValidationSchema(pages, elementIdsWithLookupsExecuted)
-  }, [pages, elementIdsWithLookupsExecuted])
+    return generateValidationSchema(
+      formElementsWithoutName,
+      elementIdsWithLookupsExecuted,
+    )
+  }, [formElementsWithoutName, elementIdsWithLookupsExecuted])
 
   const handleValidate = React.useCallback(
     (

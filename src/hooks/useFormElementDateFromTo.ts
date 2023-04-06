@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { submissionService } from '@oneblink/sdk-core'
+import getDateRangeConfiguration from '../services/getDateRangeConfiguration'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
 
@@ -8,43 +8,34 @@ export default function useFormElementDateFromTo(
 ) {
   const { formSubmissionModel, elements } = useFormSubmissionModel()
 
-  const { fromDate, fromDaysOffset } = React.useMemo(() => {
-    if (element.fromDateElementId) {
-      const fromDateValue = submissionService.getRootElementValueById(
-        element.fromDateElementId,
-        elements,
-        formSubmissionModel,
-      )
-      if (fromDateValue) {
-        return {
-          fromDate: fromDateValue,
-          fromDaysOffset: element.fromDateDaysOffset,
-        }
-      }
-    }
-    return {
-      fromDate: element.fromDate,
-      fromDaysOffset:
-        element.fromDate === 'NOW' ? element.fromDateDaysOffset : undefined,
-    }
-  }, [element, elements, formSubmissionModel])
+  const [fromDate, fromDaysOffset] = React.useMemo(() => {
+    return getDateRangeConfiguration(
+      {
+        referenceFormElementId: element.fromDateElementId,
+        date: element.fromDate,
+        daysOffset: element.fromDateDaysOffset,
+      },
+      elements,
+      formSubmissionModel,
+    )
+  }, [
+    element.fromDate,
+    element.fromDateDaysOffset,
+    element.fromDateElementId,
+    elements,
+    formSubmissionModel,
+  ])
 
-  const { toDate, toDaysOffset } = React.useMemo(() => {
-    if (element.toDateElementId) {
-      const toDateValue = submissionService.getRootElementValueById(
-        element.toDateElementId,
-        elements,
-        formSubmissionModel,
-      )
-      if (toDateValue) {
-        return { toDate: toDateValue, toDaysOffset: element.toDateDaysOffset }
-      }
-    }
-    return {
-      toDate: element.toDate,
-      toDaysOffset:
-        element.toDate === 'NOW' ? element.toDateDaysOffset : undefined,
-    }
+  const [toDate, toDaysOffset] = React.useMemo(() => {
+    return getDateRangeConfiguration(
+      {
+        referenceFormElementId: element.toDateElementId,
+        date: element.toDate,
+        daysOffset: element.toDateDaysOffset,
+      },
+      elements,
+      formSubmissionModel,
+    )
   }, [
     element.toDate,
     element.toDateDaysOffset,
