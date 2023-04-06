@@ -1,7 +1,7 @@
 import * as React from 'react'
 import useBooleanState from '../hooks/useBooleanState'
 import useIsOffline from '../hooks/useIsOffline'
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import geolocation from '@blinkmobile/geolocation'
 import queryString from 'query-string'
 import OnLoading from '../components/renderer/OnLoading'
@@ -342,6 +342,9 @@ const LocationPicker = React.memo(function SummaryResult({
 }) {
   const googleMapsApiKey = useGoogleMapsApiKeyKey()
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: googleMapsApiKey ?? '',
+  })
   const [map, setMap] = React.useState<google.maps.Map | null>(null)
 
   const center = React.useMemo(() => {
@@ -365,7 +368,7 @@ const LocationPicker = React.memo(function SummaryResult({
 
   return (
     <figure className="ob-figure">
-      <LoadScript googleMapsApiKey={googleMapsApiKey || ''}>
+      {isLoaded && (
         <GoogleMap
           onLoad={(map) => setMap(map)}
           onUnmount={() => setMap(null)}
@@ -393,7 +396,7 @@ const LocationPicker = React.memo(function SummaryResult({
             }}
           ></Marker>
         </GoogleMap>
-      </LoadScript>
+      )}
     </figure>
   )
 })
