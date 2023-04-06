@@ -1,4 +1,4 @@
-import validate from 'validate.js'
+import validate, { ValidatorConstraintFn } from 'validate.js'
 import { attachmentsService, localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
@@ -6,11 +6,21 @@ import { Value as FormElementComplianceValue } from '../form-elements/FormElemen
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 import {
+  FormElementConditionallyShown,
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormSubmissionModel,
 } from '../types/form'
 import generateFreshdeskDependentFieldElements from './generateFreshdeskDependentFieldElements'
+import cleanFormSubmissionModel from './cleanFormSubmissionModel'
+import getDateRangeConfiguration, {
+  DateRangeConfigurationOptions,
+} from './getDateRangeConfiguration'
+
+type NestedValidateJSSchema = {
+  schema: ValidateJSSchema
+  formElementConditionallyShown: FormElementConditionallyShown | undefined
+}
 
 export const lookupValidationMessage = 'Lookup is required'
 // https://validatejs.org/#validators-datetime
@@ -36,13 +46,22 @@ validate.validators.entries = function (
   value: unknown,
   {
     setSchema,
-    entrySchema,
-  }: { setSchema: ValidateJSSchema; entrySchema: ValidateJSSchema },
+    entrySchema: { schema: entrySchema, formElementConditionallyShown },
+  }: {
+    setSchema: ValidateJSSchema
+    entrySchema: NestedValidateJSSchema
+  },
 ) {
   const entries = Array.isArray(value) ? value : []
 
   const entryErrors = entries.reduce((errorsByIndex, entry, index) => {
-    const entryValidation = validateSingleMessageError(entry, entrySchema)
+    const entryValidation = validateSubmission(
+      entrySchema,
+      entry,
+      formElementConditionallyShown?.type === 'repeatableSet'
+        ? formElementConditionallyShown.entries[index.toString()]
+        : undefined,
+    )
     if (entryValidation) {
       errorsByIndex[index] = entryValidation
     }
@@ -64,9 +83,15 @@ validate.validators.entries = function (
 
 validate.validators.nestedElements = function (
   value: FormSubmissionModel | undefined,
-  schema: ValidateJSSchema,
+  { schema, formElementConditionallyShown }: NestedValidateJSSchema,
 ) {
-  const errors = validateSingleMessageError(value || {}, schema)
+  const errors = validateSubmission(
+    schema,
+    value,
+    formElementConditionallyShown?.type === 'formElements'
+      ? formElementConditionallyShown.formElements
+      : undefined,
+  )
   if (!errors) {
     return
   }
@@ -192,95 +217,6 @@ function getCustomRegexFormatConfig<DefaultValue>(
 
 type ValidateJSSchema = Record<string, unknown>
 
-export function validateSubmission(
-  schema: ValidateJSSchema,
-  submission: FormSubmissionModel,
-  formElementsConditionallyShown: FormElementsConditionallyShown,
-): FormElementsValidation | undefined {
-  const formElementsValidation = validateSingleMessageError(submission, schema)
-  if (formElementsValidation) {
-    clearValidationMessagesForHiddenElements(
-      formElementsValidation,
-      formElementsConditionallyShown,
-    )
-    if (!validate.isEmpty(formElementsValidation)) {
-      return formElementsValidation
-    }
-  }
-}
-
-const clearValidationMessagesForHiddenElements = (
-  formElementsValidation?: FormElementsValidation,
-  formElementsConditionallyShown?: FormElementsConditionallyShown,
-) => {
-  // If there is no validation to check, there are no invalid elements
-  // If there is no conditionally shown elements, all invalid elements should display validation messages,
-  if (!formElementsValidation || !formElementsConditionallyShown) {
-    return
-  }
-
-  for (const key in formElementsValidation) {
-    const formElementValidation = formElementsValidation[key]
-    if (!formElementValidation) {
-      continue
-    }
-
-    const formElementConditionallyShown = formElementsConditionallyShown[key]
-
-    // If the validation is for an element that is being hidden,
-    // we can remove the validation message and move to the next validation
-    if (formElementConditionallyShown?.isHidden) {
-      delete formElementsValidation[key]
-      continue
-    }
-
-    // If the validation is for a single element (not nested elements),
-    // we will always show the validation message
-    if (typeof formElementValidation === 'string') {
-      continue
-    }
-
-    // Here we will check to see if the nested elements that are
-    // invalid are being shown, if not, remove validation messages
-    switch (formElementValidation.type) {
-      case 'repeatableSet': {
-        for (const index in formElementValidation.entries) {
-          clearValidationMessagesForHiddenElements(
-            formElementValidation.entries[index],
-            formElementConditionallyShown &&
-              formElementConditionallyShown.type === 'repeatableSet'
-              ? formElementConditionallyShown.entries[index]
-              : undefined,
-          )
-          if (validate.isEmpty(formElementValidation.entries[index])) {
-            delete formElementValidation.entries[index]
-          }
-        }
-        // Remove the validation if all entries are valid and the set is also valid
-        if (
-          validate.isEmpty(formElementValidation.entries) &&
-          !formElementValidation.set
-        ) {
-          delete formElementsValidation[key]
-        }
-        break
-      }
-      case 'formElements': {
-        clearValidationMessagesForHiddenElements(
-          formElementValidation.formElements,
-          formElementConditionallyShown?.type === 'formElements'
-            ? formElementConditionallyShown?.formElements
-            : undefined,
-        )
-        if (validate.isEmpty(formElementValidation.formElements)) {
-          delete formElementsValidation[key]
-        }
-        break
-      }
-    }
-  }
-}
-
 const presence = (
   { required, requiredMessage }: FormTypes.FormElementRequired,
   message: string,
@@ -291,397 +227,468 @@ const escapeElementName = (elementName: string) => {
   return escapedName
 }
 
-export function generateValidationSchema(
+function getCleanDateRangeConfiguration(
+  options: DateRangeConfigurationOptions,
   elements: FormTypes.FormElement[],
+  submission: FormSubmissionModel | undefined,
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
+): ReturnType<typeof getDateRangeConfiguration> {
+  if (options.referenceFormElementId && submission) {
+    const { model } = cleanFormSubmissionModel(
+      submission,
+      elements,
+      formElementsConditionallyShown,
+      true,
+    )
+    return getDateRangeConfiguration(options, elements, model)
+  }
+  return [options.date, options.daysOffset]
+}
+
+export function generateValidationSchema(
+  elements: FormTypes.FormElementWithName[],
   elementIdsWithLookupsExecuted: string[],
 ): ValidateJSSchema {
   return elements.reduce<ValidateJSSchema>((partialSchema, formElement) => {
     switch (formElement.type) {
+      // Elements that do not need to be validated
       case 'summary':
       case 'calculation':
       case 'image':
       case 'html':
       case 'infoPage':
       case 'heading': {
-        break
+        return partialSchema
       }
-      case 'section':
-      case 'page': {
-        const nestedSchema = generateValidationSchema(
-          formElement.elements,
-          elementIdsWithLookupsExecuted,
-        )
-        Object.assign(partialSchema, nestedSchema)
-        break
-      }
-      case 'draw': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          attachment: true,
-          presence: presence(formElement, 'A saved signature is required'),
-        }
-        break
-      }
-      case 'camera': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          attachment: true,
-          presence: presence(formElement, 'A photo is required'),
-        }
-        break
-      }
-      case 'captcha': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            { ...formElement, required: true },
-            'Please complete the CAPTCHA successfully',
-          ),
-        }
-        break
-      }
-      case 'location': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please select a location'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'compliance': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Required'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          attachments: true,
-        }
-        break
-      }
-      case 'checkboxes': {
-        const requiredAllDefaultMessage = 'All options are required'
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            {
-              ...formElement,
-              required: formElement.required || !!formElement.requiredAll,
-            },
-            formElement.requiredAll ? requiredAllDefaultMessage : 'Required',
-          ),
-          length: formElement.requiredAll
-            ? {
-                is: formElement.options?.length,
-                message:
-                  formElement.requiredMessage || requiredAllDefaultMessage,
-              }
-            : undefined,
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'abn':
-      case 'geoscapeAddress':
-      case 'pointAddress':
-      case 'civicaStreetName':
-      case 'autocomplete':
-      case 'radio':
-      case 'select': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Required'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'boolean': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          isTrue: formElement.required && 'Required',
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'bsb': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please enter a BSB number'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          format: {
-            pattern: /\d{3}-\d{3}/,
-            message: 'Please enter a valid BSB number',
-          },
-        }
-        break
-      }
-      case 'barcodeScanner': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(
-            formElement,
-            'Please scan a barcode or enter a value',
-          ),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          format: getCustomRegexFormatConfig(formElement),
-        }
-        break
-      }
-      case 'text':
-      case 'textarea': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please enter a value'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          length: {
-            minimum: formElement.minLength,
-            tooShort:
-              'Please enter a value with at least %{count} character(s)',
-            maximum: formElement.maxLength,
-            tooLong: 'Please enter a value with %{count} character(s) or less',
-          },
-          format: getCustomRegexFormatConfig(formElement),
-        }
-        break
-      }
-      case 'telephone': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please enter a phone number'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          format: getCustomRegexFormatConfig(formElement),
-        }
-        break
-      }
-      case 'email': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please enter an email address'),
-          email: {
-            message: 'Please enter a valid email for this field',
-          },
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          format: getCustomRegexFormatConfig(formElement),
-        }
-        break
-      }
-      case 'time': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please select a time'),
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'date': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please select a date'),
-          date: {
-            format: (v: Date) => localisationService.formatDate(v),
-            earliest: parseDateValue({
-              dateOnly: true,
-              daysOffset: formElement.fromDateDaysOffset,
-              value: formElement.fromDate,
-            }),
-            latest: parseDateValue({
-              dateOnly: true,
-              daysOffset: formElement.toDateDaysOffset,
-              value: formElement.toDate,
-            }),
-            notValid: 'Please select a valid date',
-            tooEarly: 'Date cannot be before %{date}',
-            tooLate: 'Date cannot be after %{date}',
-          },
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'datetime': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: presence(formElement, 'Please select a date and time'),
-          datetime: {
-            format: (v: Date) => localisationService.formatDatetime(v),
-            earliest: parseDateValue({
-              dateOnly: false,
-              daysOffset: formElement.fromDateDaysOffset,
-              value: formElement.fromDate,
-            }),
-            latest: parseDateValue({
-              dateOnly: false,
-              daysOffset: formElement.toDateDaysOffset,
-              value: formElement.toDate,
-            }),
-            notValid: 'Please select a valid date and time',
-            tooEarly: 'Date and time cannot be before %{date}',
-            tooLate: 'Date and time cannot be after %{date}',
-          },
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-        }
-        break
-      }
-      case 'number': {
-        let minErrorMessage =
-          'Please enter a number greater than or equal to %{count}'
-        let maxErrorMessage =
-          'Please enter a number less than or equal to %{count}'
-        if (
-          typeof formElement.minNumber === 'number' &&
-          typeof formElement.maxNumber === 'number'
-        ) {
-          minErrorMessage =
-            maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
-        }
+    }
 
-        partialSchema[escapeElementName(formElement.name)] = {
-          type: 'number',
-          presence: presence(formElement, 'Please enter a number'),
-          numericality: {
-            greaterThanOrEqualTo: formElement.minNumber,
-            notGreaterThanOrEqualTo: minErrorMessage,
-            lessThanOrEqualTo: formElement.maxNumber,
-            notLessThanOrEqualTo: maxErrorMessage,
-            onlyInteger: formElement.isInteger,
-            notInteger: 'Please enter a whole number',
-          },
-          lookups: {
-            formElement,
-            elementIdsWithLookupsExecuted,
-          },
-          numberRegex: getCustomRegexFormatConfig(formElement),
-        }
-        break
+    const constraint: ValidatorConstraintFn<FormSubmissionModel> = (
+      value,
+      submission,
+      propertyName,
+      { formElementsConditionallyShown },
+    ) => {
+      // If the element is current hidden, we do not need to apply validation
+      const formElementConditionallyShown =
+        formElementsConditionallyShown?.[formElement.name]
+      if (formElementConditionallyShown?.isHidden) {
+        return
       }
-      case 'files': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          presence: formElement.minEntries
-            ? {
-                message: `Please upload at least ${
-                  formElement.minEntries
-                } file${formElement.minEntries === 1 ? '' : 's'}`,
-              }
-            : false,
-          length: {
-            minimum: formElement.minEntries,
-            maximum: formElement.maxEntries,
-            tooLong: 'Cannot upload more than %{count} file(s)',
-            tooShort: 'Please upload at least %{count} file(s)',
-          },
-          type: {
-            type: (files: attachmentsService.Attachment[] | undefined) => {
-              return (
-                !Array.isArray(files) ||
-                files.every((file) => {
-                  return checkFileNameIsValid(formElement, file.fileName)
-                })
-              )
-            },
-            message: `Only the following file types are accepted: ${(
-              formElement.restrictedFileTypes || []
-            ).join(', ')}`,
-          },
-          needsExtension: formElement,
-          attachments: true,
+
+      switch (formElement.type) {
+        case 'draw': {
+          return {
+            attachment: true,
+            presence: presence(formElement, 'A saved signature is required'),
+          }
         }
-        break
-      }
-      case 'repeatableSet': {
-        partialSchema[escapeElementName(formElement.name)] = {
-          entries: {
-            setSchema: {
-              presence: formElement.minSetEntries
-                ? {
-                    message: `Must have at least ${formElement.minSetEntries} ${
-                      formElement.minSetEntries === 1 ? 'entry' : 'entries'
-                    }`,
-                  }
-                : false,
-              length: {
-                minimum: formElement.minSetEntries,
-                maximum: formElement.maxSetEntries,
-                tooLong: 'Cannot have more than %{count} entry/entries',
-                tooShort: 'Must have at least %{count} entry/entries',
-              },
-            },
-            entrySchema: generateValidationSchema(
-              formElement.elements,
-              elementIdsWithLookupsExecuted,
-            ),
-          },
+        case 'camera': {
+          return {
+            attachment: true,
+            presence: presence(formElement, 'A photo is required'),
+          }
         }
-        break
-      }
-      case 'civicaNameRecord': {
-        const nestedElements = generateCivicaNameRecordElements(formElement, [])
-        partialSchema[escapeElementName(formElement.name)] = {
-          nestedElements: generateValidationSchema(
-            nestedElements,
-            elementIdsWithLookupsExecuted,
-          ),
-        }
-        break
-      }
-      case 'form': {
-        if (formElement.elements) {
-          partialSchema[escapeElementName(formElement.name)] = {
-            nestedElements: generateValidationSchema(
-              formElement.elements,
-              elementIdsWithLookupsExecuted,
+        case 'captcha': {
+          return {
+            presence: presence(
+              { ...formElement, required: true },
+              'Please complete the CAPTCHA successfully',
             ),
           }
         }
-        break
-      }
-      case 'freshdeskDependentField': {
-        const nestedElements = generateFreshdeskDependentFieldElements(
-          formElement,
-          undefined,
-        )
-        partialSchema[escapeElementName(formElement.name)] = {
-          nestedElements: generateValidationSchema(
-            nestedElements,
-            elementIdsWithLookupsExecuted,
-          ),
+        case 'location': {
+          return {
+            presence: presence(formElement, 'Please select a location'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
         }
-        break
-      }
-      default: {
-        console.info('Unsupported form element with validation', formElement)
+        case 'compliance': {
+          return {
+            presence: presence(formElement, 'Required'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            attachments: true,
+          }
+        }
+        case 'checkboxes': {
+          const requiredAllDefaultMessage = 'All options are required'
+          return {
+            presence: presence(
+              {
+                ...formElement,
+                required: formElement.required || !!formElement.requiredAll,
+              },
+              formElement.requiredAll ? requiredAllDefaultMessage : 'Required',
+            ),
+            length: formElement.requiredAll
+              ? {
+                  is: formElement.options?.length,
+                  message:
+                    formElement.requiredMessage || requiredAllDefaultMessage,
+                }
+              : undefined,
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'abn':
+        case 'geoscapeAddress':
+        case 'pointAddress':
+        case 'civicaStreetName':
+        case 'autocomplete':
+        case 'radio':
+        case 'select': {
+          return {
+            presence: presence(formElement, 'Required'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'boolean': {
+          return {
+            isTrue: formElement.required && 'Required',
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'bsb': {
+          return {
+            presence: presence(formElement, 'Please enter a BSB number'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            format: {
+              pattern: /\d{3}-\d{3}/,
+              message: 'Please enter a valid BSB number',
+            },
+          }
+        }
+        case 'barcodeScanner': {
+          return {
+            presence: presence(
+              formElement,
+              'Please scan a barcode or enter a value',
+            ),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            format: getCustomRegexFormatConfig(formElement),
+          }
+        }
+        case 'text':
+        case 'textarea': {
+          return {
+            presence: presence(formElement, 'Please enter a value'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            length: {
+              minimum: formElement.minLength,
+              tooShort:
+                'Please enter a value with at least %{count} character(s)',
+              maximum: formElement.maxLength,
+              tooLong:
+                'Please enter a value with %{count} character(s) or less',
+            },
+            format: getCustomRegexFormatConfig(formElement),
+          }
+        }
+        case 'telephone': {
+          return {
+            presence: presence(formElement, 'Please enter a phone number'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            format: getCustomRegexFormatConfig(formElement),
+          }
+        }
+        case 'email': {
+          return {
+            presence: presence(formElement, 'Please enter an email address'),
+            email: {
+              message: 'Please enter a valid email for this field',
+            },
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            format: getCustomRegexFormatConfig(formElement),
+          }
+        }
+        case 'time': {
+          return {
+            presence: presence(formElement, 'Please select a time'),
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'date': {
+          const [fromDate, fromDateDaysOffset] = getCleanDateRangeConfiguration(
+            {
+              date: formElement.fromDate,
+              daysOffset: formElement.fromDateDaysOffset,
+              referenceFormElementId: formElement.fromDateElementId,
+            },
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
+          const [toDate, toDateDaysOffset] = getCleanDateRangeConfiguration(
+            {
+              date: formElement.toDate,
+              daysOffset: formElement.toDateDaysOffset,
+              referenceFormElementId: formElement.toDateElementId,
+            },
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
+          return {
+            presence: presence(formElement, 'Please select a date'),
+            date: {
+              format: (v: Date) => localisationService.formatDate(v),
+              earliest: parseDateValue({
+                dateOnly: true,
+                daysOffset: fromDateDaysOffset,
+                value: fromDate,
+              }),
+              latest: parseDateValue({
+                dateOnly: true,
+                daysOffset: toDateDaysOffset,
+                value: toDate,
+              }),
+              notValid: 'Please select a valid date',
+              tooEarly: 'Date cannot be before %{date}',
+              tooLate: 'Date cannot be after %{date}',
+            },
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'datetime': {
+          const [fromDate, fromDateDaysOffset] = getCleanDateRangeConfiguration(
+            {
+              date: formElement.fromDate,
+              daysOffset: formElement.fromDateDaysOffset,
+              referenceFormElementId: formElement.fromDateElementId,
+            },
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
+          const [toDate, toDateDaysOffset] = getCleanDateRangeConfiguration(
+            {
+              date: formElement.toDate,
+              daysOffset: formElement.toDateDaysOffset,
+              referenceFormElementId: formElement.toDateElementId,
+            },
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
+          return {
+            presence: presence(formElement, 'Please select a date and time'),
+            datetime: {
+              format: (v: Date) => localisationService.formatDatetime(v),
+              earliest: parseDateValue({
+                dateOnly: true,
+                daysOffset: fromDateDaysOffset,
+                value: fromDate,
+              }),
+              latest: parseDateValue({
+                dateOnly: true,
+                daysOffset: toDateDaysOffset,
+                value: toDate,
+              }),
+              notValid: 'Please select a valid date and time',
+              tooEarly: 'Date and time cannot be before %{date}',
+              tooLate: 'Date and time cannot be after %{date}',
+            },
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+          }
+        }
+        case 'number': {
+          let minErrorMessage =
+            'Please enter a number greater than or equal to %{count}'
+          let maxErrorMessage =
+            'Please enter a number less than or equal to %{count}'
+          if (
+            typeof formElement.minNumber === 'number' &&
+            typeof formElement.maxNumber === 'number'
+          ) {
+            minErrorMessage =
+              maxErrorMessage = `Please enter a number between ${formElement.minNumber} and ${formElement.maxNumber}`
+          }
+
+          return {
+            type: 'number',
+            presence: presence(formElement, 'Please enter a number'),
+            numericality: {
+              greaterThanOrEqualTo: formElement.minNumber,
+              notGreaterThanOrEqualTo: minErrorMessage,
+              lessThanOrEqualTo: formElement.maxNumber,
+              notLessThanOrEqualTo: maxErrorMessage,
+              onlyInteger: formElement.isInteger,
+              notInteger: 'Please enter a whole number',
+            },
+            lookups: {
+              formElement,
+              elementIdsWithLookupsExecuted,
+            },
+            numberRegex: getCustomRegexFormatConfig(formElement),
+          }
+        }
+        case 'files': {
+          return {
+            presence: formElement.minEntries
+              ? {
+                  message: `Please upload at least ${
+                    formElement.minEntries
+                  } file${formElement.minEntries === 1 ? '' : 's'}`,
+                }
+              : false,
+            length: {
+              minimum: formElement.minEntries,
+              maximum: formElement.maxEntries,
+              tooLong: 'Cannot upload more than %{count} file(s)',
+              tooShort: 'Please upload at least %{count} file(s)',
+            },
+            type: {
+              type: (files: attachmentsService.Attachment[] | undefined) => {
+                return (
+                  !Array.isArray(files) ||
+                  files.every((file) => {
+                    return checkFileNameIsValid(formElement, file.fileName)
+                  })
+                )
+              },
+              message: `Only the following file types are accepted: ${(
+                formElement.restrictedFileTypes || []
+              ).join(', ')}`,
+            },
+            needsExtension: formElement,
+            attachments: true,
+          }
+        }
+        case 'repeatableSet': {
+          return {
+            entries: {
+              setSchema: {
+                presence: formElement.minSetEntries
+                  ? {
+                      message: `Must have at least ${
+                        formElement.minSetEntries
+                      } ${
+                        formElement.minSetEntries === 1 ? 'entry' : 'entries'
+                      }`,
+                    }
+                  : false,
+                length: {
+                  minimum: formElement.minSetEntries,
+                  maximum: formElement.maxSetEntries,
+                  tooLong: 'Cannot have more than %{count} entry/entries',
+                  tooShort: 'Must have at least %{count} entry/entries',
+                },
+              },
+              entrySchema: {
+                schema: generateValidationSchema(
+                  formElement.elements as FormTypes.FormElementWithName[],
+                  elementIdsWithLookupsExecuted,
+                ),
+                formElementConditionallyShown:
+                  formElementsConditionallyShown?.[formElement.name],
+              },
+            },
+          }
+        }
+        case 'civicaNameRecord': {
+          const nestedElements = generateCivicaNameRecordElements(
+            formElement,
+            [],
+          )
+          return {
+            nestedElements: {
+              schema: generateValidationSchema(
+                nestedElements as FormTypes.FormElementWithName[],
+                elementIdsWithLookupsExecuted,
+              ),
+              formElementConditionallyShown:
+                formElementsConditionallyShown?.[formElement.name],
+            },
+          }
+        }
+        case 'form': {
+          if (formElement.elements) {
+            return {
+              nestedElements: {
+                schema: generateValidationSchema(
+                  formElement.elements as FormTypes.FormElementWithName[],
+                  elementIdsWithLookupsExecuted,
+                ),
+                formElementConditionallyShown:
+                  formElementsConditionallyShown?.[formElement.name],
+              },
+            }
+          }
+          break
+        }
+        case 'freshdeskDependentField': {
+          const nestedElements = generateFreshdeskDependentFieldElements(
+            formElement,
+            undefined,
+          )
+          return {
+            nestedElements: {
+              schema: generateValidationSchema(
+                nestedElements as FormTypes.FormElementWithName[],
+                elementIdsWithLookupsExecuted,
+              ),
+              formElementConditionallyShown:
+                formElementsConditionallyShown?.[formElement.name],
+            },
+          }
+        }
+        default: {
+          console.info('Unsupported form element with validation', formElement)
+        }
       }
     }
+    partialSchema[escapeElementName(formElement.name)] = constraint
     return partialSchema
   }, {})
 }
 
-const validateSingleMessageError = (
-  submission: FormSubmissionModel,
+export function validateSubmission(
   schema: ValidateJSSchema,
-): FormElementsValidation | undefined => {
+  submission: FormSubmissionModel | undefined,
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
+): FormElementsValidation | undefined {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
     fullMessages: false,
+    formElementsConditionallyShown,
   })
   if (!errorsAsArray || validate.isEmpty(errorsAsArray)) {
     return
