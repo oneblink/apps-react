@@ -61,7 +61,7 @@ function FormElementDate({
     [element, onChange],
   )
 
-  useFlatpickr(
+  const { onBlur } = useFlatpickr(
     {
       id,
       value,
@@ -102,11 +102,7 @@ function FormElementDate({
               placeholder={element.placeholderValue}
               disabled={element.readOnly}
               className="input ob-input cypress-date-control"
-              onBlur={(e) => {
-                if (!e.target.value) {
-                  onChange(element, undefined)
-                }
-              }}
+              onBlur={onBlur}
             />
 
             <span className="ob-input-icon icon is-small is-right">
