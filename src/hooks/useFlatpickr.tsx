@@ -8,13 +8,12 @@ import useFlatpickrGuid from '../hooks/useFlatpickrGuid'
 export { FlatpickrOptions }
 
 const getDateValue = (
-  vp: FlatpickrInstance,
   date: Date | undefined,
   dateOnly: boolean | undefined,
 ) => {
   if (!date) return
   if (dateOnly) {
-    return vp.formatDate(date, 'Y-m-d')
+    return Flatpickr.formatDate(date, 'Y-m-d')
   }
   return date.toISOString()
 }
@@ -42,13 +41,19 @@ export default function useFlatpickr(
       ...fpOpts,
       static: true,
       appendTo: htmlElement.current || undefined,
+      formatDate: (date: Date | undefined, format: string) => {
+        if (date) {
+          return Flatpickr.formatDate(date, format)
+        }
+        return ''
+      },
     }
     const newVp: FlatpickrInstance = new (Flatpickr as any)(
       `[id="${flatpickrGuid}"] [id="${id}"]`,
       options,
     )
     newVp.set('onChange', (selectedDates: Date[]) => {
-      onChange(getDateValue(newVp, selectedDates?.[0], dateOnly))
+      onChange(getDateValue(selectedDates?.[0], dateOnly))
     })
     vpRef.current = newVp
     return () => {
@@ -75,7 +80,7 @@ export default function useFlatpickr(
       } else if (
         value &&
         typeof value === 'string' &&
-        (!selectedDate || getDateValue(vp, selectedDate, dateOnly) !== value)
+        (!selectedDate || getDateValue(selectedDate, dateOnly) !== value)
       ) {
         try {
           vp.setDate(new Date(value), false)
@@ -85,4 +90,27 @@ export default function useFlatpickr(
       }
     }
   }, [dateOnly, value])
+
+  const onBlur = React.useCallback(
+    (e: React.FocusEvent<HTMLInputElement, Element>) => {
+      if (e.target.value) {
+        try {
+          const date = Flatpickr.parseDate(e.target.value, fpOpts.dateFormat)
+          if (date) {
+            const newValue = getDateValue(date, dateOnly)
+            onChange(newValue)
+            return
+          }
+        } catch (e) {
+          console.warn('Could not parse date on blur event', id, e)
+        }
+      }
+      onChange(undefined)
+    },
+    [dateOnly, fpOpts.dateFormat, id, onChange],
+  )
+
+  return {
+    onBlur,
+  }
 }
