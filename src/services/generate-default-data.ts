@@ -90,22 +90,20 @@ export const generateDate = ({
 }): Date | undefined => {
   if (value === 'NOW') {
     const date = new Date()
-    if (daysOffset === undefined) {
-      return date
-    } else {
+    if (daysOffset !== undefined) {
       date.setDate(date.getDate() + daysOffset)
-      return date
     }
+    return date
   } else {
     const timestamp = Date.parse(value)
     if (!Number.isNaN(timestamp)) {
       const date = new Date(timestamp)
+      if (daysOffset !== undefined) {
+        date.setDate(date.getDate() + daysOffset)
+      }
       if (dateOnly) {
         const offset = date.getTimezoneOffset()
         return new Date(date.getTime() + offset * 60000)
-      }
-      if (daysOffset !== undefined) {
-        date.setDate(date.getDate() + daysOffset)
       }
       return date
     }
