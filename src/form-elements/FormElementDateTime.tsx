@@ -99,7 +99,6 @@ function FormElementDateTime({
               placeholder={element.placeholderValue}
               disabled={element.readOnly}
               className="input ob-input"
-              autoComplete="off"
             />
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">date_range</i>
