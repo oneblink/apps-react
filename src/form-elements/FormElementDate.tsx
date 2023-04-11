@@ -36,11 +36,8 @@ function FormElementDate({
 
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {
-      altInput: true,
-      dateFormat: 'Y-m-d',
-      altFormat: localisationService.getFlatpickrFormats().shortDate,
+      dateFormat: localisationService.getFlatpickrFormats().shortDate,
       allowInput: true,
-      altInputClass: 'input ob-input cypress-date-control',
       minDate: parseDateValue({
         dateOnly: false,
         daysOffset: fromDaysOffset,
@@ -100,13 +97,18 @@ function FormElementDate({
         <div className="field has-addons">
           <div className="control is-expanded has-icons-right">
             <input
-              type="date"
               id={id}
               name={element.name}
               placeholder={element.placeholderValue}
               disabled={element.readOnly}
-              className="input ob-input"
+              className="input ob-input cypress-date-control"
+              onBlur={(e) => {
+                if (!e.target.value) {
+                  onChange(element, undefined)
+                }
+              }}
             />
+
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">event</i>
             </span>

@@ -510,12 +510,12 @@ export function generateValidationSchema(
             datetime: {
               format: (v: Date) => localisationService.formatDatetime(v),
               earliest: parseDateValue({
-                dateOnly: true,
+                dateOnly: false,
                 daysOffset: fromDateDaysOffset,
                 value: fromDate,
               }),
               latest: parseDateValue({
-                dateOnly: true,
+                dateOnly: false,
                 daysOffset: toDateDaysOffset,
                 value: toDate,
               }),
