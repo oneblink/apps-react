@@ -103,6 +103,7 @@ function FormElementDate({
               disabled={element.readOnly}
               className="input ob-input cypress-date-control"
               onBlur={onBlur}
+              autoComplete="off"
             />
 
             <span className="ob-input-icon icon is-small is-right">
