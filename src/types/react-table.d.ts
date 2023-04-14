@@ -8,6 +8,7 @@ import { formStoreService } from '@oneblink/apps'
 
 declare module 'react-table' {
   export interface UseTableColumnOptions<
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     D extends Record<string, unknown> = Record<string, unknown>,
   > {
     headerText: string

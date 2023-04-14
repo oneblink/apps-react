@@ -283,6 +283,7 @@ function LookupNotificationComponent({
                     </i>
                     <p
                       className="fade-in"
+                      // eslint-disable-next-line react/no-danger
                       dangerouslySetInnerHTML={{
                         __html: lookupErrorHTML || '',
                       }}

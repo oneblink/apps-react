@@ -11,6 +11,7 @@ export default function QuillHTML({
     <div
       {...props}
       className={clsx(props.className, 'ql-editor')}
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: html,
       }}

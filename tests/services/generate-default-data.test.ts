@@ -1021,6 +1021,7 @@ describe('generateDefaultData()', () => {
         },
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const compliance = result.compliance as any
       expect(compliance.value).toBe('option-2')
       expect(compliance.files[0].type).toBe('NEW')
@@ -1127,7 +1128,7 @@ describe('generateDefaultData()', () => {
         ],
       })
 
-      const files = result.files as any
+      const files = result.files as Record<string, unknown>[]
       expect(files[0].type).toBe('NEW')
       expect(files[0].fileName).toBe('dot.png')
       expect(files[0].data).toBeInstanceOf(Blob)
@@ -1226,7 +1227,7 @@ describe('generateDefaultData()', () => {
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII=',
       })
 
-      const camera = result.camera as any
+      const camera = result.camera as Record<string, unknown>
       expect(camera.type).toBe('NEW')
       expect(camera.fileName).toBe('file')
       expect(camera.data).toBeInstanceOf(Blob)
@@ -1323,7 +1324,7 @@ describe('generateDefaultData()', () => {
         draw: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAYAAABWKLW/AAAAIElEQVQYV2NkYGBoYGBgqGdgYGhkZGBg+M8ABSAOXAYATFcEA8STCz8AAAAASUVORK5CYII=',
       })
 
-      const draw = result.draw as any
+      const draw = result.draw as Record<string, unknown>
       expect(draw.type).toBe('NEW')
       expect(draw.fileName).toBe('file')
       expect(draw.data).toBeInstanceOf(Blob)

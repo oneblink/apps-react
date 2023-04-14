@@ -316,6 +316,7 @@ function AutocompleteDropdown<T>({
                     },
                   )}
                   onMouseDown={(e) => handleClickOption(e, option)}
+                  // eslint-disable-next-line react/no-danger
                   dangerouslySetInnerHTML={{
                     __html: highlightLabel(option.label, label),
                   }}
