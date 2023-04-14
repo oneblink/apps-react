@@ -30,7 +30,11 @@ export default function (
         locate: true, // try to locate the barcode in the image
         src: imgData,
       },
-      function (result: any) {
+      function (result: {
+        codeResult: {
+          code: string | PromiseLike<string | undefined> | undefined
+        }
+      }) {
         if (result && result.codeResult) {
           resolve(result.codeResult.code)
         } else {

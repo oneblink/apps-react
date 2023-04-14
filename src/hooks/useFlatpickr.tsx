@@ -48,6 +48,7 @@ export default function useFlatpickr(
         return ''
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newVp: FlatpickrInstance = new (Flatpickr as any)(
       `[id="${flatpickrGuid}"] [id="${id}"]`,
       options,

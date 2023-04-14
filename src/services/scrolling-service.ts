@@ -1,6 +1,7 @@
 const overflowClass = 'overflow-hidden'
 let isDisabled = false
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function elementOrAncestorHasClass(element: any, className: string): boolean {
   if (!element || element === document) {
     return false
