@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.0] - 2023-04-14
+
 ### Added
 
 - date validation based on another form element
@@ -15,6 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unvisited pages not displaying validation when clicking submit
 - `styles.css` source map file pointing to `../src` directory
+
+### Dependencies
+
+- update [@emotion/react](https://www.npmjs.com/package/@emotion/react) to [11.10.6](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.10.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@emotion/styled](https://www.npmjs.com/package/@emotion/styled) to [11.10.6](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.10.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material) to [5.11.11](https://github.com/mui/material-ui/blob/master/CHANGELOG.md) (from [5.8.4](https://github.com/mui/material-ui/blob/master/CHANGELOG.md))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [1.0.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [0.4.6-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.18.1 (from 2.12.1)
+
+- update [copy-to-clipboard](https://www.npmjs.com/package/copy-to-clipboard) to 3.3.3 (from 3.3.2)
+
+- update [date-fns](https://www.npmjs.com/package/date-fns) to [2.29.3](https://github.com/date-fns/date-fns/blob/master/CHANGELOG.md) (from [2.29.2](https://github.com/date-fns/date-fns/blob/master/CHANGELOG.md))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.10.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.7.1](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- update [uuid](https://www.npmjs.com/package/uuid) to [9.0.0](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md) (from [8.3.2](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md))
 
 ## [2.10.0] - 2023-04-02
 
