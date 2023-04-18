@@ -23,6 +23,19 @@ function stripFormElementsWithoutName(
             ...stripFormElementsWithoutName(formElement.elements),
           ]
         }
+        case 'infoPage':
+        case 'form':
+        case 'repeatableSet': {
+          return [
+            ...memo,
+            {
+              ...formElement,
+              elements: stripFormElementsWithoutName(
+                formElement.elements || [],
+              ),
+            },
+          ]
+        }
         default: {
           return [...memo, formElement]
         }
