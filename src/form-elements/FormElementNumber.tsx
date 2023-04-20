@@ -32,7 +32,6 @@ function FormElementNumber({
     () => (typeof value === 'number' ? value.toString() : ''),
     [value],
   )
-
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseFloat(event.target.value)
@@ -40,6 +39,26 @@ function FormElementNumber({
     },
     [element, onChange],
   )
+  const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
+  const handleWheel = React.useCallback((e) => {
+    e.preventDefault()
+  }, [])
+
+  React.useEffect(() => {
+    const currentRef = htmlInputElementRef.current
+    if (currentRef) {
+      currentRef.addEventListener('wheel', handleWheel, {
+        passive: false,
+      })
+    }
+    return () => {
+      {
+        if (currentRef) {
+          currentRef.removeEventListener('wheel', handleWheel)
+        }
+      }
+    }
+  }, [htmlInputElementRef, handleWheel])
 
   return (
     <div className="cypress-number-element">
@@ -63,6 +82,7 @@ function FormElementNumber({
                 required={element.required}
                 disabled={element.readOnly}
                 onBlur={setIsDirty}
+                ref={htmlInputElementRef}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <i className="material-icons is-size-5">tag</i>
