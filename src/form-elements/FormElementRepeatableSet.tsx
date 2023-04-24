@@ -17,6 +17,8 @@ import {
   FormSubmissionModel,
   IsDirtyProps,
 } from '../types/form'
+import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
+import getRepeatableSetEntriesConfiguration from '../services/getRepeatableSetEntriesConfiguration'
 
 type Props = {
   formId: number
@@ -51,6 +53,8 @@ function FormElementRepeatableSet({
     () => (Array.isArray(value) ? value : []),
     [value],
   )
+
+  const { formSubmissionModel, elements } = useFormSubmissionModel()
 
   const handleAddEntry = React.useCallback(() => {
     onChange(element, (existingEntries) => {
@@ -99,6 +103,22 @@ function FormElementRepeatableSet({
     [element, onChange],
   )
 
+  const minSetEntries = React.useMemo(() => {
+    return getRepeatableSetEntriesConfiguration(
+      element.minSetEntries,
+      elements,
+      formSubmissionModel,
+    )
+  }, [element.minSetEntries, elements, formSubmissionModel])
+
+  const maxSetEntries = React.useMemo(() => {
+    return getRepeatableSetEntriesConfiguration(
+      element.maxSetEntries,
+      elements,
+      formSubmissionModel,
+    )
+  }, [element.maxSetEntries, elements, formSubmissionModel])
+
   const repeatableSetValidation = React.useMemo(
     () =>
       !formElementValidation ||
@@ -130,7 +150,7 @@ function FormElementRepeatableSet({
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
         element={element}
         id={id}
-        required={!!element.minSetEntries}
+        required={!!minSetEntries}
       >
         {entries.map((entry, index) => {
           return (
@@ -156,7 +176,7 @@ function FormElementRepeatableSet({
             />
           )
         })}
-        {(!element.maxSetEntries || entries.length < element.maxSetEntries) && (
+        {(!maxSetEntries || entries.length < maxSetEntries) && (
           <button
             type="button"
             className="button ob-button ob-button__add is-primary cypress-add-repeatable-set"
