@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Repeatable set min/max entries based on another element
+
 ### Changed
 
 - Prevent default behaviour of mouse wheel for number element

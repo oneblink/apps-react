@@ -16,6 +16,7 @@ import cleanFormSubmissionModel from './cleanFormSubmissionModel'
 import getDateRangeConfiguration, {
   DateRangeConfigurationOptions,
 } from './getDateRangeConfiguration'
+import getRepeatableSetEntriesConfiguration from './getRepeatableSetEntriesConfiguration'
 
 type NestedValidateJSSchema = {
   schema: ValidateJSSchema
@@ -243,6 +244,23 @@ function getCleanDateRangeConfiguration(
     return getDateRangeConfiguration(options, elements, model)
   }
   return [options.date, options.daysOffset]
+}
+
+function getCleanRepeatableSetConfiguration(
+  setEntries: FormTypes.RepeatableSetElement['minSetEntries'],
+  elements: FormTypes.FormElement[],
+  submission: FormSubmissionModel | undefined,
+  formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
+) {
+  if (submission) {
+    const { model } = cleanFormSubmissionModel(
+      submission,
+      elements,
+      formElementsConditionallyShown,
+      true,
+    )
+    return getRepeatableSetEntriesConfiguration(setEntries, elements, model)
+  }
 }
 
 export function generateValidationSchema(
@@ -593,21 +611,31 @@ export function generateValidationSchema(
           }
         }
         case 'repeatableSet': {
+          const minSetEntries = getCleanRepeatableSetConfiguration(
+            formElement.minSetEntries,
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
+          const maxSetEntries = getCleanRepeatableSetConfiguration(
+            formElement.maxSetEntries,
+            elements,
+            submission,
+            formElementsConditionallyShown,
+          )
           return {
             entries: {
               setSchema: {
-                presence: formElement.minSetEntries
+                presence: minSetEntries
                   ? {
-                      message: `Must have at least ${
-                        formElement.minSetEntries
-                      } ${
-                        formElement.minSetEntries === 1 ? 'entry' : 'entries'
+                      message: `Must have at least ${minSetEntries} ${
+                        minSetEntries === 1 ? 'entry' : 'entries'
                       }`,
                     }
                   : false,
                 length: {
-                  minimum: formElement.minSetEntries,
-                  maximum: formElement.maxSetEntries,
+                  minimum: minSetEntries,
+                  maximum: maxSetEntries,
                   tooLong: 'Cannot have more than %{count} entry/entries',
                   tooShort: 'Must have at least %{count} entry/entries',
                 },
