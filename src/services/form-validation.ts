@@ -618,7 +618,7 @@ export function generateValidationSchema(
             formElementsConditionallyShown,
           )
           const maxSetEntries = getCleanRepeatableSetConfiguration(
-            formElement.minSetEntries,
+            formElement.maxSetEntries,
             elements,
             submission,
             formElementsConditionallyShown,

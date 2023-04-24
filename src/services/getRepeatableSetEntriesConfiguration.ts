@@ -8,7 +8,7 @@ export default function getRepeatableSetEntriesConfiguration(
   elements: FormTypes.FormElement[],
   formSubmissionModel: FormSubmissionModel,
 ) {
-  if (typeof setEntries === 'object') {
+  if (setEntries && typeof setEntries === 'object') {
     const value = submissionService.getRootElementValueById(
       setEntries.elementId,
       elements,

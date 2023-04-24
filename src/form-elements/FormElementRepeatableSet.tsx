@@ -17,8 +17,7 @@ import {
   FormSubmissionModel,
   IsDirtyProps,
 } from '../types/form'
-import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
-import getRepeatableSetEntriesConfiguration from '../services/getRepeatableSetEntriesConfiguration'
+import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
 
 type Props = {
   formId: number
@@ -53,8 +52,6 @@ function FormElementRepeatableSet({
     () => (Array.isArray(value) ? value : []),
     [value],
   )
-
-  const { formSubmissionModel, elements } = useFormSubmissionModel()
 
   const handleAddEntry = React.useCallback(() => {
     onChange(element, (existingEntries) => {
@@ -103,21 +100,8 @@ function FormElementRepeatableSet({
     [element, onChange],
   )
 
-  const minSetEntries = React.useMemo(() => {
-    return getRepeatableSetEntriesConfiguration(
-      element.minSetEntries,
-      elements,
-      formSubmissionModel,
-    )
-  }, [element.minSetEntries, elements, formSubmissionModel])
-
-  const maxSetEntries = React.useMemo(() => {
-    return getRepeatableSetEntriesConfiguration(
-      element.maxSetEntries,
-      elements,
-      formSubmissionModel,
-    )
-  }, [element.maxSetEntries, elements, formSubmissionModel])
+  const { minSetEntries, maxSetEntries } =
+    useFormElementRepeatableSetEntries(element)
 
   const repeatableSetValidation = React.useMemo(
     () =>
