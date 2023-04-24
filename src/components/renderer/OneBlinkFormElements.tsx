@@ -596,6 +596,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
+            {...dirtyProps}
           />
         </LookupNotification>
       )

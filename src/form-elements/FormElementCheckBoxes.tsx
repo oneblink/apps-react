@@ -12,6 +12,7 @@ import ToggleAllCheckbox from '../components/renderer/ToggleAllCheckbox'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  IsDirtyProps,
 } from '../types/form'
 
 type Props = {
@@ -24,7 +25,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
-}
+} & IsDirtyProps
 
 function FormElementCheckboxes({
   id,
@@ -34,11 +35,38 @@ function FormElementCheckboxes({
   validationMessage,
   displayValidationMessage,
   conditionallyShownOptionsElement,
+  isDirty,
+  setIsDirty,
 }: Props) {
+  console.log({ displayValidationMessage, validationMessage })
   const selectedValues = React.useMemo(() => {
     if (!Array.isArray(value)) return []
     return value
   }, [value])
+
+  // Need to use a `useEffect` to update the `isDirty` state, because it cannot be done from
+  // inside the below `setState` callback function since it runs from inside another component
+  React.useEffect(() => {
+    if (isDirty) return
+
+    if (
+      // If the element requires a single selection and has a value
+      (element.required && !!selectedValues.length) ||
+      // or all options are selected and requiredAll is true
+      (element.requiredAll && selectedValues.length === element.options?.length)
+    ) {
+      setIsDirty()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // `isDirty` is excluded from this dep list because we do not want to trigger re-runs
+    // when it changes, it is only referenced to short circuit the function when it does run
+    element.options?.length,
+    element.required,
+    element.requiredAll,
+    selectedValues.length,
+    setIsDirty,
+  ])
 
   const changeValues = React.useCallback(
     (toggledValue: string, hasSelectedValue: boolean) => {
@@ -153,7 +181,7 @@ function FormElementCheckboxes({
           />
         </FormElementOptions>
 
-        {displayValidationMessage && !!validationMessage && (
+        {(displayValidationMessage || isDirty) && !!validationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
