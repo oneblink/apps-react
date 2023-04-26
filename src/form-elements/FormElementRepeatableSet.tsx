@@ -134,7 +134,7 @@ function FormElementRepeatableSet({
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
         element={element}
         id={id}
-        required={!!minSetEntries}
+        required={!!minSetEntries && minSetEntries > 0}
       >
         {entries.map((entry, index) => {
           return (
