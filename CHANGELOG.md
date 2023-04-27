@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- autocomplete option that always displays
+
+### Fixed
+
+- `isDirty` validation for Checkbox Element
+
+## [2.13.0] - 2023-04-27
+
+### Added
+
 - Repeatable set min/max entries based on another element
 
 ### Changed

@@ -38,10 +38,18 @@ export default function useFormElementOptions<T>({
   }, [conditionallyShownOptions, element.options, onFilter])
 
   //options that are shown based on conditional logic and user input
-  const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(
-    () => shownOptions.filter((option) => !onFilter || onFilter(option)),
-    [shownOptions, onFilter],
-  )
+  const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
+    const reducedOptions = shownOptions.filter(
+      (option) => !onFilter || (onFilter(option) && !option.displayAlways),
+    )
+    if (element.type === 'autocomplete') {
+      const alwaysShownOptions = shownOptions.filter(
+        (option) => option.displayAlways,
+      )
+      reducedOptions.push(...alwaysShownOptions)
+    }
+    return reducedOptions
+  }, [shownOptions, onFilter])
 
   React.useEffect(() => {
     if (
