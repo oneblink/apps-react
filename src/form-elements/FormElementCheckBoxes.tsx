@@ -56,13 +56,11 @@ function FormElementCheckboxes({
     ) {
       setIsDirty()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    // `isDirty` is excluded from this dep list because we do not want to trigger re-runs
-    // when it changes, it is only referenced to short circuit the function when it does run
     element.options?.length,
     element.required,
     element.requiredAll,
+    isDirty,
     selectedValues.length,
     setIsDirty,
   ])
