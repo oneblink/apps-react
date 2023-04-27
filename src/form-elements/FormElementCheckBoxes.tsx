@@ -38,7 +38,6 @@ function FormElementCheckboxes({
   isDirty,
   setIsDirty,
 }: Props) {
-  console.log({ displayValidationMessage, validationMessage })
   const selectedValues = React.useMemo(() => {
     if (!Array.isArray(value)) return []
     return value
