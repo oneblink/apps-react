@@ -7,12 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- `isDirty` validation for Checkbox Element
-
-## [2.13.0] - 2023-04-27
-
 ### Added
 
 - autocomplete option that always displays
