@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
-import useHint from '../../hooks/useHint'
+import useReplaceableHTML from '../../hooks/useReplaceableHTML'
 import QuillHTML from '../QuillHTML'
 
 function FormElementLabelContainer({
@@ -48,7 +48,7 @@ function FormElementLabelContainer({
 }
 
 export function HintTooltip({ hint }: { hint: string }) {
-  const html = useHint(hint)
+  const html = useReplaceableHTML(hint)
 
   return (
     <Tooltip
@@ -63,7 +63,7 @@ export function HintTooltip({ hint }: { hint: string }) {
 }
 
 export function HintBelowLabel({ hint }: { hint: string }) {
-  const html = useHint(hint)
+  const html = useReplaceableHTML(hint)
 
   return <QuillHTML html={html} className="ob-hint-text" />
 }

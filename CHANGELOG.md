@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- default value for date not catering for timezone
+- replaceable dates not catering for timezones
+
 ## [2.14.0] - 2023-05-02
 
 ### Added

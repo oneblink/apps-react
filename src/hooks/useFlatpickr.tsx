@@ -4,6 +4,7 @@ import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
 import { Sentry } from '@oneblink/apps'
 import useFlatpickrGuid from '../hooks/useFlatpickrGuid'
+import { generateDate } from '../services/generate-default-data'
 
 export { FlatpickrOptions }
 
@@ -84,7 +85,14 @@ export default function useFlatpickr(
         (!selectedDate || getDateValue(selectedDate, dateOnly) !== value)
       ) {
         try {
-          vp.setDate(new Date(value), false)
+          const date = generateDate({
+            daysOffset: undefined,
+            value,
+            dateOnly: !!dateOnly,
+          })
+          if (date) {
+            vp.setDate(date, false)
+          }
         } catch (error) {
           Sentry.captureException(new Error(`Error setting date: ${value}`))
         }

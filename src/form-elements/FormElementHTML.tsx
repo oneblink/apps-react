@@ -1,10 +1,6 @@
 import * as React from 'react'
-import sanitizeHtml from '../services/sanitize-html'
 import { FormTypes } from '@oneblink/types'
-import { RepeatableSetIndexContext } from './FormElementRepeatableSet'
-import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
-import { submissionService } from '@oneblink/sdk-core'
-import { localisationService } from '@oneblink/apps'
+import useReplaceableHTML from '../hooks/useReplaceableHTML'
 import QuillHTML from '../components/QuillHTML'
 
 type Props = {
@@ -12,23 +8,7 @@ type Props = {
 }
 
 function FormElementHTML({ element }: Props) {
-  const { formSubmissionModel, elements } = useFormSubmissionModel()
-  const index = React.useContext(RepeatableSetIndexContext)
-  const html = React.useMemo(() => {
-    let html = element.defaultValue
-    html = html.replace('{INDEX}', (index + 1).toString())
-
-    html = submissionService.replaceElementValues(html, {
-      submission: formSubmissionModel,
-      formElements: elements,
-      formatCurrency: localisationService.formatCurrency,
-      formatDate: (v) => localisationService.formatDate(new Date(v)),
-      formatNumber: localisationService.formatNumber,
-      formatTime: (v) => localisationService.formatTime(new Date(v)),
-    })
-
-    return sanitizeHtml(html)
-  }, [element.defaultValue, elements, formSubmissionModel, index])
+  const html = useReplaceableHTML(element.defaultValue)
 
   return (
     <div className="cypress-html-element">
