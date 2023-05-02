@@ -32,7 +32,15 @@ type Props = {
   displayValidationMessage: boolean
 } & IsDirtyProps
 
-export const RepeatableSetIndexContext = React.createContext<number>(0)
+const RepeatableSetIndexContext = React.createContext<number>(0)
+
+export function useRepeatableSetIndexText(text: string) {
+  const index = React.useContext(RepeatableSetIndexContext)
+  return React.useMemo(
+    () => text.replace('{INDEX}', (index + 1).toString()),
+    [index, text],
+  )
+}
 
 function FormElementRepeatableSet({
   formId,
