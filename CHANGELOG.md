@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - default value for date not catering for timezone
 - replaceable dates not catering for timezones
+- freshdesk dependent elements not validating correctly
 
 ## [2.14.0] - 2023-05-02
 
@@ -21,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `isDirty` validation for Checkbox Element
-- freshdesk dependent elements not validating correctly
 
 ## [2.13.0] - 2023-04-27
 
