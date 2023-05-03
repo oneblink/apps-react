@@ -13,7 +13,7 @@ const createFormElement = () => ({
   requiresAllConditionallyShowPredicates: false,
 })
 
-function getNestedOptions(
+export function getNestedOptions(
   parentOptions: FormTypes.ChoiceElementOption[] | undefined,
   parentValue: string | undefined,
 ): FormTypes.ChoiceElementOption[] | undefined {
@@ -38,8 +38,7 @@ function getNestedOptions(
 
 export default function generateFreshdeskDependentFieldElements(
   element: FormTypes.FreshdeskDependentFieldElement,
-  value: FormTypes.FreshdeskDependentFieldElementValue | undefined,
-): FormTypes.FormElement[] {
+): FormTypes.SelectElement[] {
   const categoryElement: FormTypes.SelectElement = {
     ...createFormElement(),
     name: 'category',
@@ -52,37 +51,29 @@ export default function generateFreshdeskDependentFieldElements(
   }
   const formElements = [categoryElement]
 
-  if (value?.category) {
-    const subCategoryOptions = getNestedOptions(
-      element.options,
-      value?.category,
-    )
-    const subCategoryElement: FormTypes.SelectElement = {
-      ...createFormElement(),
-      name: 'subCategory',
-      required: element.required,
-      readOnly: element.readOnly,
-      label: element.subCategoryLabel,
-      hint: element.subCategoryHint,
-      defaultValue: element.defaultValue?.subCategory,
-      options: subCategoryOptions,
-    }
-    formElements.push(subCategoryElement)
-
-    if (value?.subCategory) {
-      const itemElement: FormTypes.SelectElement = {
-        ...createFormElement(),
-        name: 'item',
-        required: element.required,
-        readOnly: element.readOnly,
-        label: element.itemLabel,
-        hint: element.itemHint,
-        defaultValue: element.defaultValue?.item,
-        options: getNestedOptions(subCategoryOptions, value?.subCategory),
-      }
-      formElements.push(itemElement)
-    }
+  const subCategoryElement: FormTypes.SelectElement = {
+    ...createFormElement(),
+    name: 'subCategory',
+    required: element.required,
+    readOnly: element.readOnly,
+    label: element.subCategoryLabel,
+    hint: element.subCategoryHint,
+    defaultValue: element.defaultValue?.subCategory,
+    options: [],
   }
+  formElements.push(subCategoryElement)
+
+  const itemElement: FormTypes.SelectElement = {
+    ...createFormElement(),
+    name: 'item',
+    required: element.required,
+    readOnly: element.readOnly,
+    label: element.itemLabel,
+    hint: element.itemHint,
+    defaultValue: element.defaultValue?.item,
+    options: [],
+  }
+  formElements.push(itemElement)
 
   return formElements
 }
