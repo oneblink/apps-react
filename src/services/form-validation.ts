@@ -683,10 +683,8 @@ export function generateValidationSchema(
           break
         }
         case 'freshdeskDependentField': {
-          const nestedElements = generateFreshdeskDependentFieldElements(
-            formElement,
-            undefined,
-          )
+          const nestedElements =
+            generateFreshdeskDependentFieldElements(formElement)
           return {
             nestedElements: {
               schema: generateValidationSchema(
