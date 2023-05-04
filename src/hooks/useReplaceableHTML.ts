@@ -1,6 +1,5 @@
 import { localisationService } from '@oneblink/apps'
 import * as React from 'react'
-import { generateDate } from '../services/generate-default-data'
 import { submissionService } from '@oneblink/sdk-core'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { useRepeatableSetIndexText } from '../form-elements/FormElementRepeatableSet'
@@ -16,7 +15,7 @@ export default function useReplaceableHTML(text: string) {
       formElements: elements,
       formatCurrency: localisationService.formatCurrency,
       formatDate: (v) => {
-        const date = generateDate({
+        const date = localisationService.generateDate({
           value: v,
           dateOnly: true,
           daysOffset: undefined,

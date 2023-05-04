@@ -6,7 +6,7 @@ import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { generateDate, parseDateValue } from '../services/generate-default-data'
+import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 
@@ -74,7 +74,7 @@ function FormElementDate({
 
   const text = React.useMemo(() => {
     if (typeof value === 'string') {
-      const date = generateDate({
+      const date = localisationService.generateDate({
         daysOffset: undefined,
         value,
         dateOnly: true,

@@ -8,7 +8,6 @@ import {
   FormElementValueChangeHandler,
   FormSubmissionModel,
 } from '../types/form'
-import { generateDate } from '../services/generate-default-data'
 type Props = {
   element: FormTypes.SummaryElement
   onChange: FormElementValueChangeHandler
@@ -129,7 +128,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
           break
         }
         case 'date': {
-          const date = generateDate({
+          const date = localisationService.generateDate({
             daysOffset: undefined,
             value: formElementValue as string,
             dateOnly: true,

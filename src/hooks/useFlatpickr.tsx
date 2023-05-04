@@ -2,9 +2,8 @@ import * as React from 'react'
 import Flatpickr from 'flatpickr'
 import { Options as FlatpickrOptions } from 'flatpickr/dist/types/options'
 import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
-import { Sentry } from '@oneblink/apps'
+import { Sentry, localisationService } from '@oneblink/apps'
 import useFlatpickrGuid from '../hooks/useFlatpickrGuid'
-import { generateDate } from '../services/generate-default-data'
 
 export { FlatpickrOptions }
 
@@ -85,7 +84,7 @@ export default function useFlatpickr(
         (!selectedDate || getDateValue(selectedDate, dateOnly) !== value)
       ) {
         try {
-          const date = generateDate({
+          const date = localisationService.generateDate({
             daysOffset: undefined,
             value,
             dateOnly: !!dateOnly,
