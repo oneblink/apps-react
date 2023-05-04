@@ -26,6 +26,7 @@ export default function useReplaceableHTML(text: string) {
         }
         return ''
       },
+      formatDateTime: (v) => localisationService.formatDatetime(new Date(v)),
       formatNumber: localisationService.formatNumber,
       formatTime: (v) => localisationService.formatTime(new Date(v)),
     })

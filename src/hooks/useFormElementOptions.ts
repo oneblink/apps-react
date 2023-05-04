@@ -49,7 +49,7 @@ export default function useFormElementOptions<T>({
       reducedOptions.push(...alwaysShownOptions)
     }
     return reducedOptions
-  }, [shownOptions, onFilter])
+  }, [shownOptions, element.type, onFilter])
 
   React.useEffect(() => {
     if (
