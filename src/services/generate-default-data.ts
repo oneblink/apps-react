@@ -79,37 +79,6 @@ function parseFiles(
   }
 }
 
-export const generateDate = ({
-  daysOffset,
-  value,
-  dateOnly,
-}: {
-  daysOffset: number | undefined
-  value: string
-  dateOnly: boolean
-}): Date | undefined => {
-  if (value === 'NOW') {
-    const date = new Date()
-    if (daysOffset !== undefined) {
-      date.setDate(date.getDate() + daysOffset)
-    }
-    return date
-  } else {
-    const timestamp = Date.parse(value)
-    if (!Number.isNaN(timestamp)) {
-      const date = new Date(timestamp)
-      if (daysOffset !== undefined) {
-        date.setDate(date.getDate() + daysOffset)
-      }
-      if (dateOnly) {
-        const offset = date.getTimezoneOffset()
-        return new Date(date.getTime() + offset * 60000)
-      }
-      return date
-    }
-  }
-}
-
 export function parseDateValue({
   dateOnly,
   daysOffset,
@@ -123,7 +92,7 @@ export function parseDateValue({
     return
   }
 
-  const date = generateDate({ daysOffset, value, dateOnly })
+  const date = localisationService.generateDate({ daysOffset, value, dateOnly })
   if (!date) {
     return
   }
