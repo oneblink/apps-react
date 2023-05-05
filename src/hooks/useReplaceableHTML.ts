@@ -9,7 +9,7 @@ export default function useReplaceableHTML(text: string) {
   const html = React.useMemo(() => sanitizeHtml(textWithIndex), [textWithIndex])
   const { formSubmissionModel, elements } = useFormSubmissionModel()
   return React.useMemo(() => {
-    return localisationService.replaceSubmissionValues(html, {
+    return localisationService.replaceInjectablesWithElementValues(html, {
       submission: formSubmissionModel,
       formElements: elements,
     })
