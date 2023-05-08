@@ -39,6 +39,15 @@ export default function useFormStoreTable({
   onRefresh: () => void
   submissionIdValidationMessage?: string
 }) {
+  React.useEffect(() => {
+    parameters.sorting = [
+      {
+        property: 'dateTimeSubmitted',
+        direction: 'descending',
+      },
+    ]
+  }, [form, parameters])
+
   const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
     return generateColumns({

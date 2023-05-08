@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - default value for date not catering for timezone
 - replaceable dates not catering for timezones
 - freshdesk dependent elements not validating correctly
+- data manager sorting error on form change
 
 ## [2.14.0] - 2023-05-02
 
