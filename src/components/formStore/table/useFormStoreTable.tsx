@@ -39,14 +39,22 @@ export default function useFormStoreTable({
   onRefresh: () => void
   submissionIdValidationMessage?: string
 }) {
+  // Resets parameters on form change
   React.useEffect(() => {
-    parameters.sorting = [
-      {
-        property: 'dateTimeSubmitted',
-        direction: 'descending',
-      },
-    ]
-  }, [form, parameters])
+    onChangeParameters(
+      (currentParameters) => ({
+        ...currentParameters,
+        filters: undefined,
+        sorting: [
+          {
+            property: 'dateTimeSubmitted',
+            direction: 'descending',
+          },
+        ],
+      }),
+      false,
+    )
+  }, [form, onChangeParameters])
 
   const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
