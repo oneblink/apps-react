@@ -2,7 +2,7 @@ import { localisationService } from '@oneblink/apps'
 import * as React from 'react'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { useRepeatableSetIndexText } from '../form-elements/FormElementRepeatableSet'
-import sanitizeHtml from 'sanitize-html'
+import sanitizeHtml from '../services/sanitize-html'
 
 export default function useReplaceableHTML(text: string) {
   const textWithIndex = useRepeatableSetIndexText(text)
