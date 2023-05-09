@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `useInfiniteScrollDataLoad` optionally return `total` if present in the meta
+
 ### Fixed
 
 - data manager sorting error on form change
