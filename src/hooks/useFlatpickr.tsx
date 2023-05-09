@@ -56,6 +56,15 @@ export default function useFlatpickr(
     newVp.set('onChange', (selectedDates: Date[]) => {
       onChange(getDateValue(selectedDates?.[0], dateOnly))
     })
+    // Have to update the value in an onClose event if time is
+    // enabled as changing the AM/PM via keyboard does not
+    // trigger the onChange event:
+    // https://github.com/flatpickr/flatpickr/issues/1957
+    if (fpOpts.enableTime) {
+      newVp.set('onClose', (selectedDates: Date[]) => {
+        onChange(getDateValue(selectedDates?.[0], dateOnly))
+      })
+    }
     vpRef.current = newVp
     return () => {
       // destroy the flatpickr instance when the dom element is removed
