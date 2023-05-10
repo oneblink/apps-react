@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - data manager sorting error on form change
 - sanitized HTML not including classes and styles
+- time AM/PM picker not triggering change on keyboard input
 
 ## [2.14.1] - 2023-05-08
 
