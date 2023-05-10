@@ -35,7 +35,6 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
       limit: number
       offset: number
       nextOffset?: number | undefined
-      total?: number
     }
   }>
   onValidateFilters?: (filters: Filters) => boolean
@@ -70,20 +69,17 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     [],
   )
 
-  const [{ isLoading, records, error, nextOffset, total }, setState] =
-    React.useState<{
-      isLoading: LoadingType
-      records: T[]
-      error: Error | null
-      nextOffset: number
-      total?: number
-    }>({
-      isLoading: 'INITIAL',
-      records: [],
-      error: null,
-      nextOffset: 0,
-      total: undefined,
-    })
+  const [{ isLoading, records, error, nextOffset }, setState] = React.useState<{
+    isLoading: LoadingType
+    records: T[]
+    error: Error | null
+    nextOffset: number
+  }>({
+    isLoading: 'INITIAL',
+    records: [],
+    error: null,
+    nextOffset: 0,
+  })
 
   const fetchRecords = React.useCallback(
     async (abortSignal: AbortSignal) => {
@@ -114,7 +110,6 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
           records: [...currentState.records, ...result.records],
           isLoading: null,
           nextOffset: result.meta.nextOffset || 0,
-          total: result.meta.total,
         }))
       } catch (error) {
         if (abortSignal.aborted) {
@@ -203,6 +198,5 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     onChangeFilters,
     onReplace,
     nextOffset,
-    total,
   }
 }
