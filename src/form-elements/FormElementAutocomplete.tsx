@@ -36,6 +36,7 @@ type AutocompleteFilterProps = _AutocompleteChangeHandlerProps &
 
 type AutocompleteFetchProps = _AutocompleteChangeHandlerProps & {
   searchUrl: string
+  searchQuerystringParameter: string
 }
 
 type Props = _BaseProps &
@@ -144,6 +145,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   validationMessage,
   displayValidationMessage,
   searchUrl,
+  searchQuerystringParameter,
   isDirty,
   setIsDirty,
 }: AutocompleteFetchProps) {
@@ -153,7 +155,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
     async (search: string, abortSignal: AbortSignal) => {
       const headers = await generateHeaders()
       const url = new URL(searchUrl)
-      url.searchParams.append('value', search)
+      url.searchParams.append(searchQuerystringParameter, search)
       const response = await fetch(url.href, {
         headers,
         signal: abortSignal,
@@ -167,7 +169,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
       const data = await response.json()
       return formElementsService.parseFormElementOptionsSet(data)
     },
-    [searchUrl],
+    [searchQuerystringParameter, searchUrl],
   )
 
   // Ensure the label is set if the value is set outside of this component
@@ -225,6 +227,9 @@ function FormElementAutocomplete({
         {...props}
         onChange={handleChange}
         searchUrl={props.element.searchUrl}
+        searchQuerystringParameter={
+          props.element.searchQuerystringParameter || 'value'
+        }
       />
     )
   }

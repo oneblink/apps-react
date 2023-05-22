@@ -8,12 +8,11 @@ import { SetFormSubmission } from '../types/form'
 export default function useDynamicOptionsLoaderState(
   form: FormTypes.Form,
   setFormSubmission: SetFormSubmission,
-): {
-  elementId: string
-  error: OneBlinkAppsError
-} | null {
-  const [state, setState] =
-    React.useState<ReturnType<typeof useDynamicOptionsLoaderState>>(null)
+) {
+  const [state, setState] = React.useState<{
+    elementId: string
+    error: OneBlinkAppsError
+  } | null>(null)
   React.useEffect(() => {
     if (state) {
       return
@@ -31,10 +30,13 @@ export default function useDynamicOptionsLoaderState(
       }
 
       const nonOkResponse = optionsByElementId.find(
-        (optionsForElementId) => !optionsForElementId.ok,
+        (optionsForElementId) => optionsForElementId.type === 'ERROR',
       )
-      if (nonOkResponse && !nonOkResponse.ok) {
-        setState(nonOkResponse)
+      if (nonOkResponse && nonOkResponse.type === 'ERROR') {
+        setState({
+          elementId: nonOkResponse.elementId,
+          error: nonOkResponse.error,
+        })
         return
       }
 
@@ -43,16 +45,28 @@ export default function useDynamicOptionsLoaderState(
           currentFormSubmission.definition,
         )
         for (const optionsForElementId of optionsByElementId) {
-          if (optionsForElementId.ok) {
-            formElementsService.forEachFormElementWithOptions(
-              clonedForm.elements,
-              (formElement) => {
-                if (formElement.id === optionsForElementId.elementId) {
-                  formElement.options = optionsForElementId.options
+          formElementsService.forEachFormElementWithOptions(
+            clonedForm.elements,
+            (formElement) => {
+              if (formElement.id === optionsForElementId.elementId) {
+                switch (optionsForElementId.type) {
+                  case 'OPTIONS': {
+                    formElement.options = optionsForElementId.options
+                    break
+                  }
+                  case 'SEARCH': {
+                    if (formElement.type === 'autocomplete') {
+                      formElement.optionsType = 'SEARCH'
+                      formElement.searchUrl = optionsForElementId.url
+                      formElement.searchQuerystringParameter =
+                        optionsForElementId.searchQuerystringParameter
+                    }
+                    break
+                  }
                 }
-              },
-            )
-          }
+              }
+            },
+          )
         }
         return {
           ...currentFormSubmission,

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- options sets that support passing a querystring parameter to filter options server side
+
 ## [2.14.2] - 2023-05-12
 
 ### Fixed
