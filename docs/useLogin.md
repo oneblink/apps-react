@@ -51,6 +51,9 @@ The return type is an object with the following properties:
 | `newPasswordValidation.hasSpecialCharacter` | `boolean`         | `true` if the `newPassword` argument has a special character (required to be valid)                                                                                                       |
 | `newPasswordValidation.hasMinLength`        | `boolean`         | `true` if the `newPassword` argument has a at least the minimum number of characters (required to be valid)                                                                               |
 | `newPasswordConfirmedValidation.isInvalid`  | `boolean`         | `true` if the `newPasswordConfirmed` argument is invalid (must match the `newPassword` argument)                                                                                          |
+| `isMfaCodeRequired`                         | `boolean`         | `true` if the user logged in using a MFA and a code is required to finish login attempt. Prompt the user for a code and call `submitMfaCode()`                                            |
+| `isSubmittingMfaCode`                       | `boolean`         | `true` while processing `submitMfaCode()`                                                                                                                                                 |
+| `submitMfaCode`                             | `() => void`      | Attempt to use `code` arguments to submit the MFA code and create a session. Will call `onLogin()` if successful, otherwise will set `loginError`.                                        |
 
 ## Example
 
@@ -81,6 +84,10 @@ function App() {
     isPasswordTemporary,
     isResettingTemporaryPassword,
     resetTemporaryPassword,
+    // MFA Password
+    isMfaCodeRequired,
+    isSubmittingMfaCode,
+    submitMfaCode,
     // Login Errors
     loginError,
     clearLoginError,
@@ -239,6 +246,38 @@ function App() {
         <p>Contains a number: {validation.hasNumber ? 'Yes' : 'No'}</p>
         <p>Contains a special character: {validation.hasSpecialCharacter ? 'Yes' : 'No'}</p>
         <p>Contains at least 8 characters: {validation.hasMinLength ? 'Yes' : 'No'}</p>
+
+        {loginError && (
+          <p>{loginError.message}</p>
+          <button type="button" onClick={clearLoginError}>Clear Error</button>
+        )}
+      </form>
+    )
+  }
+
+  if (isMfaCodeRequired) {
+    return (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          submitMfaCode()
+        }}
+      >
+        <p>Enter the 6-digit code found in your authenticator app.</p>
+
+        <input
+          type="password"
+          placeholder="Code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+        />
+
+        <button
+          type="submit"
+          disabled={isSubmittingMfaCode || codeValidation.isInvalid}
+        >
+          Sign In
+        </button>
 
         {loginError && (
           <p>{loginError.message}</p>
