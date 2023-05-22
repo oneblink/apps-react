@@ -64,25 +64,35 @@ export default function useLogin({
     }
   }, [newPassword, newPasswordConfirmed])
 
-  // Login & Reset Password
+  // Login, Reset Password, MFA
   const [
     {
       isResettingTemporaryPassword,
       isLoggingIn,
       loginError,
       resetTemporaryPasswordCallback,
+      isSubmittingMfaCode,
+      mfaCodeCallback,
     },
     setLoginState,
   ] = React.useState<{
     isResettingTemporaryPassword: boolean
     isLoggingIn: boolean
     loginError: null | Error
-    resetTemporaryPasswordCallback: null | ((newPassword: string) => void)
+    resetTemporaryPasswordCallback:
+      | null
+      | ((newPassword: string) => Promise<authService.LoginAttemptResponse>)
+    isSubmittingMfaCode: boolean
+    mfaCodeCallback:
+      | null
+      | ((code: string) => Promise<authService.LoginAttemptResponse>)
   }>({
     isResettingTemporaryPassword: false,
     isLoggingIn: false,
     loginError: null,
     resetTemporaryPasswordCallback: null,
+    isSubmittingMfaCode: false,
+    mfaCodeCallback: null,
   })
   const clearLoginError = React.useCallback(
     () =>
@@ -113,22 +123,25 @@ export default function useLogin({
       resetTemporaryPasswordCallback: null,
       isLoggingIn: true,
       loginError: null,
+      isSubmittingMfaCode: false,
+      mfaCodeCallback: null,
     })
 
     try {
-      const newResetPasswordCallback = await authService.loginUsernamePassword(
+      const loginAttemptResponse = await authService.loginUsernamePassword(
         username,
         password,
       )
-      if (newResetPasswordCallback) {
-        if (isMounted.current) {
-          setLoginState({
-            isResettingTemporaryPassword: false,
-            isLoggingIn: false,
-            resetTemporaryPasswordCallback: newResetPasswordCallback,
-            loginError: null,
-          })
-        }
+      if (isMounted.current) {
+        setLoginState({
+          isLoggingIn: false,
+          loginError: null,
+          isResettingTemporaryPassword: false,
+          resetTemporaryPasswordCallback:
+            loginAttemptResponse.resetPasswordCallback || null,
+          isSubmittingMfaCode: false,
+          mfaCodeCallback: loginAttemptResponse.mfaCodeCallback || null,
+        })
       }
     } catch (error) {
       Sentry.captureException(error)
@@ -138,6 +151,8 @@ export default function useLogin({
           isLoggingIn: false,
           resetTemporaryPasswordCallback: null,
           loginError: error as Error,
+          isSubmittingMfaCode: false,
+          mfaCodeCallback: null,
         })
       }
     }
@@ -177,7 +192,20 @@ export default function useLogin({
     }))
 
     try {
-      await resetTemporaryPasswordCallback(newPassword)
+      const resetPasswordResponse = await resetTemporaryPasswordCallback(
+        newPassword,
+      )
+      if (isMounted.current) {
+        setLoginState({
+          isLoggingIn: false,
+          loginError: null,
+          isResettingTemporaryPassword: false,
+          resetTemporaryPasswordCallback:
+            resetPasswordResponse.resetPasswordCallback || null,
+          isSubmittingMfaCode: false,
+          mfaCodeCallback: resetPasswordResponse.mfaCodeCallback || null,
+        })
+      }
     } catch (error) {
       Sentry.captureException(error)
       if (isMounted.current) {
@@ -195,6 +223,42 @@ export default function useLogin({
     newPasswordValidation.isInvalid,
     resetTemporaryPasswordCallback,
   ])
+
+  const submitMfaCode = React.useCallback(async () => {
+    if (!mfaCodeCallback) {
+      return
+    }
+
+    setLoginState((current) => ({
+      ...current,
+      isSubmittingMfaCode: true,
+      loginError: null,
+    }))
+
+    try {
+      const resetPasswordResponse = await mfaCodeCallback(code)
+      if (isMounted.current) {
+        setLoginState({
+          isLoggingIn: false,
+          loginError: null,
+          isResettingTemporaryPassword: false,
+          resetTemporaryPasswordCallback:
+            resetPasswordResponse.resetPasswordCallback || null,
+          isSubmittingMfaCode: false,
+          mfaCodeCallback: resetPasswordResponse.mfaCodeCallback || null,
+        })
+      }
+    } catch (error) {
+      Sentry.captureException(error)
+      if (isMounted.current) {
+        setLoginState((current) => ({
+          ...current,
+          isSubmittingMfaCode: false,
+          loginError: error as Error,
+        }))
+      }
+    }
+  }, [code, isMounted, mfaCodeCallback])
 
   // Forgot Password
   const [isShowingForgotPassword, showForgotPassword, hideForgotPassword] =
@@ -349,6 +413,10 @@ export default function useLogin({
     isPasswordTemporary: !!resetTemporaryPasswordCallback,
     isResettingTemporaryPassword,
     resetTemporaryPassword,
+    // MFA Code
+    isMfaCodeRequired: !!mfaCodeCallback,
+    isSubmittingMfaCode,
+    submitMfaCode,
     // Showing Forgot Password
     isShowingForgotPassword,
     showForgotPassword,
