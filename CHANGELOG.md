@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **[BREAKING]** `useLogin()` returns a `isMfaCodeRequired`, `isSubmittingMfaCode` and `submitMfaCode` which should be implemented to ensure login attempts support MFA
+
 ### Added
 
 - options sets that support passing a querystring parameter to filter options server side
