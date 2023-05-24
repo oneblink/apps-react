@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
-import useReplaceableHTML from '../hooks/useReplaceableHTML'
+import useReplaceableText from '../hooks/useReplaceableText'
 import QuillHTML from '../components/QuillHTML'
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 }
 
 function FormElementHTML({ element }: Props) {
-  const html = useReplaceableHTML(element.defaultValue)
+  const html = useReplaceableText(element.defaultValue)
 
   return (
     <div className="cypress-html-element">

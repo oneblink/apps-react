@@ -1,7 +1,6 @@
 import * as React from 'react'
 import ExpressionParser from 'morph-expressions'
 import escapeString from 'escape-string-regexp'
-import sanitizeHtmlStandard from '../services/sanitize-html'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { FormTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
@@ -42,13 +41,11 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     }
 
     const numberValue = typeof value === 'number' ? value : 0
-    return sanitizeHtmlStandard(
-      (htmlTemplate || '').replace(
-        /{result}/gi,
-        element.displayAsCurrency
-          ? localisationService.formatCurrency(numberValue)
-          : localisationService.formatNumber(numberValue),
-      ),
+    return (htmlTemplate || '').replace(
+      /{result}/gi,
+      element.displayAsCurrency
+        ? localisationService.formatCurrency(numberValue)
+        : localisationService.formatNumber(numberValue),
     )
   }, [element, value])
 
