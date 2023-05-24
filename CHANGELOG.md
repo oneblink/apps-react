@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - options sets that support passing a querystring parameter to filter options server side
 
+### Fixed
+
+- HTML sanitization not running after element inputs are replaced
+
 ## [2.14.2] - 2023-05-12
 
 ### Fixed
