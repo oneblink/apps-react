@@ -20,6 +20,7 @@ export {
   IsOfflineContextProvider,
 } from './hooks/useIsOffline'
 export { default as useLogin } from './hooks/useLogin'
+export { default as useSignUp } from './hooks/useSignUp'
 export { default as useAuth, AuthContextProvider } from './hooks/useAuth'
 export { default as useLoadDataState } from './hooks/useLoadDataState'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
