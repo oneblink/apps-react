@@ -7,19 +7,17 @@ export default function useSignUp({
   username,
   firstName,
   lastName,
-  generatePassword,
 }: {
   formsAppId: number
   username: string
   firstName?: string
   lastName?: string
-  generatePassword: boolean
 }) {
   const usernameValidation = React.useMemo(() => {
     // regex source: https://www.w3resource.com/javascript/form/email-validation.php#:~:text=To%20get%20a%20valid%20email,%5D%2B)*%24%2F.
     return {
-      isInvalid: !!username.match(
-        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/g,
+      isInvalid: !username.match(
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
       ),
     }
   }, [username])
@@ -65,7 +63,6 @@ export default function useSignUp({
         email: username,
         firstName,
         lastName,
-        generatePassword,
       })
 
       setSignUpState((currentState) => ({
@@ -81,14 +78,7 @@ export default function useSignUp({
         signUpError: error as Error,
       }))
     }
-  }, [
-    firstName,
-    formsAppId,
-    generatePassword,
-    lastName,
-    username,
-    usernameValidation.isInvalid,
-  ])
+  }, [firstName, formsAppId, lastName, username, usernameValidation.isInvalid])
 
   return {
     signUpWithUserDetails,
@@ -96,5 +86,6 @@ export default function useSignUp({
     isSigningUp,
     signUpError,
     newFormsAppUser,
+    usernameValidation,
   }
 }
