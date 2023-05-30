@@ -21,13 +21,16 @@ export default function useSignUp({
     }
   }, [username])
 
-  const [{ isSigningUp, signUpError }, setSignUpState] = React.useState<{
-    isSigningUp: boolean
-    signUpError: Error | null
-  }>({
-    isSigningUp: false,
-    signUpError: null,
-  })
+  const [{ isSigningUp, signUpError, signUpComplete }, setSignUpState] =
+    React.useState<{
+      isSigningUp: boolean
+      signUpError: Error | null
+      signUpComplete: boolean
+    }>({
+      isSigningUp: false,
+      signUpError: null,
+      signUpComplete: false,
+    })
 
   const clearSignUpError = React.useCallback(
     () =>
@@ -64,6 +67,7 @@ export default function useSignUp({
       setSignUpState((currentState) => ({
         ...currentState,
         isSigningUp: false,
+        signUpComplete: true,
       }))
     } catch (error) {
       Sentry.captureException(error)
@@ -80,6 +84,7 @@ export default function useSignUp({
     clearSignUpError,
     isSigningUp,
     signUpError,
+    signUpComplete,
     usernameValidation,
   }
 }
