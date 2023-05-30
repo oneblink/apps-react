@@ -21,16 +21,13 @@ export default function useSignUp({
     }
   }, [username])
 
-  const [{ isSigningUp, signUpError, signUpComplete }, setSignUpState] =
-    React.useState<{
-      isSigningUp: boolean
-      signUpError: Error | null
-      signUpComplete: boolean
-    }>({
-      isSigningUp: false,
-      signUpError: null,
-      signUpComplete: false,
-    })
+  const [{ isSigningUp, signUpError }, setSignUpState] = React.useState<{
+    isSigningUp: boolean
+    signUpError: Error | null
+  }>({
+    isSigningUp: false,
+    signUpError: null,
+  })
 
   const clearSignUpError = React.useCallback(
     () =>
@@ -66,7 +63,6 @@ export default function useSignUp({
 
       setSignUpState((currentState) => ({
         ...currentState,
-        signUpComplete: true,
         isSigningUp: false,
       }))
     } catch (error) {
@@ -84,7 +80,6 @@ export default function useSignUp({
     clearSignUpError,
     isSigningUp,
     signUpError,
-    signUpComplete,
     usernameValidation,
   }
 }
