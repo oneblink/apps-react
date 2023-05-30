@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { authService, Sentry } from '@oneblink/apps'
-import { FormsAppUser } from '@oneblink/types/typescript/formsApps'
 
 export default function useSignUp({
   formsAppId,
@@ -22,15 +21,15 @@ export default function useSignUp({
     }
   }, [username])
 
-  const [{ isSigningUp, signUpError, newFormsAppUser }, setSignUpState] =
+  const [{ isSigningUp, signUpError, signUpComplete }, setSignUpState] =
     React.useState<{
       isSigningUp: boolean
       signUpError: Error | null
-      newFormsAppUser: FormsAppUser | undefined
+      signUpComplete: boolean
     }>({
       isSigningUp: false,
       signUpError: null,
-      newFormsAppUser: undefined,
+      signUpComplete: false,
     })
 
   const clearSignUpError = React.useCallback(
@@ -58,7 +57,7 @@ export default function useSignUp({
     }))
 
     try {
-      const newUser = await authService.signUp({
+      await authService.signUp({
         formsAppId,
         email: username,
         firstName,
@@ -67,7 +66,7 @@ export default function useSignUp({
 
       setSignUpState((currentState) => ({
         ...currentState,
-        newFormsAppUser: newUser,
+        signUpComplete: true,
         isSigningUp: false,
       }))
     } catch (error) {
@@ -85,7 +84,7 @@ export default function useSignUp({
     clearSignUpError,
     isSigningUp,
     signUpError,
-    newFormsAppUser,
+    signUpComplete,
     usernameValidation,
   }
 }
