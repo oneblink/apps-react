@@ -1,4 +1,4 @@
-import { localisationService } from '@oneblink/apps'
+import { localisationService, authService } from '@oneblink/apps'
 import * as React from 'react'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { useRepeatableSetIndexText } from '../form-elements/FormElementRepeatableSet'
@@ -12,6 +12,7 @@ export default function useReplaceableText(text: string) {
       {
         submission: formSubmissionModel,
         formElements: elements,
+        userProfile: authService.getUserProfile() || undefined,
       },
     )
   }, [elements, formSubmissionModel, textWithIndex])
