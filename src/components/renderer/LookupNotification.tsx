@@ -358,9 +358,9 @@ async function fetchLookup(
     formElementLookupId,
   )
 
-  if (!formElementLookup || !formElementLookup.url) {
+  if (!formElementLookup) {
     console.log(
-      'Could not find URL for form element lookup for id:',
+      'Could not find form element lookup configuration for id:',
       formElementLookupId,
       formElementLookup,
     )
@@ -370,20 +370,25 @@ async function fetchLookup(
   if (formElementLookup.type === 'STATIC_DATA') {
     const elementName = payload.element.name
     const inputValue = payload.submission[elementName]
-    const records = formElementLookup.records || []
-    const matchingRecord = records.find((r) => r.inputValue === inputValue)
+    const matchingRecord = formElementLookup.records?.find(
+      (r) => r.inputValue === inputValue,
+    )
     const lookupResult: FormSubmissionModel = {}
-
-    if (!matchingRecord) {
-      return lookupResult
-    }
-
-    matchingRecord.preFills.forEach((prefill) => {
+    matchingRecord?.preFills.forEach((prefill) => {
       if (prefill.type === 'TEXT') {
         lookupResult[prefill.formElementName] = prefill.text
       }
     })
     return lookupResult
+  }
+
+  if (!formElementLookup.url) {
+    console.log(
+      'Could not find URL for form element lookup for id:',
+      formElementLookupId,
+      formElementLookup,
+    )
+    throw new Error('Could not find element lookup configuration')
   }
 
   const headers = await generateHeaders()
