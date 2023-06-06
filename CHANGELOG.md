@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **[BREAKING]** `allowSubmitWithPendingAttachments` prop for `<OneBlinkForm />` component to `isPendingQueueEnabled` to prevent offline submissions. The functionality regarding attachments from the previous `allowSubmitWithPendingAttachments` prop have not changed.
 - `FormNotification` to handle static data lookup type
 
 ## [3.1.0] - 2023-06-05

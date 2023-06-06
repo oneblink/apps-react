@@ -41,7 +41,6 @@ import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
-import determineIsInfoPage from './services/determineIsInfoPage'
 import { formElementsService } from '@oneblink/sdk-core'
 
 export type BaseProps = {
@@ -55,7 +54,7 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   attachmentRetentionInDays?: number
-  allowSubmitWithPendingAttachments?: boolean
+  isPendingQueueEnabled?: boolean
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
@@ -91,7 +90,7 @@ function OneBlinkFormBase({
   buttons,
   primaryColour,
   attachmentRetentionInDays,
-  allowSubmitWithPendingAttachments,
+  isPendingQueueEnabled,
   handleNavigateAway,
   isInfoPage: isInfoPageProp,
   lastElementUpdated,
@@ -118,7 +117,7 @@ function OneBlinkFormBase({
     if (!!isInfoPageProp && isInfoPageProp !== 'CALCULATED') {
       return isInfoPageProp === 'YES'
     }
-    return determineIsInfoPage(definition)
+    return formElementsService.determineIsInfoPage(definition)
   }, [definition, isInfoPageProp])
 
   //
@@ -182,6 +181,8 @@ function OneBlinkFormBase({
     hasConfirmedNavigation: null,
     goToLocation: null,
   })
+  const [promptOfflineSubmissionAttempt, setPromptOfflineSubmissionAttempt] =
+    React.useState<boolean>(false)
   const [promptUploadingAttachments, setPromptUploadingAttachments] =
     React.useState<boolean>(false)
   const handleBlockedNavigation = React.useCallback<
@@ -374,7 +375,8 @@ function OneBlinkFormBase({
     (submission: FormSubmissionModel) => {
       // Prevent submission until all attachment uploads are finished
       // Unless the user is offline, in which case, the uploads will
-      // be taken care of by a pending queue...hopefully.
+      // be taken care of by a pending queue if enabled, otherwise
+      // the user will be prompted to try again or save a draft.
       if (isOffline) {
         return true
       }
@@ -385,12 +387,12 @@ function OneBlinkFormBase({
         )
 
       if (attachmentsAreUploading) {
-        if (isUsingFormsKey || !allowSubmitWithPendingAttachments) {
+        if (isUsingFormsKey || !isPendingQueueEnabled) {
           bulmaToast.toast({
             message:
               'Attachments are still uploading, please wait for them to finish before trying again.',
-            // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-            type: 'ob-toast is-primary cypress-still-uploading-toast',
+            type: 'is-primary',
+            extraClasses: 'ob-toast cypress-still-uploading-toast',
             duration: 4000,
             pauseOnHover: true,
             closeOnClick: true,
@@ -404,7 +406,7 @@ function OneBlinkFormBase({
 
       return true
     },
-    [definition, isOffline, isUsingFormsKey, allowSubmitWithPendingAttachments],
+    [definition, isOffline, isPendingQueueEnabled, isUsingFormsKey],
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
@@ -420,8 +422,8 @@ function OneBlinkFormBase({
         bulmaToast.toast({
           message:
             'Bsb(s) are still being validated, please wait for them to finish before trying again.',
-          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-          type: 'ob-toast is-primary cypress-still-validating-toast',
+          type: 'is-primary',
+          extraClasses: 'ob-toast cypress-still-validating-toast',
           duration: 4000,
           pauseOnHover: true,
           closeOnClick: true,
@@ -453,8 +455,8 @@ function OneBlinkFormBase({
         console.log('Validation errors', formElementsValidation)
         bulmaToast.toast({
           message: 'Please fix validation errors',
-          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-          type: 'ob-toast is-danger cypress-invalid-submit-attempt',
+          type: 'is-danger',
+          extraClasses: 'ob-toast cypress-invalid-submit-attempt',
           duration: 4000,
           pauseOnHover: true,
           closeOnClick: true,
@@ -464,10 +466,11 @@ function OneBlinkFormBase({
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
         return
       }
-      if (!continueWhilstAttachmentsAreUploading) {
-        if (!checkAttachmentsCanBeSubmitted(submissionData.submission)) {
-          return
-        }
+      if (
+        !continueWhilstAttachmentsAreUploading &&
+        !checkAttachmentsCanBeSubmitted(submissionData.submission)
+      ) {
+        return
       }
       // check if attachments exist
       const newSubmission = checkIfAttachmentsExist(
@@ -483,12 +486,18 @@ function OneBlinkFormBase({
         bulmaToast.toast({
           message:
             "Some files that were included in your submission have been removed based on your administrator's data retention policy, please remove them and upload them again.",
-          // @ts-expect-error bulma sets this string as a class, so we are hacking in our own classes
-          type: 'ob-toast is-danger cypress-invalid-submit-attempt',
+          type: 'is-danger',
+          extraClasses: 'ob-toast cypress-invalid-submit-attempt',
           duration: 4000,
           pauseOnHover: true,
           closeOnClick: true,
         })
+        return
+      }
+
+      if (isOffline && !isPendingQueueEnabled) {
+        console.log('User is offline and form does not support a pending queue')
+        setPromptOfflineSubmissionAttempt(true)
         return
       }
 
@@ -506,12 +515,14 @@ function OneBlinkFormBase({
       getCurrentSubmissionData,
       checkBsbAreValidating,
       formElementsValidation,
-      checkAttachmentsCanBeSubmitted,
       checkBsbsCanBeSubmitted,
       definition,
       attachmentRetentionInDays,
+      isOffline,
+      isPendingQueueEnabled,
       allowNavigation,
       onSubmit,
+      checkAttachmentsCanBeSubmitted,
       setFormSubmission,
     ],
   )
@@ -528,10 +539,11 @@ function OneBlinkFormBase({
         if (!checkBsbAreValidating(submission)) {
           return
         }
-        if (!continueWhilstAttachmentsAreUploading) {
-          if (!checkAttachmentsCanBeSubmitted(submission)) {
-            return
-          }
+        if (
+          !continueWhilstAttachmentsAreUploading &&
+          !checkAttachmentsCanBeSubmitted(submission)
+        ) {
+          return
         }
         onSaveDraft({
           definition,
@@ -1061,6 +1073,60 @@ function OneBlinkFormBase({
                 continue the attachments will upload in the background. Do not
                 close the app until the upload has been completed.
               </p>
+            </Modal>
+
+            <Modal
+              isOpen={promptOfflineSubmissionAttempt}
+              title="It looks like you're Offline"
+              className="ob-modal__offline-submission-attempt"
+              cardClassName="cypress-submission-offline has-text-centered"
+              titleClassName="cypress-offline-title"
+              bodyClassName="cypress-offline-body"
+              actions={
+                <>
+                  {onSaveDraft && (
+                    <button
+                      type="button"
+                      className="button ob-button ob-button__offline-submission-attempt-save-draft is-success"
+                      onClick={() => handleSaveDraft(false)}
+                    >
+                      <CustomisableButtonInner
+                        label={buttons?.saveDraft?.label || 'Save Draft'}
+                        icon={buttons?.saveDraft?.icon}
+                      />
+                    </button>
+                  )}
+                  <span style={{ flex: 1 }}></span>
+                  <button
+                    className="button ob-button ob-button__offline-submission-attempt-cancel is-light"
+                    onClick={() => setPromptOfflineSubmissionAttempt(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="button ob-button ob-button__offline-submission-attempt-try-again is-primary"
+                    onClick={(e) => handleSubmit(e, false)}
+                  >
+                    Try Again
+                  </button>
+                </>
+              }
+            >
+              <p className="ob-modal__offline-submission-attempt-message">
+                You cannot submit this form while offline, please try again when
+                connectivity is restored.
+                {onSaveDraft && (
+                  <span className="ob-modal__offline-submission-attempt-save-draft-message">
+                    {' '}
+                    Alternatively, click the{' '}
+                    <b>{buttons?.saveDraft?.label || 'Save Draft'}</b> button
+                    below to come back to this later.
+                  </span>
+                )}
+              </p>
+              <i className="material-icons has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
+                wifi_off
+              </i>
             </Modal>
           </React.Fragment>
         )}
