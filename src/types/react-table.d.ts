@@ -62,14 +62,14 @@ declare module 'react-table' {
         }
       | {
           type: 'OPTIONS_SINGLE'
-          options: FormTypes.DynamicChoiceElementOption[]
+          options: FormTypes.ChoiceElementOption[]
           value?: {
             $in: string[]
           }
         }
       | {
           type: 'OPTIONS_MULTIPLE'
-          options: FormTypes.DynamicChoiceElementOption[]
+          options: FormTypes.ChoiceElementOption[]
           value?: {
             $elemMatch: {
               $in: string[]

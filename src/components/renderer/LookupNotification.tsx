@@ -17,6 +17,11 @@ import { FormTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
 import { FormElementLookupHandler, FormSubmissionModel } from '../../types/form'
 
+type FetchLookupPayload = {
+  element: FormTypes.LookupFormElement
+  definition: FormTypes.Form
+  submission: FormSubmissionModel
+}
 type Props = {
   autoLookupValue?: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
@@ -138,7 +143,7 @@ function LookupNotificationComponent({
         setIsCancellable(!abortController.signal.aborted)
       }, 5000)
 
-      const payload = {
+      const payload: FetchLookupPayload = {
         element,
         definition,
         submission: {
@@ -332,7 +337,7 @@ async function fetchLookup(
   formElementLookupId: number | undefined,
   organisationId: string | undefined,
   formsAppEnvironmentId: number | undefined,
-  payload: FormSubmissionModel,
+  payload: FetchLookupPayload,
   abortSignal: AbortSignal,
 ) {
   if (
@@ -353,7 +358,31 @@ async function fetchLookup(
     formElementLookupId,
   )
 
-  if (!formElementLookup || !formElementLookup.url) {
+  if (!formElementLookup) {
+    console.log(
+      'Could not find form element lookup configuration for id:',
+      formElementLookupId,
+      formElementLookup,
+    )
+    throw new Error('Could not find element lookup configuration')
+  }
+
+  if (formElementLookup.type === 'STATIC_DATA') {
+    const elementName = payload.element.name
+    const inputValue = payload.submission[elementName]
+    const matchingRecord = formElementLookup.records?.find(
+      (r) => r.inputValue === inputValue,
+    )
+    const lookupResult: FormSubmissionModel = {}
+    matchingRecord?.preFills.forEach((prefill) => {
+      if (prefill.type === 'TEXT') {
+        lookupResult[prefill.formElementName] = prefill.text
+      }
+    })
+    return lookupResult
+  }
+
+  if (!formElementLookup.url) {
     console.log(
       'Could not find URL for form element lookup for id:',
       formElementLookupId,
