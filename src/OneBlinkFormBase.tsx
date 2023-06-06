@@ -54,7 +54,7 @@ export type BaseProps = {
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   primaryColour?: string
   attachmentRetentionInDays?: number
-  isPendingQueueEnabled?: boolean
+  isPendingQueueEnabled: boolean
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
