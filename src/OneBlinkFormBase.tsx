@@ -1105,7 +1105,10 @@ function OneBlinkFormBase({
                   </button>
                   <button
                     className="button ob-button ob-button__offline-submission-attempt-try-again is-primary"
-                    onClick={(e) => handleSubmit(e, false)}
+                    onClick={(e) => {
+                      setPromptOfflineSubmissionAttempt(false)
+                      handleSubmit(e, false)
+                    }}
                   >
                     Try Again
                   </button>
