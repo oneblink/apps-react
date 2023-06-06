@@ -361,7 +361,7 @@ function OptionsTextField({
   value,
   onChange,
 }: {
-  options: FormTypes.DynamicChoiceElementOption[]
+  options: FormTypes.ChoiceElementOption[]
   value: string[] | undefined
   onChange: (newValue: string[]) => void
 }) {
