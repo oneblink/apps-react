@@ -75,6 +75,7 @@ function OneBlinkReadOnlyForm({ form, initialSubmission, ...rest }: Props) {
       onCancel={noop}
       onSubmit={noop}
       setFormSubmission={setFormSubmission}
+      isPendingQueueEnabled={false}
       {...rest}
     />
   )
