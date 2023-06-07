@@ -4,19 +4,28 @@ import { SubmissionTypes } from '@oneblink/types'
 import useAuth from './useAuth'
 import useIsMounted from './useIsMounted'
 import useIsOffline from './useIsOffline'
+
+/** The value returned from `useDrafts()` hook */
 export type DraftsContextValue = {
-  // Load
+  /** `true` drafts are currently loading. */
   isLoading: boolean
+  /** An Error object if loading drafts fails */
   loadError: Error | null
+  /** The incomplete submissions that were saved for later */
   drafts: SubmissionTypes.FormsAppDraft[]
+  /** A function to trigger loading of the drafts */
   reloadDrafts: () => unknown
+  /** A function to clear Error object from loading drafts */
   clearLoadError: () => void
-  // Sync
+  /** `true` drafts are syncing with other devices */
   isSyncing: boolean
+  /** A function to trigger syncing of the drafts */
   syncDrafts: () => unknown
+  /** An Error object if syncing drafts fails */
   syncError: Error | null
+  /** A function to clear Error object from syncing drafts */
   clearSyncError: () => void
-  // Delete
+  /** A function to remove a draft */
   deleteDraft: (draftId: string) => Promise<void>
 }
 
@@ -31,19 +40,53 @@ const defaultSyncState = {
   syncError: null,
 }
 
-const DraftsContext = React.createContext<DraftsContextValue>({
-  ...defaultLoadState,
-  ...defaultSyncState,
-  reloadDrafts: () => {},
-  clearLoadError: () => {},
-  syncDrafts: () => {},
-  clearSyncError: () => {},
-  deleteDraft: async () => {},
-})
+const DraftsContext = React.createContext<DraftsContextValue | undefined>(
+  undefined,
+)
 
+/**
+ * React Component that provides the context for the `useDrafts()` hook to be
+ * used by components further down your component tree. **It should only be
+ * included in your component tree once and ideally at the root of the
+ * application.**
+ *
+ * #### Example
+ *
+ * ```jsx
+ * import * as React from 'react'
+ * import { DraftsContextProvider } from '@oneblink/apps-react'
+ *
+ * function Component() {
+ *   const draftsContext = useDrafts()
+ *   // use drafts here
+ * }
+ *
+ * function App() {
+ *   return (
+ *     <DraftsContextProvider>
+ *       <Component />
+ *     </DraftsContextProvider>
+ *   )
+ * }
+ *
+ * const root = document.getElementById('root')
+ * if (root) {
+ *   ReactDOM.render(<App />, root)
+ * }
+ * ```
+ *
+ * @param props
+ * @returns
+ */
 export function DraftsContextProvider({
+  /** The identifier for the forms app associated with the user's drafts */
   formsAppId,
+  /**
+   * `true` if drafts are enabled, otherwise `false`. Can be used for account
+   * tier validation.
+   */
   isDraftsEnabled,
+  /** Your application components */
   children,
 }: {
   formsAppId: number
@@ -211,6 +254,18 @@ export function DraftsContextProvider({
   )
 }
 
-export default function useDrafts() {
-  return React.useContext(DraftsContext)
+/**
+ * React hook to get the context value for Drafts. Will throw an Error if used
+ * outside of the `<DraftsContextProvider />` component.
+ *
+ * @returns
+ */
+export default function useDrafts(): DraftsContextValue {
+  const value = React.useContext(DraftsContext)
+  if (!value) {
+    throw new Error(
+      `"useDrafts" hook was used outside of the "<DraftsContextProvider />" component's children.`,
+    )
+  }
+  return value
 }

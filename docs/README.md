@@ -32,6 +32,8 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 - [useLoadDataState()](./useLoadDataState.md)
 - [useLogin()](./useLogin.md)
 - [useNullableState()](./useNullableState.md)
+- usePendingSubmissions() (see JSDoc comments)
+- useDrafts() (see JSDoc comments)
 
 ## Frequently Asked Questions
 

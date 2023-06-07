@@ -23,6 +23,11 @@ export { default as useLogin } from './hooks/useLogin'
 export { default as useSignUp } from './hooks/useSignUp'
 export { default as useAuth, AuthContextProvider } from './hooks/useAuth'
 export {
+  default as usePendingSubmissions,
+  PendingSubmissionsProvider,
+  PendingSubmissionsContextValue,
+} from './hooks/usePendingSubmissions'
+export {
   default as useDrafts,
   DraftsContextProvider,
   DraftsContextValue,
