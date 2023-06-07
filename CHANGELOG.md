@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `useDrafts()` hook
+
 ### Changed
 
 - **[BREAKING]** `allowSubmitWithPendingAttachments` prop for `<OneBlinkForm />` component to `isPendingQueueEnabled` to prevent offline submissions. The functionality regarding attachments from the previous `allowSubmitWithPendingAttachments` prop have not changed.
