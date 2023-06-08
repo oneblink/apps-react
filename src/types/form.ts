@@ -6,7 +6,7 @@ export {
   FormElementsConditionallyShown,
 } from '@oneblink/sdk-core/dist/conditionalLogicService'
 
-type FormElementKey = string
+export type FormElementKey = string
 export type RepeatableSetEntryIndex = string
 
 export type FormSubmissionModel = Record<FormElementKey, unknown>
