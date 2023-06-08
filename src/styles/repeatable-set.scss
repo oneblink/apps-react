@@ -8,10 +8,10 @@
       margin-bottom: $size-8;
 
       @media only screen and (min-width: $desktop) {
-        float:right;
+        float: right;
         margin-bottom: 0;
         min-width: 0;
-        margin-left: $size-7
+        margin-left: $size-7;
       }
     }
   }
