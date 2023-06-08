@@ -2,12 +2,6 @@
 
 Helpers for OneBlink apps in ReactJS.
 
-## Installation
+## Documentation
 
-```sh
-npm install react@17 react-dom@17 @oneblink/apps-react --save
-```
-
-## Usage
-
-- [Usage Documentation](./docs/README.md)
+See the [Documentation](https://oneblink.github.io/apps-react/) for more details.
