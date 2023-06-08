@@ -71,7 +71,10 @@ const PendingSubmissionsContext =
  *
  * function App() {
  *   return (
- *     <PendingSubmissionsProvider>
+ *     <PendingSubmissionsProvider
+ *       isPendingQueueEnabled
+ *       successNotificationTimeoutMs={3000}
+ *     >
  *       <Component />
  *     </PendingSubmissionsProvider>
  *   )
@@ -88,6 +91,7 @@ const PendingSubmissionsContext =
  */
 export function PendingSubmissionsProvider({
   isPendingQueueEnabled,
+  successNotificationTimeoutMs = 500,
   children,
 }: {
   /**
@@ -95,6 +99,14 @@ export function PendingSubmissionsProvider({
    * offline submissions from being processed.
    */
   isPendingQueueEnabled: boolean
+  /**
+   * When a submission is processed successfully the
+   * `isShowingSuccessNotification` will be temporarily set to `true`, it will
+   * be set back to `false` after 5 seconds. This prop will allow you to
+   * customise how long to wait before hiding the notification with a
+   * milliseconds value.
+   */
+  successNotificationTimeoutMs?: number
   /** Your application components */
   children: React.ReactNode
 }) {
@@ -210,12 +222,12 @@ export function PendingSubmissionsProvider({
     if (submittedNotificationCount > 0) {
       const timeoutId = setTimeout(() => {
         setSubmittedNotificationCount(0)
-      }, 5000)
+      }, successNotificationTimeoutMs)
       return () => {
         clearTimeout(timeoutId)
       }
     }
-  }, [submittedNotificationCount])
+  }, [submittedNotificationCount, successNotificationTimeoutMs])
 
   const value = React.useMemo(
     () => ({
