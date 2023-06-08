@@ -7,6 +7,10 @@ const defaultValue = offlineService.isOffline()
 
 const IsOfflineContext = React.createContext<boolean>(defaultValue)
 
+/**
+ * @param type
+ * @param listener
+ */
 export const useNetworkChangeEffect = (
   type: 'online' | 'offline',
   listener: () => unknown,
@@ -24,6 +28,35 @@ export const useNetworkChangeEffect = (
   }, [type, listener])
 }
 
+/**
+ * IsOfflineContextProvider is a React Component that provides the `isOffline`
+ * state for components further down your component tree to consume. It should
+ * be used to wrap the components requiring the state.
+ *
+ * - **This component is required in your component tree to be able to consume the
+ *   [`useIsOffline`](./useIsOffline.html) hook.**
+ *
+ * ### Usage
+ *
+ * ```jsx
+ * import { IsOfflineContextProvider } from '@oneblink/apps-react'
+ *
+ * const TopLevelComponent = () => {
+ *   return (
+ *     <IsOfflineContextProvider>
+ *       <div>
+ *         <ComponentThatRequiresOfflineState />
+ *       </div>
+ *     </IsOfflineContextProvider>
+ *   )
+ * }
+ *
+ * export default TopLevelComponent
+ * ```
+ *
+ * @param props
+ * @returns
+ */
 export function IsOfflineContextProvider({
   children,
 }: {
@@ -41,6 +74,22 @@ export function IsOfflineContextProvider({
   )
 }
 
+/**
+ * This function is a react hook for determining whether an application is in an
+ * offline state.
+ *
+ * - **This component requires
+ *   [`<IsOfflineContextProvider/>`](./IsOfflineContextProvider.html) to be
+ *   present in your component tree.**
+ *
+ * ## Example
+ *
+ * ```js
+ * import { useIsOffline } from '@oneblink/apps-react'
+ *
+ * const isOffline = useIsOffline()
+ * ```
+ */
 export default function useIsOffline() {
   return React.useContext(IsOfflineContext)
 }
