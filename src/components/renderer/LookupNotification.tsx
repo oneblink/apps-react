@@ -333,6 +333,18 @@ export default function LookupNotification(props: Props) {
   return <>{props.children}</>
 }
 
+function getStaticDataLookupElementNames(
+  records: FormTypes.FormElementLookupStaticDataRecord[],
+) {
+  const elementNames = new Set<string>()
+  for (const record of records) {
+    for (const preFill of record.preFills) {
+      elementNames.add(preFill.formElementName)
+    }
+  }
+  return Array.from(elementNames)
+}
+
 async function fetchLookup(
   formElementLookupId: number | undefined,
   organisationId: string | undefined,
@@ -373,12 +385,26 @@ async function fetchLookup(
     const matchingRecord = formElementLookup.records?.find(
       (r) => r.inputValue === inputValue,
     )
+    const prefillElementNames = getStaticDataLookupElementNames(
+      formElementLookup.records || [],
+    )
+
+    // insert prefill values
     const lookupResult: FormSubmissionModel = {}
     matchingRecord?.preFills.forEach((prefill) => {
       if (prefill.type === 'TEXT') {
         lookupResult[prefill.formElementName] = prefill.text
       }
     })
+
+    // insert empty prefill values
+    const resultElementNames = Object.keys(lookupResult)
+    for (const elementName of prefillElementNames) {
+      if (!resultElementNames.includes(elementName)) {
+        lookupResult[elementName] = undefined
+      }
+    }
+
     return lookupResult
   }
 
