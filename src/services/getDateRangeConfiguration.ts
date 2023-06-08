@@ -1,6 +1,5 @@
 import { submissionService } from '@oneblink/sdk-core'
-import { FormTypes } from '@oneblink/types'
-import { FormSubmissionModel } from '../types/form'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 export type DateRangeConfigurationOptions = {
   referenceFormElementId: string | undefined
@@ -11,7 +10,7 @@ export type DateRangeConfigurationOptions = {
 export default function getDateRangeConfiguration(
   { referenceFormElementId, date, daysOffset }: DateRangeConfigurationOptions,
   elements: FormTypes.FormElement[],
-  formSubmissionModel: FormSubmissionModel,
+  formSubmissionModel: SubmissionTypes.S3SubmissionData['submission'],
 ): [string | undefined, number | undefined] {
   if (referenceFormElementId) {
     const referenceDate = submissionService.getRootElementValueById(

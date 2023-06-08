@@ -1,9 +1,8 @@
-import { FormTypes } from '@oneblink/types'
-import { FormSubmissionModel } from '../types/form'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 function checkIfBsbsAreValidatingForFormElements(
   formElements: FormTypes.FormElement[],
-  submission: FormSubmissionModel,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
 ): boolean {
   return formElements.some((formElement) => {
     switch (formElement.type) {
@@ -21,7 +20,7 @@ function checkIfBsbsAreValidatingForFormElements(
         }
         return checkIfBsbsAreValidatingForFormElements(
           formElement.elements || [],
-          nestedSubmission as FormSubmissionModel,
+          nestedSubmission as SubmissionTypes.S3SubmissionData['submission'],
         )
       }
       case 'repeatableSet': {
@@ -52,7 +51,7 @@ function checkIfBsbsAreValidatingForFormElements(
 
 export default function checkIfBsbsAreValidating(
   form: FormTypes.Form,
-  submission: FormSubmissionModel,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
 ): boolean {
   return checkIfBsbsAreValidatingForFormElements(form.elements, submission)
 }

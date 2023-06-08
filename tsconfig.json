@@ -21,7 +21,7 @@
   "include": ["./src"],
   "typedocOptions": {
     "entryPoints": ["src/typedoc.ts"],
-    "readme": "./DOCUMENTATION.md",
+    "readme": "DOCUMENTATION.md",
     "out": "docs",
     "excludeInternal": true,
     "hideGenerator": true

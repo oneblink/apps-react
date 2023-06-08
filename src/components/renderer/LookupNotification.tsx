@@ -13,14 +13,14 @@ import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useExecutedLookupCallback from '../../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { Sentry } from '@oneblink/apps'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
-import { FormElementLookupHandler, FormSubmissionModel } from '../../types/form'
+import { FormElementLookupHandler } from '../../types/form'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
   definition: FormTypes.Form
-  submission: FormSubmissionModel
+  submission: SubmissionTypes.S3SubmissionData['submission']
 }
 type Props = {
   autoLookupValue?: unknown
@@ -60,7 +60,7 @@ function LookupNotificationComponent({
   const mergeLookupData = React.useCallback(
     (
       newValue: unknown,
-      dataLookupResult: FormSubmissionModel,
+      dataLookupResult: SubmissionTypes.S3SubmissionData['submission'],
       elementLookupResult: FormTypes.FormElement[],
     ) => {
       if (elementLookupResult) {
@@ -390,7 +390,7 @@ async function fetchLookup(
     )
 
     // insert prefill values
-    const lookupResult: FormSubmissionModel = {}
+    const lookupResult: SubmissionTypes.S3SubmissionData['submission'] = {}
     matchingRecord?.preFills.forEach((prefill) => {
       if (prefill.type === 'TEXT') {
         lookupResult[prefill.formElementName] = prefill.text

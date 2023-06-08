@@ -3,11 +3,8 @@ import { localisationService } from '@oneblink/apps'
 
 import { useFormSubmissionModelParent } from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'
-import { FormTypes } from '@oneblink/types'
-import {
-  FormElementValueChangeHandler,
-  FormSubmissionModel,
-} from '../types/form'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormElementValueChangeHandler } from '../types/form'
 type Props = {
   element: FormTypes.SummaryElement
   onChange: FormElementValueChangeHandler
@@ -39,7 +36,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
     (
       partialSummary: FormElementSummaryResults,
       formElement: FormTypes.FormElement,
-      submission: FormSubmissionModel,
+      submission: SubmissionTypes.S3SubmissionData['submission'],
     ) => {
       if (!('name' in formElement)) return partialSummary
       if (

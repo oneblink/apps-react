@@ -49,6 +49,7 @@ import {
   GeoscapeTypes,
   MiscTypes,
   PointTypes,
+  SubmissionTypes,
 } from '@oneblink/types'
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
@@ -61,7 +62,6 @@ import {
   FormElementsValidation,
   FormElementValidation,
   FormElementValueChangeHandler,
-  FormSubmissionModel,
   IsDirtyProps,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
@@ -77,7 +77,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   // Props passed by repeatable sets
   isEven?: boolean
   idPrefix: string
-  model: FormSubmissionModel
+  model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
 }
 
@@ -526,7 +526,11 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           id={id}
           isEven={!isEven}
           element={element}
-          value={value as Array<FormSubmissionModel> | undefined}
+          value={
+            value as
+              | Array<SubmissionTypes.S3SubmissionData['submission']>
+              | undefined
+          }
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementRepeatableSet
@@ -636,7 +640,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formId={formId}
           id={id}
           element={element}
-          value={value as FormSubmissionModel | undefined}
+          value={
+            value as SubmissionTypes.S3SubmissionData['submission'] | undefined
+          }
           onChange={
             onChange as React.ComponentProps<typeof FormElementForm>['onChange']
           }
@@ -778,7 +784,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formId={formId}
           id={id}
           element={element}
-          value={value as FormSubmissionModel | undefined}
+          value={
+            value as SubmissionTypes.S3SubmissionData['submission'] | undefined
+          }
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementFreshdeskDependentField
@@ -870,7 +878,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formId={formId}
           id={id}
           element={element}
-          value={value as FormSubmissionModel | undefined}
+          value={
+            value as SubmissionTypes.S3SubmissionData['submission'] | undefined
+          }
           onChange={
             onChange as React.ComponentProps<
               typeof FormElementCivicaNameRecord

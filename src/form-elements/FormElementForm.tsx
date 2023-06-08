@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import {
@@ -6,15 +6,16 @@ import {
   FormElementLookupHandler,
   FormElementValidation,
   FormElementValueChangeHandler,
-  FormSubmissionModel,
 } from '../types/form'
 
 export type Props = {
   formId: number
   id: string
   element: FormTypes.FormFormElement
-  value: FormSubmissionModel | undefined
-  onChange: FormElementValueChangeHandler<FormSubmissionModel>
+  value: SubmissionTypes.S3SubmissionData['submission'] | undefined
+  onChange: FormElementValueChangeHandler<
+    SubmissionTypes.S3SubmissionData['submission']
+  >
   onLookup: FormElementLookupHandler
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
@@ -53,7 +54,7 @@ function FormElementForm({
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission[
           element.name
-        ] as FormSubmissionModel
+        ] as SubmissionTypes.S3SubmissionData['submission']
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (
             formElement.type === 'form' &&

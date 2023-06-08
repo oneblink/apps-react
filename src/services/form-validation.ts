@@ -1,6 +1,6 @@
 import validate, { ValidatorConstraintFn } from 'validate.js'
 import { attachmentsService, localisationService } from '@oneblink/apps'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { parseDateValue } from './generate-default-data'
@@ -9,7 +9,6 @@ import {
   FormElementConditionallyShown,
   FormElementsConditionallyShown,
   FormElementsValidation,
-  FormSubmissionModel,
 } from '../types/form'
 import generateFreshdeskDependentFieldElements from './generateFreshdeskDependentFieldElements'
 import cleanFormSubmissionModel from './cleanFormSubmissionModel'
@@ -83,7 +82,7 @@ validate.validators.entries = function (
 }
 
 validate.validators.nestedElements = function (
-  value: FormSubmissionModel | undefined,
+  value: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   { schema, formElementConditionallyShown }: NestedValidateJSSchema,
 ) {
   const errors = validateSubmission(
@@ -231,7 +230,7 @@ const escapeElementName = (elementName: string) => {
 function getCleanDateRangeConfiguration(
   options: DateRangeConfigurationOptions,
   elements: FormTypes.FormElement[],
-  submission: FormSubmissionModel | undefined,
+  submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
 ): ReturnType<typeof getDateRangeConfiguration> {
   if (options.referenceFormElementId && submission) {
@@ -249,7 +248,7 @@ function getCleanDateRangeConfiguration(
 function getCleanRepeatableSetConfiguration(
   setEntries: FormTypes.RepeatableSetElement['minSetEntries'],
   elements: FormTypes.FormElement[],
-  submission: FormSubmissionModel | undefined,
+  submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
 ) {
   if (submission) {
@@ -280,7 +279,9 @@ export function generateValidationSchema(
       }
     }
 
-    const constraint: ValidatorConstraintFn<FormSubmissionModel> = (
+    const constraint: ValidatorConstraintFn<
+      SubmissionTypes.S3SubmissionData['submission']
+    > = (
       value,
       submission,
       propertyName,
@@ -708,7 +709,7 @@ export function generateValidationSchema(
 
 export function validateSubmission(
   schema: ValidateJSSchema,
-  submission: FormSubmissionModel | undefined,
+  submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
 ): FormElementsValidation | undefined {
   const errorsAsArray = validate(submission, schema, {

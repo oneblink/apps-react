@@ -1,14 +1,11 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import {
   validateSubmission,
   generateValidationSchema,
 } from '../services/form-validation'
-import {
-  FormElementsConditionallyShown,
-  FormSubmissionModel,
-} from '../types/form'
+import { FormElementsConditionallyShown } from '../types/form'
 
 function stripFormElementsWithoutName(
   formElements: FormTypes.FormElement[],
@@ -88,7 +85,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
 
   const handleValidate = React.useCallback(
     (
-      submission: FormSubmissionModel,
+      submission: SubmissionTypes.S3SubmissionData['submission'],
       formElementsConditionallyShown: FormElementsConditionallyShown,
     ) => {
       return validateSubmission(

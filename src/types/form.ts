@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 export {
   FormElementConditionallyShownElement,
@@ -8,8 +8,6 @@ export {
 
 export type FormElementKey = string
 export type RepeatableSetEntryIndex = string
-
-export type FormSubmissionModel = Record<FormElementKey, unknown>
 
 export type FormElementsValidation = Record<
   FormElementKey,
@@ -39,11 +37,11 @@ export type FormElementValueChangeHandler<T = unknown> = (
 
 export type FormElementLookupHandler = (
   setter: (data: {
-    submission: FormSubmissionModel
+    submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
   }) => {
-    submission: FormSubmissionModel
+    submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
   },
 ) => void
@@ -51,7 +49,7 @@ export type FormElementLookupHandler = (
 export type SetFormSubmission = React.Dispatch<
   React.SetStateAction<{
     definition: FormTypes.Form
-    submission: FormSubmissionModel
+    submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
   }>
 >

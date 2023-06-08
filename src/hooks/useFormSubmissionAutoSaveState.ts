@@ -1,17 +1,15 @@
 import * as React from 'react'
 import _throttle from 'lodash.throttle'
 import { autoSaveService, submissionService, Sentry } from '@oneblink/apps'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
-import { FormSubmissionModel } from '../types/form'
 import { FormElement } from '@oneblink/types/typescript/forms'
 
 /**
  * Use this if you want to implement a controlled auto saving form. See
- * [Implementing Controlled Auto Save](./faq/how-to-implement-auto-save.md) for
- * a full example. If you do not need to control the `submission` or
- * `definition` properties, you can use the
- * [OneBlinkAutoSaveForm](./OneBlinkAutoSaveForm.md) component. TODO: Fix link
+ * {@link OneBlinkFormControlled} for a full example. If you do not need to
+ * control the `submission` or `definition` properties, you can use the
+ * {@link OneBlinkAutoSaveForm} component.
  *
  * @param options
  * @returns
@@ -33,7 +31,7 @@ export default function useFormSubmissionAutoSaveState({
   autoSaveKey: string
   onCancel: () => unknown
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
-  initialSubmission?: FormSubmissionModel
+  initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
   resumeAtElement?: FormTypes.FormElement
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
@@ -47,7 +45,7 @@ export default function useFormSubmissionAutoSaveState({
     setAutoSaveState,
   ] = React.useState<{
     isLoadingAutoSaveSubmission: boolean
-    autoSaveSubmission: FormSubmissionModel | null
+    autoSaveSubmission: SubmissionTypes.S3SubmissionData['submission'] | null
     autoSaveElement: FormElement | null
   }>({
     isLoadingAutoSaveSubmission: true,
@@ -57,7 +55,10 @@ export default function useFormSubmissionAutoSaveState({
 
   const throttledAutoSave = React.useMemo(() => {
     return _throttle(
-      (model: FormSubmissionModel, lastElementUpdated?: FormElement) => {
+      (
+        model: SubmissionTypes.S3SubmissionData['submission'],
+        lastElementUpdated?: FormElement,
+      ) => {
         console.log('Auto saving...')
         autoSaveService
           .upsertAutoSaveData(definition.id, autoSaveKey, model)
@@ -145,11 +146,9 @@ export default function useFormSubmissionAutoSaveState({
     let ignore = false
     const loadAutoSaveData = async () => {
       try {
-        const autoSaveSubmission =
-          await autoSaveService.getAutoSaveData<FormSubmissionModel>(
-            definition.id,
-            autoSaveKey,
-          )
+        const autoSaveSubmission = await autoSaveService.getAutoSaveData<
+          SubmissionTypes.S3SubmissionData['submission']
+        >(definition.id, autoSaveKey)
         const autoSaveElement =
           await autoSaveService.getAutoSaveData<FormElement>(
             definition.id,
