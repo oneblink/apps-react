@@ -18,5 +18,12 @@
     "sourceMap": true,
     "inlineSources": true
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "typedocOptions": {
+    "entryPoints": ["src/typedoc.ts"],
+    "readme": "./DOCUMENTATION.md",
+    "out": "docs",
+    "excludeInternal": true,
+    "hideGenerator": true
+  }
 }
