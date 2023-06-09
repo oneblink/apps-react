@@ -58,13 +58,19 @@ export function FormStoreTableProvider({
     onDefaultFilters: React.useCallback((query) => {
       let defaultParameters: formStoreService.FormStoreParameters = {}
       const localStorageParams = getParamsFromLocalStorage()
-      if (localStorageParams?.unwindRepeatableSets === true) {
-        defaultParameters.unwindRepeatableSets =
-          localStorageParams.unwindRepeatableSets
+      if (
+        localStorageParams &&
+        Object(localStorageParams) === localStorageParams
+      ) {
+        defaultParameters = localStorageParams
       }
       try {
         if (typeof query.parameters === 'string') {
-          defaultParameters = JSON.parse(query.parameters)
+          //allow qs params to override local storage
+          defaultParameters = {
+            ...defaultParameters,
+            ...JSON.parse(query.parameters),
+          }
         }
       } catch (error) {
         console.warn('Could not parse filter as JSON', error)
