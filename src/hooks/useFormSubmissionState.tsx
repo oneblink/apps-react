@@ -37,6 +37,7 @@ import generateDefaultData from '../services/generate-default-data'
  *   with
  * @param lastElementUpdated
  * @returns
+ * @group Hooks
  */
 export default function useFormSubmissionState(
   form: FormTypes.Form,

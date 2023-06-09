@@ -122,5 +122,6 @@ function OneBlinkAutoSaveForm({
  *
  * @param props
  * @returns
+ * @group Components
  */
 export default React.memo(OneBlinkAutoSaveForm)

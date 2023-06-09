@@ -34,6 +34,7 @@ import * as React from 'react'
  *
  * @param defaultValue
  * @returns
+ * @group Hooks
  */
 export default function useBooleanState(
   defaultValue: boolean,

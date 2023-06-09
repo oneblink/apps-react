@@ -216,4 +216,9 @@ const V4CompatibleDateTimePicker = ({
   )
 }
 
+/**
+ * @param props
+ * @returns
+ * @group Components
+ */
 export default React.memo<Props>(V4CompatibleDateTimePicker)

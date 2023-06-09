@@ -10,6 +10,7 @@ const IsOfflineContext = React.createContext<boolean>(defaultValue)
 /**
  * @param type
  * @param listener
+ * @group Hooks
  */
 export const useNetworkChangeEffect = (
   type: 'online' | 'offline',
@@ -56,6 +57,7 @@ export const useNetworkChangeEffect = (
  *
  * @param props
  * @returns
+ * @group Components
  */
 export function IsOfflineContextProvider({
   children,
@@ -89,6 +91,9 @@ export function IsOfflineContextProvider({
  *
  * const isOffline = useIsOffline()
  * ```
+ *
+ * @returns
+ * @group Hooks
  */
 export default function useIsOffline() {
   return React.useContext(IsOfflineContext)

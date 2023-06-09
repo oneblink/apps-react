@@ -31,4 +31,9 @@ function OneBlinkFormStoreClearFiltersButton(
   )
 }
 
+/**
+ * @param props
+ * @returns
+ * @group Components
+ */
 export default React.memo(OneBlinkFormStoreClearFiltersButton)

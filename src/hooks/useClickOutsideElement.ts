@@ -38,6 +38,7 @@ import * as React from 'react'
  *
  * @param ref
  * @param callback
+ * @group Hooks
  */
 export default function useClickOutsideElement(
   ref: { current: HTMLElement | null },

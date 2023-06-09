@@ -10,4 +10,9 @@ const ProgressBar = ({
   return <LinearProgress {...rest} variant="determinate" value={progress} />
 }
 
+/**
+ * @param props
+ * @returns
+ * @group Components
+ */
 export default React.memo(ProgressBar)

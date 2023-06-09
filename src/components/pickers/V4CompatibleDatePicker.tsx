@@ -207,4 +207,9 @@ const V4CompatibleDatePicker = ({
   )
 }
 
+/**
+ * @param props
+ * @returns
+ * @group Components
+ */
 export default React.memo<Props>(V4CompatibleDatePicker)

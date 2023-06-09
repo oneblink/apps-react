@@ -178,4 +178,9 @@ const V4CompatibleTimePicker = ({
   )
 }
 
+/**
+ * @param props
+ * @returns
+ * @group Components
+ */
 export default React.memo<Props>(V4CompatibleTimePicker)

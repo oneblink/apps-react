@@ -404,5 +404,9 @@ function PaymentReceipt({
  *   ReactDOM.render(<App />, root)
  * }
  * ```
+ *
+ * @param props
+ * @returns
+ * @group Components
  */
 export default React.memo(PaymentReceipt)

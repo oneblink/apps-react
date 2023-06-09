@@ -21,7 +21,7 @@ export {
   default as useIsOffline,
   IsOfflineContextProvider,
 } from './hooks/useIsOffline'
-export { default as useLogin } from './hooks/useLogin'
+export { default as useLogin, UseLoginValue } from './hooks/useLogin'
 export { default as useSignUp } from './hooks/useSignUp'
 export {
   default as useAuth,

@@ -24,6 +24,12 @@
     "readme": "DOCUMENTATION.md",
     "out": "docs",
     "excludeInternal": true,
-    "hideGenerator": true
+    "hideGenerator": true,
+    "navigation": {
+      "includeCategories": true,
+      "includeGroups": true
+    },
+    "categorizeByGroup": true,
+    "visibilityFilters": {}
   }
 }

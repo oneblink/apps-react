@@ -62,7 +62,10 @@ const PendingSubmissionsContext =
  *
  * ```jsx
  * import * as React from 'react'
- * import { PendingSubmissionsContextProvider } from '@oneblink/apps-react'
+ * import {
+ *   PendingSubmissionsContextProvider,
+ *   usePendingSubmissions,
+ * } from '@oneblink/apps-react'
  *
  * function Component() {
  *   const pendingSubmissionsContext = usePendingSubmissions()
