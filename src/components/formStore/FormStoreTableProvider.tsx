@@ -131,7 +131,7 @@ export function FormStoreTableProvider({
       TABLE_PARAMETERS_FORM_STORE_KEY,
       JSON.stringify(paramsToStore),
     )
-  }, [parameters])
+  }, [parameters?.unwindRepeatableSets])
 
   const formStoreTable = useFormStoreTable({
     formStoreRecords,
