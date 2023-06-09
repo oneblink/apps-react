@@ -8,7 +8,7 @@ import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
-import { FormTypes, FormsAppsTypes } from '@oneblink/types'
+import { FormTypes, FormsAppsTypes, SubmissionTypes } from '@oneblink/types'
 import { attachmentsService } from '@oneblink/apps'
 import * as H from 'history'
 
@@ -34,7 +34,6 @@ import CustomisableButtonInner from './components/renderer/CustomisableButtonInn
 import {
   FormElementsValidation,
   FormElementValueChangeHandler,
-  FormSubmissionModel,
   SetFormSubmission,
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
@@ -43,34 +42,79 @@ import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 
-export type BaseProps = {
+export type OneBlinkFormBaseProps = {
+  /** The function to call when the user cancels the form */
   onCancel: () => unknown
+  /**
+   * The function to call when the user submits the form with valid submission
+   * data. See
+   * [NewFormSubmission](https://oneblink.github.io/apps/modules/submissionService.html#NewFormSubmission)
+   * for the structure of the argument.
+   */
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
+  /** Whether the form is currently able to be submitted. False by default. */
   disabled?: boolean
   isPreview?: boolean
+  /**
+   * A [Google Maps API
+   * Key](https://developers.google.com/maps/documentation/javascript/get-api-key).
+   * Required if the form contains a `location` form element.
+   */
   googleMapsApiKey?: string
+  /**
+   * An [ABN Lookup Authentication
+   * Guid](https://abr.business.gov.au/Tools/WebServices). Required if the form
+   * contains a `abn` form element.
+   */
   abnLookupAuthenticationGuid?: string
+  /**
+   * A [reCAPTCHA Site Key](https://developers.google.com/recaptcha/intro).
+   * Required if the form contains a `captcha` form element.
+   */
   captchaSiteKey?: string
+  /** Change properties for certain buttons on the form. */
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
+  /** Hex colour value for certain inputs (defaults to `#4c8da7`). */
   primaryColour?: string
+  /** Number of days attachments are retained for. */
   attachmentRetentionInDays?: number
+  /**
+   * If set to `false`, submission will be prevented while offline. If set to
+   * `true`, the user will be prompted to allow them to continue with
+   * attachments uploading in the background later.
+   */
   isPendingQueueEnabled: boolean
+  /**
+   * The function to call when the user wishes to save there submission data as
+   * a draft submission. If not specified, drafts cannot be saved. See
+   * [NewDraftSubmission](https://oneblink.github.io/apps/modules/submissionService.html#NewDraftSubmission)
+   * for the structure of the argument.
+   */
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
+  /**
+   * The function to call when the user needs to navigate away from the form.
+   * e.g. `history.push`
+   */
   handleNavigateAway?: () => unknown
+  /**
+   * Determines whether the form is submittable or not. Info page type forms
+   * show a "Done" button instead of a "Submit" button. Defaults to
+   * "CALCULATED"
+   */
   isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
 }
 
-export type ControlledProps = {
+export type OneBlinkFormControlledProps = {
   definition: FormTypes.Form
-  submission: FormSubmissionModel
+  submission: SubmissionTypes.S3SubmissionData['submission']
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
 }
 
-type Props = BaseProps &
-  ControlledProps & {
+type Props = OneBlinkFormBaseProps &
+  OneBlinkFormControlledProps & {
     isReadOnly: boolean
   }
 
@@ -372,7 +416,7 @@ function OneBlinkFormBase({
   }, [])
 
   const checkAttachmentsCanBeSubmitted = React.useCallback(
-    (submission: FormSubmissionModel) => {
+    (submission: SubmissionTypes.S3SubmissionData['submission']) => {
       // Prevent submission until all attachment uploads are finished
       // Unless the user is offline, in which case, the uploads will
       // be taken care of by a pending queue if enabled, otherwise
@@ -410,14 +454,14 @@ function OneBlinkFormBase({
   )
 
   const checkBsbsCanBeSubmitted = React.useCallback(
-    (submission: FormSubmissionModel) => {
+    (submission: SubmissionTypes.S3SubmissionData['submission']) => {
       return !checkBsbsAreInvalid(definition, submission)
     },
     [definition],
   )
 
   const checkBsbAreValidating = React.useCallback(
-    (submission: FormSubmissionModel) => {
+    (submission: SubmissionTypes.S3SubmissionData['submission']) => {
       if (checkIfBsbsAreValidating(definition, submission)) {
         bulmaToast.toast({
           message:

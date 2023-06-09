@@ -4,14 +4,6 @@ import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
-import { FormTypes } from '@oneblink/types'
-
-type Props = React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
-  autoSaveKey: string
-  removeAutoSaveDataBeforeSubmit?: boolean
-  removeAutoSaveDataBeforeSaveDraft?: boolean
-  resumeAtElement?: FormTypes.FormElement
-}
 
 function OneBlinkAutoSaveForm({
   form,
@@ -24,7 +16,22 @@ function OneBlinkAutoSaveForm({
   onSubmit,
   onSaveDraft,
   ...props
-}: Props) {
+}: React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
+  /** Pass a unique key for this submission e.g. the `externalId` the parameter */
+  autoSaveKey: string
+  /**
+   * By default, auto save data is removed when the user clicks Submit. If you
+   * would like auto save data to persist and clean up the auto save data later,
+   * pass `false`.
+   */
+  removeAutoSaveDataBeforeSubmit?: boolean
+  /**
+   * By default, auto save data is removed when the user clicks Save Draft. If
+   * you would like auto save data to persist and clean up the auto save data
+   * later, pass `false`.
+   */
+  removeAutoSaveDataBeforeSaveDraft?: boolean
+}) {
   const {
     definition,
     submission,
@@ -105,4 +112,15 @@ function OneBlinkAutoSaveForm({
   )
 }
 
+/**
+ * This component is a drop in replacement for {@link OneBlinkForm} with the
+ * addition of auto save happening periodically to prevent users from losing
+ * submission data.
+ *
+ * If you need auto saving with a controlled form, see the
+ * {@link OneBlinkFormControlled} component for a full example.
+ *
+ * @param props
+ * @returns
+ */
 export default React.memo(OneBlinkAutoSaveForm)

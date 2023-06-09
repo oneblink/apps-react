@@ -2,13 +2,10 @@ import * as React from 'react'
 import ExpressionParser from 'morph-expressions'
 import escapeString from 'escape-string-regexp'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
 import { localisationService } from '@oneblink/apps'
-import {
-  FormElementValueChangeHandler,
-  FormSubmissionModel,
-} from '../types/form'
+import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
 type Props = {
@@ -62,7 +59,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     ) => {
       exprParser.registerProperty(
         replacement,
-        (submission: FormSubmissionModel) => {
+        (submission: SubmissionTypes.S3SubmissionData['submission']) => {
           const defaultAccumulator = submission[nestedElementNames[0]]
 
           return nestedElementNames.reduce(

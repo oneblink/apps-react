@@ -1,9 +1,8 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { v4 as uuid } from 'uuid'
 import { attachmentsService } from '@oneblink/apps'
 
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
-import { FormSubmissionModel } from '../types/form'
 
 export function validateAttachmentExists(
   attachment: attachmentsService.Attachment,
@@ -64,10 +63,10 @@ function validateAttachmentsExists(
 
 function checkIfAttachmentsExistForFormElements(
   formElements: FormTypes.FormElement[],
-  submission: FormSubmissionModel,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
   attachmentRetentionInDays: number | undefined,
-): FormSubmissionModel | void {
-  const result: FormSubmissionModel = {
+): SubmissionTypes.S3SubmissionData['submission'] | void {
+  const result: SubmissionTypes.S3SubmissionData['submission'] = {
     ...submission,
   }
   let hasChanges = false
@@ -93,7 +92,7 @@ function checkIfAttachmentsExistForFormElements(
         }
         const newSubmission = checkIfAttachmentsExistForFormElements(
           formElement.elements || [],
-          nestedSubmission as FormSubmissionModel,
+          nestedSubmission as SubmissionTypes.S3SubmissionData['submission'],
           attachmentRetentionInDays,
         )
         if (newSubmission) {
@@ -188,9 +187,9 @@ function checkIfAttachmentsExistForFormElements(
 
 export default function checkIfAttachmentsExist(
   form: FormTypes.Form,
-  submission: FormSubmissionModel,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
   attachmentRetentionInDays: number | undefined,
-): FormSubmissionModel | void {
+): SubmissionTypes.S3SubmissionData['submission'] | void {
   return checkIfAttachmentsExistForFormElements(
     form.elements,
     submission,

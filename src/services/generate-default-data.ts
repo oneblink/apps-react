@@ -1,6 +1,5 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { attachmentsService, localisationService } from '@oneblink/apps'
-import { FormSubmissionModel } from '../types/form'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
@@ -159,23 +158,32 @@ function parseUnknownAsRecord<T>(
 function parseFormSubmissionModel(
   elements: FormTypes.FormElement[],
   value: unknown,
-): FormSubmissionModel | undefined {
+): SubmissionTypes.S3SubmissionData['submission'] | undefined {
   return parseUnknownAsRecord(value, (record) => {
-    return elements.reduce<FormSubmissionModel>((model, element) => {
-      switch (element.type) {
-        case 'section':
-        case 'page': {
-          const partialModel = parseFormSubmissionModel(element.elements, model)
-          Object.assign(model, partialModel)
-          break
+    return elements.reduce<SubmissionTypes.S3SubmissionData['submission']>(
+      (model, element) => {
+        switch (element.type) {
+          case 'section':
+          case 'page': {
+            const partialModel = parseFormSubmissionModel(
+              element.elements,
+              model,
+            )
+            Object.assign(model, partialModel)
+            break
+          }
+          default: {
+            model[element.name] = parsePreFillData(
+              element,
+              record[element.name],
+            )
+          }
         }
-        default: {
-          model[element.name] = parsePreFillData(element, record[element.name])
-        }
-      }
 
-      return model
-    }, record)
+        return model
+      },
+      record,
+    )
   })
 }
 
@@ -359,130 +367,135 @@ function parsePreFillData(
 
 export default function generateDefaultData(
   elements: FormTypes.FormElement[],
-  preFillData: FormSubmissionModel,
-): FormSubmissionModel {
-  return elements.reduce<FormSubmissionModel>((m, el) => {
-    if (el.type !== 'page' && el.type !== 'section' && el.name in m) {
-      m[el.name] = parsePreFillData(el, m[el.name])
-      return m
-    }
+  preFillData: SubmissionTypes.S3SubmissionData['submission'],
+): SubmissionTypes.S3SubmissionData['submission'] {
+  return elements.reduce<SubmissionTypes.S3SubmissionData['submission']>(
+    (m, el) => {
+      if (el.type !== 'page' && el.type !== 'section' && el.name in m) {
+        m[el.name] = parsePreFillData(el, m[el.name])
+        return m
+      }
 
-    switch (el.type) {
-      case 'checkboxes':
-      case 'select':
-      case 'autocomplete':
-      case 'radio':
-      case 'compliance': {
-        const dv = getOptionsDefaultValue(el)
-        if (dv) {
-          if (el.type === 'compliance' && typeof dv === 'string') {
-            m[el.name] = {
-              value: dv,
+      switch (el.type) {
+        case 'checkboxes':
+        case 'select':
+        case 'autocomplete':
+        case 'radio':
+        case 'compliance': {
+          const dv = getOptionsDefaultValue(el)
+          if (dv) {
+            if (el.type === 'compliance' && typeof dv === 'string') {
+              m[el.name] = {
+                value: dv,
+              }
+            } else {
+              m[el.name] = dv
             }
+          }
+          break
+        }
+        case 'number': {
+          if (typeof el.defaultValue === 'number') {
+            m[el.name] = el.defaultValue
+          } else if (el.isSlider) {
+            m[el.name] = el.minNumber
           } else {
-            m[el.name] = dv
+            m[el.name] = undefined
           }
+          break
         }
-        break
-      }
-      case 'number': {
-        if (typeof el.defaultValue === 'number') {
-          m[el.name] = el.defaultValue
-        } else if (el.isSlider) {
-          m[el.name] = el.minNumber
-        } else {
-          m[el.name] = undefined
-        }
-        break
-      }
-      case 'section':
-      case 'page': {
-        if (Array.isArray(el.elements)) {
-          Object.assign(m, generateDefaultData(el.elements, m))
-        }
-        break
-      }
-      case 'civicaNameRecord': {
-        const nestedElements = generateCivicaNameRecordElements(el, [])
-        m[el.name] = generateDefaultData(nestedElements, { ...el.defaultValue })
-        break
-      }
-      case 'form': {
-        if (Array.isArray(el.elements)) {
-          m[el.name] = generateDefaultData(el.elements, {})
-        }
-        break
-      }
-      case 'repeatableSet': {
-        if (
-          Array.isArray(el.elements) &&
-          typeof el.minSetEntries === 'number'
-        ) {
-          const minSetEntries = el.minSetEntries
-          // add min number of entries by default
-          const entries = []
-          for (let index = 0; index < minSetEntries; index++) {
-            const entry = generateDefaultData(el.elements, {})
-            entries.push(entry)
+        case 'section':
+        case 'page': {
+          if (Array.isArray(el.elements)) {
+            Object.assign(m, generateDefaultData(el.elements, m))
           }
-          m[el.name] = entries
+          break
         }
-        break
-      }
-      case 'date':
-      case 'datetime':
-      case 'time': {
-        if (el.defaultValue) {
-          m[el.name] = parseDateValue({
-            dateOnly: el.type === 'date',
-            daysOffset: el.defaultValueDaysOffset,
-            value: el.defaultValue,
+        case 'civicaNameRecord': {
+          const nestedElements = generateCivicaNameRecordElements(el, [])
+          m[el.name] = generateDefaultData(nestedElements, {
+            ...el.defaultValue,
           })
+          break
         }
-        break
-      }
-      case 'camera':
-      case 'draw':
-      case 'files': {
-        m[el.name] = parsePreFillData(el, el.defaultValue)
-        break
-      }
-      case 'freshdeskDependentField':
-      case 'geoscapeAddress':
-      case 'pointAddress':
-      case 'civicaStreetName':
-      case 'abn':
-      case 'bsb':
-      case 'text':
-      case 'barcodeScanner':
-      case 'email':
-      case 'telephone':
-      case 'textarea':
-      case 'location': {
-        if (el.defaultValue) {
-          m[el.name] = el.defaultValue
+        case 'form': {
+          if (Array.isArray(el.elements)) {
+            m[el.name] = generateDefaultData(el.elements, {})
+          }
+          break
         }
-        break
+        case 'repeatableSet': {
+          if (
+            Array.isArray(el.elements) &&
+            typeof el.minSetEntries === 'number'
+          ) {
+            const minSetEntries = el.minSetEntries
+            // add min number of entries by default
+            const entries = []
+            for (let index = 0; index < minSetEntries; index++) {
+              const entry = generateDefaultData(el.elements, {})
+              entries.push(entry)
+            }
+            m[el.name] = entries
+          }
+          break
+        }
+        case 'date':
+        case 'datetime':
+        case 'time': {
+          if (el.defaultValue) {
+            m[el.name] = parseDateValue({
+              dateOnly: el.type === 'date',
+              daysOffset: el.defaultValueDaysOffset,
+              value: el.defaultValue,
+            })
+          }
+          break
+        }
+        case 'camera':
+        case 'draw':
+        case 'files': {
+          m[el.name] = parsePreFillData(el, el.defaultValue)
+          break
+        }
+        case 'freshdeskDependentField':
+        case 'geoscapeAddress':
+        case 'pointAddress':
+        case 'civicaStreetName':
+        case 'abn':
+        case 'bsb':
+        case 'text':
+        case 'barcodeScanner':
+        case 'email':
+        case 'telephone':
+        case 'textarea':
+        case 'location': {
+          if (el.defaultValue) {
+            m[el.name] = el.defaultValue
+          }
+          break
+        }
+        case 'boolean': {
+          m[el.name] = el.defaultValue || false
+          break
+        }
+        case 'captcha':
+        case 'heading':
+        case 'html':
+        case 'image':
+        case 'infoPage':
+        case 'calculation':
+        case 'summary':
+          break
+        default: {
+          console.warn('Default value is not supported for element type', el)
+        }
       }
-      case 'boolean': {
-        m[el.name] = el.defaultValue || false
-        break
-      }
-      case 'captcha':
-      case 'heading':
-      case 'html':
-      case 'image':
-      case 'infoPage':
-      case 'calculation':
-      case 'summary':
-        break
-      default: {
-        console.warn('Default value is not supported for element type', el)
-      }
-    }
 
-    return m
-  }, Object.assign({}, preFillData))
+      return m
+    },
+    Object.assign({}, preFillData),
+  )
 }
 
 const getOptionsDefaultValue = (el: FormTypes.FormElementWithOptions) => {

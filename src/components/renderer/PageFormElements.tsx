@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import OneBlinkFormElements from './OneBlinkFormElements'
 import useFormDefinition from '../../hooks/useFormDefinition'
 import {
@@ -8,7 +8,6 @@ import {
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormElementValueChangeHandler,
-  FormSubmissionModel,
   SetFormSubmission,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
@@ -19,7 +18,7 @@ export type Props = {
   isActive: boolean
   pageElement: FormTypes.PageElement
   displayValidationMessages: boolean
-  model: FormSubmissionModel
+  model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   onChange: FormElementValueChangeHandler

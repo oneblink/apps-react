@@ -62,7 +62,7 @@ const PendingSubmissionsContext =
  *
  * ```jsx
  * import * as React from 'react'
- * import { PendingSubmissionsProvider } from '@oneblink/apps-react'
+ * import { PendingSubmissionsContextProvider } from '@oneblink/apps-react'
  *
  * function Component() {
  *   const pendingSubmissionsContext = usePendingSubmissions()
@@ -71,12 +71,12 @@ const PendingSubmissionsContext =
  *
  * function App() {
  *   return (
- *     <PendingSubmissionsProvider
+ *     <PendingSubmissionsContextProvider
  *       isPendingQueueEnabled
  *       successNotificationTimeoutMs={3000}
  *     >
  *       <Component />
- *     </PendingSubmissionsProvider>
+ *     </PendingSubmissionsContextProvider>
  *   )
  * }
  *
@@ -88,8 +88,9 @@ const PendingSubmissionsContext =
  *
  * @param props
  * @returns
+ * @group Components
  */
-export function PendingSubmissionsProvider({
+export function PendingSubmissionsContextProvider({
   isPendingQueueEnabled,
   successNotificationTimeoutMs = 500,
   children,
@@ -260,15 +261,17 @@ export function PendingSubmissionsProvider({
 
 /**
  * React hook to get the context value for Pending Submissions. Will throw an
- * Error if used outside of the `<PendingSubmissionsProvider />` component.
+ * Error if used outside of the `<PendingSubmissionsContextProvider />`
+ * component.
  *
  * @returns
+ * @group Hooks
  */
 export default function usePendingSubmissions(): PendingSubmissionsContextValue {
   const value = React.useContext(PendingSubmissionsContext)
   if (!value) {
     throw new Error(
-      `"usePendingSubmissions" hook was used outside of the "<PendingSubmissionsProvider />" component's children.`,
+      `"usePendingSubmissions" hook was used outside of the "<PendingSubmissionsContextProvider />" component's children.`,
     )
   }
   return value

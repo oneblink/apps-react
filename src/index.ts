@@ -1,4 +1,6 @@
 export {
+  OneBlinkFormBaseProps,
+  OneBlinkFormControlledProps,
   OneBlinkFormUncontrolled as OneBlinkForm,
   OneBlinkFormControlled,
 } from './OneBlinkForm'
@@ -28,7 +30,7 @@ export {
 } from './hooks/useAuth'
 export {
   default as usePendingSubmissions,
-  PendingSubmissionsProvider,
+  PendingSubmissionsContextProvider,
   PendingSubmissionsContextValue,
 } from './hooks/usePendingSubmissions'
 export {

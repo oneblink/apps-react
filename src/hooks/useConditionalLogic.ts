@@ -1,16 +1,13 @@
 import { Sentry } from '@oneblink/apps'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import { conditionalLogicService } from '@oneblink/sdk-core'
 
-import {
-  FormElementsConditionallyShown,
-  FormSubmissionModel,
-} from '../types/form'
+import { FormElementsConditionallyShown } from '../types/form'
 
 export default function useConditionalLogic(
   definition: FormTypes.Form,
-  submission: FormSubmissionModel,
+  submission: SubmissionTypes.S3SubmissionData['submission'],
 ) {
   const [conditionalLogicError, setConditionalLogicError] = React.useState<
     Error | undefined

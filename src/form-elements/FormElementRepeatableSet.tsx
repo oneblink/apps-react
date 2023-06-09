@@ -4,7 +4,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import generateDefaultData from '../services/generate-default-data'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import Modal from '../components/renderer/Modal'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import {
@@ -14,7 +14,6 @@ import {
   FormElementsValidation,
   FormElementValidation,
   FormElementValueChangeHandler,
-  FormSubmissionModel,
   IsDirtyProps,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
@@ -24,8 +23,10 @@ type Props = {
   id: string
   isEven: boolean
   element: FormTypes.RepeatableSetElement
-  value: Array<FormSubmissionModel> | undefined
-  onChange: FormElementValueChangeHandler<FormSubmissionModel[]>
+  value: Array<SubmissionTypes.S3SubmissionData['submission']> | undefined
+  onChange: FormElementValueChangeHandler<
+    SubmissionTypes.S3SubmissionData['submission'][]
+  >
   onLookup: FormElementLookupHandler
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   formElementValidation: FormElementValidation | undefined
@@ -204,7 +205,7 @@ type RepeatableSetEntryProps = {
   id: string
   index: number
   isEven: boolean
-  entry: FormSubmissionModel
+  entry: SubmissionTypes.S3SubmissionData['submission']
   element: FormTypes.RepeatableSetElement
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
@@ -249,7 +250,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           let newEntry = {}
           const entries = currentFormSubmission.submission[
             element.name
-          ] as Array<FormSubmissionModel>
+          ] as Array<SubmissionTypes.S3SubmissionData['submission']>
           const elements = currentFormSubmission.elements.map((formElement) => {
             if (
               formElement.type === 'repeatableSet' &&

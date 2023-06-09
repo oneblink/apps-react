@@ -2,8 +2,8 @@ import * as React from 'react'
 import { formElementsService } from '@oneblink/sdk-core'
 
 import generateDefaultData from '../services/generate-default-data'
-import { FormTypes } from '@oneblink/types'
-import { FormSubmissionModel, SetFormSubmission } from '../types/form'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { SetFormSubmission } from '../types/form'
 
 export default function useLookups(
   formId: number,
@@ -13,7 +13,7 @@ export default function useLookups(
     (
       element: FormTypes.LookupFormElement,
       elementLookupData: FormTypes.PageElement[],
-      dataLookupResult?: FormSubmissionModel,
+      dataLookupResult?: SubmissionTypes.S3SubmissionData['submission'],
     ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,

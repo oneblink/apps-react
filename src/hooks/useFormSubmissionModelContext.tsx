@@ -1,14 +1,11 @@
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { FormElement } from '@oneblink/types/typescript/forms'
 import * as React from 'react'
 import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
-import {
-  FormElementsConditionallyShown,
-  FormSubmissionModel,
-} from '../types/form'
+import { FormElementsConditionallyShown } from '../types/form'
 
 export type FormSubmissionModelContextValue = {
-  formSubmissionModel: FormSubmissionModel
+  formSubmissionModel: SubmissionTypes.S3SubmissionData['submission']
   parent?: FormSubmissionModelContextValue
   elements: FormElement[]
 }
@@ -23,7 +20,7 @@ export function FormSubmissionModelContextProvider({
   elements,
   formElementsConditionallyShown,
 }: {
-  model: FormSubmissionModel
+  model: SubmissionTypes.S3SubmissionData['submission']
   elements: FormTypes.FormElement[]
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   children: React.ReactNode
