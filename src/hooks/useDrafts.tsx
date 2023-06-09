@@ -54,7 +54,7 @@ const DraftsContext = React.createContext<DraftsContextValue | undefined>(
  *
  * ```jsx
  * import * as React from 'react'
- * import { DraftsContextProvider } from '@oneblink/apps-react'
+ * import { DraftsContextProvider, useDrafts } from '@oneblink/apps-react'
  *
  * function Component() {
  *   const draftsContext = useDrafts()
@@ -77,6 +77,7 @@ const DraftsContext = React.createContext<DraftsContextValue | undefined>(
  *
  * @param props
  * @returns
+ * @group Components
  */
 export function DraftsContextProvider({
   /** The identifier for the forms app associated with the user's drafts */
@@ -259,6 +260,7 @@ export function DraftsContextProvider({
  * outside of the `<DraftsContextProvider />` component.
  *
  * @returns
+ * @group Hooks
  */
 export default function useDrafts(): DraftsContextValue {
   const value = React.useContext(DraftsContext)

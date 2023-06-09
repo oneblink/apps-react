@@ -1,6 +1,11 @@
 import * as React from 'react'
 import { authService, Sentry } from '@oneblink/apps'
 
+/**
+ * @param options
+ * @returns
+ * @group Hooks
+ */
 export default function useSignUp({
   formsAppId,
   username,

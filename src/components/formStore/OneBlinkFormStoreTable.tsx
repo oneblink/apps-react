@@ -295,4 +295,8 @@ function OneBlinkFormStoreTable() {
   )
 }
 
+/**
+ * @returns
+ * @group Components
+ */
 export default React.memo(OneBlinkFormStoreTable)

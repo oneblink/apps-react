@@ -34,8 +34,10 @@ import * as React from 'react'
  * unsetUserProfile()
  * ```
  *
+ * @typeParam T The type of the state
  * @param defaultValue
  * @returns
+ * @group Hooks
  */
 export default function useNullableState<T>(
   /** The starting state for the hook. */

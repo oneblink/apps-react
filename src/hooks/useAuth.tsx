@@ -38,7 +38,7 @@ const AuthContext = React.createContext<AuthContextValue>({
  *
  * ```jsx
  * import * as React from 'react'
- * import { AuthContextProvider } from '@oneblink/apps-react'
+ * import { AuthContextProvider, useAuth } from '@oneblink/apps-react'
  *
  * function Component() {
  *   const auth = useAuth()
@@ -61,6 +61,7 @@ const AuthContext = React.createContext<AuthContextValue>({
  *
  * @param props
  * @returns
+ * @group Components
  */
 export function AuthContextProvider({
   children,
@@ -134,6 +135,7 @@ export function AuthContextProvider({
  * ```
  *
  * @returns
+ * @group Hooks
  */
 export default function useAuth() {
   return React.useContext(AuthContext)

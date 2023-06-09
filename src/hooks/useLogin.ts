@@ -301,6 +301,7 @@ import useBooleanState from './useBooleanState'
  *
  * @param options
  * @returns
+ * @group Hooks
  */
 export default function useLogin({
   username,
@@ -325,125 +326,7 @@ export default function useLogin({
    * "forgot password" process.
    */
   code: string
-}): {
-  /** Open redirect user to the Google sign-in page. */
-  loginWithGoogle: () => void
-  /**
-   * Attempt to use the `username` and `password` arguments to create a session.
-   * Will call `onLogin()` if successful, otherwise will set `loginError`.
-   */
-  loginWithUsernamePassword: () => void
-  /** `true` while processing `loginWithUsernamePassword()`. */
-  isLoggingIn: boolean
-  /**
-   * `true` if the user logged in using a temporary password. Prompt the user
-   * for a new password and call `resetTemporaryPassword()`.
-   */
-  isPasswordTemporary: boolean
-  /**
-   * Attempt to use `newPassword` and `newPasswordConfirmed` arguments to reset
-   * the user's password and create a session. Will call `onLogin()` if
-   * successful, otherwise will set `loginError`.
-   */
-  resetTemporaryPassword: () => void
-  /**
-   * Set if an error occurs while processing `loginWithUsernamePassword()` or
-   * `resetTemporaryPassword()`.
-   */
-  loginError: Error | null
-  /** Set `loginError` back to `null`. */
-  clearLoginError: () => void
-  /** `true` while processing `resetTemporaryPassword()`. */
-  isResettingTemporaryPassword: boolean
-  /** `true` when showing the forgot password flow. */
-  isShowingForgotPassword: boolean
-  /** Set `isShowingForgotPassword` to `true`. */
-  showForgotPassword: () => void
-  /** Set `isShowingForgotPassword` to `false`. */
-  hideForgotPassword: () => void
-  /**
-   * Attempt to use the `username` argument to start the forgot password
-   * process. This will send the user an email with a code to enter. A failed
-   * request will set `forgotPasswordError`.
-   */
-  sendForgotPasswordCode: () => void
-  /** `true` while processing `sendForgotPasswordCode()`. */
-  isSendingForgotPasswordCode: boolean
-  /** `true` if the forgot password code has been successfully sent to the user. */
-  hasSentForgotPasswordCode: boolean
-  /**
-   * Attempt to use the `code`, `newPassword`, and `newPasswordConfirmed`
-   * arguments to reset the user's password. A failed request will set
-   * `forgotPasswordError`.
-   */
-  resetForgottenPassword: () => void
-  /** `true` while processing `resetForgottenPassword()`. */
-  isResettingForgottenPassword: boolean
-  /**
-   * Set if an error occurs while processing `sendForgotPasswordCode()` or
-   * `resetForgottenPassword()`.
-   */
-  forgotPasswordError: Error | null
-  /** Set `forgotPasswordError` back to `null`. */
-  clearForgotPasswordError: () => void
-  usernameValidation: {
-    /** `true` if the `username` argument is invalid. */
-    isInvalid: boolean
-  }
-  passwordValidation: {
-    /** `true` if the `password` argument is invalid. */
-    isInvalid: boolean
-  }
-  codeValidation: {
-    /** `true` if the `code` argument is invalid. */
-    isInvalid: boolean
-  }
-  newPasswordValidation: {
-    /** `true` if the `newPassword` argument is invalid. */
-    isInvalid: boolean
-    /**
-     * `true` if the `newPassword` argument has a lowercase letter (required to
-     * be valid).
-     */
-    hasLowercaseLetter: boolean
-    /**
-     * `true` if the `newPassword` argument has an uppercase letter (required to
-     * be valid).
-     */
-    hasUpperCaseLetter: boolean
-    /** `true` if the `newPassword` argument has a number (required to be valid). */
-    hasNumber: boolean
-    /**
-     * `true` if the `newPassword` argument has a special character (required to
-     * be valid).
-     */
-    hasSpecialCharacter: boolean
-    /**
-     * `true` if the `newPassword` argument has at least the minimum number of
-     * characters (required to be valid).
-     */
-    hasMinLength: boolean
-  }
-  newPasswordConfirmedValidation: {
-    /**
-     * `true` if the `newPasswordConfirmed` argument is invalid (must match the
-     * `newPassword` argument).
-     */
-    isInvalid: boolean
-  }
-  /**
-   * `true` if the user logged in using MFA and a code is required to finish the
-   * login attempt. Prompt the user for a code and call `submitMfaCode()`.
-   */
-  isMfaCodeRequired: boolean
-  /** `true` while processing `submitMfaCode()`. */
-  isSubmittingMfaCode: boolean
-  /**
-   * Attempt to use `code` argument to submit the MFA code and create a session.
-   * Will call `onLogin()` if successful, otherwise will set `loginError`.
-   */
-  submitMfaCode: () => void
-} {
+}): UseLoginValue {
   const isMounted = useIsMounted()
 
   // Validation
@@ -843,4 +726,124 @@ export default function useLogin({
     newPasswordValidation,
     newPasswordConfirmedValidation,
   }
+}
+
+export interface UseLoginValue {
+  /** Open redirect user to the Google sign-in page. */
+  loginWithGoogle: () => void
+  /**
+   * Attempt to use the `username` and `password` arguments to create a session.
+   * Will call `onLogin()` if successful, otherwise will set `loginError`.
+   */
+  loginWithUsernamePassword: () => void
+  /** `true` while processing `loginWithUsernamePassword()`. */
+  isLoggingIn: boolean
+  /**
+   * `true` if the user logged in using a temporary password. Prompt the user
+   * for a new password and call `resetTemporaryPassword()`.
+   */
+  isPasswordTemporary: boolean
+  /**
+   * Attempt to use `newPassword` and `newPasswordConfirmed` arguments to reset
+   * the user's password and create a session. Will call `onLogin()` if
+   * successful, otherwise will set `loginError`.
+   */
+  resetTemporaryPassword: () => void
+  /**
+   * Set if an error occurs while processing `loginWithUsernamePassword()` or
+   * `resetTemporaryPassword()`.
+   */
+  loginError: Error | null
+  /** Set `loginError` back to `null`. */
+  clearLoginError: () => void
+  /** `true` while processing `resetTemporaryPassword()`. */
+  isResettingTemporaryPassword: boolean
+  /** `true` when showing the forgot password flow. */
+  isShowingForgotPassword: boolean
+  /** Set `isShowingForgotPassword` to `true`. */
+  showForgotPassword: () => void
+  /** Set `isShowingForgotPassword` to `false`. */
+  hideForgotPassword: () => void
+  /**
+   * Attempt to use the `username` argument to start the forgot password
+   * process. This will send the user an email with a code to enter. A failed
+   * request will set `forgotPasswordError`.
+   */
+  sendForgotPasswordCode: () => void
+  /** `true` while processing `sendForgotPasswordCode()`. */
+  isSendingForgotPasswordCode: boolean
+  /** `true` if the forgot password code has been successfully sent to the user. */
+  hasSentForgotPasswordCode: boolean
+  /**
+   * Attempt to use the `code`, `newPassword`, and `newPasswordConfirmed`
+   * arguments to reset the user's password. A failed request will set
+   * `forgotPasswordError`.
+   */
+  resetForgottenPassword: () => void
+  /** `true` while processing `resetForgottenPassword()`. */
+  isResettingForgottenPassword: boolean
+  /**
+   * Set if an error occurs while processing `sendForgotPasswordCode()` or
+   * `resetForgottenPassword()`.
+   */
+  forgotPasswordError: Error | null
+  /** Set `forgotPasswordError` back to `null`. */
+  clearForgotPasswordError: () => void
+  usernameValidation: {
+    /** `true` if the `username` argument is invalid. */
+    isInvalid: boolean
+  }
+  passwordValidation: {
+    /** `true` if the `password` argument is invalid. */
+    isInvalid: boolean
+  }
+  codeValidation: {
+    /** `true` if the `code` argument is invalid. */
+    isInvalid: boolean
+  }
+  newPasswordValidation: {
+    /** `true` if the `newPassword` argument is invalid. */
+    isInvalid: boolean
+    /**
+     * `true` if the `newPassword` argument has a lowercase letter (required to
+     * be valid).
+     */
+    hasLowercaseLetter: boolean
+    /**
+     * `true` if the `newPassword` argument has an uppercase letter (required to
+     * be valid).
+     */
+    hasUpperCaseLetter: boolean
+    /** `true` if the `newPassword` argument has a number (required to be valid). */
+    hasNumber: boolean
+    /**
+     * `true` if the `newPassword` argument has a special character (required to
+     * be valid).
+     */
+    hasSpecialCharacter: boolean
+    /**
+     * `true` if the `newPassword` argument has at least the minimum number of
+     * characters (required to be valid).
+     */
+    hasMinLength: boolean
+  }
+  newPasswordConfirmedValidation: {
+    /**
+     * `true` if the `newPasswordConfirmed` argument is invalid (must match the
+     * `newPassword` argument).
+     */
+    isInvalid: boolean
+  }
+  /**
+   * `true` if the user logged in using MFA and a code is required to finish the
+   * login attempt. Prompt the user for a code and call `submitMfaCode()`.
+   */
+  isMfaCodeRequired: boolean
+  /** `true` while processing `submitMfaCode()`. */
+  isSubmittingMfaCode: boolean
+  /**
+   * Attempt to use `code` argument to submit the MFA code and create a session.
+   * Will call `onLogin()` if successful, otherwise will set `loginError`.
+   */
+  submitMfaCode: () => void
 }

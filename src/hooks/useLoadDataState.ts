@@ -51,9 +51,11 @@ export type LoadDataState<T> =
  * export default MyComponent
  * ```
  *
+ * @typeParam T The type of the data returned by your `onLoad` function
  * @param onLoad The function that fetches your data. Should be a Promise that
  *   returns your data
  * @returns
+ * @group Hooks
  */
 export default function useLoadDataState<T>(
   onLoad: (abortSignal?: AbortSignal) => Promise<T>,

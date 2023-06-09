@@ -331,6 +331,7 @@ export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
  *
  * @param props
  * @returns
+ * @group Components
  */
 const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
   props: OneBlinkFormBaseProps & OneBlinkFormControlledProps,
@@ -557,6 +558,7 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
  *
  * @param props
  * @returns
+ * @group Components
  */
 const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
   form,

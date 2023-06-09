@@ -17,6 +17,7 @@ import * as React from 'react'
  * ```
  *
  * @returns
+ * @group Hooks
  */
 export default function useIsMounted(): {
   /** Whether the current component is mounted. */
