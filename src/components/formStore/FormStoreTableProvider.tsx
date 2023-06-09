@@ -21,6 +21,15 @@ import NoResourcesYet from '../messages/NoResourcesYet'
 import FormStoreIcon from './display/FormStoreIcon'
 import { FormStoreTableContext } from './useFormStoreTableContext'
 
+const TABLE_PARAMETERS_FORM_STORE_KEY = 'REACT_TABLE_PARAMETERS_FORM_STORE'
+
+function getParamsFromLocalStorage() {
+  const text = localStorage.getItem(TABLE_PARAMETERS_FORM_STORE_KEY)
+  if (text) {
+    return JSON.parse(text)
+  }
+}
+
 export function FormStoreTableProvider({
   form,
   children,
@@ -48,9 +57,20 @@ export function FormStoreTableProvider({
     debounceSearchMs: 1000,
     onDefaultFilters: React.useCallback((query) => {
       let defaultParameters: formStoreService.FormStoreParameters = {}
+      const localStorageParams = getParamsFromLocalStorage()
+      if (
+        localStorageParams &&
+        Object(localStorageParams) === localStorageParams
+      ) {
+        defaultParameters = localStorageParams
+      }
       try {
         if (typeof query.parameters === 'string') {
-          defaultParameters = JSON.parse(query.parameters)
+          //allow qs params to override local storage
+          defaultParameters = {
+            ...defaultParameters,
+            ...JSON.parse(query.parameters),
+          }
         }
       } catch (error) {
         console.warn('Could not parse filter as JSON', error)
@@ -108,6 +128,16 @@ export function FormStoreTableProvider({
   const submissionIdValidationMessage = useSubmissionIdValidationMessage(
     parameters.filters?.submissionId?.$eq,
   )
+
+  React.useEffect(() => {
+    const paramsToStore = {
+      unwindRepeatableSets: parameters?.unwindRepeatableSets,
+    }
+    localStorage.setItem(
+      TABLE_PARAMETERS_FORM_STORE_KEY,
+      JSON.stringify(paramsToStore),
+    )
+  }, [parameters?.unwindRepeatableSets])
 
   const formStoreTable = useFormStoreTable({
     formStoreRecords,
