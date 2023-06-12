@@ -92,7 +92,7 @@ const PendingSubmissionsContext = React.createContext<
  */
 export function PendingSubmissionsContextProvider({
   isPendingQueueEnabled,
-  successNotificationTimeoutMs = 500,
+  successNotificationTimeoutMs = 5000,
   children,
 }: {
   /**
