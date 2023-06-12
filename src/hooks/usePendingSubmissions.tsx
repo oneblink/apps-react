@@ -32,6 +32,11 @@ export type PendingSubmissionsContextValue = {
   hideFailedNotification: () => unknown
   /** `true` if a submission being processed completes successfully. */
   isShowingSuccessNotification: boolean
+  /**
+   * A function to hide the notification after a submission completed
+   * successfully
+   */
+  hideSuccessNotification: () => unknown
 }
 
 const defaultState = {
@@ -40,17 +45,9 @@ const defaultState = {
   pendingSubmissions: [],
 }
 
-const PendingSubmissionsContext =
-  React.createContext<PendingSubmissionsContextValue>({
-    ...defaultState,
-    reloadPendingSubmissions: () => {},
-    processPendingQueue: () => {},
-    deletePendingSubmission: () => {},
-    isProcessingPendingQueue: false,
-    isShowingFailedNotification: false,
-    hideFailedNotification: () => {},
-    isShowingSuccessNotification: false,
-  })
+const PendingSubmissionsContext = React.createContext<
+  PendingSubmissionsContextValue | undefined
+>(undefined)
 
 /**
  * React Component that provides the context for the `usePendingSubmissions()`
@@ -121,6 +118,9 @@ export function PendingSubmissionsContextProvider({
   // the snack bar each time a pending queue item is processed
   const [submittedNotificationCount, setSubmittedNotificationCount] =
     React.useState(0)
+  const hideSuccessNotification = React.useCallback(() => {
+    setSubmittedNotificationCount(0)
+  }, [])
   const [
     isShowingFailedNotification,
     showFailedNotification,
@@ -225,15 +225,19 @@ export function PendingSubmissionsContextProvider({
   React.useEffect(() => {
     if (submittedNotificationCount > 0) {
       const timeoutId = setTimeout(() => {
-        setSubmittedNotificationCount(0)
+        hideSuccessNotification()
       }, successNotificationTimeoutMs)
       return () => {
         clearTimeout(timeoutId)
       }
     }
-  }, [submittedNotificationCount, successNotificationTimeoutMs])
+  }, [
+    hideSuccessNotification,
+    submittedNotificationCount,
+    successNotificationTimeoutMs,
+  ])
 
-  const value = React.useMemo(
+  const value = React.useMemo<PendingSubmissionsContextValue>(
     () => ({
       ...state,
       isShowingFailedNotification,
@@ -243,6 +247,7 @@ export function PendingSubmissionsContextProvider({
       reloadPendingSubmissions,
       deletePendingSubmission: submissionService.deletePendingQueueSubmission,
       isShowingSuccessNotification: submittedNotificationCount > 0,
+      hideSuccessNotification,
     }),
     [
       state,
@@ -252,6 +257,7 @@ export function PendingSubmissionsContextProvider({
       processPendingQueue,
       reloadPendingSubmissions,
       submittedNotificationCount,
+      hideSuccessNotification,
     ],
   )
 
