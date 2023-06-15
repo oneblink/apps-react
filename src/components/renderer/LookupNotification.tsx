@@ -114,7 +114,7 @@ function LookupNotificationComponent({
   )
 
   const triggerLookup = React.useCallback(
-    async (newValue: unknown) => {
+    async (newValue: unknown, abortSignal: AbortSignal) => {
       // No lookups for read only forms
       if (formIsReadOnly) return
       // if the element triggering the lookup has no value..
@@ -135,12 +135,12 @@ function LookupNotificationComponent({
       setHasLookupSucceeded(false)
       setLookupErrorHTML(null)
 
-      const abortController = new AbortController()
-      setOnCancelLookup(() => () => abortController.abort())
+      const cancelAbortController = new AbortController()
+      setOnCancelLookup(() => () => cancelAbortController.abort())
 
       // After certain amount of time, show the cancel button
       const isCancellableTimeout = setTimeout(() => {
-        setIsCancellable(!abortController.signal.aborted)
+        setIsCancellable(!cancelAbortController.signal.aborted)
       }, 5000)
 
       const payload: FetchLookupPayload = {
@@ -159,16 +159,22 @@ function LookupNotificationComponent({
             definition?.organisationId,
             definition?.formsAppEnvironmentId,
             payload,
-            abortController.signal,
+            abortSignal,
           ),
           fetchLookup(
             element.elementLookupId,
             definition?.organisationId,
             definition?.formsAppEnvironmentId,
             payload,
-            abortController.signal,
+            abortSignal,
           ),
         ])
+
+        // If the user clicked cancel, we stop showing lookup.
+        if (cancelAbortController.signal.aborted) {
+          setIsLookingUp(false)
+          return
+        }
 
         mergeLookupData(newValue, dataLookupResult, elementLookupResult)
 
@@ -177,24 +183,22 @@ function LookupNotificationComponent({
         }
 
         // After certain amount of time, hide the lookup succeeded message
-        await new Promise((resolve) => setTimeout(() => resolve(false), 750))
-
-        if (isMounted.current) {
-          setIsLookingUp(false)
-        }
+        setTimeout(() => {
+          if (isMounted.current && !abortSignal.aborted) {
+            setIsLookingUp(false)
+          }
+        }, 750)
       } catch (error) {
-        executeLookupFailed(element)
-
         if (!isMounted.current) {
           return
         }
 
-        // Cancelling will throw an error.
-        if (abortController.signal.aborted) {
+        if (abortSignal.aborted) {
           console.log('Fetch aborted')
-          setIsLookingUp(false)
           return
         }
+
+        executeLookupFailed(element)
 
         setHasLookupFailed(true)
         setLookupErrorHTML(
@@ -232,8 +236,10 @@ function LookupNotificationComponent({
     ? stringifyAutoLookupValue(autoLookupValue)
     : autoLookupValue
   React.useEffect(() => {
-    if (autoLookupValue !== undefined) {
-      triggerLookup(autoLookupValue)
+    const abortController = new AbortController()
+    triggerLookup(autoLookupValue, abortController.signal)
+    return () => {
+      abortController.abort()
     }
     // Wants to use "triggerLookup" as a dependency,
     // however, this will change on any change made on any
@@ -375,8 +381,9 @@ async function fetchLookup(
     )
 
     // insert prefill values
-    const lookupResult: SubmissionTypes.S3SubmissionData['submission'] = {}
-    matchingRecord?.preFills.forEach((prefill) => {
+    return matchingRecord?.preFills.reduce<
+      SubmissionTypes.S3SubmissionData['submission']
+    >((lookupResult, prefill) => {
       switch (prefill.type) {
         case 'TEXT':
           lookupResult[prefill.formElementName] = prefill.text
@@ -388,8 +395,8 @@ async function fetchLookup(
           lookupResult[prefill.formElementName] = undefined
           break
       }
-    })
-    return lookupResult
+      return lookupResult
+    }, {})
   }
 
   if (!formElementLookup.url) {
@@ -433,5 +440,3 @@ async function fetchLookup(
 
   return data
 }
-
-// Validate that an element with a lookup has had the lookup button pressed if the element is required

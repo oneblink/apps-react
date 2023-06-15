@@ -41,13 +41,13 @@ function FormElementBarcodeScanner({
     useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
-  const { onLookup } = useLookupNotification()
+  const { onLookup } = useLookupNotification(value)
   const handleScan = React.useCallback(
     (newValue: string | undefined) => {
       setIsDirty()
       onChange(element, newValue)
       stopBarcodeScanner()
-      onLookup(newValue)
+      onLookup()
     },
     [element, onChange, onLookup, setIsDirty, stopBarcodeScanner],
   )
