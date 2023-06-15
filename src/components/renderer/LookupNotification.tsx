@@ -376,7 +376,26 @@ async function fetchLookup(
   if (formElementLookup.type === 'STATIC_DATA') {
     const elementName = payload.element.name
     const inputValue = payload.submission[elementName]
-    const matchingRecord = formElementLookup.records?.find(
+    const formElementLookupEnvironment = formElementLookup.environments.find(
+      (e) => e.formsAppEnvironmentId === formsAppEnvironmentId,
+    )
+
+    if (!formElementLookupEnvironment) {
+      console.log(
+        `Returning... static data lookup not found for environment ${formsAppEnvironmentId}`,
+      )
+      return {}
+    }
+
+    // currently only supporting TEXT input type
+    if (formElementLookupEnvironment.inputType !== 'TEXT') {
+      console.log(
+        'Returning... currently only supporting TEXT input type for static data lookups',
+      )
+      return {}
+    }
+
+    const matchingRecord = formElementLookupEnvironment.records?.find(
       (r) => r.inputValue === inputValue,
     )
 
