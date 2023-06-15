@@ -384,7 +384,11 @@ async function fetchLookup(
       !formElementLookupEnvironment ||
       formElementLookupEnvironment.inputType !== 'TEXT' // currently only supporting TEXT input type
     ) {
-      return
+      const logMessage = !formElementLookupEnvironment
+        ? `Returning... static data lookup not found for environment ${formsAppEnvironmentId}`
+        : 'Returning... currently only supporting TEXT input type for static data lookups'
+      console.log('')
+      return {}
     }
 
     const matchingRecord = formElementLookupEnvironment.records?.find(
