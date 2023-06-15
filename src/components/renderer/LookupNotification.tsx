@@ -387,7 +387,7 @@ async function fetchLookup(
       const logMessage = !formElementLookupEnvironment
         ? `Returning... static data lookup not found for environment ${formsAppEnvironmentId}`
         : 'Returning... currently only supporting TEXT input type for static data lookups'
-      console.log('')
+      console.log(logMessage)
       return {}
     }
 
