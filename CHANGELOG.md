@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `FormNotification` to handle static data lookup type
 - `unwindRepeatableSets` parameter stored in localStorage
 
+### Fixed
+
+- lookups running in a loop if the lookup is triggered while currently running
+
 ## [3.1.0] - 2023-06-05
 
 ### Added

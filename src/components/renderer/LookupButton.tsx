@@ -16,7 +16,7 @@ function LookupButton({
   hasMarginTop,
   isInputButton,
 }: Props) {
-  const { isLookup, onLookup, isDisabled } = useLookupNotification()
+  const { isLookup, onLookup, isDisabled } = useLookupNotification(value)
   const formIsReadOnly = useFormIsReadOnly()
   if (!isLookup) {
     return null
@@ -33,7 +33,7 @@ function LookupButton({
           'has-margin-top-8': hasMarginTop,
         },
       )}
-      onClick={() => onLookup(value)}
+      onClick={() => onLookup()}
       disabled={
         formIsReadOnly ||
         isDisabled ||
