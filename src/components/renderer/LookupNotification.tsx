@@ -387,14 +387,6 @@ async function fetchLookup(
       return {}
     }
 
-    // currently only supporting TEXT input type
-    if (formElementLookupEnvironment.inputType !== 'TEXT') {
-      console.log(
-        'Returning... currently only supporting TEXT input type for static data lookups',
-      )
-      return {}
-    }
-
     const matchingRecord = formElementLookupEnvironment.records?.find(
       (r) => r.inputValue === inputValue,
     )
