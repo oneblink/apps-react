@@ -170,11 +170,6 @@ function LookupNotificationComponent({
           ),
         ])
 
-        // Clear any population on lookup element.
-        if (dataLookupResult && dataLookupResult[payload.element.name]) {
-          delete dataLookupResult[payload.element.name]
-        }
-
         // If the user clicked cancel, we stop showing lookup.
         if (cancelAbortController.signal.aborted) {
           setIsLookingUp(false)
