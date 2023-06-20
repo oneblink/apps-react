@@ -6,7 +6,10 @@ import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 import useIsOffline from '../../hooks/useIsOffline'
 import OnLoading from './OnLoading'
 import generateDefaultData from '../../services/generate-default-data'
-import { LookupNotificationContext } from '../../hooks/useLookupNotification'
+import {
+  LookupNotificationContext,
+  LookupNotificationContextValue,
+} from '../../hooks/useLookupNotification'
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
@@ -113,8 +116,10 @@ function LookupNotificationComponent({
     [element, injectPagesAfter, onLookup],
   )
 
-  const triggerLookup = React.useCallback(
-    async (newValue: unknown, abortSignal: AbortSignal) => {
+  const triggerLookup = React.useCallback<
+    LookupNotificationContextValue['onLookup']
+  >(
+    async ({ newValue, abortController, continueLookupOnAbort }) => {
       // No lookups for read only forms
       if (formIsReadOnly) return
       // if the element triggering the lookup has no value..
@@ -134,13 +139,16 @@ function LookupNotificationComponent({
       setHasLookupFailed(false)
       setHasLookupSucceeded(false)
       setLookupErrorHTML(null)
-
-      const cancelAbortController = new AbortController()
-      setOnCancelLookup(() => () => cancelAbortController.abort())
+      setOnCancelLookup(() => () => {
+        if (isMounted.current) {
+          setIsLookingUp(false)
+        }
+        abortController.abort()
+      })
 
       // After certain amount of time, show the cancel button
       const isCancellableTimeout = setTimeout(() => {
-        setIsCancellable(!cancelAbortController.signal.aborted)
+        setIsCancellable(!abortController.signal.aborted)
       }, 5000)
 
       const payload: FetchLookupPayload = {
@@ -159,14 +167,14 @@ function LookupNotificationComponent({
             definition?.organisationId,
             definition?.formsAppEnvironmentId,
             payload,
-            abortSignal,
+            abortController.signal,
           ),
           fetchLookup(
             element.elementLookupId,
             definition?.organisationId,
             definition?.formsAppEnvironmentId,
             payload,
-            abortSignal,
+            abortController.signal,
           ),
         ])
 
@@ -174,7 +182,6 @@ function LookupNotificationComponent({
         if (cancelAbortController.signal.aborted) {
           setIsLookingUp(false)
           return
-        }
 
         mergeLookupData(newValue, dataLookupResult, elementLookupResult)
 
@@ -184,7 +191,7 @@ function LookupNotificationComponent({
 
         // After certain amount of time, hide the lookup succeeded message
         setTimeout(() => {
-          if (isMounted.current && !abortSignal.aborted) {
+          if (isMounted.current) {
             setIsLookingUp(false)
           }
         }, 750)
@@ -193,8 +200,11 @@ function LookupNotificationComponent({
           return
         }
 
-        if (abortSignal.aborted) {
+        if (abortController.signal.aborted) {
           console.log('Fetch aborted')
+          if (!continueLookupOnAbort) {
+            setIsLookingUp(false)
+          }
           return
         }
 
@@ -236,8 +246,16 @@ function LookupNotificationComponent({
     ? stringifyAutoLookupValue(autoLookupValue)
     : autoLookupValue
   React.useEffect(() => {
+    if (!autoLookupValue) {
+      setIsLookingUp(false)
+      return
+    }
     const abortController = new AbortController()
-    triggerLookup(autoLookupValue, abortController.signal)
+    triggerLookup({
+      newValue: autoLookupValue,
+      abortController,
+      continueLookupOnAbort: true,
+    })
     return () => {
       abortController.abort()
     }
