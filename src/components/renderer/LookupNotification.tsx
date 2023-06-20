@@ -178,11 +178,6 @@ function LookupNotificationComponent({
           ),
         ])
 
-        // Clear any population on lookup element.
-        if (dataLookupResult && dataLookupResult[payload.element.name]) {
-          delete dataLookupResult[payload.element.name]
-        }
-
         mergeLookupData(newValue, dataLookupResult, elementLookupResult)
 
         if (isMounted.current) {
