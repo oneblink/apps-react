@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **[BREAKING]** `allowSubmitWithPendingAttachments` prop for `<OneBlinkForm />` component to `isPendingQueueEnabled` to prevent offline submissions. The functionality regarding attachments from the previous `allowSubmitWithPendingAttachments` prop have not changed.
+- Payment Receipt Items returned from `@oneblink/apps` instead of generated in `PaymentReceipt.tsx`
 - `FormNotification` to handle static data lookup type
 - `unwindRepeatableSets` parameter stored in localStorage
 
