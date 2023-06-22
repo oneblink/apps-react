@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom'
 import {
   paymentService,
   submissionService,
-  localisationService,
   OneBlinkAppsError,
 } from '@oneblink/apps'
 import useIsMounted from './hooks/useIsMounted'
@@ -17,6 +16,7 @@ import {
   ReceiptListItem,
   ReceiptButton,
 } from './components/receipts'
+import { PaymentReceiptItem } from '@oneblink/apps/dist/types/payments'
 
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
@@ -47,18 +47,20 @@ function PaymentReceipt({
   const history = useHistory()
 
   const [
-    { isLoading, loadError, transaction, submissionResult },
+    { isLoading, loadError, transaction, submissionResult, receiptItems },
     setLoadState,
   ] = React.useState<{
     isLoading: boolean
     loadError: Error | null
     transaction: paymentService.HandlePaymentResult['transaction'] | null
     submissionResult: submissionService.FormSubmissionResult | null
+    receiptItems: PaymentReceiptItem[] | null
   }>({
     isLoading: true,
     loadError: null,
     transaction: null,
     submissionResult: null,
+    receiptItems: null,
   })
   const [
     { isRunningPostSubmissionAction, postSubmissionError },
@@ -97,10 +99,12 @@ function PaymentReceipt({
       let newError = null
       let newTransaction = null
       let newSubmissionResult = null
+      let newReceiptItems = null
       try {
         const result = await handlePaymentQuerystring(query)
         newTransaction = result.transaction
         newSubmissionResult = result.submissionResult
+        newReceiptItems = result.receiptItems
       } catch (error) {
         console.warn('Error while attempting to load transaction', error)
         newError = error as Error
@@ -112,6 +116,7 @@ function PaymentReceipt({
           loadError: newError,
           transaction: newTransaction,
           submissionResult: newSubmissionResult,
+          receiptItems: newReceiptItems,
         })
       }
     }
@@ -227,47 +232,21 @@ function PaymentReceipt({
                 : transaction.errorMessage || undefined
             }
           >
-            {submissionResult && submissionResult.submissionId && (
-              <ReceiptListItem
-                className="ob-payment-receipt__submission-id"
-                valueClassName="cypress-payment-receipt-submission-id"
-                icon="receipt"
-                label="Submission Id"
-                value={submissionResult.submissionId}
-                allowCopyToClipboard
-              />
-            )}
-
-            {!!transaction.id && (
-              <ReceiptListItem
-                className="ob-payment-receipt__transaction-id"
-                valueClassName="cypress-payment-receipt-transaction-id"
-                icon="shopping_cart"
-                label="Transaction Id"
-                value={transaction.id}
-                allowCopyToClipboard
-              />
-            )}
-
-            {!!transaction.creditCardMask && (
-              <ReceiptListItem
-                className="ob-payment-receipt__card-number"
-                valueClassName="cypress-payment-receipt-card-number"
-                icon="credit_card"
-                label="Card Number"
-                value={transaction.creditCardMask}
-              />
-            )}
-
-            {!!transaction.amount && (
-              <ReceiptListItem
-                className="ob-payment-receipt__amount"
-                valueClassName="cypress-payment-receipt-amount"
-                icon="attach_money"
-                label="Amount"
-                value={localisationService.formatCurrency(transaction.amount)}
-              />
-            )}
+            {receiptItems &&
+              receiptItems.length &&
+              receiptItems.map((receiptItem, i) => {
+                return (
+                  <ReceiptListItem
+                    key={i}
+                    className={receiptItem.className ?? ''}
+                    valueClassName={receiptItem.valueClassName ?? ''}
+                    icon={receiptItem.icon}
+                    label={receiptItem.label}
+                    value={receiptItem.value}
+                    allowCopyToClipboard={receiptItem.allowCopyToClipboard}
+                  />
+                )
+              })}
             <ReceiptListItem
               className="ob-payment-receipt__warning"
               valueClassName="cypress-payment-receipt-warning"
