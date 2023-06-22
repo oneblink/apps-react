@@ -16,7 +16,6 @@ import {
   ReceiptListItem,
   ReceiptButton,
 } from './components/receipts'
-import { PaymentReceiptItem } from '@oneblink/apps/dist/types/payments'
 
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
@@ -54,7 +53,7 @@ function PaymentReceipt({
     loadError: Error | null
     transaction: paymentService.HandlePaymentResult['transaction'] | null
     submissionResult: submissionService.FormSubmissionResult | null
-    receiptItems: PaymentReceiptItem[] | null
+    receiptItems: paymentService.PaymentReceiptItem[] | null
   }>({
     isLoading: true,
     loadError: null,
