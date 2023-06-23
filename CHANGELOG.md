@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `lookupButtonConfig` to `lookupButton` to allow for different labels and icons
+
 ## [4.0.0] - 2023-06-23
 
 ### Added

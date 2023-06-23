@@ -3,11 +3,13 @@ import clsx from 'clsx'
 import useLookupNotification from '../../hooks/useLookupNotification'
 import { lookupValidationMessage } from '../../services/form-validation'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
+import { FormsAppsTypes } from '@oneblink/types'
 type Props = {
   value: unknown | undefined
   validationMessage: string | undefined
   hasMarginTop?: boolean
   isInputButton?: boolean
+  lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration
 }
 
 function LookupButton({
@@ -15,6 +17,7 @@ function LookupButton({
   validationMessage,
   hasMarginTop,
   isInputButton,
+  lookupButtonConfig,
 }: Props) {
   const { isLookup, onLookup, isDisabled } = useLookupNotification(value)
   const formIsReadOnly = useFormIsReadOnly()
@@ -43,10 +46,10 @@ function LookupButton({
     >
       {isInputButton && <span></span>}
       <span className="icon">
-        <i className="material-icons">search</i>
+        <i className="material-icons">{lookupButtonConfig?.icon ?? 'search'}</i>
       </span>
       <span className={isInputButton ? 'is-hidden-mobile' : undefined}>
-        &nbsp;Lookup
+        &nbsp;{lookupButtonConfig?.label ?? 'Lookup'}
       </span>
     </button>
   )
