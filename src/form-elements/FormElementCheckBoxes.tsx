@@ -175,6 +175,7 @@ function FormElementCheckboxes({
             hasMarginTop
             value={value}
             validationMessage={validationMessage}
+            lookupButtonConfig={element.lookupButton}
           />
         </FormElementOptions>
 

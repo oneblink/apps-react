@@ -91,6 +91,7 @@ function FormElementTextarea({
               <LookupButton
                 value={value}
                 validationMessage={validationMessage}
+                lookupButtonConfig={element.lookupButton}
               />
             )}
           </div>

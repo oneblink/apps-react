@@ -247,6 +247,7 @@ function FormElementABN({
             isInputButton
             value={value}
             validationMessage={validationMessage}
+            lookupButtonConfig={element.lookupButton}
           />
         </div>
         {(((isDirty || displayValidationMessage) &&

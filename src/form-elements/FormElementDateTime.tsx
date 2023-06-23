@@ -116,6 +116,7 @@ function FormElementDateTime({
             isInputButton
             value={value}
             validationMessage={validationMessage}
+            lookupButtonConfig={element.lookupButton}
           />
         </div>
 

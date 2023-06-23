@@ -63,6 +63,7 @@ function FormElementText({
             isInputButton
             value={value}
             validationMessage={validationMessage}
+            lookupButtonConfig={element.lookupButton}
           />
         </div>
         {(isDisplayingValidationMessage || !!element.maxLength) && (

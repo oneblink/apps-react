@@ -126,6 +126,7 @@ function FormElementSelect({
                 hasMarginTop
                 value={value}
                 validationMessage={validationMessage}
+                lookupButtonConfig={element.lookupButton}
               />
             </div>
           )}
