@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `lookupButtonConfig` to `lookupButton` to allow for different labels and icons
 
+### Changed
+
+- Only update `lastElementUpdated` when it is triggered via a user input
+
 ## [4.0.0] - 2023-06-23
 
 ### Added
