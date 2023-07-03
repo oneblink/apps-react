@@ -669,17 +669,31 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
-      setFormSubmission((currentFormSubmission) => ({
-        ...currentFormSubmission,
-        submission: {
-          ...currentFormSubmission.submission,
-          [element.name]:
-            typeof value === 'function'
-              ? value(currentFormSubmission.submission[element.name])
-              : value,
-        },
-        lastElementUpdated: element,
-      }))
+      // dont update the last element updated for elements the user cannot set the value of
+      if (element.type === 'summary' || element.type === 'calculation') {
+        setFormSubmission((currentFormSubmission) => ({
+          ...currentFormSubmission,
+          submission: {
+            ...currentFormSubmission.submission,
+            [element.name]:
+              typeof value === 'function'
+                ? value(currentFormSubmission.submission[element.name])
+                : value,
+          },
+        }))
+      } else {
+        setFormSubmission((currentFormSubmission) => ({
+          ...currentFormSubmission,
+          submission: {
+            ...currentFormSubmission.submission,
+            [element.name]:
+              typeof value === 'function'
+                ? value(currentFormSubmission.submission[element.name])
+                : value,
+          },
+          lastElementUpdated: element,
+        }))
+      }
     },
     [disabled, setFormSubmission],
   )
