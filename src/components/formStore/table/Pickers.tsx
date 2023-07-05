@@ -1,10 +1,11 @@
-import { IconButton, TextField } from '@mui/material'
+import { IconButton, TextField, TextFieldProps } from '@mui/material'
 import {
   MobileDatePicker,
   DateValidationError,
   DateTimeValidationError,
   CalendarIcon,
   MobileDateTimePicker,
+  PickersActionBarAction,
 } from '@mui/x-date-pickers'
 import * as React from 'react'
 import useNullableState from '../../../hooks/useNullableState'
@@ -23,66 +24,21 @@ type DatePickersProps = {
   maxDate?: string
   minDate?: string
 }
-export const FiltersDatePicker = ({
-  label,
-  value,
-  onChange,
-  renderHelperText,
-  maxDate,
-  minDate,
-}: DatePickersProps) => {
-  const [errorType, setErrorType] = useNullableState<DateValidationError>(null)
-
-  const valueMemo = React.useMemo(() => {
-    return value ? new Date(value) : null
-  }, [value])
-
-  const maxDateMemo = React.useMemo(
-    () => (maxDate ? new Date(maxDate) : null),
-    [maxDate],
-  )
-  const minDateMemo = React.useMemo(
-    () => (minDate ? new Date(minDate) : null),
-    [minDate],
-  )
+export const FiltersDatePicker = (props: DatePickersProps) => {
+  const { label, onChange } = props
+  const commonProps = useCommonPickerProps(props)
 
   return (
     <MobileDatePicker
       label={label}
       format={shortDateFormat}
-      slots={{
-        textField: (params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            margin="dense"
-            size="small"
-            helperText={renderHelperText(errorType)}
-            InputProps={{
-              endAdornment: (
-                <IconButton edge="end">
-                  <CalendarIcon />
-                </IconButton>
-              ),
-            }}
-          />
-        ),
-      }}
-      slotProps={{
-        actionBar: {
-          actions: ['clear', 'today', 'cancel', 'accept'],
-        },
-      }}
-      maxDate={maxDateMemo}
-      minDate={minDateMemo}
-      value={valueMemo}
+      {...commonProps}
       onAccept={(newDate) => {
         if (!newDate) return onChange(undefined)
 
         const formattedDate = format(newDate, 'yyyy-MM-dd')
         onChange(formattedDate)
       }}
-      onError={setErrorType}
     />
   )
 }
@@ -90,16 +46,35 @@ export const FiltersDatePicker = ({
 type DateTimePickersProps = DatePickersProps & {
   renderHelperText: (errorType: DateTimeValidationError) => void
 }
-export const FiltersDateTimePicker = ({
-  label,
-  onChange,
+export const FiltersDateTimePicker = (props: DateTimePickersProps) => {
+  const { label, onChange } = props
+  const commonProps = useCommonPickerProps(props)
+
+  return (
+    <MobileDateTimePicker
+      label={label}
+      format={shortDateTimeFormat}
+      {...commonProps}
+      onAccept={(newDate) => {
+        if (!newDate) return onChange(undefined)
+        onChange(newDate.toISOString())
+      }}
+    />
+  )
+}
+
+const useCommonPickerProps = <T,>({
   renderHelperText,
   value,
   maxDate,
   minDate,
-}: DateTimePickersProps) => {
-  const [errorType, setErrorType] =
-    useNullableState<DateTimeValidationError>(null)
+}: {
+  renderHelperText: (errorType: T | null) => void
+  value: string | undefined
+  maxDate?: string
+  minDate?: string
+}) => {
+  const [errorType, setErrorType] = useNullableState<T>(null)
 
   const valueMemo = React.useMemo(() => {
     return value ? new Date(value) : null
@@ -114,41 +89,38 @@ export const FiltersDateTimePicker = ({
     [minDate],
   )
 
-  return (
-    <MobileDateTimePicker
-      label={label}
-      format={shortDateTimeFormat}
-      slots={{
-        textField: (params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            margin="dense"
-            size="small"
-            helperText={renderHelperText(errorType)}
-            InputProps={{
-              endAdornment: (
-                <IconButton edge="end">
-                  <CalendarIcon />
-                </IconButton>
-              ),
-            }}
-          />
-        ),
-      }}
-      slotProps={{
-        actionBar: {
-          actions: ['clear', 'today', 'cancel', 'accept'],
-        },
-      }}
-      maxDate={maxDateMemo}
-      minDate={minDateMemo}
-      value={valueMemo}
-      onAccept={(newDate) => {
-        if (!newDate) return onChange(undefined)
-        onChange(newDate.toISOString())
-      }}
-      onError={setErrorType}
-    />
-  )
+  return {
+    slots: {
+      textField: (params: React.PropsWithChildren<TextFieldProps>) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          margin="dense"
+          size="small"
+          helperText={renderHelperText(errorType)}
+          InputProps={{
+            endAdornment: (
+              <IconButton edge="end">
+                <CalendarIcon />
+              </IconButton>
+            ),
+          }}
+        />
+      ),
+    },
+    slotProps: {
+      actionBar: {
+        actions: [
+          'clear',
+          'today',
+          'cancel',
+          'accept',
+        ] as PickersActionBarAction[],
+      },
+    },
+    maxDate: maxDateMemo,
+    minDate: minDateMemo,
+    value: valueMemo,
+    onError: setErrorType,
+  }
 }
