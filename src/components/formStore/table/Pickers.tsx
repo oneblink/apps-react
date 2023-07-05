@@ -79,8 +79,6 @@ export const FiltersDatePicker = ({
       onAccept={(newDate) => {
         if (!newDate) return onChange(undefined)
 
-        // Number conversion because `newDate` is typed as a string, despite always being a `Date` object or `null`.
-        // It is typed as a string because `value` is passed as a a`s
         const formattedDate = format(newDate, 'yyyy-MM-dd')
         onChange(formattedDate)
       }}
