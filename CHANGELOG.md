@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- MuiV4 Compatible Picker interface
+
 ### Changed
 
 - Only update `lastElementUpdated` when it is triggered via a user input
