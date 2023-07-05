@@ -13,11 +13,10 @@ import {
   RadioGroup,
   TextField,
 } from '@mui/material'
-import V4CompatibleDateTimePicker from '../../pickers/V4CompatibleDateTimePicker'
-import V4CompatibleDatePicker from '../../pickers/V4CompatibleDatePicker'
 import { styled } from '@mui/material/styles'
 import { format } from 'date-fns'
 import { localisationService } from '@oneblink/apps'
+import { FiltersDatePicker, FiltersDateTimePicker } from './Pickers'
 
 const StyledTextField = styled(TextField)(() => ({
   width: '350px',
@@ -144,73 +143,55 @@ function ColumnFilters({ filter }: Props) {
       return (
         <Grid container spacing={1}>
           <Grid item xs={6}>
-            <V4CompatibleDatePicker
+            <FiltersDatePicker
               label="After"
-              showTodayButton
-              clearable
-              margin="dense"
-              size="small"
-              inputVariant="outlined"
               maxDate={filter.value?.$lte}
-              maxDateMessage={
-                filter.value?.$lte &&
-                `Must be before "${format(
-                  new Date(filter.value?.$lte),
-                  shortDateFormat,
-                )}"`
-              }
-              value={filter.value?.$gte || null}
-              onChange={(newDate) => {
-                const newValue = newDate
-                  ? format(newDate, 'yyyy-MM-dd')
-                  : undefined
+              value={filter.value?.$gte}
+              renderHelperText={(errorType) => {
+                if (errorType === 'maxDate' && filter.value?.$lte) {
+                  return `Must be before "${format(
+                    new Date(filter.value?.$lte),
+                    shortDateFormat,
+                  )}"`
+                }
+              }}
+              onChange={(newDate) =>
                 filter.onChange(
-                  filter.value?.$lte || newValue !== undefined
+                  filter.value?.$lte || !!newDate
                     ? {
                         ...filter.value,
-                        $gte: newValue,
+                        $gte: newDate,
                       }
                     : undefined,
                   false,
                 )
-              }}
-              endIconButton
-              iconButtonEdge="end"
+              }
             />
           </Grid>
           <Grid item xs={6}>
-            <V4CompatibleDatePicker
+            <FiltersDatePicker
               label="Before"
-              showTodayButton
-              clearable
-              margin="dense"
-              size="small"
-              inputVariant="outlined"
+              value={filter.value?.$lte}
               minDate={filter.value?.$gte}
-              minDateMessage={
-                filter.value?.$lte &&
-                `Must be after "${format(
-                  new Date(filter.value?.$lte),
-                  shortDateFormat,
-                )}"`
-              }
-              value={filter.value?.$lte || null}
-              onChange={(newDate) => {
-                const newValue = newDate
-                  ? format(newDate, 'yyyy-MM-dd')
-                  : undefined
+              renderHelperText={(errorType) => {
+                if (errorType === 'minDate' && filter.value?.$gte) {
+                  return `Must be after "${format(
+                    new Date(filter.value?.$gte),
+                    shortDateFormat,
+                  )}"`
+                }
+              }}
+              onChange={(newDate) =>
                 filter.onChange(
-                  filter.value?.$gte || newValue !== undefined
+                  filter.value?.$gte || !!newDate
                     ? {
                         ...filter.value,
-                        $lte: newValue,
+                        $lte: newDate,
                       }
                     : undefined,
                   false,
                 )
-              }}
-              endIconButton
-              iconButtonEdge="end"
+              }
             />
           </Grid>
         </Grid>
@@ -220,69 +201,55 @@ function ColumnFilters({ filter }: Props) {
       return (
         <Grid container spacing={1}>
           <Grid item xs={6}>
-            <V4CompatibleDateTimePicker
+            <FiltersDateTimePicker
               label="After"
-              showTodayButton
-              clearable
-              margin="dense"
-              size="small"
-              inputVariant="outlined"
               maxDate={filter.value?.$lte}
-              maxDateMessage={
-                filter.value?.$lte &&
-                `Must be before "${format(
-                  new Date(filter.value?.$lte),
-                  shortDateFormat,
-                )}"`
-              }
-              value={filter.value?.$gte || null}
-              onChange={(momentDate) => {
-                const newValue = momentDate?.toISOString()
+              value={filter.value?.$gte}
+              renderHelperText={(errorType) => {
+                if (errorType === 'maxDate' && filter.value?.$lte) {
+                  return `Must be before "${format(
+                    new Date(filter.value?.$lte),
+                    shortDateFormat,
+                  )}"`
+                }
+              }}
+              onChange={(newDate) =>
                 filter.onChange(
-                  filter.value?.$lte || newValue !== undefined
+                  filter.value?.$lte || !!newDate
                     ? {
                         ...filter.value,
-                        $gte: newValue,
+                        $gte: newDate,
                       }
                     : undefined,
                   false,
                 )
-              }}
-              endIconButton
-              iconButtonEdge="end"
+              }
             />
           </Grid>
           <Grid item xs={6}>
-            <V4CompatibleDateTimePicker
+            <FiltersDateTimePicker
               label="Before"
-              showTodayButton
-              clearable
-              margin="dense"
-              size="small"
-              inputVariant="outlined"
               minDate={filter.value?.$gte}
-              minDateMessage={
-                filter.value?.$lte &&
-                `Must be after "${format(
-                  new Date(filter.value?.$lte),
-                  shortDateFormat,
-                )}"`
-              }
-              value={filter.value?.$lte || null}
-              onChange={(momentDate) => {
-                const newValue = momentDate?.toISOString()
+              value={filter.value?.$lte}
+              renderHelperText={(errorType) => {
+                if (errorType === 'minDate' && filter.value?.$gte) {
+                  return `Must be after "${format(
+                    new Date(filter.value?.$gte),
+                    shortDateFormat,
+                  )}"`
+                }
+              }}
+              onChange={(newDate) =>
                 filter.onChange(
-                  filter.value?.$gte || newValue !== undefined
+                  filter.value?.$gte || !!newDate
                     ? {
                         ...filter.value,
-                        $lte: newValue,
+                        $lte: newDate,
                       }
                     : undefined,
                   false,
                 )
-              }}
-              endIconButton
-              iconButtonEdge="end"
+              }
             />
           </Grid>
         </Grid>

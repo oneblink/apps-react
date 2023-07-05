@@ -46,7 +46,7 @@
     "@microsoft/eslint-plugin-sdl": "^0.2.0",
     "@mui/lab": "^5.0.0-alpha.95",
     "@mui/material": "^5.10.1",
-    "@mui/x-date-pickers": "^5.0.0-beta.6",
+    "@mui/x-date-pickers": "^6.9.1",
     "@oneblink/apps": "^5.2.0-beta.1",
     "@oneblink/release-cli": "^2.0.2",
     "@oneblink/types": "github:oneblink/types",
@@ -106,7 +106,7 @@
   "peerDependencies": {
     "@mui/lab": "^5.0.0 || ^5.0.0-alpha.79",
     "@mui/material": "^5.6.1",
-    "@mui/x-date-pickers": "^5.0.0 || ^5.0.0-alpha.6",
+    "@mui/x-date-pickers": "^6.9.1",
     "@oneblink/apps": "*",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
