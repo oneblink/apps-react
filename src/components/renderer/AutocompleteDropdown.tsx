@@ -98,7 +98,7 @@ function AutocompleteDropdown<T>({
     setError(null)
     onClose()
 
-    if (!value && Array.isArray(options)) {
+    if (Array.isArray(options)) {
       // If there is no option currently selected but the typed in label
       // matches an option's label, set that option as the value, otherwise remove label
       if (label) {
@@ -113,15 +113,16 @@ function AutocompleteDropdown<T>({
         }
       }
       console.log('Removing label after blurring away from autocomplete')
+      onChangeValue(undefined)
       onChangeLabel('')
     }
   }, [
     label,
     onChangeLabel,
+    onChangeValue,
     onClose,
     onSelectOption,
     options,
-    value,
     setIsDirty,
   ])
 
@@ -186,11 +187,9 @@ function AutocompleteDropdown<T>({
       onOpen()
       setCurrentFocusedOptionIndex(0)
 
-      // Remove value when changing label
-      onChangeValue(undefined)
       onChangeLabel(newLabel)
     },
-    [onChangeLabel, onChangeValue, onOpen],
+    [onChangeLabel, onOpen],
   )
 
   React.useEffect(() => {

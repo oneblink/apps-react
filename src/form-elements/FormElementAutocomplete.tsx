@@ -99,6 +99,12 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     if (option && label !== option.label) {
       setLabel(option.label)
     }
+
+    //If there is no value set, we want to clear the label
+    //This is to satisfy lookups that return undefined.
+    if (!value) {
+      setLabel('')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element.options, value])
 
