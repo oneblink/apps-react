@@ -10,6 +10,7 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 
 type Props = {
@@ -22,6 +23,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
+  onUpdateFormElements: UpdateFormElementsHandler
 } & IsDirtyProps
 
 function FormElementSelect({
@@ -32,6 +34,7 @@ function FormElementSelect({
   validationMessage,
   displayValidationMessage,
   conditionallyShownOptionsElement,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: Props) {
@@ -40,6 +43,7 @@ function FormElementSelect({
     value,
     onChange,
     conditionallyShownOptionsElement,
+    onUpdateFormElements,
   })
 
   const selectedValuesAsArray = React.useMemo(() => {

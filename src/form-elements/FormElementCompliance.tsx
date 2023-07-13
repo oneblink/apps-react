@@ -14,6 +14,7 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
@@ -28,6 +29,7 @@ interface Props extends IsDirtyProps {
     | FormElementConditionallyShownElement
     | undefined
   isEven?: boolean
+  onUpdateFormElements: UpdateFormElementsHandler
 }
 
 export interface Value {
@@ -53,6 +55,7 @@ function FormElementCompliance({
   validationMessage,
   displayValidationMessage,
   isEven,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: Props) {
@@ -168,6 +171,7 @@ function FormElementCompliance({
     value: typedValue?.value,
     onChange: handleValueChange,
     conditionallyShownOptionsElement,
+    onUpdateFormElements,
   })
 
   return (
