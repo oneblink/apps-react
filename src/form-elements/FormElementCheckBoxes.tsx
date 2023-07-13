@@ -180,6 +180,7 @@ function FormElementCheckboxes({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
+            allowLookupOnEmptyValue={element.runLookupOnClear}
           />
         </FormElementOptions>
 

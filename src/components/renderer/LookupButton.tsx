@@ -10,6 +10,7 @@ type Props = {
   hasMarginTop?: boolean
   isInputButton?: boolean
   lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration
+  allowLookupOnEmptyValue?: boolean
 }
 
 function LookupButton({
@@ -18,6 +19,7 @@ function LookupButton({
   hasMarginTop,
   isInputButton,
   lookupButtonConfig,
+  allowLookupOnEmptyValue,
 }: Props) {
   const { isLookup, onLookup, isDisabled } = useLookupNotification(value)
   const formIsReadOnly = useFormIsReadOnly()
@@ -40,7 +42,7 @@ function LookupButton({
       disabled={
         formIsReadOnly ||
         isDisabled ||
-        value === undefined ||
+        (value === undefined && !allowLookupOnEmptyValue) ||
         (!!validationMessage && validationMessage !== lookupValidationMessage)
       }
     >
