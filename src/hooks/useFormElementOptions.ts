@@ -3,7 +3,9 @@ import * as React from 'react'
 import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
+  UpdateFormElementsHandler,
 } from '../types/form'
+import { useLoadDynamicOptionsEffect } from './useDynamicOptionsLoaderState'
 
 export default function useFormElementOptions<T>({
   element,
@@ -11,6 +13,7 @@ export default function useFormElementOptions<T>({
   onChange,
   conditionallyShownOptionsElement,
   onFilter,
+  onUpdateFormElements,
 }: {
   element: FormTypes.FormElementWithOptions
   value: unknown | undefined
@@ -19,6 +22,7 @@ export default function useFormElementOptions<T>({
     | FormElementConditionallyShownElement
     | undefined
   onFilter?: (choiceElementOption: FormTypes.ChoiceElementOption) => boolean
+  onUpdateFormElements: UpdateFormElementsHandler
 }) {
   const conditionallyShownOptions = conditionallyShownOptionsElement?.options
   //options that are shown due to conditional logic
@@ -84,6 +88,8 @@ export default function useFormElementOptions<T>({
     value,
     conditionallyShownOptionsElement?.dependencyIsLoading,
   ])
+
+  useLoadDynamicOptionsEffect(element, onUpdateFormElements)
 
   return filteredOptions
 }

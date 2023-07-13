@@ -11,6 +11,7 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 
 type Props = {
@@ -23,6 +24,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
+  onUpdateFormElements: UpdateFormElementsHandler
 } & IsDirtyProps
 
 function FormElementRadio({
@@ -33,6 +35,7 @@ function FormElementRadio({
   conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: Props) {
@@ -41,6 +44,7 @@ function FormElementRadio({
     value,
     onChange,
     conditionallyShownOptionsElement,
+    onUpdateFormElements,
   })
 
   return (

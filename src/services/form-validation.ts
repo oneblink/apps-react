@@ -273,7 +273,6 @@ export function generateValidationSchema(
       case 'calculation':
       case 'image':
       case 'html':
-      case 'infoPage':
       case 'heading': {
         return partialSchema
       }
@@ -668,6 +667,7 @@ export function generateValidationSchema(
             },
           }
         }
+        case 'infoPage':
         case 'form': {
           if (formElement.elements) {
             return {
