@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Autocomplete element not clearing on lookup returning undefined on value
 
+### Changed
+
+- blur autocomplete when an option is clicked
+
 ## [4.2.0] - 2023-07-12
 
 ### Removed
