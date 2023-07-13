@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- support for `runLookupOnClear` to allow running lookups on empty values
+
 ### Changed
 
 - blur autocomplete when an option is clicked

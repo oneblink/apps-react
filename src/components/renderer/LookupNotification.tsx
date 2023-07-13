@@ -122,9 +122,6 @@ function LookupNotificationComponent({
     async ({ newValue, abortController, continueLookupOnAbort }) => {
       // No lookups for read only forms
       if (formIsReadOnly) return
-      // if the element triggering the lookup has no value..
-      // ..return and do nothing
-      if (newValue === undefined || newValue === null) return
 
       setIsLookingUp(true)
 
@@ -241,7 +238,12 @@ function LookupNotificationComponent({
     ? stringifyAutoLookupValue(autoLookupValue)
     : autoLookupValue
   React.useEffect(() => {
-    if (!autoLookupValue) {
+    const hasLookupRan = hasLookupFailed || hasLookupSucceeded
+
+    // For lookups configured with `runLookupOnClear` set to true, we want to
+    // allow empty values for `autoLookupValue`, but only if the lookup has
+    // been ran previously. This prevents the lookup running on load with an empty value.
+    if (!autoLookupValue && (!element.runLookupOnClear || !hasLookupRan)) {
       setIsLookingUp(false)
       return
     }
@@ -401,7 +403,9 @@ async function fetchLookup(
     }
 
     const matchingRecord = formElementLookupEnvironment.records?.find(
-      (r) => r.inputValue === inputValue,
+      (r) =>
+        (r.inputType === 'UNDEFINED' && !inputValue) ||
+        (r.inputType !== 'UNDEFINED' && r.inputValue === inputValue),
     )
 
     // insert prefill values

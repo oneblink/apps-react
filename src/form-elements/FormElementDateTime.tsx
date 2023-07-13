@@ -117,6 +117,7 @@ function FormElementDateTime({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
+            allowLookupOnEmptyValue={element.runLookupOnClear}
           />
         </div>
 
