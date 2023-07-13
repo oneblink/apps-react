@@ -82,8 +82,9 @@ function AutocompleteDropdown<T>({
       event.stopPropagation()
 
       onSelectOption(option)
+      document.getElementById(id)?.blur()
     },
-    [onSelectOption],
+    [onSelectOption, id],
   )
 
   const onFocus = React.useCallback(() => {
