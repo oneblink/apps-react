@@ -48,6 +48,8 @@ export default function generateFreshdeskDependentFieldElements(
     hint: element.hint,
     defaultValue: element.defaultValue?.category,
     options: element.options,
+    freshdeskFieldName: element.freshdeskFieldName,
+    optionsType: 'FRESHDESK_FIELD',
   }
   const formElements = [categoryElement]
 
