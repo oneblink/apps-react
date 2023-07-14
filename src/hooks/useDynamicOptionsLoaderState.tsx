@@ -56,8 +56,25 @@ export function FormElementOptionsContextProvider({
 
   const [freshdeskFieldsState] = useLoadDataState(loadFreshdeskFields)
 
+  const hasOptionsSets = React.useMemo<boolean>(() => {
+    return !!formElementsService.findFormElement(
+      form.elements,
+      (formElement) => {
+        const formElementWithOptions =
+          typeCastService.formElements.toOptionsElement(formElement)
+        return (
+          formElementWithOptions?.optionsType === 'DYNAMIC' &&
+          !!formElementWithOptions.dynamicOptionSetId
+        )
+      },
+    )
+  }, [form.elements])
+
   const loadFormElementOptionsSets = React.useCallback(
-    async (abortSignal) => {
+    async (abortSignal): Promise<OptionsSetResult[]> => {
+      if (!hasOptionsSets) {
+        return []
+      }
       const formElementOptionsSets =
         await formService.getFormElementOptionsSets(
           form.organisationId,
@@ -69,7 +86,7 @@ export function FormElementOptionsContextProvider({
         }),
       )
     },
-    [form.organisationId],
+    [form.organisationId, hasOptionsSets],
   )
 
   const [optionsSetResultsState, , setOptionsSetResults] = useLoadDataState(
