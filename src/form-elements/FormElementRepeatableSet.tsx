@@ -15,6 +15,7 @@ import {
   FormElementValidation,
   FormElementValueChangeHandler,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
 
@@ -31,6 +32,7 @@ type Props = {
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
+  onUpdateFormElements: UpdateFormElementsHandler
 } & IsDirtyProps
 
 const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -54,6 +56,7 @@ function FormElementRepeatableSet({
   formElementConditionallyShown,
   onChange,
   onLookup,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: Props) {
@@ -166,6 +169,7 @@ function FormElementRepeatableSet({
                 repeatableSetValidation.entries[index.toString()]
               }
               displayValidationMessages={displayValidationMessage}
+              onUpdateFormElements={onUpdateFormElements}
             />
           )
         })}
@@ -217,6 +221,7 @@ type RepeatableSetEntryProps = {
   ) => unknown
   onLookup: FormElementLookupHandler
   onRemove: (index: number) => unknown
+  onUpdateFormElements: UpdateFormElementsHandler
 }
 
 const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
@@ -233,6 +238,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     onChange,
     onLookup,
     onRemove,
+    onUpdateFormElements,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
@@ -295,6 +301,27 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       validClassName: 'ob-repeatable-set__valid',
       invalidClassName: 'ob-repeatable-set__invalid',
     })
+
+    const handleUpdateNestedFormElements =
+      React.useCallback<UpdateFormElementsHandler>(
+        (setter) => {
+          onUpdateFormElements((formElements) => {
+            return formElements.map((formElement) => {
+              if (
+                formElement.id === element.id &&
+                formElement.type === 'repeatableSet'
+              ) {
+                return {
+                  ...formElement,
+                  elements: setter(formElement.elements),
+                }
+              }
+              return formElement
+            })
+          })
+        },
+        [element.id, onUpdateFormElements],
+      )
 
     return (
       <RepeatableSetIndexContext.Provider value={index}>
@@ -361,6 +388,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             model={entry}
             parentElement={element}
             formElementsConditionallyShown={formElementsConditionallyShown}
+            onUpdateFormElements={handleUpdateNestedFormElements}
           />
         </div>
       </RepeatableSetIndexContext.Provider>

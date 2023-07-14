@@ -6,6 +6,7 @@ import {
   FormElementLookupHandler,
   FormElementValidation,
   FormElementValueChangeHandler,
+  UpdateFormElementsHandler,
 } from '../types/form'
 
 export type Props = {
@@ -20,6 +21,7 @@ export type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
+  onUpdateFormElements: UpdateFormElementsHandler
 }
 
 function FormElementForm({
@@ -32,6 +34,7 @@ function FormElementForm({
   formElementConditionallyShown,
   onChange,
   onLookup,
+  onUpdateFormElements,
 }: Props) {
   const handleNestedChange = React.useCallback(
     (nestedElement: FormTypes.FormElement, nestedElementValue: unknown) => {
@@ -111,6 +114,28 @@ function FormElementForm({
     }
   }, [element.elements])
 
+  const handleUpdateNestedFormElements =
+    React.useCallback<UpdateFormElementsHandler>(
+      (setter) => {
+        onUpdateFormElements((formElements) => {
+          return formElements.map((formElement) => {
+            if (
+              formElement.id === element.id &&
+              formElement.type === 'form' &&
+              Array.isArray(formElement.elements)
+            ) {
+              return {
+                ...formElement,
+                elements: setter(formElement.elements),
+              }
+            }
+            return formElement
+          })
+        })
+      },
+      [element.id, onUpdateFormElements],
+    )
+
   return (
     <OneBlinkFormElements
       formId={formId}
@@ -123,6 +148,7 @@ function FormElementForm({
       model={value || {}}
       parentElement={parentElement}
       idPrefix={`${id}_`}
+      onUpdateFormElements={handleUpdateNestedFormElements}
     />
   )
 }

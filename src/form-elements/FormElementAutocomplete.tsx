@@ -11,6 +11,7 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 
 type _BaseProps = {
@@ -19,6 +20,7 @@ type _BaseProps = {
   value: unknown | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  onUpdateFormElements: UpdateFormElementsHandler
 } & IsDirtyProps
 
 type _AutocompleteChangeHandlerProps = _BaseProps & {
@@ -52,6 +54,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: AutocompleteFilterProps) {
@@ -83,6 +86,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     onChange: handleChange,
     conditionallyShownOptionsElement,
     onFilter,
+    onUpdateFormElements,
   })
 
   const handleSearch = React.useCallback(async () => {
@@ -102,7 +106,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
 
     //If there is no value set, we want to clear the label
     //This is to satisfy lookups that return undefined.
-    if (!value) {
+    if (!value && label) {
       setLabel('')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

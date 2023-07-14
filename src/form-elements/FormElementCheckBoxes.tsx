@@ -13,6 +13,7 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  UpdateFormElementsHandler,
 } from '../types/form'
 
 type Props = {
@@ -25,6 +26,7 @@ type Props = {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
+  onUpdateFormElements: UpdateFormElementsHandler
 } & IsDirtyProps
 
 function FormElementCheckboxes({
@@ -35,6 +37,7 @@ function FormElementCheckboxes({
   validationMessage,
   displayValidationMessage,
   conditionallyShownOptionsElement,
+  onUpdateFormElements,
   isDirty,
   setIsDirty,
 }: Props) {
@@ -92,6 +95,7 @@ function FormElementCheckboxes({
     value,
     onChange,
     conditionallyShownOptionsElement,
+    onUpdateFormElements,
   })
 
   return (
@@ -176,6 +180,7 @@ function FormElementCheckboxes({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
+            allowLookupOnEmptyValue={element.runLookupOnClear}
           />
         </FormElementOptions>
 

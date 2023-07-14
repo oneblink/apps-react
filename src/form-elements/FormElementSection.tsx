@@ -7,7 +7,10 @@ import OneBlinkFormElements, {
   Props,
 } from '../components/renderer/OneBlinkFormElements'
 import { checkSectionValidity } from '../services/form-validation'
-import { FormElementLookupHandler } from '../types/form'
+import {
+  FormElementLookupHandler,
+  UpdateFormElementsHandler,
+} from '../types/form'
 import {
   HintBelowLabel,
   HintTooltip,
@@ -18,6 +21,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   onLookup,
   displayValidationMessages,
+  onUpdateFormElements,
   ...props
 }: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
@@ -76,6 +80,27 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     [element.id, onLookup],
   )
 
+  const handleUpdateNestedFormElements =
+    React.useCallback<UpdateFormElementsHandler>(
+      (setter) => {
+        onUpdateFormElements((formElements) => {
+          return formElements.map((formElement) => {
+            if (
+              formElement.id === element.id &&
+              formElement.type === 'section'
+            ) {
+              return {
+                ...formElement,
+                elements: setter(formElement.elements),
+              }
+            }
+            return formElement
+          })
+        })
+      },
+      [element.id, onUpdateFormElements],
+    )
+
   return (
     <div className={clsx('ob-section', validationClassName)}>
       <div
@@ -125,6 +150,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           displayValidationMessages={displayValidationMessage}
           onLookup={handleLookup}
           elements={element.elements}
+          onUpdateFormElements={handleUpdateNestedFormElements}
         />
       </Collapse>
     </div>

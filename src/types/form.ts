@@ -45,6 +45,9 @@ export type FormElementLookupHandler = (
     elements: FormTypes.FormElement[]
   },
 ) => void
+export type UpdateFormElementsHandler = (
+  setter: (element: FormTypes.FormElement[]) => FormTypes.FormElement[],
+) => void
 
 export type SetFormSubmission = React.Dispatch<
   React.SetStateAction<{

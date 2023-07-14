@@ -9,6 +9,7 @@ import {
   FormElementsValidation,
   FormElementValueChangeHandler,
   SetFormSubmission,
+  UpdateFormElementsHandler,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
@@ -80,6 +81,44 @@ function PageFormElements({
 
   const form = useFormDefinition()
 
+  const handleUpdateFormElements = React.useCallback<UpdateFormElementsHandler>(
+    (updateFormElements) => {
+      setFormSubmission((currentFormSubmission) => {
+        const definition = {
+          ...currentFormSubmission.definition,
+        }
+
+        if (pageElement.id === formId.toString()) {
+          definition.elements = updateFormElements(
+            currentFormSubmission.definition.elements,
+          )
+        } else {
+          definition.elements = currentFormSubmission.definition.elements.map(
+            (formElement) => {
+              if (
+                formElement.id === pageElement.id &&
+                formElement.type === 'page'
+              ) {
+                return {
+                  ...formElement,
+                  elements: updateFormElements(formElement.elements),
+                }
+              } else {
+                return formElement
+              }
+            },
+          )
+        }
+
+        return {
+          ...currentFormSubmission,
+          definition,
+        }
+      })
+    },
+    [formId, pageElement.id, setFormSubmission],
+  )
+
   return (
     <IsPageVisibleProvider isPageVisible={isActive}>
       <FlatpickrGuidProvider>
@@ -99,6 +138,7 @@ function PageFormElements({
             elements={pageElement.elements}
             onChange={onChange}
             onLookup={handleLookup}
+            onUpdateFormElements={handleUpdateFormElements}
             idPrefix=""
           />
         </div>
