@@ -40,8 +40,15 @@ function FormElementNumber({
     [element, onChange],
   )
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
+
+  const timeout = React.useRef<NodeJS.Timeout>()
+
   const handleWheel = React.useCallback((e) => {
-    e.preventDefault()
+    clearTimeout(timeout.current)
+    e.target.blur()
+    timeout.current = setTimeout(() => {
+      e.target.focus({ preventScroll: true })
+    }, 100)
   }, [])
 
   React.useEffect(() => {

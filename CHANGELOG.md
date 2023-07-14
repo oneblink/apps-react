@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - blur autocomplete when an option is clicked
 - form element to display options as soon as possible instead of wait for all dynamic options to be loaded
+- allow scrolling page on number elements
 
 ## [4.2.0] - 2023-07-12
 
