@@ -40,16 +40,16 @@ function FormElementNumber({
     [element, onChange],
   )
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
+  const [trigger, setTrigger] = React.useState<boolean>(false)
 
-  const timeout = React.useRef<NodeJS.Timeout>()
-
-  const handleWheel = React.useCallback((e) => {
-    clearTimeout(timeout.current)
-    e.target.blur()
-    timeout.current = setTimeout(() => {
-      e.target.focus({ preventScroll: true })
-    }, 100)
+  const handleWheel = React.useCallback(() => {
+    htmlInputElementRef.current?.blur()
+    setTrigger((trigger) => !trigger)
   }, [])
+
+  React.useEffect(() => {
+    htmlInputElementRef.current?.focus({ preventScroll: true })
+  }, [trigger])
 
   React.useEffect(() => {
     const currentRef = htmlInputElementRef.current
