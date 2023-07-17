@@ -93,13 +93,11 @@ function AutocompleteDropdown<T>({
             (option) => option.label.toLowerCase() === lowerCase,
           )
           if (option) {
-            if (option.label.toLowerCase() !== label.toLowerCase()) {
-              console.log('Setting value after blurring away from autocomplete')
-              onSelectOption(option)
-            }
+            console.log('Setting value after blurring away from autocomplete')
+            onSelectOption(option)
             return
           }
-          if (value && !option) {
+          if (inputOption.value && !option) {
             console.log(
               'No option found, but there is a value so removing value',
             )
@@ -112,14 +110,12 @@ function AutocompleteDropdown<T>({
       }
     },
     [
-      label,
       onChangeLabel,
       onChangeValue,
       onClose,
       onSelectOption,
       options,
       setIsDirty,
-      value,
     ],
   )
 
@@ -134,7 +130,6 @@ function AutocompleteDropdown<T>({
       event.stopPropagation()
 
       onSelectOption(option)
-      //handleBlur(option)
       document.getElementById(id)?.blur()
     },
     [id, onSelectOption],
@@ -201,8 +196,11 @@ function AutocompleteDropdown<T>({
       setCurrentFocusedOptionIndex(0)
 
       onChangeLabel(newLabel)
+      if (!newLabel) {
+        onChangeValue(undefined)
+      }
     },
-    [onChangeLabel, onOpen],
+    [onChangeLabel, onChangeValue, onOpen],
   )
 
   React.useEffect(() => {
