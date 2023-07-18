@@ -103,7 +103,6 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
     if (option && label !== option.label) {
       setLabel(option.label)
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [element.options, value])
 
