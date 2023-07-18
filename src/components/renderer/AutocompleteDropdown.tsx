@@ -82,9 +82,8 @@ function AutocompleteDropdown<T>({
       event.stopPropagation()
 
       onSelectOption(option)
-      document.getElementById(id)?.blur()
     },
-    [onSelectOption, id],
+    [onSelectOption],
   )
 
   const onFocus = React.useCallback(() => {
@@ -94,37 +93,45 @@ function AutocompleteDropdown<T>({
 
   // When moving away from the input, if this is no value remove
   // the label to show the user they have not selected a value
-  const handleBlur = React.useCallback(() => {
-    setIsDirty()
-    setError(null)
-    onClose()
+  const handleBlur = React.useCallback(
+    (inputOption: { label: string; value: unknown | undefined }) => {
+      setIsDirty()
+      setError(null)
+      onClose()
 
-    if (!value && Array.isArray(options)) {
-      // If there is no option currently selected but the typed in label
-      // matches an option's label, set that option as the value, otherwise remove label
-      if (label) {
-        const lowerCase = label.toLowerCase()
-        const option = options.find(
-          (option) => option.label.toLowerCase() === lowerCase,
-        )
-        if (option) {
-          console.log('Setting value after blurring away from autocomplete')
-          onSelectOption(option)
-          return
+      if (Array.isArray(options)) {
+        // If there is a label that resembles an option, set that option to be the new value.
+        // UNLESS it was the previously selected label. Else, clear the label and the value.
+        if (inputOption.label) {
+          const lowerCase = inputOption.label.toLowerCase()
+          const option = options.find(
+            (option) => option.label.toLowerCase() === lowerCase,
+          )
+          if (option) {
+            // If the new option is not equal to the option that is currently selected,
+            // we want to update to the new option to ensure that it gets changed.
+            if (inputOption.value !== option.value) {
+              console.log('Setting value after blurring away from autocomplete')
+              onSelectOption(option)
+            }
+            return
+          }
         }
+
+        console.log('Removing label after blurring away from autocomplete')
+        onChangeValue(undefined)
+        onChangeLabel('')
       }
-      console.log('Removing label after blurring away from autocomplete')
-      onChangeLabel('')
-    }
-  }, [
-    label,
-    onChangeLabel,
-    onClose,
-    onSelectOption,
-    options,
-    value,
-    setIsDirty,
-  ])
+    },
+    [
+      onChangeLabel,
+      onChangeValue,
+      onClose,
+      onSelectOption,
+      options,
+      setIsDirty,
+    ],
+  )
 
   const onKeyDown = React.useCallback<
     React.KeyboardEventHandler<HTMLInputElement>
@@ -187,11 +194,9 @@ function AutocompleteDropdown<T>({
       onOpen()
       setCurrentFocusedOptionIndex(0)
 
-      // Remove value when changing label
-      onChangeValue(undefined)
       onChangeLabel(newLabel)
     },
-    [onChangeLabel, onChangeValue, onOpen],
+    [onChangeLabel, onOpen],
   )
 
   React.useEffect(() => {
@@ -235,6 +240,14 @@ function AutocompleteDropdown<T>({
     }
   }, [isOpen, label, onSearch, searchDebounceMs, searchMinCharacters])
 
+  React.useEffect(() => {
+    //If there is no value set, we want to clear the label
+    //This is to satisfy lookups that return undefined.
+    if (!value) {
+      onChangeLabel('')
+    }
+  }, [onChangeLabel, value])
+
   const isShowingLoading = isFetchingOptions || !!isLoading
   const isShowingValid = !isShowingLoading && value !== undefined
   const isShowingError = !isShowingLoading && !!hasError
@@ -266,7 +279,7 @@ function AutocompleteDropdown<T>({
               value={label}
               disabled={disabled}
               onFocus={onFocus}
-              onBlur={handleBlur}
+              onBlur={() => handleBlur({ label, value })}
               onKeyDown={onKeyDown}
               onChange={handleChangeLabel}
             />

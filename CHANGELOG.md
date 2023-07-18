@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Autocomplete element not clearing on lookup returning undefined on value
+
 ### Added
 
 - support for `runLookupOnClear` to allow running lookups on empty values
