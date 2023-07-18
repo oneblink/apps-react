@@ -93,8 +93,10 @@ function AutocompleteDropdown<T>({
             (option) => option.label.toLowerCase() === lowerCase,
           )
           if (option) {
-            console.log('Setting value after blurring away from autocomplete')
-            onSelectOption(option)
+            if (!value) {
+              console.log('Setting value after blurring away from autocomplete')
+              onSelectOption(option)
+            }
             return
           }
         }
@@ -111,6 +113,7 @@ function AutocompleteDropdown<T>({
       onSelectOption,
       options,
       setIsDirty,
+      value,
     ],
   )
 
