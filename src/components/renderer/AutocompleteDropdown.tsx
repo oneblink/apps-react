@@ -76,6 +76,21 @@ function AutocompleteDropdown<T>({
     onOpen()
   }, [onOpen])
 
+  const handleClickOption = React.useCallback(
+    (
+      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      option: AutocompleteOption<T>,
+    ) => {
+      console.log('Selected element option in autocomplete', option)
+
+      event.preventDefault()
+      event.stopPropagation()
+
+      onSelectOption(option)
+    },
+    [onSelectOption],
+  )
+
   // When moving away from the input, if this is no value remove
   // the label to show the user they have not selected a value
   const handleBlur = React.useCallback(
@@ -118,20 +133,6 @@ function AutocompleteDropdown<T>({
     ],
   )
 
-  const handleClickOption = React.useCallback(
-    (
-      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-      option: AutocompleteOption<T>,
-    ) => {
-      console.log('Selected element option in autocomplete', option)
-
-      event.preventDefault()
-      event.stopPropagation()
-
-      onSelectOption(option)
-    },
-    [onSelectOption],
-  )
   const onKeyDown = React.useCallback<
     React.KeyboardEventHandler<HTMLInputElement>
   >(
