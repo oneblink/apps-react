@@ -71,11 +71,6 @@ function AutocompleteDropdown<T>({
     [onChangeLabel, onChangeValue, onClose],
   )
 
-  const onFocus = React.useCallback(() => {
-    setCurrentFocusedOptionIndex(0)
-    onOpen()
-  }, [onOpen])
-
   const handleClickOption = React.useCallback(
     (
       event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -90,6 +85,11 @@ function AutocompleteDropdown<T>({
     },
     [onSelectOption],
   )
+
+  const onFocus = React.useCallback(() => {
+    setCurrentFocusedOptionIndex(0)
+    onOpen()
+  }, [onOpen])
 
   // When moving away from the input, if this is no value remove
   // the label to show the user they have not selected a value
