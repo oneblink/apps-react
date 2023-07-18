@@ -97,15 +97,10 @@ function AutocompleteDropdown<T>({
             onSelectOption(option)
             return
           }
-          if (inputOption.value && !option) {
-            console.log(
-              'No option found, but there is a value so removing value',
-            )
-            onChangeValue(undefined)
-          }
         }
 
         console.log('Removing label after blurring away from autocomplete')
+        onChangeValue(undefined)
         onChangeLabel('')
       }
     },
@@ -130,9 +125,8 @@ function AutocompleteDropdown<T>({
       event.stopPropagation()
 
       onSelectOption(option)
-      document.getElementById(id)?.blur()
     },
-    [id, onSelectOption],
+    [onSelectOption],
   )
   const onKeyDown = React.useCallback<
     React.KeyboardEventHandler<HTMLInputElement>
@@ -196,11 +190,8 @@ function AutocompleteDropdown<T>({
       setCurrentFocusedOptionIndex(0)
 
       onChangeLabel(newLabel)
-      if (!newLabel) {
-        onChangeValue(undefined)
-      }
     },
-    [onChangeLabel, onChangeValue, onOpen],
+    [onChangeLabel, onOpen],
   )
 
   React.useEffect(() => {
