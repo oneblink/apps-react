@@ -85,15 +85,17 @@ function AutocompleteDropdown<T>({
       onClose()
 
       if (Array.isArray(options)) {
-        // If there is no option currently selected but the typed in label
-        // matches an option's label, set that option as the value, otherwise remove label
+        // If there is a label that resembles an option, set that option to be the new value.
+        // UNLESS it was the previously selected label. Else, clear the label and the value.
         if (inputOption.label) {
           const lowerCase = inputOption.label.toLowerCase()
           const option = options.find(
             (option) => option.label.toLowerCase() === lowerCase,
           )
           if (option) {
-            if (!inputOption.value) {
+            // If the new option is not equal to the option that is currently selected,
+            // we want to update to the new option to ensure that it gets changed.
+            if (inputOption.value !== option.value) {
               console.log('Setting value after blurring away from autocomplete')
               onSelectOption(option)
             }
