@@ -93,7 +93,7 @@ function AutocompleteDropdown<T>({
             (option) => option.label.toLowerCase() === lowerCase,
           )
           if (option) {
-            if (!value) {
+            if (!inputOption.value) {
               console.log('Setting value after blurring away from autocomplete')
               onSelectOption(option)
             }
@@ -113,7 +113,6 @@ function AutocompleteDropdown<T>({
       onSelectOption,
       options,
       setIsDirty,
-      value,
     ],
   )
 
@@ -237,6 +236,14 @@ function AutocompleteDropdown<T>({
       abortController.abort()
     }
   }, [isOpen, label, onSearch, searchDebounceMs, searchMinCharacters])
+
+  React.useEffect(() => {
+    //If there is no value set, we want to clear the label
+    //This is to satisfy lookups that return undefined.
+    if (!value) {
+      onChangeLabel('')
+    }
+  }, [onChangeLabel, value])
 
   const isShowingLoading = isFetchingOptions || !!isLoading
   const isShowingValid = !isShowingLoading && value !== undefined
