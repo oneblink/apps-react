@@ -40,25 +40,16 @@ function FormElementNumber({
     [element, onChange],
   )
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
-  const handleWheel = React.useCallback((e) => {
-    e.preventDefault()
+  const [trigger, setTrigger] = React.useState<boolean>(false)
+
+  const handleWheel = React.useCallback(() => {
+    htmlInputElementRef.current?.blur()
+    setTrigger((trigger) => !trigger)
   }, [])
 
   React.useEffect(() => {
-    const currentRef = htmlInputElementRef.current
-    if (currentRef) {
-      currentRef.addEventListener('wheel', handleWheel, {
-        passive: false,
-      })
-    }
-    return () => {
-      {
-        if (currentRef) {
-          currentRef.removeEventListener('wheel', handleWheel)
-        }
-      }
-    }
-  }, [htmlInputElementRef, handleWheel])
+    htmlInputElementRef.current?.focus({ preventScroll: true })
+  }, [trigger])
 
   return (
     <div className="cypress-number-element">
@@ -83,6 +74,7 @@ function FormElementNumber({
                 disabled={element.readOnly}
                 onBlur={setIsDirty}
                 ref={htmlInputElementRef}
+                onWheel={handleWheel}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <i className="material-icons is-size-5">tag</i>
