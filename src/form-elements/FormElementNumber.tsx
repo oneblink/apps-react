@@ -41,6 +41,7 @@ function FormElementNumber({
   )
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
 
+  //this onWheel callback prevents numbers changing while scrolling
   const handleWheel = React.useCallback(() => {
     htmlInputElementRef.current?.blur()
     setTimeout(() => {
