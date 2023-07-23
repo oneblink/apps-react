@@ -171,7 +171,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
       }
 
       const data = await response.json()
-      return formElementsService.parseFormElementOptionsSet(data)
+      return formElementsService.parseDynamicFormElementOptions(data)
     },
     [searchQuerystringParameter, searchUrl],
   )
