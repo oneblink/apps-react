@@ -40,16 +40,14 @@ function FormElementNumber({
     [element, onChange],
   )
   const htmlInputElementRef = React.useRef<HTMLInputElement>(null)
-  const [trigger, setTrigger] = React.useState<boolean>(false)
 
+  //this onWheel callback prevents numbers changing while scrolling
   const handleWheel = React.useCallback(() => {
     htmlInputElementRef.current?.blur()
-    setTrigger((trigger) => !trigger)
+    setTimeout(() => {
+      htmlInputElementRef.current?.focus()
+    })
   }, [])
-
-  React.useEffect(() => {
-    htmlInputElementRef.current?.focus({ preventScroll: true })
-  }, [trigger])
 
   return (
     <div className="cypress-number-element">
