@@ -42,6 +42,7 @@ export {
   default as useLoadDataState,
   LoadDataState,
 } from './hooks/useLoadDataState'
+export { default as useLoadResourcesState } from './hooks/useLoadResourcesState'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
 export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmissionAutoSaveState'
 

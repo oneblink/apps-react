@@ -10,7 +10,6 @@ type Props = {
   hasMarginTop?: boolean
   isInputButton?: boolean
   lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration
-  allowLookupOnEmptyValue?: boolean
 }
 
 function LookupButton({
@@ -19,13 +18,15 @@ function LookupButton({
   hasMarginTop,
   isInputButton,
   lookupButtonConfig,
-  allowLookupOnEmptyValue,
 }: Props) {
-  const { isLookup, onLookup, isDisabled } = useLookupNotification(value)
+  const { isLookup, onLookup, isDisabled, isLoading, allowLookupOnEmptyValue } =
+    useLookupNotification(value)
   const formIsReadOnly = useFormIsReadOnly()
   if (!isLookup) {
     return null
   }
+
+  const isEmptyValue = value === undefined || value === null
 
   const button = (
     <button
@@ -33,6 +34,7 @@ function LookupButton({
       className={clsx(
         'button is-primary ob-lookup__button cypress-lookup-button',
         {
+          'is-loading': isLoading,
           'is-input-addon': isInputButton,
           'ob-button': !isInputButton,
           'has-margin-top-8': hasMarginTop,
@@ -42,8 +44,11 @@ function LookupButton({
       disabled={
         formIsReadOnly ||
         isDisabled ||
-        (value === undefined && !allowLookupOnEmptyValue) ||
-        (!!validationMessage && validationMessage !== lookupValidationMessage)
+        isLoading ||
+        (isEmptyValue && !allowLookupOnEmptyValue) ||
+        (!isEmptyValue &&
+          !!validationMessage &&
+          validationMessage !== lookupValidationMessage)
       }
     >
       {isInputButton && <span></span>}
