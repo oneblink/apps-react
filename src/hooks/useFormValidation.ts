@@ -59,7 +59,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
     },
     [],
   )
-  const executeLookupFailed = React.useCallback(
+  const removeExecutedLookup = React.useCallback(
     (element: FormTypes.LookupFormElement) => {
       setElementIdsWithLookupsExecuted(
         (currentElementIdsWithLookupsExecuted) => {
@@ -99,7 +99,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
 
   return {
     executedLookup,
-    executeLookupFailed,
+    removeExecutedLookup,
     validate: handleValidate,
   }
 }

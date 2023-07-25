@@ -3,7 +3,7 @@ import * as React from 'react'
 
 type ExecutedLookupContextValue = {
   executedLookup: (lookupFormElement: FormTypes.LookupFormElement) => void
-  executeLookupFailed: (lookupFormElement: FormTypes.LookupFormElement) => void
+  removeExecutedLookup: (lookupFormElement: FormTypes.LookupFormElement) => void
 }
 
 type Props = ExecutedLookupContextValue & {
@@ -12,21 +12,21 @@ type Props = ExecutedLookupContextValue & {
 
 const ExecutedLookupContext = React.createContext<ExecutedLookupContextValue>({
   executedLookup: () => {},
-  executeLookupFailed: () => {},
+  removeExecutedLookup: () => {},
 })
 
 export const ExecutedLookupProvider = React.memo<Props>(
   function ExecutedLookupProvider({
     executedLookup,
-    executeLookupFailed,
+    removeExecutedLookup,
     children,
   }: Props) {
     const value = React.useMemo(
       () => ({
         executedLookup,
-        executeLookupFailed,
+        removeExecutedLookup,
       }),
-      [executeLookupFailed, executedLookup],
+      [removeExecutedLookup, executedLookup],
     )
     return (
       <ExecutedLookupContext.Provider value={value}>

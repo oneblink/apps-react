@@ -28,6 +28,7 @@ type FetchLookupPayload = {
 }
 type Props = {
   autoLookupValue?: unknown
+  value: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
   element: FormTypes.LookupFormElement
   onLookup: FormElementLookupHandler
@@ -39,13 +40,14 @@ function LookupNotificationComponent({
   stringifyAutoLookupValue,
   element,
   onLookup,
+  value,
   children,
 }: Props) {
   const isMounted = useIsMounted()
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
-  const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
+  const { executedLookup, removeExecutedLookup } = useExecutedLookupCallback()
   const { isLoading, formElementLookups, loadError, onTryAgain } =
     useFormElementLookups()
 
@@ -225,7 +227,7 @@ function LookupNotificationComponent({
           return
         }
 
-        executeLookupFailed(element)
+        removeExecutedLookup(element)
 
         setHasLookupFailed(true)
         setLookupErrorHTML(
@@ -244,7 +246,7 @@ function LookupNotificationComponent({
     [
       definition,
       element,
-      executeLookupFailed,
+      removeExecutedLookup,
       executedLookup,
       formElementDataLookup,
       formElementElementLookup,
@@ -293,6 +295,10 @@ function LookupNotificationComponent({
     // to trigger a lookup when the correct dependencies change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLookupValueString, isLoading])
+
+  React.useEffect(() => {
+    removeExecutedLookup(element)
+  }, [value, removeExecutedLookup, element])
 
   const contextValue = React.useMemo(
     () => ({
