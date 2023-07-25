@@ -1,6 +1,5 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { formService } from '@oneblink/apps'
 import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 
 import useIsOffline from '../../hooks/useIsOffline'
@@ -15,10 +14,12 @@ import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useExecutedLookupCallback from '../../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
-import { Sentry } from '@oneblink/apps'
+import { Sentry, formService } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
 import { FormElementLookupHandler } from '../../types/form'
+import useFormElementLookups from '../../hooks/useFormElementLookups'
+import ErrorMessage from '../messages/ErrorMessage'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
@@ -45,6 +46,8 @@ function LookupNotificationComponent({
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
   const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
+  const { isLoading, formElementLookups, loadError, onTryAgain } =
+    useFormElementLookups()
 
   const [onCancelLookup, setOnCancelLookup] = React.useState<
     (() => void) | undefined
@@ -59,6 +62,28 @@ function LookupNotificationComponent({
   )
   const formIsReadOnly = useFormIsReadOnly()
   const { formSubmissionModel: model } = useFormSubmissionModel()
+
+  const formElementElementLookup = React.useMemo(() => {
+    return formElementLookups.find(
+      ({ id }) => element.isElementLookup && id === element.elementLookupId,
+    )
+  }, [element.elementLookupId, element.isElementLookup, formElementLookups])
+
+  const formElementDataLookup = React.useMemo(() => {
+    return formElementLookups.find(
+      ({ id }) => element.isDataLookup && id === element.dataLookupId,
+    )
+  }, [element.dataLookupId, element.isDataLookup, formElementLookups])
+
+  const runLookupOnClear = React.useMemo<boolean>(() => {
+    return !!(
+      formElementDataLookup?.runLookupOnClear ||
+      formElementElementLookup?.runLookupOnClear
+    )
+  }, [
+    formElementDataLookup?.runLookupOnClear,
+    formElementElementLookup?.runLookupOnClear,
+  ])
 
   const mergeLookupData = React.useCallback(
     (
@@ -159,17 +184,9 @@ function LookupNotificationComponent({
 
       try {
         const [dataLookupResult, elementLookupResult] = await Promise.all([
+          fetchLookup(formElementDataLookup, payload, abortController.signal),
           fetchLookup(
-            element.dataLookupId,
-            definition?.organisationId,
-            definition?.formsAppEnvironmentId,
-            payload,
-            abortController.signal,
-          ),
-          fetchLookup(
-            element.elementLookupId,
-            definition?.organisationId,
-            definition?.formsAppEnvironmentId,
+            formElementElementLookup,
             payload,
             abortController.signal,
           ),
@@ -221,6 +238,8 @@ function LookupNotificationComponent({
       element,
       executeLookupFailed,
       executedLookup,
+      formElementDataLookup,
+      formElementElementLookup,
       formIsReadOnly,
       isMounted,
       isOffline,
@@ -238,12 +257,15 @@ function LookupNotificationComponent({
     ? stringifyAutoLookupValue(autoLookupValue)
     : autoLookupValue
   React.useEffect(() => {
+    if (isLoading || loadError) {
+      return
+    }
     const hasLookupRan = hasLookupFailed || hasLookupSucceeded
 
     // For lookups configured with `runLookupOnClear` set to true, we want to
     // allow empty values for `autoLookupValue`, but only if the lookup has
     // been ran previously. This prevents the lookup running on load with an empty value.
-    if (!autoLookupValue && (!element.runLookupOnClear || !hasLookupRan)) {
+    if (!autoLookupValue && (!runLookupOnClear || !hasLookupRan)) {
       setIsLookingUp(false)
       return
     }
@@ -261,20 +283,34 @@ function LookupNotificationComponent({
     // element. Checking if "value" has changed is enough
     // to trigger a lookup when the correct dependencies change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLookupValueString])
+  }, [autoLookupValueString, isLoading])
 
   const contextValue = React.useMemo(
     () => ({
       isLookup: true,
       isDisabled,
+      isLoading,
       onLookup: triggerLookup,
+      allowLookupOnEmptyValue: runLookupOnClear,
     }),
-    [isDisabled, triggerLookup],
+    [isDisabled, isLoading, runLookupOnClear, triggerLookup],
   )
 
   return (
     <LookupNotificationContext.Provider value={contextValue}>
       {children}
+
+      {loadError && (
+        <ErrorMessage
+          title="Error Loading Configuration"
+          onTryAgain={onTryAgain}
+        >
+          <span className="cypress-lookup-notification-loading-error">
+            {loadError.message}
+          </span>
+        </ErrorMessage>
+      )}
+
       <div
         className={clsx('ob-lookup__notification', {
           'is-looking-up': isLookingUp,
@@ -355,54 +391,19 @@ export default function LookupNotification(props: Props) {
 }
 
 async function fetchLookup(
-  formElementLookupId: number | undefined,
-  organisationId: string | undefined,
-  formsAppEnvironmentId: number | undefined,
+  formElementLookup: formService.FormElementLookupResult | undefined,
   payload: FetchLookupPayload,
   abortSignal: AbortSignal,
 ) {
-  if (
-    typeof formElementLookupId !== 'number' ||
-    !organisationId ||
-    typeof formsAppEnvironmentId !== 'number'
-  ) {
+  if (!formElementLookup) {
     return
   }
 
-  console.log(
-    'Attempting to retrieve form element lookup for id:',
-    formElementLookupId,
-  )
-  const formElementLookup = await formService.getFormElementLookupById(
-    organisationId,
-    formsAppEnvironmentId,
-    formElementLookupId,
-  )
-
-  if (!formElementLookup) {
-    console.log(
-      'Could not find form element lookup configuration for id:',
-      formElementLookupId,
-      formElementLookup,
-    )
-    throw new Error('Could not find element lookup configuration')
-  }
-
-  if (formElementLookup.type === 'STATIC_DATA') {
+  if (formElementLookup.records) {
     const elementName = payload.element.name
     const inputValue = payload.submission[elementName]
-    const formElementLookupEnvironment = formElementLookup.environments.find(
-      (e) => e.formsAppEnvironmentId === formsAppEnvironmentId,
-    )
 
-    if (!formElementLookupEnvironment) {
-      console.log(
-        `Returning... static data lookup not found for environment ${formsAppEnvironmentId}`,
-      )
-      return {}
-    }
-
-    const matchingRecord = formElementLookupEnvironment.records?.find(
+    const matchingRecord = formElementLookup.records.find(
       (r) =>
         (r.inputType === 'UNDEFINED' && !inputValue) ||
         (r.inputType !== 'UNDEFINED' && r.inputValue === inputValue),
@@ -429,8 +430,7 @@ async function fetchLookup(
 
   if (!formElementLookup.url) {
     console.log(
-      'Could not find URL for form element lookup for id:',
-      formElementLookupId,
+      'Could not find dynamic URL or static records for form element lookup:',
       formElementLookup,
     )
     throw new Error('Could not find element lookup configuration')

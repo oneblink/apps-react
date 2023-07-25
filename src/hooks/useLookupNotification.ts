@@ -3,6 +3,8 @@ import * as React from 'react'
 export type LookupNotificationContextValue = {
   isLookup: boolean
   isDisabled: boolean
+  isLoading: boolean
+  allowLookupOnEmptyValue: boolean
   onLookup: (options: {
     newValue: unknown
     abortController: AbortController
@@ -13,6 +15,8 @@ export type LookupNotificationContextValue = {
 const defaultContext = {
   isLookup: false,
   isDisabled: false,
+  isLoading: false,
+  allowLookupOnEmptyValue: false,
   onLookup: async () => undefined,
 }
 

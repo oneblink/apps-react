@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - support for `runLookupOnClear` to allow running lookups on empty values
+- `useLoadResourcesState()` hook
 
 ### Changed
 
