@@ -395,7 +395,11 @@ async function fetchLookup(
   payload: FetchLookupPayload,
   abortSignal: AbortSignal,
 ) {
-  if (formElementLookup?.records) {
+  if (!formElementLookup) {
+    return
+  }
+
+  if (formElementLookup.records) {
     const elementName = payload.element.name
     const inputValue = payload.submission[elementName]
 
@@ -424,8 +428,12 @@ async function fetchLookup(
     }, {})
   }
 
-  if (!formElementLookup?.url) {
-    return
+  if (!formElementLookup.url) {
+    console.log(
+      'Could not find dynamic URL or static records for form element lookup:',
+      formElementLookup,
+    )
+    throw new Error('Could not find element lookup configuration')
   }
 
   const headers = await generateHeaders()
