@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.0] - 2023-07-26
+
 ### Fixed
 
 - Autocomplete element not clearing on lookup returning undefined on value
@@ -21,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - blur autocomplete when an option is clicked
 - form element to display options as soon as possible instead of wait for all dynamic options to be loaded
 - allow scrolling page on number elements
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [4.0.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [3.1.0-beta.4](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [4.2.0] - 2023-07-12
 
