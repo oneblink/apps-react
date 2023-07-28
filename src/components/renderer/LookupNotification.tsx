@@ -141,6 +141,14 @@ function LookupNotificationComponent({
     [element, injectPagesAfter, onLookup],
   )
 
+  const isNotStaticLookup = React.useMemo(() => {
+    return (
+      (formElementDataLookup && formElementDataLookup.type !== 'STATIC_DATA') ||
+      (formElementElementLookup &&
+        formElementElementLookup.type !== 'STATIC_DATA')
+    )
+  }, [formElementDataLookup, formElementElementLookup])
+
   const triggerLookup = React.useCallback<
     LookupNotificationContextValue['onLookup']
   >(
@@ -150,7 +158,7 @@ function LookupNotificationComponent({
 
       setIsLookingUp(true)
 
-      if (isOffline) {
+      if (isOffline && isNotStaticLookup) {
         setHasLookupFailed(true)
         return
       }
@@ -242,6 +250,7 @@ function LookupNotificationComponent({
       formElementElementLookup,
       formIsReadOnly,
       isMounted,
+      isNotStaticLookup,
       isOffline,
       mergeLookupData,
       model,
@@ -328,7 +337,7 @@ function LookupNotificationComponent({
               />
 
               <div>
-                {isOffline ? (
+                {isOffline && isNotStaticLookup ? (
                   <div>
                     <i className="material-icons fade-in has-text-warning">
                       wifi_off
