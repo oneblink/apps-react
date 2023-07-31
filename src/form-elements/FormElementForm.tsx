@@ -2,6 +2,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import {
+  ExecutedLookups,
   FormElementConditionallyShown,
   FormElementLookupHandler,
   FormElementValidation,
@@ -21,6 +22,7 @@ export type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
+  executedLookups: ExecutedLookups
   onUpdateFormElements: UpdateFormElementsHandler
 }
 
@@ -32,22 +34,46 @@ function FormElementForm({
   formElementValidation,
   displayValidationMessages,
   formElementConditionallyShown,
+  executedLookups,
   onChange,
   onLookup,
   onUpdateFormElements,
 }: Props) {
   const handleNestedChange = React.useCallback(
-    (nestedElement: FormTypes.FormElement, nestedElementValue: unknown) => {
+    (
+      nestedElement: FormTypes.FormElement,
+      {
+        value: nestedElementValue,
+        executedLookups,
+      }: Parameters<FormElementValueChangeHandler>[1],
+    ) => {
       if (!('name' in nestedElement)) return
-      onChange(element, (existingValue) => ({
-        ...existingValue,
-        [nestedElement.name]:
-          typeof nestedElementValue === 'function'
-            ? nestedElementValue(
-                existingValue ? existingValue[nestedElement.name] : undefined,
-              )
-            : nestedElementValue,
-      }))
+      onChange(element, {
+        value: (existingValue) => ({
+          ...existingValue,
+          [nestedElement.name]:
+            typeof nestedElementValue === 'function'
+              ? nestedElementValue(
+                  existingValue ? existingValue[nestedElement.name] : undefined,
+                )
+              : nestedElementValue,
+        }),
+        executedLookups: (existingExecutedLookups) => ({
+          ...existingExecutedLookups,
+          [element.name]: {
+            //@ts-expect-error handle later
+            ...existingExecutedLookups[element.name],
+            [nestedElement.name]:
+              typeof executedLookups === 'function'
+                ? executedLookups(
+                    existingExecutedLookups[
+                      nestedElement.name
+                    ] as ExecutedLookups,
+                  )
+                : executedLookups?.[nestedElement.name] ?? false,
+          },
+        }),
+      })
     },
     [element, onChange],
   )
@@ -58,18 +84,24 @@ function FormElementForm({
         let model = currentFormSubmission.submission[
           element.name
         ] as SubmissionTypes.S3SubmissionData['submission']
+        let newExecutedLookups = { ...currentFormSubmission.executedLookups }
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (
             formElement.type === 'form' &&
             formElement.name === element.name &&
             Array.isArray(formElement.elements)
           ) {
-            const { elements, submission } = mergeLookupResults({
-              elements: formElement.elements,
-              submission: model,
-              lastElementUpdated: currentFormSubmission.lastElementUpdated,
-            })
+            const { elements, submission, executedLookups } =
+              mergeLookupResults({
+                elements: formElement.elements,
+                submission: model,
+                lastElementUpdated: currentFormSubmission.lastElementUpdated,
+                executedLookups: currentFormSubmission.executedLookups[
+                  element.name
+                ] as ExecutedLookups,
+              })
             model = submission
+            newExecutedLookups = executedLookups
             return {
               ...formElement,
               elements,
@@ -87,6 +119,12 @@ function FormElementForm({
           elements,
           submission,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups: {
+            ...currentFormSubmission.executedLookups,
+            [element.name]: {
+              ...newExecutedLookups,
+            },
+          },
         }
       })
     },
@@ -149,6 +187,7 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={`${id}_`}
       onUpdateFormElements={handleUpdateNestedFormElements}
+      executedLookups={(executedLookups[element.name] as ExecutedLookups) ?? {}}
     />
   )
 }

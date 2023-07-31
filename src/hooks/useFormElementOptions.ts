@@ -68,7 +68,9 @@ export default function useFormElementOptions<T>({
       value &&
       !shownOptions.some((option) => value === option.value)
     ) {
-      onChange(element, undefined)
+      onChange(element, {
+        value: undefined,
+      })
       return
     }
 
@@ -78,7 +80,9 @@ export default function useFormElementOptions<T>({
       )
       if (newValue.length !== value.length) {
         const newValueArray = newValue.length ? newValue : undefined
-        onChange(element, newValueArray as T | undefined)
+        onChange(element, {
+          value: newValueArray as T | undefined,
+        })
       }
     }
   }, [

@@ -45,7 +45,9 @@ function FormElementBarcodeScanner({
   const handleScan = React.useCallback(
     (newValue: string | undefined) => {
       setIsDirty()
-      onChange(element, newValue)
+      onChange(element, {
+        value: newValue,
+      })
       stopBarcodeScanner()
       onLookup()
     },
@@ -119,7 +121,10 @@ function FormElementBarcodeScanner({
                   className="input ob-input cypress-barcode-scanner-control has-margin-bottom-8"
                   value={text}
                   onChange={(e) =>
-                    onChange(element, e.target.value || undefined)
+                    onChange(element, {
+                      value: e.target.value || undefined,
+                      executedLookups: { [element.name]: false },
+                    })
                   }
                   required={element.required}
                   disabled={element.readOnly}

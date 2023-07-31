@@ -53,7 +53,9 @@ function FormElementCamera({
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const clearImage = React.useCallback(() => {
-    onChange(element, undefined)
+    onChange(element, {
+      value: undefined,
+    })
   }, [element, onChange])
 
   const fileChange = React.useCallback(
@@ -84,10 +86,14 @@ function FormElementCamera({
         )
 
         if (result instanceof Blob) {
-          onChange(element, prepareNewAttachment(result, file.name, element))
+          onChange(element, {
+            value: prepareNewAttachment(result, file.name, element),
+          })
         } else {
           const blob = await canvasToBlob(result)
-          onChange(element, prepareNewAttachment(blob, file.name, element))
+          onChange(element, {
+            value: prepareNewAttachment(blob, file.name, element),
+          })
         }
 
         setIsDirty()
@@ -112,10 +118,9 @@ function FormElementCamera({
         (base64Data: string) => {
           urlToBlobAsync(`data:image/jpeg;base64,${base64Data}`)
             .then((blob) => {
-              onChange(
-                element,
-                prepareNewAttachment(blob, 'photo.jpeg', element),
-              )
+              onChange(element, {
+                value: prepareNewAttachment(blob, 'photo.jpeg', element),
+              })
               setState({
                 isLoading: false,
               })
@@ -173,7 +178,9 @@ function FormElementCamera({
     element,
     React.useCallback(
       (id, attachment) => {
-        onChange(element, attachment)
+        onChange(element, {
+          value: attachment,
+        })
       },
       [element, onChange],
     ),
@@ -185,11 +192,13 @@ function FormElementCamera({
     if (value.type === 'ERROR' && value.data) {
       return () => {
         onChange(element, {
-          type: 'NEW',
-          _id: value._id,
-          data: value.data,
-          fileName: value.fileName,
-          isPrivate: value.isPrivate,
+          value: {
+            type: 'NEW',
+            _id: value._id,
+            data: value.data,
+            fileName: value.fileName,
+            isPrivate: value.isPrivate,
+          },
         })
       }
     }
@@ -240,7 +249,9 @@ function FormElementCamera({
                   'photo.png',
                   element,
                 )
-                onChange(element, attachment)
+                onChange(element, {
+                  value: attachment,
+                })
                 setState({
                   isLoading: false,
                 })

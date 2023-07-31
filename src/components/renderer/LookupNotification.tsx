@@ -12,12 +12,11 @@ import {
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
-import useExecutedLookupCallback from '../../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { Sentry, formService } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
-import { FormElementLookupHandler } from '../../types/form'
+import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import ErrorMessage from '../messages/ErrorMessage'
 
@@ -28,7 +27,6 @@ type FetchLookupPayload = {
 }
 type Props = {
   autoLookupValue?: unknown
-  value: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
   element: FormTypes.LookupFormElement
   onLookup: FormElementLookupHandler
@@ -40,14 +38,12 @@ function LookupNotificationComponent({
   stringifyAutoLookupValue,
   element,
   onLookup,
-  value,
   children,
 }: Props) {
   const isMounted = useIsMounted()
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
-  const { executedLookup, removeExecutedLookup } = useExecutedLookupCallback()
   const { isLoading, formElementLookups, loadError, onTryAgain } =
     useFormElementLookups()
 
@@ -88,11 +84,17 @@ function LookupNotificationComponent({
   ])
 
   const mergeLookupData = React.useCallback(
-    (
-      newValue: unknown,
-      dataLookupResult: SubmissionTypes.S3SubmissionData['submission'],
-      elementLookupResult: FormTypes.FormElement[],
-    ) => {
+    ({
+      newValue,
+      dataLookupResult,
+      elementLookupResult,
+      executedLookup,
+    }: {
+      newValue: unknown
+      dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
+      elementLookupResult: FormTypes.FormElement[]
+      executedLookup: ExecutedLookups
+    }) => {
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
           injectPagesAfter(
@@ -104,7 +106,7 @@ function LookupNotificationComponent({
         }
       }
 
-      onLookup(({ submission, elements }) => {
+      onLookup(({ submission, elements, executedLookups }) => {
         let allElements = elements
         if (Array.isArray(elementLookupResult)) {
           const indexOfElement = elements.findIndex(
@@ -137,6 +139,10 @@ function LookupNotificationComponent({
             [element.name]: newValue,
             ...dataLookupResult,
           }),
+          executedLookups: {
+            ...executedLookups,
+            ...executedLookup,
+          },
         }
       })
     },
@@ -165,7 +171,6 @@ function LookupNotificationComponent({
         return
       }
 
-      executedLookup(element)
       setIsDisabled(true)
       setIsCancellable(false)
       setHasLookupFailed(false)
@@ -202,7 +207,12 @@ function LookupNotificationComponent({
           ),
         ])
 
-        mergeLookupData(newValue, dataLookupResult, elementLookupResult)
+        mergeLookupData({
+          newValue,
+          dataLookupResult,
+          elementLookupResult,
+          executedLookup: { [element.name]: true },
+        })
 
         if (isMounted.current) {
           setHasLookupSucceeded(true)
@@ -227,8 +237,6 @@ function LookupNotificationComponent({
           return
         }
 
-        removeExecutedLookup(element)
-
         setHasLookupFailed(true)
         setLookupErrorHTML(
           typeof error === 'string'
@@ -246,8 +254,6 @@ function LookupNotificationComponent({
     [
       definition,
       element,
-      removeExecutedLookup,
-      executedLookup,
       formElementDataLookup,
       formElementElementLookup,
       formIsReadOnly,
@@ -295,10 +301,6 @@ function LookupNotificationComponent({
     // to trigger a lookup when the correct dependencies change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLookupValueString, isLoading])
-
-  React.useEffect(() => {
-    removeExecutedLookup(element)
-  }, [value, removeExecutedLookup, element])
 
   const contextValue = React.useMemo(
     () => ({

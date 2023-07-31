@@ -32,17 +32,31 @@ export type FormElementValidation =
 
 export type FormElementValueChangeHandler<T = unknown> = (
   element: FormTypes.FormElement,
-  value?: T | ((existingValue?: T) => T | undefined),
+  {
+    value,
+    executedLookups,
+  }: {
+    value?: T | ((existingValue?: T) => T | undefined)
+    executedLookups?:
+      | ExecutedLookups
+      | ((currentExecutedLookups: ExecutedLookups) => ExecutedLookups)
+  },
 ) => void
+
+export type ExecutedLookups = {
+  [elementName: string]: boolean | ExecutedLookups | Array<ExecutedLookups>
+}
 
 export type FormElementLookupHandler = (
   setter: (data: {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
+    executedLookups: ExecutedLookups
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
+    executedLookups: ExecutedLookups
   },
 ) => void
 export type UpdateFormElementsHandler = (
@@ -54,6 +68,7 @@ export type SetFormSubmission = React.Dispatch<
     definition: FormTypes.Form
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
+    executedLookups: ExecutedLookups
   }>
 >
 

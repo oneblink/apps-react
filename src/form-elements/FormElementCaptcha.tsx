@@ -26,7 +26,9 @@ function FormElementCaptcha({
         <ReCAPTCHA
           sitekey={captchaSiteKey || ''}
           onChange={(val) => {
-            onChange(element, val || undefined)
+            onChange(element, {
+              value: val || undefined,
+            })
           }}
           className="ob-input cypress-captcha-control"
         />

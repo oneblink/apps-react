@@ -10,6 +10,7 @@ import {
   FormElementValueChangeHandler,
   SetFormSubmission,
   UpdateFormElementsHandler,
+  ExecutedLookups,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
@@ -24,6 +25,7 @@ export type Props = {
   formElementsValidation: FormElementsValidation | undefined
   onChange: FormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
+  executedLookups: ExecutedLookups
 }
 
 function PageFormElements({
@@ -36,14 +38,16 @@ function PageFormElements({
   formElementsValidation,
   onChange,
   setFormSubmission,
+  executedLookups,
 }: Props) {
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
       setFormSubmission((currentFormSubmission) => {
-        const { submission, elements } = mergeLookupResults({
+        const { submission, elements, executedLookups } = mergeLookupResults({
           elements: pageElement.elements,
           submission: currentFormSubmission.submission,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups: currentFormSubmission.executedLookups,
         })
 
         const definition = {
@@ -73,6 +77,7 @@ function PageFormElements({
           submission,
           definition,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups,
         }
       })
     },
@@ -140,6 +145,7 @@ function PageFormElements({
             onLookup={handleLookup}
             onUpdateFormElements={handleUpdateFormElements}
             idPrefix=""
+            executedLookups={executedLookups}
           />
         </div>
       </FlatpickrGuidProvider>

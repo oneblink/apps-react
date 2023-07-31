@@ -45,7 +45,11 @@ function FormElementText({
               name={element.name}
               className="input ob-input cypress-text-control"
               value={text}
-              onChange={(e) => onChange(element, e.target.value || undefined)}
+              onChange={(e) =>
+                onChange(element, {
+                  value: e.target.value || undefined,
+                })
+              }
               required={element.required}
               disabled={element.readOnly}
               onBlur={setIsDirty}

@@ -38,8 +38,10 @@ export default function useFormSubmissionAutoSaveState({
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
 }) {
-  const [{ definition, submission, lastElementUpdated }, setFormSubmission] =
-    useFormSubmissionState(form, initialSubmission, resumeAtElement)
+  const [
+    { definition, submission, lastElementUpdated, executedLookups },
+    setFormSubmission,
+  ] = useFormSubmissionState(form, initialSubmission, resumeAtElement)
 
   const [
     { isLoadingAutoSaveSubmission, autoSaveSubmission, autoSaveElement },
@@ -234,6 +236,7 @@ export default function useFormSubmissionAutoSaveState({
     definition,
     submission,
     lastElementUpdated,
+    executedLookups,
     isLoadingAutoSaveSubmission,
     isAutoSaveSubmissionAvailable: autoSaveSubmission !== null,
     startNewSubmission,

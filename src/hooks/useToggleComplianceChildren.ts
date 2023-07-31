@@ -6,14 +6,14 @@ const useToggleComplianceChildren = (
   initialState: boolean,
   onToggleOff: (
     element: FormTypes.ComplianceElement,
-    newValue: undefined,
+    options: { value: undefined },
   ) => void,
 ): [isShowing: boolean, handleToggle: () => void] => {
   const [isShowing, , , toggleIsShowing] = useBooleanState(initialState)
 
   const handleToggle = React.useCallback(() => {
     if (isShowing) {
-      onToggleOff(element, undefined)
+      onToggleOff(element, { value: undefined })
     }
     toggleIsShowing()
   }, [element, isShowing, onToggleOff, toggleIsShowing])

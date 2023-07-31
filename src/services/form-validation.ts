@@ -6,6 +6,7 @@ import { Value as FormElementComplianceValue } from '../form-elements/FormElemen
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 import {
+  ExecutedLookups,
   FormElementConditionallyShown,
   FormElementsConditionallyShown,
   FormElementsValidation,
@@ -20,6 +21,7 @@ import getRepeatableSetEntriesConfiguration from './getRepeatableSetEntriesConfi
 type NestedValidateJSSchema = {
   schema: ValidateJSSchema
   formElementConditionallyShown: FormElementConditionallyShown | undefined
+  executedLookups: boolean | ExecutedLookups | ExecutedLookups[]
 }
 
 export const lookupValidationMessage = 'Lookup is required'
@@ -46,7 +48,11 @@ validate.validators.entries = function (
   value: unknown,
   {
     setSchema,
-    entrySchema: { schema: entrySchema, formElementConditionallyShown },
+    entrySchema: {
+      schema: entrySchema,
+      formElementConditionallyShown,
+      executedLookups,
+    },
   }: {
     setSchema: ValidateJSSchema
     entrySchema: NestedValidateJSSchema
@@ -61,6 +67,7 @@ validate.validators.entries = function (
       formElementConditionallyShown?.type === 'repeatableSet'
         ? formElementConditionallyShown.entries[index.toString()]
         : undefined,
+      Array.isArray(executedLookups) ? executedLookups[index] : {},
     )
     if (entryValidation) {
       errorsByIndex[index] = entryValidation
@@ -83,7 +90,11 @@ validate.validators.entries = function (
 
 validate.validators.nestedElements = function (
   value: SubmissionTypes.S3SubmissionData['submission'] | undefined,
-  { schema, formElementConditionallyShown }: NestedValidateJSSchema,
+  {
+    schema,
+    formElementConditionallyShown,
+    executedLookups,
+  }: NestedValidateJSSchema,
 ) {
   const errors = validateSubmission(
     schema,
@@ -91,6 +102,7 @@ validate.validators.nestedElements = function (
     formElementConditionallyShown?.type === 'formElements'
       ? formElementConditionallyShown.formElements
       : undefined,
+    typeof executedLookups !== 'boolean' ? executedLookups : {},
   )
   if (!errors) {
     return
@@ -151,11 +163,11 @@ validate.validators.attachments = function (
 validate.validators.lookups = function (
   value: unknown,
   {
-    elementIdsWithLookupsExecuted,
+    executedLookups,
     formElement,
   }: {
     formElement: FormTypes.LookupFormElement & FormTypes.FormElementRequired
-    elementIdsWithLookupsExecuted: string[]
+    executedLookups?: ExecutedLookups
   },
 ) {
   if (!formElement.isDataLookup && !formElement.isElementLookup) {
@@ -167,7 +179,11 @@ validate.validators.lookups = function (
     return
   }
 
-  if (elementIdsWithLookupsExecuted.includes(formElement.id)) {
+  const elementExecutedLookups = executedLookups?.[formElement.name]
+  if (
+    typeof elementExecutedLookups === 'boolean' &&
+    elementExecutedLookups === true
+  ) {
     return
   }
 
@@ -264,7 +280,6 @@ function getCleanRepeatableSetConfiguration(
 
 export function generateValidationSchema(
   elements: FormTypes.FormElementWithName[],
-  elementIdsWithLookupsExecuted: string[],
 ): ValidateJSSchema {
   return elements.reduce<ValidateJSSchema>((partialSchema, formElement) => {
     switch (formElement.type) {
@@ -284,7 +299,7 @@ export function generateValidationSchema(
       value,
       submission,
       propertyName,
-      { formElementsConditionallyShown },
+      { formElementsConditionallyShown, executedLookups },
     ) => {
       // If the element is current hidden, we do not need to apply validation
       const formElementConditionallyShown =
@@ -319,7 +334,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Please select a location'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -328,7 +343,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Required'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             attachments: true,
           }
@@ -352,7 +367,7 @@ export function generateValidationSchema(
               : undefined,
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -367,7 +382,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Required'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -376,7 +391,7 @@ export function generateValidationSchema(
             isTrue: formElement.required && 'Required',
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -385,7 +400,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Please enter a BSB number'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             format: {
               pattern: /\d{3}-\d{3}/,
@@ -401,7 +416,7 @@ export function generateValidationSchema(
             ),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             format: getCustomRegexFormatConfig(formElement),
           }
@@ -412,7 +427,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Please enter a value'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             length: {
               minimum: formElement.minLength,
@@ -430,7 +445,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Please enter a phone number'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             format: getCustomRegexFormatConfig(formElement),
           }
@@ -443,7 +458,7 @@ export function generateValidationSchema(
             },
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             format: getCustomRegexFormatConfig(formElement),
           }
@@ -453,7 +468,7 @@ export function generateValidationSchema(
             presence: presence(formElement, 'Please select a time'),
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -498,7 +513,7 @@ export function generateValidationSchema(
             },
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -543,7 +558,7 @@ export function generateValidationSchema(
             },
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
           }
         }
@@ -573,7 +588,7 @@ export function generateValidationSchema(
             },
             lookups: {
               formElement,
-              elementIdsWithLookupsExecuted,
+              executedLookups,
             },
             numberRegex: getCustomRegexFormatConfig(formElement),
           }
@@ -623,6 +638,14 @@ export function generateValidationSchema(
             submission,
             formElementsConditionallyShown,
           )
+
+          const repeatableSetExecutedLookups =
+            typeof executedLookups !== 'boolean' &&
+            !Array.isArray(executedLookups) &&
+            Array.isArray(executedLookups[formElement.name])
+              ? executedLookups[formElement.name]
+              : []
+
           return {
             entries: {
               setSchema: {
@@ -643,10 +666,10 @@ export function generateValidationSchema(
               entrySchema: {
                 schema: generateValidationSchema(
                   formElement.elements as FormTypes.FormElementWithName[],
-                  elementIdsWithLookupsExecuted,
                 ),
                 formElementConditionallyShown:
                   formElementsConditionallyShown?.[formElement.name],
+                executedLookups: repeatableSetExecutedLookups,
               },
             },
           }
@@ -656,28 +679,38 @@ export function generateValidationSchema(
             formElement,
             [],
           )
+          const nestedExecutedLookups =
+            typeof executedLookups !== 'boolean' &&
+            !Array.isArray(executedLookups)
+              ? executedLookups[formElement.name]
+              : {}
           return {
             nestedElements: {
               schema: generateValidationSchema(
                 nestedElements as FormTypes.FormElementWithName[],
-                elementIdsWithLookupsExecuted,
               ),
               formElementConditionallyShown:
                 formElementsConditionallyShown?.[formElement.name],
+              executedLookups: nestedExecutedLookups,
             },
           }
         }
         case 'infoPage':
         case 'form': {
           if (formElement.elements) {
+            const nestedExecutedLookups =
+              typeof executedLookups !== 'boolean' &&
+              !Array.isArray(executedLookups)
+                ? executedLookups[formElement.name]
+                : {}
             return {
               nestedElements: {
                 schema: generateValidationSchema(
                   formElement.elements as FormTypes.FormElementWithName[],
-                  elementIdsWithLookupsExecuted,
                 ),
                 formElementConditionallyShown:
                   formElementsConditionallyShown?.[formElement.name],
+                executedLookups: nestedExecutedLookups,
               },
             }
           }
@@ -686,14 +719,19 @@ export function generateValidationSchema(
         case 'freshdeskDependentField': {
           const nestedElements =
             generateFreshdeskDependentFieldElements(formElement)
+          const nestedExecutedLookups =
+            typeof executedLookups !== 'boolean' &&
+            !Array.isArray(executedLookups)
+              ? executedLookups[formElement.name]
+              : {}
           return {
             nestedElements: {
               schema: generateValidationSchema(
                 nestedElements as FormTypes.FormElementWithName[],
-                elementIdsWithLookupsExecuted,
               ),
               formElementConditionallyShown:
                 formElementsConditionallyShown?.[formElement.name],
+              executedLookups: nestedExecutedLookups,
             },
           }
         }
@@ -711,11 +749,13 @@ export function validateSubmission(
   schema: ValidateJSSchema,
   submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
+  executedLookups: boolean | ExecutedLookups | ExecutedLookups[],
 ): FormElementsValidation | undefined {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
     fullMessages: false,
     formElementsConditionallyShown,
+    executedLookups,
   })
   if (!errorsAsArray || validate.isEmpty(errorsAsArray)) {
     return

@@ -46,7 +46,9 @@ function FormElementBSB({
 
   React.useEffect(() => {
     if (bsbRecord) {
-      onChange(element, bsbRecord.bsb)
+      onChange(element, {
+        value: bsbRecord.bsb,
+      })
     }
   }, [bsbRecord, element, onChange, value])
 
@@ -72,7 +74,10 @@ function FormElementBSB({
 
     const abortController = new AbortController()
     const getBSBRecord = async () => {
-      onChange(element, { isValidating: true, isInvalid: false })
+      onChange(element, {
+        value: { isValidating: true, isInvalid: false },
+        executedLookups: { [element.name]: false },
+      })
       try {
         const bsbRecord = await formService.getBSBRecord(
           formId,
@@ -89,7 +94,10 @@ function FormElementBSB({
       } catch (error) {
         console.warn('Error validating BSB number', error)
         if (!abortController.signal.aborted) {
-          onChange(element, { isInvalid: true, isValidating: false })
+          onChange(element, {
+            value: { isInvalid: true, isValidating: false },
+            executedLookups: { [element.name]: false },
+          })
           setState({
             isLoading: false,
             errorMessage: `The BSB number "${text}" does not exist`,
@@ -136,7 +144,10 @@ function FormElementBSB({
               disabled={element.readOnly}
               onBlur={() => {
                 if (text === 'xxx-xxx') {
-                  onChange(element, undefined)
+                  onChange(element, {
+                    value: undefined,
+                    executedLookups: { [element.name]: false },
+                  })
                 }
                 setIsDirty()
               }}

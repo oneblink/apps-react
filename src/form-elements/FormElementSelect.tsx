@@ -84,7 +84,9 @@ function FormElementSelect({
                     className="cypress-select-single-control ob-input ob-select__single"
                     value={typeof value === 'string' ? value : ''}
                     onChange={(e) =>
-                      onChange(element, e.target.value || undefined)
+                      onChange(element, {
+                        value: e.target.value || undefined,
+                      })
                     }
                     required={element.required}
                     disabled={element.readOnly}
@@ -113,7 +115,9 @@ function FormElementSelect({
                   for (let i = 0; i < e.target.selectedOptions.length; i++) {
                     vals.push(e.target.selectedOptions[i].value)
                   }
-                  onChange(element, vals.length ? vals : undefined)
+                  onChange(element, {
+                    value: vals.length ? vals : undefined,
+                  })
                 }}
                 required={element.required}
                 disabled={element.readOnly}

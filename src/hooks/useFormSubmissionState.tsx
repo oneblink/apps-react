@@ -54,6 +54,7 @@ export default function useFormSubmissionState(
       definition,
       submission: defaultData,
       lastElementUpdated,
+      executedLookups: {},
     }
   })
 }

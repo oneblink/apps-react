@@ -91,21 +91,23 @@ function FormElementCompliance({
   const handleValueChange = React.useCallback<
     FormElementValueChangeHandler<string>
   >(
-    (fe, v) => {
-      onChange(fe, (existingValue: Value | undefined) => {
-        let newValue = undefined
-        if (typeof v === 'function') {
-          newValue = v(existingValue ? existingValue.value : undefined)
-        } else {
-          newValue = v
-        }
-        if (!newValue) {
-          return
-        }
-        return {
-          ...existingValue,
-          value: newValue,
-        }
+    (fe, { value: v }) => {
+      onChange(fe, {
+        value: (existingValue: Value | undefined) => {
+          let newValue = undefined
+          if (typeof v === 'function') {
+            newValue = v(existingValue ? existingValue.value : undefined)
+          } else {
+            newValue = v
+          }
+          if (!newValue) {
+            return
+          }
+          return {
+            ...existingValue,
+            value: newValue,
+          }
+        },
       })
     },
     [onChange],
@@ -113,21 +115,23 @@ function FormElementCompliance({
   const handleNotesChange = React.useCallback<
     React.ComponentProps<typeof FormElementTextarea>['onChange']
   >(
-    (fe, v) => {
-      onChange(element, (existingValue) => {
-        if (!existingValue) {
-          return
-        }
-        let newNotes = undefined
-        if (typeof v === 'function') {
-          newNotes = v(existingValue.notes)
-        } else {
-          newNotes = v
-        }
-        return {
-          ...existingValue,
-          notes: newNotes,
-        }
+    (fe, { value: v }) => {
+      onChange(element, {
+        value: (existingValue) => {
+          if (!existingValue) {
+            return
+          }
+          let newNotes = undefined
+          if (typeof v === 'function') {
+            newNotes = v(existingValue.notes)
+          } else {
+            newNotes = v
+          }
+          return {
+            ...existingValue,
+            notes: newNotes,
+          }
+        },
       })
     },
     [element, onChange],
@@ -135,21 +139,23 @@ function FormElementCompliance({
   const handleFilesChange = React.useCallback<
     React.ComponentProps<typeof FormElementFiles>['onChange']
   >(
-    (fe, v) => {
-      onChange(element, (existingValue) => {
-        if (!existingValue) {
-          return
-        }
-        let newFiles = undefined
-        if (typeof v === 'function') {
-          newFiles = v(existingValue.files)
-        } else {
-          newFiles = v
-        }
-        return {
-          ...existingValue,
-          files: newFiles && newFiles.length ? newFiles : undefined,
-        }
+    (fe, { value: v }) => {
+      onChange(element, {
+        value: (existingValue) => {
+          if (!existingValue) {
+            return
+          }
+          let newFiles = undefined
+          if (typeof v === 'function') {
+            newFiles = v(existingValue.files)
+          } else {
+            newFiles = v
+          }
+          return {
+            ...existingValue,
+            files: newFiles && newFiles.length ? newFiles : undefined,
+          }
+        },
       })
     },
     [element, onChange],
@@ -198,7 +204,9 @@ function FormElementCompliance({
                       isSelected={isSelected}
                       onClick={() => {
                         setIsDirty()
-                        handleValueChange(element, option.value)
+                        handleValueChange(element, {
+                          value: option.value,
+                        })
                       }}
                       className={clsx(
                         'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',

@@ -64,6 +64,7 @@ import {
   FormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
+  ExecutedLookups,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
@@ -81,6 +82,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
+  executedLookups: ExecutedLookups
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -95,6 +97,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: FormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
+  executedLookups: ExecutedLookups
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -110,6 +113,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   onUpdateFormElements,
   model,
   parentElement,
+  executedLookups,
 }: Props<T>) {
   return (
     <FormSubmissionModelContextProvider
@@ -143,6 +147,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 onUpdateFormElements={onUpdateFormElements}
                 model={model}
                 parentElement={parentElement}
+                executedLookups={executedLookups}
               />
             </div>
           )
@@ -171,6 +176,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             onChange={onChange}
             onLookup={onLookup}
             onUpdateFormElements={onUpdateFormElements}
+            executedLookups={executedLookups}
           />
         )
       })}
@@ -232,6 +238,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  executedLookups,
 }: FormElementSwitchProps & IsDirtyProps) {
   const dirtyProps = React.useMemo(
     () => ({ isDirty, setIsDirty }),
@@ -254,7 +261,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'date': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementDate
             id={id}
             element={element}
@@ -273,7 +280,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'email': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementEmail
             id={id}
             element={element}
@@ -292,7 +299,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'text': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementText
             id={id}
             element={element}
@@ -311,7 +318,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'abn': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementABN
             id={id}
             element={element}
@@ -330,7 +337,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'bsb': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementBSB
             id={id}
             formId={formId}
@@ -350,7 +357,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'barcodeScanner': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementBarcodeScanner
             id={id}
             element={element}
@@ -369,7 +376,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'textarea': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementTextarea
             id={id}
             element={element}
@@ -388,7 +395,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'number': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementNumber
             id={id}
             element={element}
@@ -407,7 +414,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'telephone': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementTelephone
             id={id}
             element={element}
@@ -430,7 +437,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementAutocomplete
             id={id}
@@ -453,7 +459,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'select': {
       return (
         <LookupNotification
-          value={value}
           autoLookupValue={!element.multi ? value : undefined}
           element={element}
           onLookup={onLookup}
@@ -479,7 +484,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'radio': {
       return (
         <LookupNotification
-          value={value}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -554,6 +558,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
           onUpdateFormElements={onUpdateFormElements}
+          executedLookups={executedLookups}
           {...dirtyProps}
         />
       )
@@ -563,7 +568,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'datetime': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementDateTime
             id={id}
             element={element}
@@ -582,7 +587,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'time': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementTime
             id={id}
             element={element}
@@ -601,7 +606,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     }
     case 'checkboxes': {
       return (
-        <LookupNotification element={element} onLookup={onLookup} value={value}>
+        <LookupNotification element={element} onLookup={onLookup}>
           <FormElementCheckBoxes
             id={id}
             element={element}
@@ -631,7 +636,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
               typeof LookupNotification
             >['stringifyAutoLookupValue']
           }
-          value={value}
         >
           <FormElementFiles
             id={id}
@@ -667,6 +671,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          executedLookups={executedLookups}
         />
       )
     }
@@ -726,7 +731,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementLocation
             id={id}
@@ -751,7 +755,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementGeoscapeAddress
             id={id}
@@ -778,7 +781,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementCompliance
             id={id}
@@ -818,6 +820,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          executedLookups={executedLookups}
         />
       )
     }
@@ -828,7 +831,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementPointAddress
             id={id}
@@ -853,7 +855,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementBoolean
             id={id}
@@ -878,7 +879,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
-          value={value}
         >
           <FormElementCivicaStreetName
             id={id}
@@ -916,6 +916,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          executedLookups={executedLookups}
         />
       )
     }

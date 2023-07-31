@@ -55,7 +55,7 @@ function OneBlinkReadOnlyForm({
   initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
   googleMapsApiKey?: string
 }) {
-  const [{ submission, definition }, setFormSubmission] =
+  const [{ submission, definition, executedLookups }, setFormSubmission] =
     useFormSubmissionState(form, initialSubmission)
 
   const readOnlyDefinition = React.useMemo(() => {
@@ -77,6 +77,7 @@ function OneBlinkReadOnlyForm({
       onSubmit={noop}
       setFormSubmission={setFormSubmission}
       isPendingQueueEnabled={false}
+      executedLookups={executedLookups}
       {...rest}
     />
   )

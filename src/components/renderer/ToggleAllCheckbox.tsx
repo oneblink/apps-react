@@ -27,12 +27,13 @@ const ToggleAllCheckbox = ({
   const handleToggleAll = React.useCallback(
     (isSelectingAll: boolean) => {
       if (isSelectingAll) {
-        onChange(
-          element,
-          options.map((opt) => opt.value),
-        )
+        onChange(element, {
+          value: options.map((opt) => opt.value),
+        })
       } else {
-        onChange(element, undefined)
+        onChange(element, {
+          value: undefined,
+        })
       }
     },
     [element, options, onChange],

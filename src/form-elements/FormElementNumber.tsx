@@ -35,7 +35,9 @@ function FormElementNumber({
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseFloat(event.target.value)
-      onChange(element, isNaN(newValue) ? undefined : newValue)
+      onChange(element, {
+        value: isNaN(newValue) ? undefined : newValue,
+      })
     },
     [element, onChange],
   )
