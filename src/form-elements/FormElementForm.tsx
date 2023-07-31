@@ -22,7 +22,7 @@ export type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups | undefined
   onUpdateFormElements: UpdateFormElementsHandler
 }
 
@@ -61,16 +61,15 @@ function FormElementForm({
         executedLookups: (existingExecutedLookups) => ({
           ...existingExecutedLookups,
           [element.name]: {
-            //@ts-expect-error handle later
-            ...existingExecutedLookups[element.name],
+            ...(existingExecutedLookups?.[element.name] as ExecutedLookups),
             [nestedElement.name]:
               typeof executedLookups === 'function'
                 ? executedLookups(
-                    existingExecutedLookups[
+                    existingExecutedLookups?.[
                       nestedElement.name
                     ] as ExecutedLookups,
                   )
-                : executedLookups?.[nestedElement.name] ?? false,
+                : executedLookups?.[nestedElement.name],
           },
         }),
       })
@@ -84,7 +83,9 @@ function FormElementForm({
         let model = currentFormSubmission.submission[
           element.name
         ] as SubmissionTypes.S3SubmissionData['submission']
-        let newExecutedLookups = { ...currentFormSubmission.executedLookups }
+        let newExecutedLookups: ExecutedLookups | undefined = {
+          ...currentFormSubmission.executedLookups,
+        }
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (
             formElement.type === 'form' &&
@@ -96,7 +97,7 @@ function FormElementForm({
                 elements: formElement.elements,
                 submission: model,
                 lastElementUpdated: currentFormSubmission.lastElementUpdated,
-                executedLookups: currentFormSubmission.executedLookups[
+                executedLookups: currentFormSubmission.executedLookups?.[
                   element.name
                 ] as ExecutedLookups,
               })
@@ -187,7 +188,9 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={`${id}_`}
       onUpdateFormElements={handleUpdateNestedFormElements}
-      executedLookups={(executedLookups[element.name] as ExecutedLookups) ?? {}}
+      executedLookups={
+        (executedLookups?.[element.name] as ExecutedLookups) ?? {}
+      }
     />
   )
 }

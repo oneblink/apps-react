@@ -25,7 +25,7 @@ export type Props = {
   formElementsValidation: FormElementsValidation | undefined
   onChange: FormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups | undefined
 }
 
 function PageFormElements({

@@ -111,7 +111,7 @@ export type OneBlinkFormControlledProps = {
   submission: SubmissionTypes.S3SubmissionData['submission']
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups | undefined
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -322,7 +322,11 @@ function OneBlinkFormBase({
   >(
     () =>
       !isReadOnly
-        ? validate(submission, formElementsConditionallyShown, executedLookups)
+        ? validate(
+            submission,
+            formElementsConditionallyShown,
+            executedLookups ?? {},
+          )
         : undefined,
     [
       formElementsConditionallyShown,

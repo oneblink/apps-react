@@ -6,7 +6,7 @@ declare module 'validate.js' {
     formElementsConditionallyShown:
       | import('@oneblink/sdk-core').conditionalLogicService.FormElementsConditionallyShown
       | undefined
-    executedLookups: boolean | ExecutedLookups | ExecutedLookups[]
+    executedLookups: boolean | ExecutedLookups | ExecutedLookups[] | undefined
   }
 
   export interface ValidatorConstraintFn<

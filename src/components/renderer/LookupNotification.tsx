@@ -93,7 +93,7 @@ function LookupNotificationComponent({
       newValue: unknown
       dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
       elementLookupResult: FormTypes.FormElement[]
-      executedLookup: ExecutedLookups
+      executedLookup: ExecutedLookups | undefined
     }) => {
       if (elementLookupResult) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {

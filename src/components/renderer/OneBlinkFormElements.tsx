@@ -82,7 +82,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups | undefined
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -97,7 +97,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: FormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups | undefined
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({

@@ -167,7 +167,7 @@ validate.validators.lookups = function (
     formElement,
   }: {
     formElement: FormTypes.LookupFormElement & FormTypes.FormElementRequired
-    executedLookups?: ExecutedLookups
+    executedLookups: ExecutedLookups | undefined
   },
 ) {
   if (!formElement.isDataLookup && !formElement.isElementLookup) {
@@ -640,6 +640,7 @@ export function generateValidationSchema(
           )
 
           const repeatableSetExecutedLookups =
+            executedLookups !== undefined &&
             typeof executedLookups !== 'boolean' &&
             !Array.isArray(executedLookups) &&
             Array.isArray(executedLookups[formElement.name])
@@ -680,6 +681,7 @@ export function generateValidationSchema(
             [],
           )
           const nestedExecutedLookups =
+            executedLookups !== undefined &&
             typeof executedLookups !== 'boolean' &&
             !Array.isArray(executedLookups)
               ? executedLookups[formElement.name]
@@ -699,6 +701,7 @@ export function generateValidationSchema(
         case 'form': {
           if (formElement.elements) {
             const nestedExecutedLookups =
+              executedLookups !== undefined &&
               typeof executedLookups !== 'boolean' &&
               !Array.isArray(executedLookups)
                 ? executedLookups[formElement.name]
@@ -720,6 +723,7 @@ export function generateValidationSchema(
           const nestedElements =
             generateFreshdeskDependentFieldElements(formElement)
           const nestedExecutedLookups =
+            executedLookups !== undefined &&
             typeof executedLookups !== 'boolean' &&
             !Array.isArray(executedLookups)
               ? executedLookups[formElement.name]

@@ -55,7 +55,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     (mergeLookupResults) => {
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission
-        let newExecutedLookups: ExecutedLookups = {}
+        let newExecutedLookups: ExecutedLookups | undefined = {}
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (formElement.type === 'section' && formElement.id === element.id) {
             const { elements, submission, executedLookups } =
