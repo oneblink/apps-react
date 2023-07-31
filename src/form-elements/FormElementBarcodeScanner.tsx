@@ -123,7 +123,6 @@ function FormElementBarcodeScanner({
                   onChange={(e) =>
                     onChange(element, {
                       value: e.target.value || undefined,
-                      executedLookups: { [element.name]: false },
                     })
                   }
                   required={element.required}

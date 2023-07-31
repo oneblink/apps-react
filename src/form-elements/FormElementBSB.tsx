@@ -76,7 +76,6 @@ function FormElementBSB({
     const getBSBRecord = async () => {
       onChange(element, {
         value: { isValidating: true, isInvalid: false },
-        executedLookups: { [element.name]: false },
       })
       try {
         const bsbRecord = await formService.getBSBRecord(
@@ -96,7 +95,6 @@ function FormElementBSB({
         if (!abortController.signal.aborted) {
           onChange(element, {
             value: { isInvalid: true, isValidating: false },
-            executedLookups: { [element.name]: false },
           })
           setState({
             isLoading: false,
@@ -146,7 +144,6 @@ function FormElementBSB({
                 if (text === 'xxx-xxx') {
                   onChange(element, {
                     value: undefined,
-                    executedLookups: { [element.name]: false },
                   })
                 }
                 setIsDirty()

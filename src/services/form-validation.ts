@@ -167,7 +167,7 @@ validate.validators.lookups = function (
     formElement,
   }: {
     formElement: FormTypes.LookupFormElement & FormTypes.FormElementRequired
-    executedLookups: ExecutedLookups | undefined
+    executedLookups: ExecutedLookups
   },
 ) {
   if (!formElement.isDataLookup && !formElement.isElementLookup) {

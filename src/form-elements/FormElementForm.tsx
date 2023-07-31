@@ -6,7 +6,7 @@ import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
   FormElementValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   UpdateFormElementsHandler,
 } from '../types/form'
 
@@ -15,14 +15,14 @@ export type Props = {
   id: string
   element: FormTypes.FormFormElement
   value: SubmissionTypes.S3SubmissionData['submission'] | undefined
-  onChange: FormElementValueChangeHandler<
+  onChange: NestedFormElementValueChangeHandler<
     SubmissionTypes.S3SubmissionData['submission']
   >
   onLookup: FormElementLookupHandler
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  executedLookups: ExecutedLookups | undefined
+  executedLookups: ExecutedLookups
   onUpdateFormElements: UpdateFormElementsHandler
 }
 
@@ -45,7 +45,7 @@ function FormElementForm({
       {
         value: nestedElementValue,
         executedLookups,
-      }: Parameters<FormElementValueChangeHandler>[1],
+      }: Parameters<NestedFormElementValueChangeHandler>[1],
     ) => {
       if (!('name' in nestedElement)) return
       onChange(element, {
@@ -83,7 +83,7 @@ function FormElementForm({
         let model = currentFormSubmission.submission[
           element.name
         ] as SubmissionTypes.S3SubmissionData['submission']
-        let newExecutedLookups: ExecutedLookups | undefined = {
+        let newExecutedLookups: ExecutedLookups = {
           ...currentFormSubmission.executedLookups,
         }
         const elements = currentFormSubmission.elements.map((formElement) => {

@@ -61,7 +61,7 @@ import {
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormElementValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
   ExecutedLookups,
@@ -74,7 +74,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
   // Props passed by repeatable sets
@@ -82,7 +82,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
-  executedLookups: ExecutedLookups | undefined
+  executedLookups: ExecutedLookups
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -94,10 +94,10 @@ interface FormElementSwitchProps extends IsDirtyProps {
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   id: string
   isEven: boolean | undefined
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
-  executedLookups: ExecutedLookups | undefined
+  executedLookups: ExecutedLookups
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({

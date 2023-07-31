@@ -33,7 +33,7 @@ import CustomisableButtonInner from './components/renderer/CustomisableButtonInn
 import {
   ExecutedLookups,
   FormElementsValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   SetFormSubmission,
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
@@ -111,7 +111,7 @@ export type OneBlinkFormControlledProps = {
   submission: SubmissionTypes.S3SubmissionData['submission']
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
-  executedLookups: ExecutedLookups | undefined
+  executedLookups: ExecutedLookups
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -648,7 +648,7 @@ function OneBlinkFormBase({
   //
   // #region Submission/Definition Changes
 
-  const handleChange = React.useCallback<FormElementValueChangeHandler>(
+  const handleChange = React.useCallback<NestedFormElementValueChangeHandler>(
     (element, { value, executedLookups }) => {
       if (
         //This will ensure on a read only form that the summary and calculation elements

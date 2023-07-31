@@ -30,39 +30,43 @@ export type FormElementValidation =
       >
     }
 
-export type ExecutedLookups = {
-  [elementName: string]:
-    | boolean
-    | ExecutedLookups
-    | ExecutedLookups[]
-    | undefined
-}
+export type ExecutedLookups =
+  | {
+      [elementName: string]:
+        | boolean
+        | ExecutedLookups
+        | ExecutedLookups[]
+        | undefined
+    }
+  | undefined
 
-export type FormElementValueChangeHandler<T = unknown> = (
+type ValueChangeHandler<U extends Record<string, unknown>> = (
   element: FormTypes.FormElement,
-  {
-    value,
-    executedLookups,
-  }: {
-    value?: T | ((existingValue?: T) => T | undefined)
-    executedLookups?:
-      | ExecutedLookups
-      | ((
-          currentExecutedLookups: ExecutedLookups | undefined,
-        ) => ExecutedLookups)
-  },
+  opts: U,
 ) => void
+
+export type FormElementValueChangeHandler<T = unknown> = ValueChangeHandler<{
+  value?: T | ((existingValue?: T) => T | undefined)
+}>
+
+export type NestedFormElementValueChangeHandler<T = unknown> =
+  ValueChangeHandler<{
+    value?: T | ((existingValue?: T) => T | undefined)
+    executedLookups:
+      | ExecutedLookups
+      | ((currentExecutedLookups: ExecutedLookups) => ExecutedLookups)
+  }>
 
 export type FormElementLookupHandler = (
   setter: (data: {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
-    executedLookups: ExecutedLookups | undefined
+    executedLookups: ExecutedLookups
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
-    executedLookups: ExecutedLookups | undefined
+    executedLookups: ExecutedLookups
   },
 ) => void
 export type UpdateFormElementsHandler = (
@@ -74,7 +78,7 @@ export type SetFormSubmission = React.Dispatch<
     definition: FormTypes.Form
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
-    executedLookups: ExecutedLookups | undefined
+    executedLookups: ExecutedLookups
   }>
 >
 

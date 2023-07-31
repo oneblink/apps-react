@@ -49,7 +49,7 @@ export default function useFormSubmissionState(
     definition: FormTypes.Form
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
-    executedLookups: ExecutedLookups | undefined
+    executedLookups: ExecutedLookups
   }>(() => {
     const definition = _cloneDeep(form)
     const defaultData = generateDefaultData(

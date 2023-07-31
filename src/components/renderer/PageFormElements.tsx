@@ -7,7 +7,7 @@ import {
   FormElementLookupHandler,
   FormElementsConditionallyShown,
   FormElementsValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   SetFormSubmission,
   UpdateFormElementsHandler,
   ExecutedLookups,
@@ -23,9 +23,9 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
-  executedLookups: ExecutedLookups | undefined
+  executedLookups: ExecutedLookups
 }
 
 function PageFormElements({

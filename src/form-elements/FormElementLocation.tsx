@@ -109,7 +109,6 @@ function FormElementLocation({
     hideLocationPicker()
     onChange(element, {
       value: location,
-      executedLookups: { [element.name]: false },
     })
   }, [element, hideLocationPicker, location, onChange, setIsDirty])
 
