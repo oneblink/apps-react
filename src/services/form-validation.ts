@@ -7,6 +7,7 @@ import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 import {
   ExecutedLookups,
+  ExecutedLookupValue,
   FormElementConditionallyShown,
   FormElementsConditionallyShown,
   FormElementsValidation,
@@ -21,7 +22,7 @@ import getRepeatableSetEntriesConfiguration from './getRepeatableSetEntriesConfi
 type NestedValidateJSSchema = {
   schema: ValidateJSSchema
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  executedLookups: boolean | ExecutedLookups | ExecutedLookups[]
+  executedLookups: ExecutedLookupValue
 }
 
 export const lookupValidationMessage = 'Lookup is required'
@@ -753,7 +754,7 @@ export function validateSubmission(
   schema: ValidateJSSchema,
   submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
-  executedLookups: boolean | ExecutedLookups | ExecutedLookups[],
+  executedLookups: ExecutedLookupValue,
 ): FormElementsValidation | undefined {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',

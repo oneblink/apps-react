@@ -95,7 +95,8 @@ function LookupNotificationComponent({
       elementLookupResult: FormTypes.FormElement[]
       executedLookup: ExecutedLookups
     }) => {
-      if (elementLookupResult) {
+      const executedLookupResult = executedLookup?.[element.name]
+      if (elementLookupResult && executedLookupResult !== false) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
           injectPagesAfter(
             element,
@@ -108,14 +109,17 @@ function LookupNotificationComponent({
 
       onLookup(({ submission, elements, executedLookups }) => {
         let allElements = elements
-        if (Array.isArray(elementLookupResult)) {
+        if (
+          Array.isArray(elementLookupResult) &&
+          executedLookupResult !== false
+        ) {
           const indexOfElement = elements.findIndex(
             ({ id }) => id === element.id,
           )
           if (indexOfElement === -1) {
             console.log('Could not find element', element)
           } else {
-            // Filter out already injected elements
+            // Filter out already injected elements if lookup was successful
             allElements = elements.filter(
               // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
               (e) => e.injectedByElementId !== element.id,
@@ -238,6 +242,12 @@ function LookupNotificationComponent({
         }
 
         setHasLookupFailed(true)
+        mergeLookupData({
+          newValue: model[element.name],
+          dataLookupResult: {},
+          elementLookupResult: [],
+          executedLookup: { [element.name]: false },
+        })
         setLookupErrorHTML(
           typeof error === 'string'
             ? error

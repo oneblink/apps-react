@@ -14,7 +14,6 @@ import {
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormElementValidation,
-  FormElementValueChangeHandler,
   NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
@@ -35,7 +34,7 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   onUpdateFormElements: UpdateFormElementsHandler
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookups[]
 } & IsDirtyProps
 
 const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -78,19 +77,23 @@ function FormElementRepeatableSet({
         return newEntries
       },
       executedLookups: (existingExecutedLookups) => {
+        if (
+          existingExecutedLookups !== undefined &&
+          !Array.isArray(existingExecutedLookups)
+        ) {
+          return []
+        }
+
         const newExistingExecutedLookups = [
-          ...((existingExecutedLookups?.[element.name] as ExecutedLookups[]) ||
-            []),
+          ...((existingExecutedLookups as ExecutedLookups[]) ??
+            Array.from(Array(entries.length))),
         ]
         newExistingExecutedLookups.push({})
-        return {
-          ...existingExecutedLookups,
-          [element.name]: newExistingExecutedLookups,
-        }
+        return newExistingExecutedLookups
       },
     })
     setIsDirty()
-  }, [element, onChange, setIsDirty])
+  }, [element, onChange, setIsDirty, entries])
 
   const handleRemoveEntry = React.useCallback(
     (index: number) => {
@@ -101,16 +104,13 @@ function FormElementRepeatableSet({
           return newEntries
         },
         executedLookups: (existingExecutedLookups) => {
-          const newExistingExecutedLookups = [
-            ...((existingExecutedLookups?.[
-              element.name
-            ] as ExecutedLookups[]) || []),
-          ]
-          newExistingExecutedLookups.splice(index, 1)
-          return {
-            ...existingExecutedLookups,
-            [element.name]: newExistingExecutedLookups,
+          if (!Array.isArray(existingExecutedLookups)) {
+            return []
           }
+          const newExistingExecutedLookups = [...existingExecutedLookups]
+
+          newExistingExecutedLookups.splice(index, 1)
+          return newExistingExecutedLookups
         },
       })
       setIsDirty()
@@ -148,32 +148,30 @@ function FormElementRepeatableSet({
           return newEntries
         },
         executedLookups: (existingExecutedLookups) => {
-          const elementExecutedLookups =
-            existingExecutedLookups?.[element.name] ??
-            Array.from(Array(entries.length))
+          const elementExecutedLookups = existingExecutedLookups ?? []
           if (!Array.isArray(elementExecutedLookups)) {
-            return { [element.name]: elementExecutedLookups }
+            return elementExecutedLookups
           }
           const newExecutedLookups = elementExecutedLookups.map(
             (executedLookup, i) => {
               if (i === index) {
                 const updatedExecutedLookups =
                   typeof executedLookups === 'function'
-                    ? executedLookups(executedLookup)
+                    ? executedLookups(executedLookup?.[nestedElement.name])
                     : executedLookups
                 return {
-                  ...elementExecutedLookups[index],
-                  ...updatedExecutedLookups,
+                  ...executedLookup,
+                  [nestedElement.name]: updatedExecutedLookups,
                 }
               }
               return executedLookup
             },
           )
-          return { [element.name]: newExecutedLookups }
+          return newExecutedLookups
         },
       })
     },
-    [element, onChange, entries.length],
+    [element, onChange],
   )
 
   const { minSetEntries, maxSetEntries } =
@@ -234,7 +232,7 @@ function FormElementRepeatableSet({
               }
               displayValidationMessages={displayValidationMessage}
               onUpdateFormElements={onUpdateFormElements}
-              executedLookups={executedLookups}
+              executedLookups={executedLookups?.[index]}
             />
           )
         })}
@@ -313,11 +311,15 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
 
-    const handleChange: FormElementValueChangeHandler = React.useCallback(
-      (element, { value }) => {
-        onChange(index, element, {
+    const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
+      (nestedElement, { value, executedLookups }) => {
+        if (!('name' in nestedElement)) {
+          return
+        }
+
+        onChange(index, nestedElement, {
           value,
-          executedLookups: 'name' in element ? { [element.name]: false } : {},
+          executedLookups,
         })
       },
       [index, onChange],
@@ -330,13 +332,10 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           const entries = currentFormSubmission.submission[
             element.name
           ] as Array<SubmissionTypes.S3SubmissionData['submission']>
-          const repeatableSetExecutedLookups = Array.isArray(
-            currentFormSubmission.executedLookups?.[element.name],
-          )
-            ? (currentFormSubmission.executedLookups?.[
-                element.name
-              ] as ExecutedLookups[])
-            : Array.from(Array(entries.length))
+          const repeatableSetExecutedLookups =
+            (currentFormSubmission.executedLookups?.[
+              element.name
+            ] as ExecutedLookups[]) ?? []
           let newExecutedLookups: ExecutedLookups = {}
           const elements = currentFormSubmission.elements.map((formElement) => {
             if (
@@ -348,10 +347,10 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                   elements: formElement.elements,
                   submission: entries[index],
                   lastElementUpdated: currentFormSubmission.lastElementUpdated,
-                  executedLookups: repeatableSetExecutedLookups[index],
+                  executedLookups: repeatableSetExecutedLookups[index] ?? {},
                 })
               newEntry = submission
-              newExecutedLookups = executedLookups
+              newExecutedLookups = executedLookups as ExecutedLookups
               return {
                 ...formElement,
                 elements,
@@ -376,10 +375,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
               ...currentFormSubmission.executedLookups,
               [element.name]: repeatableSetExecutedLookups.map((entry, i) => {
                 if (i == index) {
-                  return {
-                    ...entry,
-                    ...newExecutedLookups,
-                  }
+                  return newExecutedLookups
                 }
                 return entry
               }),

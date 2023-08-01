@@ -40,6 +40,8 @@ export type ExecutedLookups =
     }
   | undefined
 
+export type ExecutedLookupValue = NonNullable<ExecutedLookups>[string]
+
 type ValueChangeHandler<U extends Record<string, unknown>> = (
   element: FormTypes.FormElement,
   opts: U,
@@ -53,8 +55,8 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
   ValueChangeHandler<{
     value?: T | ((existingValue?: T) => T | undefined)
     executedLookups:
-      | ExecutedLookups
-      | ((currentExecutedLookups: ExecutedLookups) => ExecutedLookups)
+      | ExecutedLookupValue
+      | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
   }>
 
 export type FormElementLookupHandler = (

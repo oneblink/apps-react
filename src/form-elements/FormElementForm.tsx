@@ -44,7 +44,7 @@ function FormElementForm({
       nestedElement: FormTypes.FormElement,
       {
         value: nestedElementValue,
-        executedLookups,
+        executedLookups: nestedExecutedLookups,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
     ) => {
       if (!('name' in nestedElement)) return
@@ -58,20 +58,25 @@ function FormElementForm({
                 )
               : nestedElementValue,
         }),
-        executedLookups: (existingExecutedLookups) => ({
-          ...existingExecutedLookups,
-          [element.name]: {
-            ...(existingExecutedLookups?.[element.name] as ExecutedLookups),
+        executedLookups: (existingExecutedLookups) => {
+          if (
+            typeof existingExecutedLookups === 'boolean' ||
+            Array.isArray(existingExecutedLookups)
+          ) {
+            return {}
+          }
+          return {
+            ...existingExecutedLookups,
             [nestedElement.name]:
-              typeof executedLookups === 'function'
-                ? executedLookups(
+              typeof nestedExecutedLookups === 'function'
+                ? nestedExecutedLookups(
                     existingExecutedLookups?.[
                       nestedElement.name
                     ] as ExecutedLookups,
                   )
-                : executedLookups?.[nestedElement.name],
-          },
-        }),
+                : nestedExecutedLookups,
+          }
+        },
       })
     },
     [element, onChange],
@@ -83,9 +88,10 @@ function FormElementForm({
         let model = currentFormSubmission.submission[
           element.name
         ] as SubmissionTypes.S3SubmissionData['submission']
-        let newExecutedLookups: ExecutedLookups = {
-          ...currentFormSubmission.executedLookups,
-        }
+        let newExecutedLookups = currentFormSubmission.executedLookups?.[
+          element.name
+        ] as ExecutedLookups
+
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (
             formElement.type === 'form' &&
@@ -97,12 +103,10 @@ function FormElementForm({
                 elements: formElement.elements,
                 submission: model,
                 lastElementUpdated: currentFormSubmission.lastElementUpdated,
-                executedLookups: currentFormSubmission.executedLookups?.[
-                  element.name
-                ] as ExecutedLookups,
+                executedLookups: newExecutedLookups,
               })
             model = submission
-            newExecutedLookups = executedLookups
+            newExecutedLookups = executedLookups as ExecutedLookups
             return {
               ...formElement,
               elements,
@@ -122,9 +126,7 @@ function FormElementForm({
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
           executedLookups: {
             ...currentFormSubmission.executedLookups,
-            [element.name]: {
-              ...newExecutedLookups,
-            },
+            [element.name]: newExecutedLookups,
           },
         }
       })
@@ -188,9 +190,7 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={`${id}_`}
       onUpdateFormElements={handleUpdateNestedFormElements}
-      executedLookups={
-        (executedLookups?.[element.name] as ExecutedLookups) ?? {}
-      }
+      executedLookups={executedLookups ?? {}}
     />
   )
 }

@@ -65,6 +65,7 @@ import {
   IsDirtyProps,
   UpdateFormElementsHandler,
   ExecutedLookups,
+  ExecutedLookupValue,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
 
@@ -82,7 +83,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookupValue
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -97,7 +98,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
-  executedLookups: ExecutedLookups
+  executedLookups: ExecutedLookupValue
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -160,6 +161,10 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
           return null
         }
 
+        const parentExecutedLookups = executedLookups as
+          | ExecutedLookups
+          | undefined
+
         return (
           <FormElementSwitchContainer
             key={element.id}
@@ -176,7 +181,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             onChange={onChange}
             onLookup={onLookup}
             onUpdateFormElements={onUpdateFormElements}
-            executedLookups={executedLookups}
+            executedLookups={parentExecutedLookups?.[element.name]}
           />
         )
       })}
@@ -558,7 +563,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
           onUpdateFormElements={onUpdateFormElements}
-          executedLookups={executedLookups}
+          executedLookups={executedLookups as ExecutedLookups[]}
           {...dirtyProps}
         />
       )
@@ -671,7 +676,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
-          executedLookups={executedLookups}
+          executedLookups={executedLookups as ExecutedLookups}
         />
       )
     }
@@ -820,7 +825,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
-          executedLookups={executedLookups}
+          executedLookups={executedLookups as ExecutedLookups}
         />
       )
     }
@@ -916,7 +921,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
-          executedLookups={executedLookups}
+          executedLookups={executedLookups as ExecutedLookups}
         />
       )
     }

@@ -680,23 +680,28 @@ function OneBlinkFormBase({
           },
         }))
       } else {
-        setFormSubmission((currentFormSubmission) => ({
-          ...currentFormSubmission,
-          submission: {
-            ...currentFormSubmission.submission,
-            [element.name]:
-              typeof value === 'function'
-                ? value(currentFormSubmission.submission[element.name])
-                : value,
-          },
-          lastElementUpdated: element,
-          executedLookups: {
-            ...currentFormSubmission.executedLookups,
-            ...(typeof executedLookups === 'function'
-              ? executedLookups(currentFormSubmission.executedLookups)
-              : executedLookups),
-          },
-        }))
+        setFormSubmission((currentFormSubmission) => {
+          return {
+            ...currentFormSubmission,
+            submission: {
+              ...currentFormSubmission.submission,
+              [element.name]:
+                typeof value === 'function'
+                  ? value(currentFormSubmission.submission[element.name])
+                  : value,
+            },
+            lastElementUpdated: element,
+            executedLookups: {
+              ...currentFormSubmission.executedLookups,
+              [element.name]:
+                typeof executedLookups === 'function'
+                  ? executedLookups(
+                      currentFormSubmission.executedLookups?.[element.name],
+                    )
+                  : executedLookups,
+            },
+          }
+        })
       }
     },
     [disabled, setFormSubmission],
