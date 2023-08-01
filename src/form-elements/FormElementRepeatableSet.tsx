@@ -34,7 +34,6 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   onUpdateFormElements: UpdateFormElementsHandler
-  executedLookups: ExecutedLookups[]
 } & IsDirtyProps
 
 const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -61,7 +60,6 @@ function FormElementRepeatableSet({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
-  executedLookups,
 }: Props) {
   const entries = React.useMemo(
     () => (Array.isArray(value) ? value : []),
@@ -232,7 +230,6 @@ function FormElementRepeatableSet({
               }
               displayValidationMessages={displayValidationMessage}
               onUpdateFormElements={onUpdateFormElements}
-              executedLookups={executedLookups?.[index]}
             />
           )
         })}
@@ -277,7 +274,6 @@ type RepeatableSetEntryProps = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
-  executedLookups: ExecutedLookups
   onChange: (
     index: number,
     formElement: FormTypes.FormElement,
@@ -302,7 +298,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     formElementsConditionallyShown,
     displayValidationMessages,
     formElementsValidation,
-    executedLookups,
     onChange,
     onLookup,
     onRemove,
@@ -486,7 +481,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             parentElement={element}
             formElementsConditionallyShown={formElementsConditionallyShown}
             onUpdateFormElements={handleUpdateNestedFormElements}
-            executedLookups={executedLookups}
           />
         </div>
       </RepeatableSetIndexContext.Provider>

@@ -935,7 +935,6 @@ function OneBlinkFormBase({
                                         onChange={handleChange}
                                         model={submission}
                                         setFormSubmission={setFormSubmission}
-                                        executedLookups={executedLookups}
                                       />
                                     ),
                                   )}

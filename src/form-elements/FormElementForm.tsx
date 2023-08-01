@@ -22,7 +22,6 @@ export type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
-  executedLookups: ExecutedLookups
   onUpdateFormElements: UpdateFormElementsHandler
 }
 
@@ -34,7 +33,6 @@ function FormElementForm({
   formElementValidation,
   displayValidationMessages,
   formElementConditionallyShown,
-  executedLookups,
   onChange,
   onLookup,
   onUpdateFormElements,
@@ -190,7 +188,6 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={`${id}_`}
       onUpdateFormElements={handleUpdateNestedFormElements}
-      executedLookups={executedLookups ?? {}}
     />
   )
 }
