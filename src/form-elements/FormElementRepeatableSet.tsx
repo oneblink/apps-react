@@ -308,10 +308,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
     const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
       (nestedElement, { value, executedLookups }) => {
-        if (!('name' in nestedElement)) {
-          return
-        }
-
         onChange(index, nestedElement, {
           value,
           executedLookups,

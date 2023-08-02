@@ -181,10 +181,7 @@ validate.validators.lookups = function (
   }
 
   const elementExecutedLookups = executedLookups?.[formElement.name]
-  if (
-    typeof elementExecutedLookups === 'boolean' &&
-    elementExecutedLookups === true
-  ) {
+  if (elementExecutedLookups === true) {
     return
   }
 
