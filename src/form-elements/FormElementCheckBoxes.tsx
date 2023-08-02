@@ -70,21 +70,23 @@ function FormElementCheckboxes({
 
   const changeValues = React.useCallback(
     (toggledValue: string, hasSelectedValue: boolean) => {
-      onChange(element, (existingValue) => {
-        if (hasSelectedValue) {
-          const newValue = (existingValue || []).filter(
-            (existingValue) => existingValue !== toggledValue,
-          )
-          if (newValue.length) {
+      onChange(element, {
+        value: (existingValue) => {
+          if (hasSelectedValue) {
+            const newValue = (existingValue || []).filter(
+              (existingValue) => existingValue !== toggledValue,
+            )
+            if (newValue.length) {
+              return newValue
+            }
+          } else {
+            const newValue = Array.isArray(existingValue)
+              ? [...existingValue]
+              : []
+            newValue.push(toggledValue)
             return newValue
           }
-        } else {
-          const newValue = Array.isArray(existingValue)
-            ? [...existingValue]
-            : []
-          newValue.push(toggledValue)
-          return newValue
-        }
+        },
       })
     },
     [element, onChange],

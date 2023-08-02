@@ -12,12 +12,11 @@ import {
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
-import useExecutedLookupCallback from '../../hooks/useExecutedLookupCallback'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { Sentry, formService } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
-import { FormElementLookupHandler } from '../../types/form'
+import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import ErrorMessage from '../messages/ErrorMessage'
 
@@ -45,7 +44,6 @@ function LookupNotificationComponent({
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
-  const { executedLookup, executeLookupFailed } = useExecutedLookupCallback()
   const { isLoading, formElementLookups, loadError, onTryAgain } =
     useFormElementLookups()
 
@@ -86,12 +84,19 @@ function LookupNotificationComponent({
   ])
 
   const mergeLookupData = React.useCallback(
-    (
-      newValue: unknown,
-      dataLookupResult: SubmissionTypes.S3SubmissionData['submission'],
-      elementLookupResult: FormTypes.FormElement[],
-    ) => {
-      if (elementLookupResult) {
+    ({
+      newValue,
+      dataLookupResult,
+      elementLookupResult,
+      executedLookup,
+    }: {
+      newValue: unknown
+      dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
+      elementLookupResult: FormTypes.FormElement[]
+      executedLookup: ExecutedLookups
+    }) => {
+      const executedLookupResult = executedLookup?.[element.name]
+      if (elementLookupResult && executedLookupResult !== false) {
         if (elementLookupResult[0] && elementLookupResult[0].type === 'page') {
           injectPagesAfter(
             element,
@@ -102,16 +107,19 @@ function LookupNotificationComponent({
         }
       }
 
-      onLookup(({ submission, elements }) => {
+      onLookup(({ submission, elements, executedLookups }) => {
         let allElements = elements
-        if (Array.isArray(elementLookupResult)) {
+        if (
+          Array.isArray(elementLookupResult) &&
+          executedLookupResult !== false
+        ) {
           const indexOfElement = elements.findIndex(
             ({ id }) => id === element.id,
           )
           if (indexOfElement === -1) {
             console.log('Could not find element', element)
           } else {
-            // Filter out already injected elements
+            // Filter out already injected elements if lookup was successful
             allElements = elements.filter(
               // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
               (e) => e.injectedByElementId !== element.id,
@@ -135,6 +143,10 @@ function LookupNotificationComponent({
             [element.name]: newValue,
             ...dataLookupResult,
           }),
+          executedLookups: {
+            ...executedLookups,
+            ...executedLookup,
+          },
         }
       })
     },
@@ -163,7 +175,6 @@ function LookupNotificationComponent({
         return
       }
 
-      executedLookup(element)
       setIsDisabled(true)
       setIsCancellable(false)
       setHasLookupFailed(false)
@@ -200,7 +211,12 @@ function LookupNotificationComponent({
           ),
         ])
 
-        mergeLookupData(newValue, dataLookupResult, elementLookupResult)
+        mergeLookupData({
+          newValue,
+          dataLookupResult,
+          elementLookupResult,
+          executedLookup: { [element.name]: true },
+        })
 
         if (isMounted.current) {
           setHasLookupSucceeded(true)
@@ -225,9 +241,13 @@ function LookupNotificationComponent({
           return
         }
 
-        executeLookupFailed(element)
-
         setHasLookupFailed(true)
+        mergeLookupData({
+          newValue: model[element.name],
+          dataLookupResult: {},
+          elementLookupResult: [],
+          executedLookup: { [element.name]: false },
+        })
         setLookupErrorHTML(
           typeof error === 'string'
             ? error
@@ -244,8 +264,6 @@ function LookupNotificationComponent({
     [
       definition,
       element,
-      executeLookupFailed,
-      executedLookup,
       formElementDataLookup,
       formElementElementLookup,
       formIsReadOnly,

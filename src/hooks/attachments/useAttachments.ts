@@ -32,9 +32,11 @@ const useAttachments = (
           }),
         )
 
-      onChange(element, (currentAttachments) => {
-        if (!currentAttachments) return newAttachments
-        return [...currentAttachments, ...newAttachments]
+      onChange(element, {
+        value: (currentAttachments) => {
+          if (!currentAttachments) return newAttachments
+          return [...currentAttachments, ...newAttachments]
+        },
       })
       if (isMounted.current) {
         setIsDirty()
@@ -45,17 +47,19 @@ const useAttachments = (
 
   const removeAttachment = React.useCallback(
     (id: string) => {
-      onChange(element, (currentAttachments) => {
-        const newAttachments = currentAttachments?.filter((att) => {
-          // Return items that are not the removed id
-          if (!att.type) {
-            return att.id !== id
+      onChange(element, {
+        value: (currentAttachments) => {
+          const newAttachments = currentAttachments?.filter((att) => {
+            // Return items that are not the removed id
+            if (!att.type) {
+              return att.id !== id
+            }
+            return att._id !== id
+          })
+          if (newAttachments?.length) {
+            return newAttachments
           }
-          return att._id !== id
-        })
-        if (newAttachments?.length) {
-          return newAttachments
-        }
+        },
       })
       if (isMounted.current) {
         setIsDirty()
@@ -66,15 +70,17 @@ const useAttachments = (
 
   const changeAttachment = React.useCallback(
     (id: string, attachment: attachmentsService.Attachment) => {
-      onChange(element, (currentAttachments) => {
-        if (!currentAttachments) return
-        return currentAttachments.map((att) => {
-          // Can only change attachments that are not uploaded (have a type)
-          if (att.type && att._id === id) {
-            return attachment
-          }
-          return att
-        })
+      onChange(element, {
+        value: (currentAttachments) => {
+          if (!currentAttachments) return
+          return currentAttachments.map((att) => {
+            // Can only change attachments that are not uploaded (have a type)
+            if (att.type && att._id === id) {
+              return attachment
+            }
+            return att
+          })
+        },
       })
       if (isMounted.current) {
         setIsDirty()

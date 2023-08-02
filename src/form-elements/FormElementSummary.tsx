@@ -186,9 +186,13 @@ function FormElementSummary({ element, onChange, value }: Props) {
       return
     }
     if (summary.length) {
-      onChange(element, summary)
+      onChange(element, {
+        value: summary,
+      })
     } else {
-      onChange(element, undefined)
+      onChange(element, {
+        value: undefined,
+      })
     }
   }, [
     element,

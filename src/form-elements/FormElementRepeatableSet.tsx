@@ -8,12 +8,13 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import {
+  ExecutedLookups,
   FormElementConditionallyShown,
   FormElementLookupHandler,
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormElementValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
 } from '../types/form'
@@ -25,7 +26,7 @@ type Props = {
   isEven: boolean
   element: FormTypes.RepeatableSetElement
   value: Array<SubmissionTypes.S3SubmissionData['submission']> | undefined
-  onChange: FormElementValueChangeHandler<
+  onChange: NestedFormElementValueChangeHandler<
     SubmissionTypes.S3SubmissionData['submission'][]
   >
   onLookup: FormElementLookupHandler
@@ -66,21 +67,49 @@ function FormElementRepeatableSet({
   )
 
   const handleAddEntry = React.useCallback(() => {
-    onChange(element, (existingEntries) => {
-      const newEntries = [...(existingEntries || [])]
-      const entry = generateDefaultData(element.elements, {})
-      newEntries.push(entry)
-      return newEntries
+    onChange(element, {
+      value: (existingEntries) => {
+        const newEntries = [...(existingEntries || [])]
+        const entry = generateDefaultData(element.elements, {})
+        newEntries.push(entry)
+        return newEntries
+      },
+      executedLookups: (existingExecutedLookups) => {
+        if (
+          existingExecutedLookups !== undefined &&
+          !Array.isArray(existingExecutedLookups)
+        ) {
+          return []
+        }
+
+        const newExistingExecutedLookups = [
+          ...((existingExecutedLookups as ExecutedLookups[]) ??
+            Array.from(Array(entries.length))),
+        ]
+        newExistingExecutedLookups.push({})
+        return newExistingExecutedLookups
+      },
     })
     setIsDirty()
-  }, [element, onChange, setIsDirty])
+  }, [element, onChange, setIsDirty, entries])
 
   const handleRemoveEntry = React.useCallback(
     (index: number) => {
-      onChange(element, (existingEntries) => {
-        const newEntries = [...(existingEntries || [])]
-        newEntries.splice(index, 1)
-        return newEntries
+      onChange(element, {
+        value: (existingEntries) => {
+          const newEntries = [...(existingEntries || [])]
+          newEntries.splice(index, 1)
+          return newEntries
+        },
+        executedLookups: (existingExecutedLookups) => {
+          if (!Array.isArray(existingExecutedLookups)) {
+            return []
+          }
+          const newExistingExecutedLookups = [...existingExecutedLookups]
+
+          newExistingExecutedLookups.splice(index, 1)
+          return newExistingExecutedLookups
+        },
       })
       setIsDirty()
     },
@@ -88,25 +117,56 @@ function FormElementRepeatableSet({
   )
 
   const handleNestedChange = React.useCallback(
-    (index: number, nestedElement: FormTypes.FormElement, value: unknown) => {
+    (
+      index: number,
+      nestedElement: FormTypes.FormElement,
+      {
+        value,
+        executedLookups,
+      }: Parameters<NestedFormElementValueChangeHandler>[1],
+    ) => {
       if (!('name' in nestedElement)) {
         return
       }
-      onChange(element, (existingEntries) => {
-        const newEntries = (existingEntries || []).map((entry, i) => {
-          if (i === index) {
-            return {
-              ...entry,
-              [nestedElement.name]:
-                typeof value === 'function'
-                  ? value(entry[nestedElement.name])
-                  : value,
+      onChange(element, {
+        value: (existingEntries) => {
+          const newEntries = (existingEntries || []).map((entry, i) => {
+            if (i === index) {
+              return {
+                ...entry,
+                [nestedElement.name]:
+                  typeof value === 'function'
+                    ? value(entry[nestedElement.name])
+                    : value,
+              }
+            } else {
+              return entry
             }
-          } else {
-            return entry
+          })
+          return newEntries
+        },
+        executedLookups: (existingExecutedLookups) => {
+          const elementExecutedLookups = existingExecutedLookups ?? []
+          if (!Array.isArray(elementExecutedLookups)) {
+            return elementExecutedLookups
           }
-        })
-        return newEntries
+          const newExecutedLookups = elementExecutedLookups.map(
+            (executedLookup, i) => {
+              if (i === index) {
+                const updatedExecutedLookups =
+                  typeof executedLookups === 'function'
+                    ? executedLookups(executedLookup?.[nestedElement.name])
+                    : executedLookups
+                return {
+                  ...executedLookup,
+                  [nestedElement.name]: updatedExecutedLookups,
+                }
+              }
+              return executedLookup
+            },
+          )
+          return newExecutedLookups
+        },
       })
     },
     [element, onChange],
@@ -217,8 +277,11 @@ type RepeatableSetEntryProps = {
   onChange: (
     index: number,
     formElement: FormTypes.FormElement,
-    value: unknown,
-  ) => unknown
+    {
+      value,
+      executedLookups,
+    }: Parameters<NestedFormElementValueChangeHandler>[1],
+  ) => void
   onLookup: FormElementLookupHandler
   onRemove: (index: number) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
@@ -243,9 +306,12 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
 
-    const handleChange = React.useCallback(
-      (element: FormTypes.FormElement, value: unknown) => {
-        onChange(index, element, value)
+    const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
+      (nestedElement, { value, executedLookups }) => {
+        onChange(index, nestedElement, {
+          value,
+          executedLookups,
+        })
       },
       [index, onChange],
     )
@@ -257,17 +323,25 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           const entries = currentFormSubmission.submission[
             element.name
           ] as Array<SubmissionTypes.S3SubmissionData['submission']>
+          const repeatableSetExecutedLookups =
+            (currentFormSubmission.executedLookups?.[
+              element.name
+            ] as ExecutedLookups[]) ?? []
+          let newExecutedLookups: ExecutedLookups = {}
           const elements = currentFormSubmission.elements.map((formElement) => {
             if (
               formElement.type === 'repeatableSet' &&
               formElement.name === element.name
             ) {
-              const { elements, submission } = mergeLookupResults({
-                elements: formElement.elements,
-                submission: entries[index],
-                lastElementUpdated: currentFormSubmission.lastElementUpdated,
-              })
+              const { elements, submission, executedLookups } =
+                mergeLookupResults({
+                  elements: formElement.elements,
+                  submission: entries[index],
+                  lastElementUpdated: currentFormSubmission.lastElementUpdated,
+                  executedLookups: repeatableSetExecutedLookups[index] ?? {},
+                })
               newEntry = submission
+              newExecutedLookups = executedLookups as ExecutedLookups
               return {
                 ...formElement,
                 elements,
@@ -286,9 +360,23 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             }),
           }
 
+          let updatedExecutedLookups = currentFormSubmission.executedLookups
+          if (Array.isArray(repeatableSetExecutedLookups)) {
+            updatedExecutedLookups = {
+              ...currentFormSubmission.executedLookups,
+              [element.name]: repeatableSetExecutedLookups.map((entry, i) => {
+                if (i == index) {
+                  return newExecutedLookups
+                }
+                return entry
+              }),
+            }
+          }
+
           return {
             elements,
             submission,
+            executedLookups: updatedExecutedLookups,
           }
         })
       },

@@ -221,7 +221,9 @@ function FormElementAutocomplete({
 }: Props) {
   const handleChange = React.useCallback(
     (newValue: unknown) => {
-      onChange(props.element, newValue as string | undefined)
+      onChange(props.element, {
+        value: newValue as string | undefined,
+      })
     },
     [onChange, props.element],
   )

@@ -7,7 +7,7 @@ import {
   FormElementLookupHandler,
   FormElementsConditionallyShown,
   FormElementsValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   SetFormSubmission,
   UpdateFormElementsHandler,
 } from '../../types/form'
@@ -22,7 +22,7 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
 }
 
@@ -40,10 +40,11 @@ function PageFormElements({
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
       setFormSubmission((currentFormSubmission) => {
-        const { submission, elements } = mergeLookupResults({
+        const { submission, elements, executedLookups } = mergeLookupResults({
           elements: pageElement.elements,
           submission: currentFormSubmission.submission,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups: currentFormSubmission.executedLookups,
         })
 
         const definition = {
@@ -73,6 +74,7 @@ function PageFormElements({
           submission,
           definition,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups,
         }
       })
     },

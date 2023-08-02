@@ -232,9 +232,13 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       return
     }
     if (!isNaN(newValue)) {
-      onChange(element, newValue)
+      onChange(element, {
+        value: newValue,
+      })
     } else {
-      onChange(element, undefined)
+      onChange(element, {
+        value: undefined,
+      })
     }
   }, [calculation, element, formSubmissionModel, onChange, value])
 

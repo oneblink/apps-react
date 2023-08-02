@@ -80,7 +80,9 @@ function FormElementRadio({
                       checked={value === option.value}
                       onChange={(e) => {
                         setIsDirty()
-                        onChange(element, e.target.value)
+                        onChange(element, {
+                          value: e.target.value,
+                        })
                       }}
                     />
                     {` ${option.label}`}
@@ -100,7 +102,9 @@ function FormElementRadio({
                       isSelected={isSelected}
                       onClick={() => {
                         setIsDirty()
-                        onChange(element, option.value)
+                        onChange(element, {
+                          value: option.value,
+                        })
                       }}
                       className={clsx(
                         'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',

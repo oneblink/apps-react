@@ -68,14 +68,18 @@ function FormElementGeoscapeAddress({
   const handleChange = React.useCallback(
     async (addressId: string | undefined) => {
       if (!addressId) {
-        onChange(element, undefined)
+        onChange(element, {
+          value: undefined,
+        })
         return
       }
 
       setIsLoadingAddressDetails(true)
       try {
         const result = await formService.getGeoscapeAddress(formId, addressId)
-        onChange(element, result)
+        onChange(element, {
+          value: result,
+        })
       } catch (newError) {
         if (isMounted.current) {
           setError(newError as Error)

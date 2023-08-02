@@ -136,10 +136,9 @@ function FormElementABN({
         }
 
         if (!abortController.signal.aborted) {
-          onChange(
-            element,
-            result.ABRPayloadSearchResults.response.businessEntity202001,
-          )
+          onChange(element, {
+            value: result.ABRPayloadSearchResults.response.businessEntity202001,
+          })
           setState({
             isLoading: false,
             error: null,
@@ -216,7 +215,9 @@ function FormElementABN({
               onChange={(e) => {
                 setLabel(e.target.value)
                 if (value) {
-                  onChange(element, undefined)
+                  onChange(element, {
+                    value: undefined,
+                  })
                 }
               }}
               required={element.required}

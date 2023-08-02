@@ -69,7 +69,9 @@ function FormElementLocation({
   const [location, setLocation] = React.useState<Coords | undefined>(undefined)
   const onClear = React.useCallback(() => {
     hideLocationPicker()
-    onChange(element, undefined)
+    onChange(element, {
+      value: undefined,
+    })
     setLocation(undefined)
   }, [element, hideLocationPicker, onChange])
 
@@ -105,7 +107,9 @@ function FormElementLocation({
   const onConfirm = React.useCallback(() => {
     setIsDirty()
     hideLocationPicker()
-    onChange(element, location)
+    onChange(element, {
+      value: location,
+    })
   }, [element, hideLocationPicker, location, onChange, setIsDirty])
 
   // SET DEFAULT/PREFILL DATA

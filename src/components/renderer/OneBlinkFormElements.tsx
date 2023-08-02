@@ -61,7 +61,7 @@ import {
   FormElementsConditionallyShown,
   FormElementsValidation,
   FormElementValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
 } from '../../types/form'
@@ -73,7 +73,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
   // Props passed by repeatable sets
@@ -92,7 +92,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   id: string
   isEven: boolean | undefined
-  onChange: FormElementValueChangeHandler
+  onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
 }

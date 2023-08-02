@@ -30,19 +30,45 @@ export type FormElementValidation =
       >
     }
 
-export type FormElementValueChangeHandler<T = unknown> = (
+export type ExecutedLookups =
+  | {
+      [elementName: string]:
+        | boolean
+        | ExecutedLookups
+        | ExecutedLookups[]
+        | undefined
+    }
+  | undefined
+
+export type ExecutedLookupValue = NonNullable<ExecutedLookups>[string]
+
+type ValueChangeHandler<U extends Record<string, unknown>> = (
   element: FormTypes.FormElement,
-  value?: T | ((existingValue?: T) => T | undefined),
+  opts: U,
 ) => void
+
+export type FormElementValueChangeHandler<T = unknown> = ValueChangeHandler<{
+  value?: T | ((existingValue?: T) => T | undefined)
+}>
+
+export type NestedFormElementValueChangeHandler<T = unknown> =
+  ValueChangeHandler<{
+    value?: T | ((existingValue?: T) => T | undefined)
+    executedLookups:
+      | ExecutedLookupValue
+      | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
+  }>
 
 export type FormElementLookupHandler = (
   setter: (data: {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
+    executedLookups: ExecutedLookups
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
+    executedLookups: ExecutedLookups
   },
 ) => void
 export type UpdateFormElementsHandler = (
@@ -54,6 +80,7 @@ export type SetFormSubmission = React.Dispatch<
     definition: FormTypes.Form
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
+    executedLookups: ExecutedLookups
   }>
 >
 

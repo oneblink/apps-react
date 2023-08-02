@@ -54,7 +54,9 @@ function FormElementCivicaStreetName({
       streetId: string | undefined,
       streetData?: CivicaTypes.CivicaStreetName,
     ) => {
-      onChange(element, streetData)
+      onChange(element, {
+        value: streetData,
+      })
     },
     [onChange, element],
   )

@@ -5,7 +5,7 @@ import {
   validateSubmission,
   generateValidationSchema,
 } from '../services/form-validation'
-import { FormElementsConditionallyShown } from '../types/form'
+import { ExecutedLookups, FormElementsConditionallyShown } from '../types/form'
 
 function stripFormElementsWithoutName(
   formElements: FormTypes.FormElement[],
@@ -43,63 +43,31 @@ function stripFormElementsWithoutName(
 }
 
 export default function useFormValidation(pages: FormTypes.PageElement[]) {
-  const [elementIdsWithLookupsExecuted, setElementIdsWithLookupsExecuted] =
-    React.useState<string[]>([])
-
-  const executedLookup = React.useCallback(
-    (element: FormTypes.LookupFormElement) => {
-      setElementIdsWithLookupsExecuted(
-        (currentElementIdsWithLookupsExecuted: string[]) => {
-          if (currentElementIdsWithLookupsExecuted.includes(element.id)) {
-            return currentElementIdsWithLookupsExecuted
-          }
-          return [...currentElementIdsWithLookupsExecuted, element.id]
-        },
-      )
-    },
-    [],
-  )
-  const executeLookupFailed = React.useCallback(
-    (element: FormTypes.LookupFormElement) => {
-      setElementIdsWithLookupsExecuted(
-        (currentElementIdsWithLookupsExecuted) => {
-          return currentElementIdsWithLookupsExecuted.filter(
-            (elementId) => elementId !== element.id,
-          )
-        },
-      )
-    },
-    [],
-  )
-
   const formElementsWithoutName = React.useMemo(() => {
     return stripFormElementsWithoutName(pages)
   }, [pages])
 
   const validationSchema = React.useMemo(() => {
-    return generateValidationSchema(
-      formElementsWithoutName,
-      elementIdsWithLookupsExecuted,
-    )
-  }, [formElementsWithoutName, elementIdsWithLookupsExecuted])
+    return generateValidationSchema(formElementsWithoutName)
+  }, [formElementsWithoutName])
 
   const handleValidate = React.useCallback(
     (
       submission: SubmissionTypes.S3SubmissionData['submission'],
       formElementsConditionallyShown: FormElementsConditionallyShown,
+      executedLookups: ExecutedLookups,
     ) => {
       return validateSubmission(
         validationSchema,
         submission,
         formElementsConditionallyShown,
+        executedLookups,
       )
     },
     [validationSchema],
   )
 
   return {
-    executedLookup,
-    executeLookupFailed,
     validate: handleValidate,
   }
 }

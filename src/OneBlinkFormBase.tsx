@@ -21,7 +21,6 @@ import usePages from './hooks/usePages'
 import useLookups from './hooks/useLookups'
 import { FormDefinitionContext } from './hooks/useFormDefinition'
 import { InjectPagesContext } from './hooks/useInjectPages'
-import { ExecutedLookupProvider } from './hooks/useExecutedLookupCallback'
 import { FormElementOptionsContextProvider } from './hooks/useDynamicOptionsLoaderState'
 import { FormElementLookupsContextProvider } from './hooks/useFormElementLookups'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
@@ -32,8 +31,9 @@ import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
 import {
+  ExecutedLookups,
   FormElementsValidation,
-  FormElementValueChangeHandler,
+  NestedFormElementValueChangeHandler,
   SetFormSubmission,
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
@@ -111,6 +111,7 @@ export type OneBlinkFormControlledProps = {
   submission: SubmissionTypes.S3SubmissionData['submission']
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
+  executedLookups: ExecutedLookups
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -138,6 +139,7 @@ function OneBlinkFormBase({
   handleNavigateAway,
   isInfoPage: isInfoPageProp,
   lastElementUpdated,
+  executedLookups,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -313,17 +315,26 @@ function OneBlinkFormBase({
   //
   // #region Validation
 
-  const { validate, executedLookup, executeLookupFailed } =
-    useFormValidation(pages)
+  const { validate } = useFormValidation(pages)
 
   const formElementsValidation = React.useMemo<
     FormElementsValidation | undefined
   >(
     () =>
       !isReadOnly
-        ? validate(submission, formElementsConditionallyShown)
+        ? validate(
+            submission,
+            formElementsConditionallyShown,
+            executedLookups ?? {},
+          )
         : undefined,
-    [formElementsConditionallyShown, isReadOnly, submission, validate],
+    [
+      formElementsConditionallyShown,
+      isReadOnly,
+      submission,
+      validate,
+      executedLookups,
+    ],
   )
 
   // #endregion
@@ -637,8 +648,8 @@ function OneBlinkFormBase({
   //
   // #region Submission/Definition Changes
 
-  const handleChange = React.useCallback<FormElementValueChangeHandler>(
-    (element, value) => {
+  const handleChange = React.useCallback<NestedFormElementValueChangeHandler>(
+    (element, { value, executedLookups }) => {
       if (
         //This will ensure on a read only form that the summary and calculation elements
         //can still be displayed as it needs handleChange so it can render
@@ -669,17 +680,28 @@ function OneBlinkFormBase({
           },
         }))
       } else {
-        setFormSubmission((currentFormSubmission) => ({
-          ...currentFormSubmission,
-          submission: {
-            ...currentFormSubmission.submission,
-            [element.name]:
-              typeof value === 'function'
-                ? value(currentFormSubmission.submission[element.name])
-                : value,
-          },
-          lastElementUpdated: element,
-        }))
+        setFormSubmission((currentFormSubmission) => {
+          return {
+            ...currentFormSubmission,
+            submission: {
+              ...currentFormSubmission.submission,
+              [element.name]:
+                typeof value === 'function'
+                  ? value(currentFormSubmission.submission[element.name])
+                  : value,
+            },
+            lastElementUpdated: element,
+            executedLookups: {
+              ...currentFormSubmission.executedLookups,
+              [element.name]:
+                typeof executedLookups === 'function'
+                  ? executedLookups(
+                      currentFormSubmission.executedLookups?.[element.name],
+                    )
+                  : executedLookups,
+            },
+          }
+        })
       }
     },
     [disabled, setFormSubmission],
@@ -878,54 +900,49 @@ function OneBlinkFormBase({
                       <InjectPagesContext.Provider
                         value={handlePagesLookupResult}
                       >
-                        <ExecutedLookupProvider
-                          executedLookup={executedLookup}
-                          executeLookupFailed={executeLookupFailed}
+                        <GoogleMapsApiKeyContext.Provider
+                          value={googleMapsApiKey}
                         >
-                          <GoogleMapsApiKeyContext.Provider
-                            value={googleMapsApiKey}
+                          <AbnLookupAuthenticationGuidContext.Provider
+                            value={abnLookupAuthenticationGuid}
                           >
-                            <AbnLookupAuthenticationGuidContext.Provider
-                              value={abnLookupAuthenticationGuid}
+                            <CaptchaSiteKeyContext.Provider
+                              value={captchaSiteKey}
                             >
-                              <CaptchaSiteKeyContext.Provider
-                                value={captchaSiteKey}
-                              >
-                                <AttachmentBlobsProvider>
-                                  <FormIsReadOnlyContext.Provider
-                                    value={isReadOnly}
-                                  >
-                                    {visiblePages.map(
-                                      (pageElement: FormTypes.PageElement) => (
-                                        <PageFormElements
-                                          key={pageElement.id}
-                                          isActive={
-                                            pageElement.id === currentPage.id
-                                          }
-                                          formId={definition.id}
-                                          formElementsConditionallyShown={
-                                            formElementsConditionallyShown
-                                          }
-                                          formElementsValidation={
-                                            formElementsValidation
-                                          }
-                                          displayValidationMessages={
-                                            hasAttemptedSubmit ||
-                                            isDisplayingCurrentPageError
-                                          }
-                                          pageElement={pageElement}
-                                          onChange={handleChange}
-                                          model={submission}
-                                          setFormSubmission={setFormSubmission}
-                                        />
-                                      ),
-                                    )}
-                                  </FormIsReadOnlyContext.Provider>
-                                </AttachmentBlobsProvider>
-                              </CaptchaSiteKeyContext.Provider>
-                            </AbnLookupAuthenticationGuidContext.Provider>
-                          </GoogleMapsApiKeyContext.Provider>
-                        </ExecutedLookupProvider>
+                              <AttachmentBlobsProvider>
+                                <FormIsReadOnlyContext.Provider
+                                  value={isReadOnly}
+                                >
+                                  {visiblePages.map(
+                                    (pageElement: FormTypes.PageElement) => (
+                                      <PageFormElements
+                                        key={pageElement.id}
+                                        isActive={
+                                          pageElement.id === currentPage.id
+                                        }
+                                        formId={definition.id}
+                                        formElementsConditionallyShown={
+                                          formElementsConditionallyShown
+                                        }
+                                        formElementsValidation={
+                                          formElementsValidation
+                                        }
+                                        displayValidationMessages={
+                                          hasAttemptedSubmit ||
+                                          isDisplayingCurrentPageError
+                                        }
+                                        pageElement={pageElement}
+                                        onChange={handleChange}
+                                        model={submission}
+                                        setFormSubmission={setFormSubmission}
+                                      />
+                                    ),
+                                  )}
+                                </FormIsReadOnlyContext.Provider>
+                              </AttachmentBlobsProvider>
+                            </CaptchaSiteKeyContext.Provider>
+                          </AbnLookupAuthenticationGuidContext.Provider>
+                        </GoogleMapsApiKeyContext.Provider>
                       </InjectPagesContext.Provider>
                     </div>
 

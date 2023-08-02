@@ -107,7 +107,9 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
 
     // Convert base64 data uri to blob and send it on its way
     const blob = await canvasToBlob(trimmedCanvas)
-    onChange(element, prepareNewAttachment(blob, 'signature.png', element))
+    onChange(element, {
+      value: prepareNewAttachment(blob, 'signature.png', element),
+    })
   }, [element, onChange])
 
   // HANDLING CANVAS CHANGE
@@ -208,7 +210,9 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     element,
     React.useCallback(
       (id, attachment) => {
-        onChange(element, attachment)
+        onChange(element, {
+          value: attachment,
+        })
       },
       [element, onChange],
     ),
@@ -220,11 +224,13 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     if (value.type === 'ERROR' && value.data) {
       return () => {
         onChange(element, {
-          type: 'NEW',
-          _id: value._id,
-          data: value.data,
-          fileName: value.fileName,
-          isPrivate: value.isPrivate,
+          value: {
+            type: 'NEW',
+            _id: value._id,
+            data: value.data,
+            fileName: value.fileName,
+            isPrivate: value.isPrivate,
+          },
         })
       }
     }
@@ -251,7 +257,11 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
         <button
           type="button"
           className="button ob-button is-light ob-button__clear cypress-clear-signature"
-          onClick={() => onChange(element, undefined)}
+          onClick={() =>
+            onChange(element, {
+              value: undefined,
+            })
+          }
           disabled={element.readOnly}
         >
           Clear

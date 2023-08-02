@@ -10,6 +10,7 @@ import { checkSectionValidity } from '../services/form-validation'
 import {
   FormElementLookupHandler,
   UpdateFormElementsHandler,
+  ExecutedLookups,
 } from '../types/form'
 import {
   HintBelowLabel,
@@ -54,14 +55,18 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     (mergeLookupResults) => {
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission
+        let newExecutedLookups: ExecutedLookups = {}
         const elements = currentFormSubmission.elements.map((formElement) => {
           if (formElement.type === 'section' && formElement.id === element.id) {
-            const { elements, submission } = mergeLookupResults({
-              elements: formElement.elements,
-              submission: currentFormSubmission.submission,
-              lastElementUpdated: currentFormSubmission.lastElementUpdated,
-            })
+            const { elements, submission, executedLookups } =
+              mergeLookupResults({
+                elements: formElement.elements,
+                submission: currentFormSubmission.submission,
+                lastElementUpdated: currentFormSubmission.lastElementUpdated,
+                executedLookups: currentFormSubmission.executedLookups,
+              })
             model = submission
+            newExecutedLookups = executedLookups
             return {
               ...formElement,
               elements,
@@ -74,6 +79,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           elements,
           submission: model,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
+          executedLookups: newExecutedLookups,
         }
       })
     },
