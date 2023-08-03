@@ -83,6 +83,56 @@ function LookupNotificationComponent({
     formElementElementLookup?.runLookupOnClear,
   ])
 
+  const mergeExecutedLookups = React.useCallback(
+    ({
+      dataLookupResult,
+      currentSubmission,
+      executedLookups,
+    }: {
+      dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
+      currentSubmission:
+        | SubmissionTypes.S3SubmissionData['submission']
+        | undefined
+      executedLookups: ExecutedLookups
+    }): ExecutedLookups => {
+      const updatedExecutedLookups = { ...executedLookups }
+      for (const [key, value] of Object.entries(dataLookupResult)) {
+        if (Array.isArray(value)) {
+          updatedExecutedLookups[key] = value.map((entry, index) => {
+            const elementExecutedLookups = executedLookups?.[key] as
+              | ExecutedLookups[]
+              | undefined
+            const elementValue = Array.isArray(currentSubmission?.[key])
+              ? (currentSubmission?.[
+                  key
+                ] as SubmissionTypes.S3SubmissionData['submission'][])
+              : []
+            return mergeExecutedLookups({
+              dataLookupResult: entry,
+              currentSubmission: elementValue[index],
+              executedLookups: elementExecutedLookups?.[index] ?? {},
+            })
+          })
+          continue
+        }
+        if (Object(value) === value) {
+          updatedExecutedLookups[key] = mergeExecutedLookups({
+            dataLookupResult:
+              value as SubmissionTypes.S3SubmissionData['submission'],
+            currentSubmission: currentSubmission?.[
+              key
+            ] as SubmissionTypes.S3SubmissionData['submission'],
+            executedLookups: (executedLookups?.[key] as ExecutedLookups) ?? {},
+          })
+          continue
+        }
+        updatedExecutedLookups[key] = value === currentSubmission?.[key]
+      }
+      return updatedExecutedLookups
+    },
+    [],
+  )
+
   const mergeLookupData = React.useCallback(
     ({
       newValue,
@@ -143,14 +193,18 @@ function LookupNotificationComponent({
             [element.name]: newValue,
             ...dataLookupResult,
           }),
-          executedLookups: {
-            ...executedLookups,
-            ...executedLookup,
-          },
+          executedLookups: mergeExecutedLookups({
+            dataLookupResult,
+            currentSubmission: model,
+            executedLookups: {
+              ...executedLookups,
+              ...executedLookup,
+            },
+          }),
         }
       })
     },
-    [element, injectPagesAfter, onLookup],
+    [element, injectPagesAfter, onLookup, mergeExecutedLookups, model],
   )
 
   const isNotStaticLookup = React.useMemo(() => {
