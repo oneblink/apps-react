@@ -89,12 +89,18 @@ function LookupNotificationComponent({
       currentSubmission,
       executedLookups,
     }: {
-      dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
+      dataLookupResult:
+        | SubmissionTypes.S3SubmissionData['submission']
+        | undefined
       currentSubmission:
         | SubmissionTypes.S3SubmissionData['submission']
         | undefined
       executedLookups: ExecutedLookups
     }): ExecutedLookups => {
+      if (!dataLookupResult) {
+        return executedLookups
+      }
+
       const updatedExecutedLookups = { ...executedLookups }
       for (const [key, value] of Object.entries(dataLookupResult)) {
         if (Array.isArray(value)) {
@@ -141,8 +147,10 @@ function LookupNotificationComponent({
       executedLookup,
     }: {
       newValue: unknown
-      dataLookupResult: SubmissionTypes.S3SubmissionData['submission']
-      elementLookupResult: FormTypes.FormElement[]
+      dataLookupResult:
+        | SubmissionTypes.S3SubmissionData['submission']
+        | undefined
+      elementLookupResult: FormTypes.FormElement[] | undefined
       executedLookup: ExecutedLookups
     }) => {
       const executedLookupResult = executedLookup?.[element.name]
@@ -267,8 +275,12 @@ function LookupNotificationComponent({
 
         mergeLookupData({
           newValue,
-          dataLookupResult,
-          elementLookupResult,
+          dataLookupResult: dataLookupResult as
+            | SubmissionTypes.S3SubmissionData['submission']
+            | undefined,
+          elementLookupResult: elementLookupResult as
+            | FormTypes.FormElement[]
+            | undefined,
           executedLookup: { [element.name]: true },
         })
 
@@ -475,7 +487,11 @@ async function fetchLookup(
   formElementLookup: formService.FormElementLookupResult | undefined,
   payload: FetchLookupPayload,
   abortSignal: AbortSignal,
-) {
+): Promise<
+  | SubmissionTypes.S3SubmissionData['submission']
+  | FormTypes.FormElement[]
+  | undefined
+> {
   if (!formElementLookup) {
     return
   }
@@ -547,5 +563,5 @@ async function fetchLookup(
     throw new Error('Invalid response from lookup')
   }
 
-  return data
+  return data as FormTypes.FormElement[]
 }
