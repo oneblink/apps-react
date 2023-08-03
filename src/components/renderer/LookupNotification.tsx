@@ -195,7 +195,7 @@ function LookupNotificationComponent({
           }),
           executedLookups: mergeExecutedLookups({
             dataLookupResult,
-            currentSubmission: model,
+            currentSubmission: submission,
             executedLookups: {
               ...executedLookups,
               ...executedLookup,
@@ -204,7 +204,7 @@ function LookupNotificationComponent({
         }
       })
     },
-    [element, injectPagesAfter, onLookup, mergeExecutedLookups, model],
+    [element, injectPagesAfter, onLookup, mergeExecutedLookups],
   )
 
   const isNotStaticLookup = React.useMemo(() => {
