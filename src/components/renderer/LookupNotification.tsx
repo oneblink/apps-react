@@ -1,6 +1,8 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
+import { Sentry, formService } from '@oneblink/apps'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 import useIsOffline from '../../hooks/useIsOffline'
 import OnLoading from './OnLoading'
@@ -13,11 +15,11 @@ import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
-import { Sentry, formService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useIsMounted from '../../hooks/useIsMounted'
-import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
+import mergeExecutedLookups from '../../utils/merge-executed-lookups'
+
+import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
 
 type FetchLookupPayload = {
@@ -83,62 +85,6 @@ function LookupNotificationComponent({
     formElementElementLookup?.runLookupOnClear,
   ])
 
-  const mergeExecutedLookups = React.useCallback(
-    ({
-      dataLookupResult,
-      currentSubmission,
-      executedLookups,
-    }: {
-      dataLookupResult:
-        | SubmissionTypes.S3SubmissionData['submission']
-        | undefined
-      currentSubmission:
-        | SubmissionTypes.S3SubmissionData['submission']
-        | undefined
-      executedLookups: ExecutedLookups
-    }): ExecutedLookups => {
-      if (!dataLookupResult) {
-        return executedLookups
-      }
-
-      const updatedExecutedLookups = { ...executedLookups }
-      for (const [key, value] of Object.entries(dataLookupResult)) {
-        if (Array.isArray(value)) {
-          updatedExecutedLookups[key] = value.map((entry, index) => {
-            const elementExecutedLookups = executedLookups?.[key] as
-              | ExecutedLookups[]
-              | undefined
-            const elementValue = Array.isArray(currentSubmission?.[key])
-              ? (currentSubmission?.[
-                  key
-                ] as SubmissionTypes.S3SubmissionData['submission'][])
-              : []
-            return mergeExecutedLookups({
-              dataLookupResult: entry,
-              currentSubmission: elementValue[index],
-              executedLookups: elementExecutedLookups?.[index] ?? {},
-            })
-          })
-          continue
-        }
-        if (Object(value) === value) {
-          updatedExecutedLookups[key] = mergeExecutedLookups({
-            dataLookupResult:
-              value as SubmissionTypes.S3SubmissionData['submission'],
-            currentSubmission: currentSubmission?.[
-              key
-            ] as SubmissionTypes.S3SubmissionData['submission'],
-            executedLookups: (executedLookups?.[key] as ExecutedLookups) ?? {},
-          })
-          continue
-        }
-        updatedExecutedLookups[key] = value === currentSubmission?.[key]
-      }
-      return updatedExecutedLookups
-    },
-    [],
-  )
-
   const mergeLookupData = React.useCallback(
     ({
       newValue,
@@ -166,7 +112,7 @@ function LookupNotificationComponent({
       }
 
       onLookup(({ submission, elements, executedLookups }) => {
-        let allElements = elements
+        let allElements: FormTypes.FormElement[] = elements
         if (
           Array.isArray(elementLookupResult) &&
           executedLookupResult !== false
@@ -212,7 +158,7 @@ function LookupNotificationComponent({
         }
       })
     },
-    [element, injectPagesAfter, onLookup, mergeExecutedLookups],
+    [element, injectPagesAfter, onLookup],
   )
 
   const isNotStaticLookup = React.useMemo(() => {
