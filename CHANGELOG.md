@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **[BREAKING]** `executedLookups` is now a required prop of the `<OneBlinkFormControlled />` component.
+
 ### Fixed
 
 - consider lookup has not having run if input changes
