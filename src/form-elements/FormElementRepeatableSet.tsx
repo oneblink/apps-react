@@ -326,7 +326,14 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           const repeatableSetExecutedLookups =
             (currentFormSubmission.executedLookups?.[
               element.name
-            ] as ExecutedLookups[]) ?? []
+            ] as ExecutedLookups[]) ?? Array.from(Array(entries.length))
+          // if the repeatable set is prefilled or has minimum entries then executed lookups exists,
+          // but is an empty array
+          for (let i = 0; i < entries.length; i++) {
+            if (!repeatableSetExecutedLookups[index]) {
+              repeatableSetExecutedLookups[index] = {}
+            }
+          }
           let newExecutedLookups: ExecutedLookups = {}
           const elements = currentFormSubmission.elements.map((formElement) => {
             if (
