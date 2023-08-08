@@ -304,7 +304,10 @@ function LookupNotificationComponent({
     // For lookups configured with `runLookupOnClear` set to true, we want to
     // allow empty values for `autoLookupValue`, but only if the lookup has
     // been ran previously. This prevents the lookup running on load with an empty value.
-    if (!autoLookupValue && (!runLookupOnClear || !hasLookupRan)) {
+    if (
+      (autoLookupValue === undefined || autoLookupValue === null) &&
+      (!runLookupOnClear || !hasLookupRan)
+    ) {
       setIsLookingUp(false)
       return
     }
