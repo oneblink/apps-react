@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - consider lookup has not having run if input changes
 - auto lookup not running for switch with false value
+- calculation element not rounding floating point numbers correctly
 
 ## [4.4.0] - 2023-08-01
 
