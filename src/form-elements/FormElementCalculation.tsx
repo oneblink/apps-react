@@ -22,6 +22,13 @@ const isObjectWithValue = (obj: unknown): obj is { value: unknown } => {
   return typeof obj === 'object' && obj !== null && 'value' in obj
 }
 
+// workaround for .toFixed() not rounding floating point numbers correctly
+function roundToFixed(number: number, decimals: number) {
+  const multiplier = Math.pow(10, decimals)
+  const roundedNumber = Math.round(number * multiplier) / multiplier
+  return roundedNumber.toFixed(decimals)
+}
+
 function FormElementCalculation({ element, onChange, value }: Props) {
   const { formSubmissionModel } = useFormSubmissionModel()
 
@@ -172,7 +179,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     const exprParser = new ExpressionParser()
     exprParser.registerFunction('ROUND', (value: number, precision: number) => {
       if (!Number.isNaN(value) && Number.isFinite(value)) {
-        return parseFloat(value.toFixed(precision))
+        return parseFloat(roundToFixed(value, precision))
       }
       return null
     })
