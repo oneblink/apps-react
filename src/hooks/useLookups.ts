@@ -79,7 +79,10 @@ export default function useLookups(
           submission,
           definition,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
-          executedLookups: currentFormSubmission.executedLookups,
+          executedLookups: {
+            ...currentFormSubmission.executedLookups,
+            [element.name]: true,
+          },
         }
       })
     },
