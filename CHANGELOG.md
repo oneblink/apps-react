@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- types allowing `definition` in data manager record
+
 ## [5.0.1] - 2023-08-11
+
+### Fixed
+
+- pages lookup not setting lookup has executed
 
 ## [5.0.0] - 2023-08-10
 
