@@ -36,6 +36,7 @@
     "react-signature-canvas": "^1.0.6",
     "react-table": "^7.8.0",
     "sanitize-html": "^2.10.0",
+    "use-resize-observer": "^9.1.0",
     "uuid": "^9.0.0",
     "validate.js": "^0.13.1",
     "xml2js": "^0.4.23"

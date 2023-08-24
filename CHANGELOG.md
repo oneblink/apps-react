@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - types allowing `definition` in data manager record
+- `draw` form element canvas not having correct height when parent `<div />` is resized
 
 ## [5.0.1] - 2023-08-11
 
