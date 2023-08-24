@@ -1,5 +1,6 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
+import useResizeObserver, { ObservedSize } from 'use-resize-observer'
 import { FormTypes } from '@oneblink/types'
 
 import scrollingService from '../services/scrolling-service'
@@ -91,7 +92,10 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
   const canvasRef = React.useRef<SignatureCanvas>(null)
 
   const [isEmpty, setIsEmpty] = React.useState(true)
-  const [canvasDimensions, setCanvasDimensions] = React.useState({})
+  const [canvasDimensions, setCanvasDimensions] = React.useState<ObservedSize>({
+    width: undefined,
+    height: undefined,
+  })
 
   const handleClear = React.useCallback(() => {
     if (canvasRef.current) {
@@ -122,28 +126,9 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
     }
   }, [isEmpty])
 
-  // HANDLE RESIZE
-  React.useEffect(() => {
-    const signatureCanvas = canvasRef.current
-    if (!signatureCanvas) return
-    const resize = () => {
-      const parentDiv = signatureCanvas.getCanvas().parentNode
-      if (parentDiv) {
-        setCanvasDimensions({
-          // @ts-expect-error ???
-          width: parentDiv.clientWidth,
-          // @ts-expect-error ???
-          height: parentDiv.clientHeight,
-        })
-      }
-    }
-    window.addEventListener('resize', resize)
-    resize()
-
-    return () => {
-      window.removeEventListener('resize', resize)
-    }
-  }, [canvasRef])
+  const { ref } = useResizeObserver<HTMLDivElement>({
+    onResize: setCanvasDimensions,
+  })
 
   // REACTIVE DISABLING OF CANVAS
   React.useEffect(() => {
@@ -157,7 +142,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
 
   return (
     <>
-      <div>
+      <div ref={ref}>
         <SignatureCanvas
           ref={canvasRef}
           canvasProps={{
