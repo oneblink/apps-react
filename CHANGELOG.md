@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0] - 2023-08-29
+
 ### Fixed
 
 - types allowing `definition` in data manager record
 - `draw` form element canvas not having correct height when parent `<div />` is resized
+
+### Dependencies
+
+- no longer depend upon [@blinkmobile/geolocation](https://www.npmjs.com/package/@blinkmobile/geolocation)
+
+- depend upon [use-resize-observer](https://www.npmjs.com/package/use-resize-observer) [9.1.0](https://github.com/ZeeCoder/use-resize-observer/releases/tag/v9.1.0)
 
 ## [5.0.1] - 2023-08-11
 
