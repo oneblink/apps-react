@@ -14,13 +14,13 @@ export type DraftsContextValue = {
   /** The incomplete submissions that were saved for later */
   drafts: SubmissionTypes.FormsAppDraft[]
   /** A function to trigger loading of the drafts */
-  reloadDrafts: () => unknown
+  reloadDrafts: () => Promise<void>
   /** A function to clear Error object from loading drafts */
   clearLoadError: () => void
   /** `true` drafts are syncing with other devices */
   isSyncing: boolean
   /** A function to trigger syncing of the drafts */
-  syncDrafts: () => unknown
+  syncDrafts: () => Promise<void>
   /** An Error object if syncing drafts fails */
   syncError: Error | null
   /** A function to clear Error object from syncing drafts */
