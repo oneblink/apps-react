@@ -24,5 +24,6 @@
   "html.format.wrapLineLength": 200,
   "html.format.endWithNewline": true,
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
-  "eslint.alwaysShowStatus": true
+  "eslint.alwaysShowStatus": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
