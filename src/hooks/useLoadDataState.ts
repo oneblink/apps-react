@@ -58,10 +58,10 @@ export type LoadDataState<T> =
  * @group Hooks
  */
 export default function useLoadDataState<T>(
-  onLoad: (abortSignal?: AbortSignal) => Promise<T>,
+  onLoad: (abortSignal: AbortSignal) => Promise<T>,
 ): [
   state: LoadDataState<T>,
-  handleLoad: (abortSignal?: AbortSignal) => void,
+  handleRefresh: () => void,
   setResult: React.Dispatch<React.SetStateAction<T>>,
 ] {
   const isMounted = useIsMounted()
@@ -70,20 +70,20 @@ export default function useLoadDataState<T>(
   })
 
   const handleLoad = React.useCallback(
-    async (abortSignal?: AbortSignal) => {
+    async (abortSignal: AbortSignal) => {
       setState({
         status: 'LOADING',
       })
       try {
         const result = await onLoad(abortSignal)
-        if (isMounted.current && !abortSignal?.aborted) {
+        if (isMounted.current && !abortSignal.aborted) {
           setState({
             status: 'SUCCESS',
             result,
           })
         }
       } catch (err) {
-        if (isMounted.current && !abortSignal?.aborted) {
+        if (isMounted.current && !abortSignal.aborted) {
           setState({
             status: 'ERROR',
             error: err as Error,
@@ -114,13 +114,22 @@ export default function useLoadDataState<T>(
     [],
   )
 
+  // We use a number to trigger the refresh function so that
+  // we can pass an abort controller using a useEffect and
+  // have it aborted if the refresh function is triggered again.
+  const [loadCount, setLoadCount] = React.useState(0)
+
+  const handleRefresh = React.useCallback(() => {
+    setLoadCount((currentLoadCount) => currentLoadCount + 1)
+  }, [])
+
   React.useEffect(() => {
     const abortController = new AbortController()
     handleLoad(abortController.signal)
     return () => {
       abortController.abort()
     }
-  }, [handleLoad])
+  }, [handleLoad, loadCount])
 
-  return [state, handleLoad, setResult]
+  return [state, handleRefresh, setResult]
 }
