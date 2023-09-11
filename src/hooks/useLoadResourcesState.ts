@@ -55,12 +55,12 @@ import useLoadDataState from './useLoadDataState'
  * @returns
  */
 export default function useLoadResourcesState<T>(
-  onLoad: (abortSignal?: AbortSignal) => Promise<T[]>,
+  onLoad: (abortSignal: AbortSignal) => Promise<T[]>,
 ): [
   resources: T[],
   isLoading: boolean,
   loadError: Error | null,
-  handleLoad: (abortSignal?: AbortSignal) => void,
+  handleRefresh: () => void,
   setResult: React.Dispatch<React.SetStateAction<T[]>>,
 ] {
   const emptyResources = React.useMemo<T[]>(() => [], [])
