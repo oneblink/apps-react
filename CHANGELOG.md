@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `useLoadDataState()` and `useLoadResourcesState()` to always pass an `AbortSignal`
+- `data-cypress` prop to `<ErrorMessage />` component Try Again button
 
 ## [5.1.1] - 2023-09-07
 

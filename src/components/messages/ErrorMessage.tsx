@@ -39,6 +39,7 @@ function ErrorMessage({
               variant="outlined"
               color="primary"
               onClick={() => onTryAgain()}
+              data-cypress="error-try-again-button"
             >
               Try Again
             </Button>
