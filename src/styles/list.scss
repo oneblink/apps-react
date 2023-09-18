@@ -106,4 +106,18 @@
     margin-left: -$section-padding-mobile-x;
     width: calc(100% + #{$section-padding-mobile-x * 2});
   }
+
+  .ob-list__item {
+    &.is-clickable-mobile {
+      cursor: pointer;
+
+      &:hover {
+        background-color: $white-bis;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
 }
