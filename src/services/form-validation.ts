@@ -396,13 +396,13 @@ export function generateValidationSchema(
         case 'bsb': {
           return {
             presence: presence(formElement, 'Please enter a BSB number'),
-            lookups: {
-              formElement,
-              executedLookups,
-            },
             format: {
               pattern: /\d{3}-\d{3}/,
               message: 'Please enter a valid BSB number',
+            },
+            lookups: {
+              formElement,
+              executedLookups,
             },
           }
         }
@@ -412,21 +412,17 @@ export function generateValidationSchema(
               formElement,
               'Please scan a barcode or enter a value',
             ),
+            format: getCustomRegexFormatConfig(formElement),
             lookups: {
               formElement,
               executedLookups,
             },
-            format: getCustomRegexFormatConfig(formElement),
           }
         }
         case 'text':
         case 'textarea': {
           return {
             presence: presence(formElement, 'Please enter a value'),
-            lookups: {
-              formElement,
-              executedLookups,
-            },
             length: {
               minimum: formElement.minLength,
               tooShort:
@@ -436,16 +432,20 @@ export function generateValidationSchema(
                 'Please enter a value with %{count} character(s) or less',
             },
             format: getCustomRegexFormatConfig(formElement),
+            lookups: {
+              formElement,
+              executedLookups,
+            },
           }
         }
         case 'telephone': {
           return {
             presence: presence(formElement, 'Please enter a phone number'),
+            format: getCustomRegexFormatConfig(formElement),
             lookups: {
               formElement,
               executedLookups,
             },
-            format: getCustomRegexFormatConfig(formElement),
           }
         }
         case 'email': {
@@ -454,11 +454,11 @@ export function generateValidationSchema(
             email: {
               message: 'Please enter a valid email for this field',
             },
+            format: getCustomRegexFormatConfig(formElement),
             lookups: {
               formElement,
               executedLookups,
             },
-            format: getCustomRegexFormatConfig(formElement),
           }
         }
         case 'time': {
@@ -584,11 +584,11 @@ export function generateValidationSchema(
               onlyInteger: formElement.isInteger,
               notInteger: 'Please enter a whole number',
             },
+            numberRegex: getCustomRegexFormatConfig(formElement),
             lookups: {
               formElement,
               executedLookups,
             },
-            numberRegex: getCustomRegexFormatConfig(formElement),
           }
         }
         case 'files': {
