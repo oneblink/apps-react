@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Stopped form navigate away prompts from displaying when in preview mode
 - ordering of lookup validation
 
 ## [5.1.2] - 2023-09-22

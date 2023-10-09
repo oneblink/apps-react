@@ -1047,7 +1047,7 @@ function OneBlinkFormBase({
                 </div>
               </form>
 
-              {!isReadOnly && (
+              {!isReadOnly && !isPreview && (
                 <React.Fragment>
                   <Prompt
                     when={isDirty && !isNavigationAllowed}
