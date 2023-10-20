@@ -8,6 +8,7 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
+import { isDate, parse } from 'date-fns'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -68,7 +69,6 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         replacement,
         (submission: SubmissionTypes.S3SubmissionData['submission']) => {
           const defaultAccumulator = submission[nestedElementNames[0]]
-
           return nestedElementNames.reduce(
             (
               elementValue: unknown | undefined,
@@ -84,6 +84,28 @@ function FormElementCalculation({ element, onChange, value }: Props) {
               // NaN is accounted for is the calculation
               // so we can return that from here
               if (typeof elementValue === 'string') {
+                // The string could be an iso date string, or a string
+                // resembling a date. We need to parse the value as an ISO string
+                // and as a date in the format below to cover all calculation checks
+                // with 'date', 'datetime' and 'time' elements. If the string is not
+                // one of these, then we want to parse it as a float.
+
+                // Date-fns has a parseIso function, but it'll interpret '10', '11', etc.
+                // as an iso date and cause issues with these string numbers. To combat this problem,
+                // using the parse function with the ISO format will bypass this.
+                const parsedIsoDate = parse(
+                  elementValue,
+                  "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+                  new Date(),
+                )
+                const parsedDate = parse(elementValue, 'yyyy-MM-dd', new Date())
+                if (
+                  (isDate(parsedIsoDate) && !isNaN(parsedIsoDate.getDate())) ||
+                  (isDate(parsedDate) && !isNaN(parsedDate.getDate()))
+                ) {
+                  return Date.parse(elementValue)
+                }
+
                 return parseFloat(elementValue)
               }
 
