@@ -98,12 +98,12 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                   "yyyy-MM-dd'T'HH:mm:ss.SSSX",
                   new Date(),
                 )
+                if (isDate(parsedIsoDate) && !isNaN(parsedIsoDate.getDate())) {
+                  return new Date(elementValue).getTime()
+                }
                 const parsedDate = parse(elementValue, 'yyyy-MM-dd', new Date())
-                if (
-                  (isDate(parsedIsoDate) && !isNaN(parsedIsoDate.getDate())) ||
-                  (isDate(parsedDate) && !isNaN(parsedDate.getDate()))
-                ) {
-                  return Date.parse(elementValue)
+                if (isDate(parsedDate) && !isNaN(parsedDate.getDate())) {
+                  return new Date(elementValue).getTime()
                 }
 
                 return parseFloat(elementValue)
