@@ -8,7 +8,7 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
-import { isDate, parse } from 'date-fns'
+import { parse } from 'date-fns'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -98,12 +98,12 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                   "yyyy-MM-dd'T'HH:mm:ss.SSSX",
                   new Date(),
                 )
-                if (isDate(parsedIsoDate) && !isNaN(parsedIsoDate.getDate())) {
-                  return new Date(elementValue).getTime()
+                if (!isNaN(parsedIsoDate.getDate())) {
+                  return parsedIsoDate.getTime()
                 }
                 const parsedDate = parse(elementValue, 'yyyy-MM-dd', new Date())
-                if (isDate(parsedDate) && !isNaN(parsedDate.getDate())) {
-                  return new Date(elementValue).getTime()
+                if (!isNaN(parsedDate.getDate())) {
+                  return parsedDate.getTime()
                 }
 
                 return parseFloat(elementValue)
