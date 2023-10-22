@@ -8,7 +8,7 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
-import { generateDate } from '@oneblink/apps/dist/localisation-service'
+import { localisationService } from '@oneblink/apps'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
