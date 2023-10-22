@@ -8,7 +8,6 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
-import { localisationService } from '@oneblink/apps'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -94,7 +93,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 // as an iso date and cause issues with these string numbers. To combat this problem,
                 // using the parse function with the ISO format will bypass this.
 
-                const parsedIsoDate = generateDate({
+                const parsedIsoDate = localisationService.generateDate({
                   value: elementValue,
                   daysOffset: undefined,
                   dateOnly: false,
@@ -102,7 +101,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 if (parsedIsoDate && !isNaN(parsedIsoDate.getDate())) {
                   return parsedIsoDate.getTime()
                 }
-                const parsedDate = generateDate({
+                const parsedDate = localisationService.generateDate({
                   value: elementValue,
                   daysOffset: undefined,
                   dateOnly: true,
