@@ -8,7 +8,7 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
-import { parse } from 'date-fns'
+import { generateDate } from '@oneblink/apps/dist/localisation-service'
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -93,16 +93,21 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 // Date-fns has a parseIso function, but it'll interpret '10', '11', etc.
                 // as an iso date and cause issues with these string numbers. To combat this problem,
                 // using the parse function with the ISO format will bypass this.
-                const parsedIsoDate = parse(
-                  elementValue,
-                  "yyyy-MM-dd'T'HH:mm:ss.SSSX",
-                  new Date(),
-                )
-                if (!isNaN(parsedIsoDate.getDate())) {
+
+                const parsedIsoDate = generateDate({
+                  value: elementValue,
+                  daysOffset: undefined,
+                  dateOnly: false,
+                })
+                if (parsedIsoDate && !isNaN(parsedIsoDate.getDate())) {
                   return parsedIsoDate.getTime()
                 }
-                const parsedDate = parse(elementValue, 'yyyy-MM-dd', new Date())
-                if (!isNaN(parsedDate.getDate())) {
+                const parsedDate = generateDate({
+                  value: elementValue,
+                  daysOffset: undefined,
+                  dateOnly: true,
+                })
+                if (parsedDate && !isNaN(parsedDate.getDate())) {
                   return parsedDate.getTime()
                 }
 
