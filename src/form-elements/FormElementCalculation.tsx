@@ -68,7 +68,6 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         replacement,
         (submission: SubmissionTypes.S3SubmissionData['submission']) => {
           const defaultAccumulator = submission[nestedElementNames[0]]
-
           return nestedElementNames.reduce(
             (
               elementValue: unknown | undefined,
@@ -84,6 +83,29 @@ function FormElementCalculation({ element, onChange, value }: Props) {
               // NaN is accounted for is the calculation
               // so we can return that from here
               if (typeof elementValue === 'string') {
+                // The string could be an iso date string, or a string
+                // resembling a date. We need to parse the value as an ISO string
+                // and as a date in the format below to cover all calculation checks
+                // with 'date', 'datetime' and 'time' elements. If the string is not
+                // one of these, then we want to parse it as a float.
+
+                const parsedIsoDate = localisationService.generateDate({
+                  value: elementValue,
+                  daysOffset: undefined,
+                  dateOnly: false,
+                })
+                if (parsedIsoDate) {
+                  return parsedIsoDate.getTime()
+                }
+                const parsedDate = localisationService.generateDate({
+                  value: elementValue,
+                  daysOffset: undefined,
+                  dateOnly: true,
+                })
+                if (parsedDate) {
+                  return parsedDate.getTime()
+                }
+
                 return parseFloat(elementValue)
               }
 
