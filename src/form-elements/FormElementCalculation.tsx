@@ -89,16 +89,12 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 // with 'date', 'datetime' and 'time' elements. If the string is not
                 // one of these, then we want to parse it as a float.
 
-                // Date-fns has a parseIso function, but it'll interpret '10', '11', etc.
-                // as an iso date and cause issues with these string numbers. To combat this problem,
-                // using the parse function with the ISO format will bypass this.
-
                 const parsedIsoDate = localisationService.generateDate({
                   value: elementValue,
                   daysOffset: undefined,
                   dateOnly: false,
                 })
-                if (parsedIsoDate && !isNaN(parsedIsoDate.getDate())) {
+                if (parsedIsoDate) {
                   return parsedIsoDate.getTime()
                 }
                 const parsedDate = localisationService.generateDate({
@@ -106,7 +102,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                   daysOffset: undefined,
                   dateOnly: true,
                 })
-                if (parsedDate && !isNaN(parsedDate.getDate())) {
+                if (parsedDate) {
                   return parsedDate.getTime()
                 }
 
