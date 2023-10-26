@@ -1,7 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import useLookupNotification from '../../hooks/useLookupNotification'
-import { lookupValidationMessage } from '../../services/form-validation'
+import { generateLookupValidationMessage } from '../../services/form-validation'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormsAppsTypes } from '@oneblink/types'
 type Props = {
@@ -48,7 +48,8 @@ function LookupButton({
         (isEmptyValue && !allowLookupOnEmptyValue) ||
         (!isEmptyValue &&
           !!validationMessage &&
-          validationMessage !== lookupValidationMessage)
+          validationMessage !==
+            generateLookupValidationMessage(lookupButtonConfig))
       }
     >
       {isInputButton && <span></span>}
