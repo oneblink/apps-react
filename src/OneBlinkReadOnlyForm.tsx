@@ -1,6 +1,9 @@
 import * as React from 'react'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import OneBlinkFormBase from './OneBlinkFormBase'
+import { FormTypes } from '@oneblink/types'
+import OneBlinkFormBase, {
+  OneBlinkFormUncontrolledProps,
+  OneBlinkReadOnlyFormProps,
+} from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
 
 function recursivelySetReadOnly(
@@ -50,11 +53,7 @@ function OneBlinkReadOnlyForm({
   form,
   initialSubmission,
   ...rest
-}: {
-  form: FormTypes.Form
-  initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
-  googleMapsApiKey?: string
-}) {
+}: OneBlinkReadOnlyFormProps & OneBlinkFormUncontrolledProps) {
   const [{ submission, definition, executedLookups }, setFormSubmission] =
     useFormSubmissionState(form, initialSubmission)
 

@@ -8,7 +8,12 @@ import { Prompt, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import * as bulmaToast from 'bulma-toast'
 import { localisationService, submissionService } from '@oneblink/apps'
-import { FormTypes, FormsAppsTypes, SubmissionTypes } from '@oneblink/types'
+import {
+  FormTypes,
+  FormsAppsTypes,
+  ScheduledTasksTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { attachmentsService } from '@oneblink/apps'
 import * as H from 'history'
 
@@ -41,8 +46,35 @@ import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
+import { TaskContext } from './hooks/useTaskContext'
 
-export type OneBlinkFormBaseProps = {
+export type OneBlinkReadOnlyFormProps = {
+  /**
+   * A [Google Maps API
+   * Key](https://developers.google.com/maps/documentation/javascript/get-api-key).
+   * Required if the form contains a `location` form element.
+   */
+  googleMapsApiKey?: string
+  /** Hex colour value for certain inputs (defaults to `#4c8da7`). */
+  primaryColour?: string
+  /**
+   * Pass a task if the user was attempting to complete a scheduled task via a
+   * form submission
+   */
+  task?: ScheduledTasksTypes.Task
+  /**
+   * Pass a task group if the user was attempting to complete a scheduled task
+   * associated with a group via a form submission
+   */
+  taskGroup?: ScheduledTasksTypes.TaskGroup
+  /**
+   * Pass a task group instance if the user was attempting to complete a
+   * scheduled task associated with a group via a form submission
+   */
+  taskGroupInstance?: ScheduledTasksTypes.TaskGroupInstance
+}
+
+export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   /** The function to call when the user cancels the form */
   onCancel: () => unknown
   /**
@@ -54,13 +86,8 @@ export type OneBlinkFormBaseProps = {
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
   /** Whether the form is currently able to be submitted. False by default. */
   disabled?: boolean
+  /** Whether the form is in preview mode. False by default. */
   isPreview?: boolean
-  /**
-   * A [Google Maps API
-   * Key](https://developers.google.com/maps/documentation/javascript/get-api-key).
-   * Required if the form contains a `location` form element.
-   */
-  googleMapsApiKey?: string
   /**
    * An [ABN Lookup Authentication
    * Guid](https://abr.business.gov.au/Tools/WebServices). Required if the form
@@ -74,8 +101,6 @@ export type OneBlinkFormBaseProps = {
   captchaSiteKey?: string
   /** Change properties for certain buttons on the form. */
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
-  /** Hex colour value for certain inputs (defaults to `#4c8da7`). */
-  primaryColour?: string
   /** Number of days attachments are retained for. */
   attachmentRetentionInDays?: number
   /**
@@ -104,6 +129,13 @@ export type OneBlinkFormBaseProps = {
    * "CALCULATED"
    */
   isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
+}
+
+export type OneBlinkFormUncontrolledProps = {
+  /** The OneBlink Form to render */
+  form: FormTypes.Form
+  /** The initial submission data */
+  initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
 }
 
 export type OneBlinkFormControlledProps = {
@@ -140,6 +172,9 @@ function OneBlinkFormBase({
   isInfoPage: isInfoPageProp,
   lastElementUpdated,
   executedLookups,
+  task,
+  taskGroup,
+  taskGroupInstance,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -710,6 +745,15 @@ function OneBlinkFormBase({
   // #endregion
   //
   //
+
+  const taskContextValue = React.useMemo(() => {
+    return {
+      task,
+      taskGroup,
+      taskGroupInstance,
+    }
+  }, [task, taskGroup, taskGroupInstance])
+
   const lastElementUpdatedExistsOnForm = React.useMemo(() => {
     return !!formElementsService.findFormElement(
       definition.elements,
@@ -913,31 +957,35 @@ function OneBlinkFormBase({
                                 <FormIsReadOnlyContext.Provider
                                   value={isReadOnly}
                                 >
-                                  {visiblePages.map(
-                                    (pageElement: FormTypes.PageElement) => (
-                                      <PageFormElements
-                                        key={pageElement.id}
-                                        isActive={
-                                          pageElement.id === currentPage.id
-                                        }
-                                        formId={definition.id}
-                                        formElementsConditionallyShown={
-                                          formElementsConditionallyShown
-                                        }
-                                        formElementsValidation={
-                                          formElementsValidation
-                                        }
-                                        displayValidationMessages={
-                                          hasAttemptedSubmit ||
-                                          isDisplayingCurrentPageError
-                                        }
-                                        pageElement={pageElement}
-                                        onChange={handleChange}
-                                        model={submission}
-                                        setFormSubmission={setFormSubmission}
-                                      />
-                                    ),
-                                  )}
+                                  <TaskContext.Provider
+                                    value={taskContextValue}
+                                  >
+                                    {visiblePages.map(
+                                      (pageElement: FormTypes.PageElement) => (
+                                        <PageFormElements
+                                          key={pageElement.id}
+                                          isActive={
+                                            pageElement.id === currentPage.id
+                                          }
+                                          formId={definition.id}
+                                          formElementsConditionallyShown={
+                                            formElementsConditionallyShown
+                                          }
+                                          formElementsValidation={
+                                            formElementsValidation
+                                          }
+                                          displayValidationMessages={
+                                            hasAttemptedSubmit ||
+                                            isDisplayingCurrentPageError
+                                          }
+                                          pageElement={pageElement}
+                                          onChange={handleChange}
+                                          model={submission}
+                                          setFormSubmission={setFormSubmission}
+                                        />
+                                      ),
+                                    )}
+                                  </TaskContext.Provider>
                                 </FormIsReadOnlyContext.Provider>
                               </AttachmentBlobsProvider>
                             </CaptchaSiteKeyContext.Provider>

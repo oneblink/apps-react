@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import OneBlinkFormBase, {
   OneBlinkFormBaseProps,
   OneBlinkFormControlledProps,
+  OneBlinkFormUncontrolledProps,
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
 
@@ -565,14 +566,11 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
   initialSubmission,
   resumeAtElement,
   ...props
-}: OneBlinkFormBaseProps & {
-  /** The OneBlink Form to render */
-  form: FormTypes.Form
-  /** The initial submission data */
-  initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
-  /** The element to resume the form at. */
-  resumeAtElement?: FormTypes.FormElement
-}) {
+}: OneBlinkFormBaseProps &
+  OneBlinkFormUncontrolledProps & {
+    /** The element to resume the form at. */
+    resumeAtElement?: FormTypes.FormElement
+  }) {
   const [
     { definition, submission, lastElementUpdated, executedLookups },
     setFormSubmission,
