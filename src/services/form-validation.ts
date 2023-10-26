@@ -1,6 +1,6 @@
 import validate, { ValidatorConstraintFn } from 'validate.js'
 import { attachmentsService, localisationService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes, FormsAppsTypes, SubmissionTypes } from '@oneblink/types'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 import { parseDateValue } from './generate-default-data'
@@ -25,7 +25,14 @@ type NestedValidateJSSchema = {
   executedLookups: ExecutedLookupValue
 }
 
-export const lookupValidationMessage = 'Lookup is required'
+export const generateLookupValidationMessage = (
+  lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration,
+) => {
+  return lookupButtonConfig && lookupButtonConfig.label
+    ? `${lookupButtonConfig.label} is required`
+    : 'Lookup is required'
+}
+
 // https://validatejs.org/#validators-datetime
 // Before using it we must add the parse and format functions
 // Here is a sample implementation using moment.js
@@ -184,8 +191,7 @@ validate.validators.lookups = function (
   if (elementExecutedLookups === true) {
     return
   }
-
-  return lookupValidationMessage
+  return generateLookupValidationMessage(formElement.lookupButton)
 }
 
 validate.validators.numberRegex = function (value: unknown, format: unknown) {
