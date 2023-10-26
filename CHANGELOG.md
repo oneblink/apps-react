@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `task`, `taskGroup` and `taskGroupInstance` props to `<OneBlinkForm />`
 
+### Changed
+
+- Use lookup button label for required validation message if configured
+
 ## [5.2.0] - 2023-10-25
 
 ### Added
