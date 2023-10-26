@@ -6,10 +6,10 @@ type PositionOptionsLike = Partial<PositionOptions>
 
 type GeolocationDriver = {
   getCurrentPosition: (
-    success: (position: PositionLike) => any,
-    error: (error: GeolocationPositionError | Error) => any,
+    success: (position: PositionLike) => void,
+    error: (error: GeolocationPositionError | Error) => void,
     options: PositionOptions,
-  ) => any
+  ) => void
   isAvailable: () => boolean
 }
 
@@ -76,8 +76,8 @@ const DRIVERS: { [id: string]: GeolocationDriver } = {
     },
 
     getCurrentPosition: function (
-      onSuccess: (position: PositionLike) => any,
-      onError: (error: GeolocationPositionError) => any,
+      onSuccess: (position: PositionLike) => void,
+      onError: (error: GeolocationPositionError) => void,
       options: PositionOptions,
     ): void {
       navigator.geolocation.getCurrentPosition(
