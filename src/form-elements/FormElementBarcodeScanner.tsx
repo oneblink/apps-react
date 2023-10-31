@@ -10,7 +10,9 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
-import useLookupNotification from '../hooks/useLookupNotification'
+import useLookupNotification, {
+  LookupNotificationContext,
+} from '../hooks/useLookupNotification'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 
 const MS_BETWEEN_IMAGE_PROCESSING = 10
@@ -40,7 +42,6 @@ function FormElementBarcodeScanner({
   const [isCameraOpen, startBarcodeScanner, stopBarcodeScanner] =
     useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)
-
   const { onLookup } = useLookupNotification(value)
   const handleScan = React.useCallback(
     (newValue: string | undefined) => {
@@ -82,6 +83,10 @@ function FormElementBarcodeScanner({
       startBarcodeScanner()
     }
   }, [handleScan, startBarcodeScanner])
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isDisplayingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   const text = typeof value === 'string' ? value : ''
   return (
@@ -160,7 +165,7 @@ function FormElementBarcodeScanner({
           </div>
         )}
 
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}

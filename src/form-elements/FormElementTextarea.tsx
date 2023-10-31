@@ -5,6 +5,7 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -29,8 +30,11 @@ function FormElementTextarea({
   const isDisplayingCopyButton = !!element.readOnly && !!value
   const isDisplayingLookupButton =
     !!element.isDataLookup || !!element.isElementLookup
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
-    (isDirty || displayValidationMessage) && !!validationMessage
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
+
   return (
     <div className="cypress-textarea-element">
       <FormElementLabelContainer

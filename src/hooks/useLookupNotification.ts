@@ -10,6 +10,7 @@ export type LookupNotificationContextValue = {
     abortController: AbortController
     continueLookupOnAbort: boolean
   }) => Promise<void>
+  isLookingUp: boolean
 }
 
 const defaultContext = {
@@ -18,6 +19,7 @@ const defaultContext = {
   isLoading: false,
   allowLookupOnEmptyValue: false,
   onLookup: async () => undefined,
+  isLookingUp: false,
 }
 
 export const LookupNotificationContext =

@@ -15,6 +15,7 @@ import {
   IsDirtyProps,
   UpdateFormElementsHandler,
 } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -99,6 +100,10 @@ function FormElementCheckboxes({
     conditionallyShownOptionsElement,
     onUpdateFormElements,
   })
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isDisplayingValidationMessage =
+    (displayValidationMessage || isDirty) && !!validationMessage && !isLookingUp
 
   return (
     <div className="cypress-checkbox-element">
@@ -185,7 +190,7 @@ function FormElementCheckboxes({
           />
         </FormElementOptions>
 
-        {(displayValidationMessage || isDirty) && !!validationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}

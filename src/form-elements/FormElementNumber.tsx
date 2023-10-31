@@ -6,6 +6,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -53,6 +54,10 @@ function FormElementNumber({
       htmlInputElementRef.current?.focus()
     })
   }, [])
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isDisplayingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   return (
     <div className="cypress-number-element">
@@ -109,7 +114,7 @@ function FormElementNumber({
           />
         ) : undefined}
 
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}

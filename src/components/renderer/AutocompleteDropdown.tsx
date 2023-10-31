@@ -4,6 +4,7 @@ import { Sentry } from '@oneblink/apps'
 
 import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'
+import { LookupNotificationContext } from '../../hooks/useLookupNotification'
 
 type AutocompleteOption<T> = {
   label: string
@@ -247,10 +248,11 @@ function AutocompleteDropdown<T>({
       onChangeLabel('')
     }
   }, [onChangeLabel, value])
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
 
   const isShowingLoading = isFetchingOptions || !!isLoading
   const isShowingValid = !isShowingLoading && value !== undefined
-  const isShowingError = !isShowingLoading && !!hasError
+  const isShowingError = !isShowingLoading && !isLookingUp && !!hasError
 
   return (
     <>
