@@ -114,7 +114,7 @@ function FormElementBSB({
   }, [formId, isValidFormat, text, onChange, element])
 
   const { isLookingUp } = React.useContext(LookupNotificationContext)
-  const isShowingValidationMessage =
+  const isDisplayingValidationMessage =
     (((isDirty || displayValidationMessage) &&
       !!validationMessage &&
       !isLoading) ||
@@ -181,7 +181,7 @@ function FormElementBSB({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
-        {isShowingValidationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {errorMessage || validationMessage}

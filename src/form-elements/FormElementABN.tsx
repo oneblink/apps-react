@@ -191,7 +191,7 @@ function FormElementABN({
   }, [value])
 
   const { isLookingUp } = React.useContext(LookupNotificationContext)
-  const isShowingValidationMessage =
+  const isDisplayingValidationMessage =
     (((isDirty || displayValidationMessage) &&
       !!validationMessage &&
       !isLoading) ||
@@ -260,7 +260,7 @@ function FormElementABN({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
-        {isShowingValidationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {error?.message || validationMessage}

@@ -55,7 +55,7 @@ function FormElementFiles({
   const attachments = value || []
 
   const { isLookingUp } = React.useContext(LookupNotificationContext)
-  const isShowingValidationMessage =
+  const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   return (
@@ -115,7 +115,7 @@ function FormElementFiles({
           </div>
         </div>
 
-        {isShowingValidationMessage && (
+        {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
