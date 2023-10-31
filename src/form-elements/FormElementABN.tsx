@@ -10,6 +10,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useAbnLookupAuthenticationGuid from '../hooks/useAbnLookupAuthenticationGuid'
 import { abnService } from '@oneblink/sdk-core'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 type Props = {
   id: string
   element: FormTypes.ABNElement
@@ -189,6 +190,14 @@ function FormElementABN({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isShowingValidationMessage =
+    (((isDirty || displayValidationMessage) &&
+      !!validationMessage &&
+      !isLoading) ||
+      error) &&
+    !isLookingUp
+
   return (
     <div className="cypress-abn-element">
       <FormElementLabelContainer
@@ -251,10 +260,7 @@ function FormElementABN({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
-        {(((isDirty || displayValidationMessage) &&
-          !!validationMessage &&
-          !isLoading) ||
-          error) && (
+        {isShowingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {error?.message || validationMessage}

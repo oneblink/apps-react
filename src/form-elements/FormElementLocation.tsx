@@ -11,6 +11,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { Sentry } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -120,6 +121,10 @@ function FormElementLocation({
     }
   }, [value])
 
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isShowingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
+
   return (
     <div className="cypress-location-element">
       <FormElementLabelContainer
@@ -179,7 +184,7 @@ function FormElementLocation({
           </div>
         </div>
 
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
+        {isShowingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}

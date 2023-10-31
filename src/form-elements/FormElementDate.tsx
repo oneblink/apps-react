@@ -9,6 +9,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -89,6 +90,10 @@ function FormElementDate({
     return null
   }, [value])
 
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isShowingValidationMessage =
+    (displayValidationMessage || isDirty) && !!validationMessage && !isLookingUp
+
   return (
     <div className="cypress-date-element" ref={htmlDivElementRef}>
       <FormElementLabelContainer
@@ -129,7 +134,7 @@ function FormElementDate({
           />
         </div>
 
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
+        {isShowingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}

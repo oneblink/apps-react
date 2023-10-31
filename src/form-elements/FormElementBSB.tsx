@@ -7,6 +7,7 @@ import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { formService } from '@oneblink/apps'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -112,6 +113,14 @@ function FormElementBSB({
     }
   }, [formId, isValidFormat, text, onChange, element])
 
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isShowingValidationMessage =
+    (((isDirty || displayValidationMessage) &&
+      !!validationMessage &&
+      !isLoading) ||
+      errorMessage) &&
+    !isLookingUp
+
   return (
     <div className="cypress-bsb-element">
       <FormElementLabelContainer
@@ -172,10 +181,7 @@ function FormElementBSB({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
-        {(((isDirty || displayValidationMessage) &&
-          !!validationMessage &&
-          !isLoading) ||
-          errorMessage) && (
+        {isShowingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {errorMessage || validationMessage}

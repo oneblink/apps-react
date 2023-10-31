@@ -334,8 +334,9 @@ function LookupNotificationComponent({
       isLoading,
       onLookup: triggerLookup,
       allowLookupOnEmptyValue: runLookupOnClear,
+      isLookingUp,
     }),
-    [isDisabled, isLoading, runLookupOnClear, triggerLookup],
+    [isDisabled, isLoading, runLookupOnClear, triggerLookup, isLookingUp],
   )
 
   return (

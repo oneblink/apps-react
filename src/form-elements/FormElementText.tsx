@@ -5,6 +5,7 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 type Props = {
   id: string
@@ -26,8 +27,11 @@ function FormElementText({
   setIsDirty,
 }: Props) {
   const text = typeof value === 'string' ? value : ''
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
-    (isDirty || displayValidationMessage) && !!validationMessage
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
+
   return (
     <div className="cypress-text-element">
       <FormElementLabelContainer

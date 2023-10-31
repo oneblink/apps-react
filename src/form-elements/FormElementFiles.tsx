@@ -9,6 +9,7 @@ import {
 } from '../services/form-validation'
 import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
 export function stringifyAttachments(
   value: attachmentsService.Attachment[] | undefined,
@@ -52,6 +53,10 @@ function FormElementFiles({
   }, [])
 
   const attachments = value || []
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isShowingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   return (
     <div className="cypress-files-element">
@@ -110,7 +115,7 @@ function FormElementFiles({
           </div>
         </div>
 
-        {(isDirty || displayValidationMessage) && !!validationMessage && (
+        {isShowingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
