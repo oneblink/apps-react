@@ -24,7 +24,7 @@ import ErrorMessage from '../messages/ErrorMessage'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
-  definition: FormTypes.Form
+  definition?: FormTypes.Form
   submission: SubmissionTypes.S3SubmissionData['submission']
 }
 type Props = {
@@ -84,6 +84,15 @@ function LookupNotificationComponent({
     formElementDataLookup?.runLookupOnClear,
     formElementElementLookup?.runLookupOnClear,
   ])
+
+  const excludeDefinition = React.useMemo(() => {
+    return !!(
+      (formElementDataLookup?.type !== 'STATIC_DATA' &&
+        formElementDataLookup?.excludeDefinition) ||
+      (formElementElementLookup?.type !== 'STATIC_DATA' &&
+        formElementElementLookup?.excludeDefinition)
+    )
+  }, [formElementDataLookup, formElementElementLookup])
 
   const mergeLookupData = React.useCallback(
     ({
@@ -202,7 +211,7 @@ function LookupNotificationComponent({
 
       const payload: FetchLookupPayload = {
         element,
-        definition,
+        definition: !excludeDefinition ? definition : undefined,
         submission: {
           ...model,
           [element.name]: newValue,
@@ -276,6 +285,7 @@ function LookupNotificationComponent({
     [
       definition,
       element,
+      excludeDefinition,
       formElementDataLookup,
       formElementElementLookup,
       formIsReadOnly,
