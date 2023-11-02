@@ -4,7 +4,7 @@ This library has a peer dependency on [@oneblink/apps](https://www.npmjs.com/pac
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) 18.0 or newer
+- [Node.js](https://nodejs.org/) 20.0 or newer
 - NPM 8.0 or newer
 
 ## Installation
