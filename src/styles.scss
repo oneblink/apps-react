@@ -20,7 +20,7 @@ $size-9: 0.25rem;
 //
 // Bulma Variables
 //
-@import 'bulma/sass/utilities/_all';
+@import 'bulma/sass/utilities/_all.sass';
 
 //
 // Our Variables
@@ -31,8 +31,8 @@ $secondary: $grey-lighter;
 //
 // Bulma Styles
 //
-@import 'bulma/sass/base/_all';
-@import 'bulma/sass/helpers/_all';
+@import 'bulma/sass/base/_all.sass';
+@import 'bulma/sass/helpers/_all.sass';
 @import 'bulma/sass/layout/section.sass';
 @import 'bulma/sass/grid/columns.sass';
 
