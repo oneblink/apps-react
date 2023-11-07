@@ -1,11 +1,10 @@
 {
   "cSpell.words": [
     "BPOINT",
-    "Finalising",
-    "Uncheck",
     "bulma",
     "checkboxes",
     "datetime",
+    "Finalising",
     "flatpickr",
     "formlink",
     "formscontainer",
@@ -16,8 +15,10 @@
     "oneblink",
     "organisation",
     "organisations",
+    "Qrcode",
     "searchbar",
     "transclude",
+    "Uncheck",
     "validators"
   ],
   "html.format.wrapAttributes": "force-aligned",
