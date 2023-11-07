@@ -8,14 +8,14 @@ jobs:
     name: NPM Publish (beta)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install --global npm@8
+      - run: npm install --global npm@10
       - run: npm ci
       - run: npm test
-      - uses: JS-DevTools/npm-publish@v1
+      - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
           access: 'public'
