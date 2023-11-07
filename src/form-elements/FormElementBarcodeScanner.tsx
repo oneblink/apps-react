@@ -1,24 +1,14 @@
 import * as React from 'react'
-import clsx from 'clsx'
-import jsQR from 'jsqr'
-
-import OnLoading from '../components/renderer/OnLoading'
+import { Html5QrcodeScanner } from 'html5-qrcode'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
-import quaggaReader from '../services/barcode-readers/quagger.js'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { Sentry } from '@oneblink/apps'
 import useLookupNotification, {
   LookupNotificationContext,
 } from '../hooks/useLookupNotification'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
-
-const MS_BETWEEN_IMAGE_PROCESSING = 10
-const fadedSquareWidthInPixels = 200
-const fadedSquareHeightInPixels = 150
-const redLineHeightInPixels = 1
 
 type Props = {
   id: string
@@ -110,7 +100,7 @@ function FormElementBarcodeScanner({
 
         {isCameraOpen ? (
           <BarcodeScanner
-            element={element}
+            id={`${id}==BARCODE_SCANNER`}
             onScan={handleScan}
             onClose={stopBarcodeScanner}
           />
@@ -180,323 +170,51 @@ function FormElementBarcodeScanner({
 export default React.memo(FormElementBarcodeScanner)
 
 type BarcodeScannerProps = {
-  element: FormTypes.BarcodeScannerElement
+  id: string
   onScan: (barcode: string | undefined) => void
   onClose: () => void
 }
 
-function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
-  const videoElementRef = React.useRef<HTMLVideoElement>(null)
-  const figureElementRef = React.useRef<HTMLDivElement>(null)
+function BarcodeScanner({ id, onScan, onClose }: BarcodeScannerProps) {
+  const [html5QrcodeScanner, setHtml5QrcodeScanner] =
+    React.useState<Html5QrcodeScanner | null>(null)
 
-  const [{ isLoading = false, selectedDeviceId, error }, setState] =
-    React.useState<{
-      isLoading: boolean
-      selectedDeviceId: string | undefined
-      error: Error | undefined
-    }>({
-      isLoading: true,
-      selectedDeviceId: undefined,
-      error: undefined,
-    })
-  const [camera, setCamera] = React.useState<HTML5Camera | null>(null)
-
-  const setError = React.useCallback((error: Error) => {
-    setState({
-      error,
-      isLoading: false,
-      selectedDeviceId: undefined,
-    })
-  }, [])
-
-  // Create timeout using $timeout outside of the scan function so
-  // so that we can cancel it when navigating away from screen
-  const scanImageForBarcode = React.useCallback(
-    (
-      videoElement: HTMLVideoElement,
-      waitInMS: number,
-      options: {
-        sourceX: number
-        sourceY: number
-        sourceWidth: number
-        sourceHeight: number
+  React.useEffect(() => {
+    const verbose = true
+    const newHtml5QrcodeScanner = new Html5QrcodeScanner(
+      id,
+      {
+        fps: 10,
+        qrbox: {
+          width: 250,
+          height: 250,
+        },
       },
-      checkStop: () => boolean,
-    ) => {
-      const restrictedBarcodeTypes = element.restrictedBarcodeTypes || []
-      // Using $timeout here instead of $interval as we dont know
-      // exactly how long each processing of the image will take.
-      setTimeout(async () => {
-        if (checkStop()) return
-        const canvasElement = document.createElement('canvas')
-
-        canvasElement.width = options.sourceWidth
-        canvasElement.height = options.sourceHeight
-
-        const canvasContext = canvasElement.getContext('2d')
-        if (canvasContext) {
-          canvasContext.drawImage(
-            videoElement,
-            options.sourceX,
-            options.sourceY,
-            canvasElement.width,
-            canvasElement.height,
-            0,
-            0,
-            canvasElement.width,
-            canvasElement.height,
-          )
-
-          if (
-            !element.restrictBarcodeTypes ||
-            (element.restrictedBarcodeTypes || []).indexOf('qr_reader') > -1
-          ) {
-            const imageData = canvasContext.getImageData(
-              0,
-              0,
-              canvasElement.width,
-              canvasElement.height,
-            )
-
-            const code = jsQR(
-              imageData.data,
-              imageData.width,
-              imageData.height,
-              {
-                inversionAttempts: 'dontInvert',
-              },
-            )
-
-            if (code) {
-              return onScan(code.data)
-            }
-          }
-        }
-
-        if (
-          !element.restrictBarcodeTypes ||
-          !(
-            restrictedBarcodeTypes.length === 1 &&
-            restrictedBarcodeTypes[0] === 'qr_reader'
-          )
-        ) {
-          const base64Image = canvasElement.toDataURL('image/png')
-          const quaggaResult = await quaggaReader(
-            base64Image,
-            restrictedBarcodeTypes,
-          )
-          if (quaggaResult) {
-            return onScan(quaggaResult)
-          }
-        }
-
-        if (checkStop()) return
-
-        scanImageForBarcode(
-          videoElement,
-          MS_BETWEEN_IMAGE_PROCESSING,
-          options,
-          checkStop,
-        )
-      }, waitInMS)
-    },
-    [element.restrictBarcodeTypes, element.restrictedBarcodeTypes, onScan],
-  )
-
-  const switchCamera = React.useCallback(() => {
-    if (!camera) {
-      return
+      verbose,
+    )
+    setHtml5QrcodeScanner(newHtml5QrcodeScanner)
+    return () => {
+      newHtml5QrcodeScanner.clear()
     }
-
-    // We will just be rotating between the available camera.
-    const nextDeviceIndex =
-      camera.availableDevices.findIndex(
-        (mediaDeviceInfo) => mediaDeviceInfo.deviceId === camera.activeDeviceId,
-      ) + 1
-    const nextDevice =
-      camera.availableDevices[nextDeviceIndex] || camera.availableDevices[0]
-    setState({
-      error: undefined,
-      isLoading: true,
-      selectedDeviceId: nextDevice.deviceId,
-    })
-  }, [camera])
+  }, [id])
 
   React.useEffect(() => {
-    if (!videoElementRef.current) {
-      return
-    }
-
-    const newCamera = new HTML5Camera(videoElementRef.current)
-    setCamera(newCamera)
-
-    return () => {
-      newCamera.close()
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (
-      !camera ||
-      error ||
-      // If attempting to open the device that is currently open,
-      // we will not attempt to open again.
-      (selectedDeviceId && camera.activeDeviceId === selectedDeviceId)
-    ) {
-      return
-    }
-
-    let ignore = false
-
-    ;(async () => {
-      try {
-        const videoElement = videoElementRef.current
-        const figureElement = figureElementRef.current
-        if (!videoElement || !figureElement) {
-          return
-        }
-
-        console.log('Opening camera with:', selectedDeviceId || 'UNKNOWN')
-        await camera.open(selectedDeviceId)
-
-        if (ignore) {
-          return
-        }
-
-        setState({
-          error: undefined,
-          isLoading: false,
-          selectedDeviceId,
-        })
-
-        // @ts-expect-error ???
-        const fadedSquareElement: HTMLDivElement =
-          figureElement.getElementsByClassName('ob-barcode-scanner__square')[0]
-        // @ts-expect-error ???
-        const redLineElement: HTMLDivElement =
-          figureElement.getElementsByClassName('ob-barcode-scanner__line')[0]
-        console.log('videoElement Width pixels', videoElement.clientWidth)
-        console.log('videoElement Height pixels', videoElement.clientHeight)
-        console.log('videoElement Width', videoElement.videoWidth)
-        console.log('videoElement Height', videoElement.videoHeight)
-
-        // Faded Square needs its values set in pixels
-        const fadedSquareLeftInPixels =
-          (videoElement.clientWidth - fadedSquareWidthInPixels) / 2
-        console.log('fadedSquareLeftInPixels', fadedSquareLeftInPixels)
-        const fadedSquareTopInPixels =
-          (videoElement.clientHeight - fadedSquareHeightInPixels) / 2
-        console.log('fadedSquareTopInPixels', fadedSquareTopInPixels)
-
-        fadedSquareElement.style.borderBottom = `${fadedSquareTopInPixels}px`
-        fadedSquareElement.style.borderTop = `${fadedSquareTopInPixels}px`
-        fadedSquareElement.style.borderLeft = `${fadedSquareLeftInPixels}px`
-        fadedSquareElement.style.borderRight = `${fadedSquareLeftInPixels}px`
-        fadedSquareElement.style.borderColor = 'rgba(0, 0, 0, 0.25)'
-        fadedSquareElement.style.borderStyle = 'solid'
-
-        redLineElement.style.height = `${redLineHeightInPixels}px`
-        redLineElement.style.top = `${
-          (videoElement.clientHeight - redLineHeightInPixels) / 2
-        }px`
-        redLineElement.style.left = `${fadedSquareLeftInPixels}px`
-        redLineElement.style.right = `${fadedSquareLeftInPixels}px`
-
-        // Need to calculate the actual width, which is not in pixels
-        const ratio = videoElement.videoWidth / videoElement.clientWidth
-        console.log('pixel to video Ratio', ratio)
-
-        const left = ratio * fadedSquareLeftInPixels
-        console.log('left in video measurement', left)
-        const top = ratio * fadedSquareTopInPixels
-        console.log('top in video measurement', top)
-
-        const fadedSquareWidth = fadedSquareWidthInPixels * ratio
-        console.log('red square in video measurement', fadedSquareWidth)
-
-        // Wait a little before scanning the first image
-        // to prevent image processing staring before
-        // camera is ready.
-        scanImageForBarcode(
-          videoElement,
-          250,
-          {
-            sourceX: left,
-            sourceY: top,
-            sourceWidth: fadedSquareWidth,
-            sourceHeight: fadedSquareWidth,
-          },
-          () => ignore,
-        )
-      } catch (error) {
-        if (ignore) {
-          return
-        }
-        console.warn('Error while attempting to open camera', error)
-        Sentry.captureException(error)
-        switch ((error as Error).name) {
-          case 'NotSupportedError': {
-            setError(
-              new Error(
-                'Your browser does not support accessing your camera. Please click "Cancel" below and type in the barcode value manually.',
-              ),
-            )
-            break
-          }
-          case 'NotAllowedError': {
-            setError(
-              new Error(
-                'Cannot scan for barcodes without granting the application access to the camera. Please click "Cancel" below to try again.',
-              ),
-            )
-            break
-          }
-          default: {
-            setError(
-              new Error(
-                'An unknown error has occurred, please click "Cancel" below to try again. If the problem persists, please contact support.',
-              ),
-            )
-          }
-        }
-      }
-    })()
-
-    return () => {
-      ignore = true
-    }
-  }, [camera, error, scanImageForBarcode, selectedDeviceId, setError])
+    html5QrcodeScanner?.render(
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log(`Code matched = ${decodedText}`, decodedResult)
+        onScan(decodedText)
+      },
+      function onScanFailure() {
+        // do nothing and keep scanning
+      },
+    )
+  }, [html5QrcodeScanner, onScan])
 
   return (
     <div>
-      <figure className="ob-figure" ref={figureElementRef}>
-        <div className="figure-content has-text-centered">
-          {isLoading && <OnLoading small />}
-
-          {!!error && (
-            <div>
-              <h4 className="title is-4">Whoops...</h4>
-              <p>{error.message}</p>
-            </div>
-          )}
-
-          <div
-            className={clsx('is-relative', {
-              'is-hidden': isLoading || error,
-            })}
-          >
-            <div className="ob-barcode-scanner__square"></div>
-            <div className="ob-barcode-scanner__line"></div>
-            <video
-              ref={videoElementRef}
-              autoPlay
-              playsInline
-              className="ob-barcode-scanner__video"
-            />
-          </div>
-        </div>
+      <figure className="ob-figure">
+        <div id={id} />
       </figure>
-
       <div className="buttons ob-buttons">
         <button
           type="button"
@@ -505,78 +223,7 @@ function BarcodeScanner({ element, onScan, onClose }: BarcodeScannerProps) {
         >
           Cancel
         </button>
-        {(camera?.availableDevices.length || 1) > 1 && (
-          <button
-            type="button"
-            className="button ob-button ob-button__switch-camera is-primary cypress-switch-camera-button"
-            onClick={switchCamera}
-          >
-            Switch Camera
-          </button>
-        )}
       </div>
     </div>
   )
-}
-
-class HTML5Camera {
-  availableDevices: MediaDeviceInfo[]
-  htmlVideoElement: HTMLVideoElement
-  mediaStream: MediaStream | undefined
-
-  constructor(htmlVideoElement: HTMLVideoElement) {
-    this.htmlVideoElement = htmlVideoElement
-    this.availableDevices = []
-    this.mediaStream = undefined
-  }
-
-  get activeDeviceId(): string | undefined {
-    if (this.mediaStream) {
-      const [activeMediaStreamTrack] = this.mediaStream.getTracks()
-      return activeMediaStreamTrack?.getSettings()?.deviceId
-    }
-  }
-
-  async open(deviceId?: string) {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      const error = new Error()
-      error.name = 'NotSupportedError'
-      throw error
-    }
-
-    this.close()
-
-    const constraints = {
-      video: {
-        facingMode: deviceId ? undefined : 'environment',
-        deviceId: deviceId ? { exact: deviceId } : undefined,
-      },
-    }
-    const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-    this.mediaStream = mediaStream
-    this.htmlVideoElement.srcObject = mediaStream
-
-    if (!this.availableDevices.length) {
-      const availableDevices = await navigator.mediaDevices.enumerateDevices()
-      this.availableDevices = availableDevices.filter(
-        (mediaDeviceInfo) =>
-          mediaDeviceInfo.kind === 'videoinput' && !!mediaDeviceInfo.deviceId,
-      )
-    }
-
-    await new Promise((resolve) =>
-      this.htmlVideoElement.addEventListener('canplay', resolve, {
-        once: true,
-      }),
-    )
-  }
-
-  close() {
-    if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => {
-        track.stop()
-      })
-      this.mediaStream = undefined
-    }
-  }
 }
