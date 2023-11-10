@@ -184,10 +184,10 @@ function BarcodeScanner({ id, onScan, onClose }: BarcodeScannerProps) {
     const newHtml5QrcodeScanner = new Html5QrcodeScanner(
       id,
       {
-        fps: 10,
+        fps: 20,
         qrbox: {
-          width: 250,
-          height: 250,
+          width: 400,
+          height: 400,
         },
       },
       verbose,
