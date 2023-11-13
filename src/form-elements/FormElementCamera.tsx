@@ -5,10 +5,10 @@ import downloadAttachment, {
   downloadFileLegacy,
 } from '../services/download-file'
 import OnLoading from '../components/renderer/OnLoading'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import drawTimestampOnCanvas from '../services/drawTimestampOnCanvas'
-import { FormElementBinaryStorageValue } from '../types/attachments'
+import { FormElementBinaryStorageValue, onUploadAttachmentConfiguration } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
 import AnnotationModal from '../components/renderer/AnnotationModal'
 import Modal from '../components/renderer/Modal'
@@ -30,6 +30,10 @@ type Props = {
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 } & IsDirtyProps
 
 function FormElementCamera({
@@ -41,6 +45,7 @@ function FormElementCamera({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+    onUploadAttachment,
 }: Props) {
   const [{ cameraError, isLoading }, setState] = React.useState<{
     isLoading: boolean
@@ -184,6 +189,7 @@ function FormElementCamera({
       },
       [element, onChange],
     ),
+    onUploadAttachment,
   )
 
   const handleRetry = React.useMemo(() => {

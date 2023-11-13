@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../hooks/attachments/useAttachments'
@@ -10,6 +10,7 @@ import {
 import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import { onUploadAttachmentConfiguration } from '../types/attachments'
 
 export function stringifyAttachments(
   value: attachmentsService.Attachment[] | undefined,
@@ -29,6 +30,7 @@ function FormElementFiles({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  onUploadAttachment,
 }: {
   id: string
   element: FormTypes.FilesElement
@@ -36,6 +38,10 @@ function FormElementFiles({
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 } & IsDirtyProps) {
   const { addAttachments, removeAttachment, changeAttachment } = useAttachments(
     element,
@@ -96,6 +102,7 @@ function FormElementFiles({
                     !checkFileNameIsValid(element, attachment.fileName) ||
                     !checkFileNameExtensionIsValid(element, attachment.fileName)
                   }
+                  onUploadAttachment={onUploadAttachment}
                 />
               )
             })}

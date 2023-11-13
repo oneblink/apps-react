@@ -1,10 +1,12 @@
 import * as React from 'react'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import OneBlinkFormBase, {
   OneBlinkFormUncontrolledProps,
   OneBlinkReadOnlyFormProps,
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
+import { onUploadAttachmentConfiguration } from './types/attachments'
+
 
 function recursivelySetReadOnly(
   elements: FormTypes.FormElement[],
@@ -52,8 +54,12 @@ function recursivelySetReadOnly(
 function OneBlinkReadOnlyForm({
   form,
   initialSubmission,
+  onUploadAttachment,
   ...rest
-}: OneBlinkReadOnlyFormProps & OneBlinkFormUncontrolledProps) {
+}: OneBlinkReadOnlyFormProps & OneBlinkFormUncontrolledProps & {  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>}) {
   const [{ submission, definition, executedLookups }, setFormSubmission] =
     useFormSubmissionState(form, initialSubmission)
 
@@ -77,6 +83,7 @@ function OneBlinkReadOnlyForm({
       setFormSubmission={setFormSubmission}
       isPendingQueueEnabled={false}
       executedLookups={executedLookups}
+      onUploadAttachment={onUploadAttachment}
       {...rest}
     />
   )

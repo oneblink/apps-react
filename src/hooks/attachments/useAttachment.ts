@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { attachmentsService } from '@oneblink/apps'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
-import { FormElementBinaryStorageValue } from '../../types/attachments'
+import {
+  FormElementBinaryStorageValue,
+  onUploadAttachmentConfiguration,
+} from '../../types/attachments'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
@@ -18,6 +21,10 @@ export default function useAttachment(
   value: FormElementBinaryStorageValue,
   element: FormTypes.FormElementBinaryStorage,
   onChange: OnChange,
+  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>,
   disableUpload?: boolean,
 ) {
   const isPrivate = element.storageType !== 'public'
@@ -67,7 +74,7 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = await attachmentsService.uploadAttachment(
+        const upload = await onUploadAttachment(
           {
             formId,
             fileName: newAttachment.fileName,
@@ -119,6 +126,7 @@ export default function useAttachment(
     isPrivate,
     onChange,
     onProgress,
+    onUploadAttachment,
     storeAttachmentBlobLocally,
     value,
   ])

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **[BREAKING]** `onUploadAttachment` has been added as a required prop to `OneBlinkForms`
+
 ### Updated
 
 - NodeJS to version 20

@@ -9,6 +9,7 @@ import {
   NestedFormElementValueChangeHandler,
   UpdateFormElementsHandler,
 } from '../types/form'
+import { onUploadAttachmentConfiguration } from '../types/attachments'
 
 export type Props = {
   formId: number
@@ -23,6 +24,10 @@ export type Props = {
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   onUpdateFormElements: UpdateFormElementsHandler
+  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 function FormElementForm({
@@ -36,6 +41,7 @@ function FormElementForm({
   onChange,
   onLookup,
   onUpdateFormElements,
+  onUploadAttachment,
 }: Props) {
   const handleNestedChange = React.useCallback(
     (
@@ -188,6 +194,7 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={`${id}_`}
       onUpdateFormElements={handleUpdateNestedFormElements}
+      onUploadAttachment={onUploadAttachment}
     />
   )
 }

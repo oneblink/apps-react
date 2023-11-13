@@ -54,7 +54,10 @@ import {
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
 import useBooleanState from '../../hooks/useBooleanState'
-import { FormElementBinaryStorageValue } from '../../types/attachments'
+import {
+  FormElementBinaryStorageValue,
+  onUploadAttachmentConfiguration,
+} from '../../types/attachments'
 import {
   FormElementConditionallyShown,
   FormElementLookupHandler,
@@ -81,6 +84,10 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
+  onUploadAttachment: (
+    onUploadAttachment: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -95,6 +102,10 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
+  onUploadAttachment: (
+    onUploadAttachment: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -110,6 +121,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   onUpdateFormElements,
   model,
   parentElement,
+  onUploadAttachment,
 }: Props<T>) {
   return (
     <FormSubmissionModelContextProvider
@@ -143,6 +155,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 onUpdateFormElements={onUpdateFormElements}
                 model={model}
                 parentElement={parentElement}
+                onUploadAttachment={onUploadAttachment}
               />
             </div>
           )
@@ -171,6 +184,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             onChange={onChange}
             onLookup={onLookup}
             onUpdateFormElements={onUpdateFormElements}
+            onUploadAttachment={onUploadAttachment}
           />
         )
       })}
@@ -232,6 +246,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  onUploadAttachment,
 }: FormElementSwitchProps & IsDirtyProps) {
   const dirtyProps = React.useMemo(
     () => ({ isDirty, setIsDirty }),
@@ -512,6 +527,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
+          onUploadAttachment={onUploadAttachment}
           {...dirtyProps}
         />
       )
@@ -551,6 +567,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
           onUpdateFormElements={onUpdateFormElements}
+          onUploadAttachment={onUploadAttachment}
           {...dirtyProps}
         />
       )
@@ -640,6 +657,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            onUploadAttachment={onUploadAttachment}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -663,6 +681,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          onUploadAttachment={onUploadAttachment}
         />
       )
     }
@@ -679,6 +698,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           }
           validationMessage={validationMessage}
           displayValidationMessage={displayValidationMessage}
+          onUploadAttachment={onUploadAttachment}
           {...dirtyProps}
         />
       )
@@ -787,6 +807,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
             isEven={isEven}
             onUpdateFormElements={onUpdateFormElements}
+            onUploadAttachment={onUploadAttachment}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -811,6 +832,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          onUploadAttachment={onUploadAttachment}
         />
       )
     }
@@ -906,6 +928,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          onUploadAttachment={onUploadAttachment}
         />
       )
     }

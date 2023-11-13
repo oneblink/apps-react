@@ -19,6 +19,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
+import { onUploadAttachmentConfiguration } from '../types/attachments'
 
 type Props = {
   formId: number
@@ -34,6 +35,10 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   onUpdateFormElements: UpdateFormElementsHandler
+  onUploadAttachment: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 } & IsDirtyProps
 
 const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -60,6 +65,7 @@ function FormElementRepeatableSet({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  onUploadAttachment
 }: Props) {
   const entries = React.useMemo(
     () => (Array.isArray(value) ? value : []),
@@ -230,6 +236,7 @@ function FormElementRepeatableSet({
               }
               displayValidationMessages={displayValidationMessage}
               onUpdateFormElements={onUpdateFormElements}
+              onUploadAttachment={onUploadAttachment}
             />
           )
         })}
@@ -285,6 +292,7 @@ type RepeatableSetEntryProps = {
   onLookup: FormElementLookupHandler
   onRemove: (index: number) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
+  onUploadAttachment: (upload: onUploadAttachmentConfiguration, abortSignal?: AbortSignal) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
@@ -302,6 +310,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     onLookup,
     onRemove,
     onUpdateFormElements,
+    onUploadAttachment,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
@@ -484,6 +493,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             parentElement={element}
             formElementsConditionallyShown={formElementsConditionallyShown}
             onUpdateFormElements={handleUpdateNestedFormElements}
+            onUploadAttachment={onUploadAttachment}
           />
         </div>
       </RepeatableSetIndexContext.Provider>
