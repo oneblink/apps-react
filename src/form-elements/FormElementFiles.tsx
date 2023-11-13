@@ -38,7 +38,7 @@ function FormElementFiles({
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

@@ -31,11 +31,10 @@ interface Props extends IsDirtyProps {
     | undefined
   isEven?: boolean
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>
-
 }
 
 export interface Value {

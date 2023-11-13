@@ -7,7 +7,10 @@ import scrollingService from '../services/scrolling-service'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import OnLoading from '../components/renderer/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
-import { FormElementBinaryStorageValue, onUploadAttachmentConfiguration } from '../types/attachments'
+import {
+  FormElementBinaryStorageValue,
+  onUploadAttachmentConfiguration,
+} from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import { canvasToBlob } from '../services/blob-utils'
@@ -24,7 +27,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>
@@ -39,7 +42,7 @@ function FormElementSignature({
   displayValidationMessage,
   setIsDirty,
   isDirty,
-  onUploadAttachment
+  onUploadAttachment,
 }: Props) {
   const isPageVisible = useIsPageVisible()
 
@@ -191,7 +194,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
   element,
   value,
   onChange,
-  onUploadAttachment
+  onUploadAttachment,
 }: {
   element: Props['element']
   value: Props['value']
@@ -209,7 +212,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
       },
       [element, onChange],
     ),
-    onUploadAttachment
+    onUploadAttachment,
   )
 
   const handleRetry = React.useMemo(() => {

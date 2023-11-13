@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **[BREAKING]** `onUploadAttachment` has been added as a required prop to `OneBlinkForms`
+- `onUploadAttachment` has been added as am optional prop to `OneBlinkForms`
 
 ### Updated
 

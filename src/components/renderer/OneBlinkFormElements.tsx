@@ -84,7 +84,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
-  onUploadAttachment: (
+  onUploadAttachment?: (
     onUploadAttachment: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>
@@ -102,7 +102,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment: (
+  onUploadAttachment?: (
     onUploadAttachment: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

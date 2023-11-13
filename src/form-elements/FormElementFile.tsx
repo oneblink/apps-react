@@ -12,7 +12,7 @@ type Props = {
   file: attachmentsService.Attachment
   disableUpload: boolean
   onChange: OnChange
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

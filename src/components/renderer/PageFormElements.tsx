@@ -25,7 +25,7 @@ export type Props = {
   formElementsValidation: FormElementsValidation | undefined
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

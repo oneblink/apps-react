@@ -35,7 +35,7 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>
@@ -65,7 +65,7 @@ function FormElementRepeatableSet({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
-  onUploadAttachment
+  onUploadAttachment,
 }: Props) {
   const entries = React.useMemo(
     () => (Array.isArray(value) ? value : []),
@@ -292,7 +292,10 @@ type RepeatableSetEntryProps = {
   onLookup: FormElementLookupHandler
   onRemove: (index: number) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment: (upload: onUploadAttachmentConfiguration, abortSignal?: AbortSignal) => Promise<SubmissionTypes.FormSubmissionAttachment>
+  onUploadAttachment?: (
+    upload: onUploadAttachmentConfiguration,
+    abortSignal?: AbortSignal,
+  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(

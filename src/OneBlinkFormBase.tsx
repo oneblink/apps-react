@@ -134,7 +134,7 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * allows attachment upload. See [uploadAttachment](https://oneblink.github.io/apps/modules/attachmentsService.html#uploadAttachment)
    * for the structure of the argument and a sample function to be used.
    */
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

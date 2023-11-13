@@ -24,7 +24,7 @@ export type Props = {
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>

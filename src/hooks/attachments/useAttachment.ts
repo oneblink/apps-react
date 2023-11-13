@@ -21,7 +21,7 @@ export default function useAttachment(
   value: FormElementBinaryStorageValue,
   element: FormTypes.FormElementBinaryStorage,
   onChange: OnChange,
-  onUploadAttachment: (
+  onUploadAttachment?: (
     upload: onUploadAttachmentConfiguration,
     abortSignal?: AbortSignal,
   ) => Promise<SubmissionTypes.FormSubmissionAttachment>,
@@ -74,17 +74,29 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = await onUploadAttachment(
-          {
-            formId,
-            fileName: newAttachment.fileName,
-            contentType: data.type,
-            data,
-            isPrivate,
-            onProgress,
-          },
-          abortController.signal,
-        )
+        const upload = onUploadAttachment
+          ? await onUploadAttachment(
+              {
+                formId,
+                fileName: newAttachment.fileName,
+                contentType: data.type,
+                data,
+                isPrivate,
+                onProgress,
+              },
+              abortController.signal,
+            )
+          : await attachmentsService.uploadAttachment(
+              {
+                formId,
+                fileName: newAttachment.fileName,
+                contentType: data.type,
+                data,
+                isPrivate,
+                onProgress,
+              },
+              abortController.signal,
+            )
         if (ignore) {
           return
         }
