@@ -48,6 +48,7 @@ import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
 import { onUploadAttachmentConfiguration } from './types/attachments'
+import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -970,34 +971,39 @@ function OneBlinkFormBase({
                                   <TaskContext.Provider
                                     value={taskContextValue}
                                   >
-                                    {visiblePages.map(
-                                      (pageElement: FormTypes.PageElement) => (
-                                        <PageFormElements
-                                          key={pageElement.id}
-                                          isActive={
-                                            pageElement.id === currentPage.id
-                                          }
-                                          formId={definition.id}
-                                          formElementsConditionallyShown={
-                                            formElementsConditionallyShown
-                                          }
-                                          formElementsValidation={
-                                            formElementsValidation
-                                          }
-                                          displayValidationMessages={
-                                            hasAttemptedSubmit ||
-                                            isDisplayingCurrentPageError
-                                          }
-                                          pageElement={pageElement}
-                                          onChange={handleChange}
-                                          model={submission}
-                                          setFormSubmission={setFormSubmission}
-                                          onUploadAttachment={
-                                            onUploadAttachment
-                                          }
-                                        />
-                                      ),
-                                    )}
+                                    <OnUploadAttachmentContext.Provider
+                                      value={onUploadAttachment}
+                                    >
+                                      {visiblePages.map(
+                                        (
+                                          pageElement: FormTypes.PageElement,
+                                        ) => (
+                                          <PageFormElements
+                                            key={pageElement.id}
+                                            isActive={
+                                              pageElement.id === currentPage.id
+                                            }
+                                            formId={definition.id}
+                                            formElementsConditionallyShown={
+                                              formElementsConditionallyShown
+                                            }
+                                            formElementsValidation={
+                                              formElementsValidation
+                                            }
+                                            displayValidationMessages={
+                                              hasAttemptedSubmit ||
+                                              isDisplayingCurrentPageError
+                                            }
+                                            pageElement={pageElement}
+                                            onChange={handleChange}
+                                            model={submission}
+                                            setFormSubmission={
+                                              setFormSubmission
+                                            }
+                                          />
+                                        ),
+                                      )}
+                                    </OnUploadAttachmentContext.Provider>
                                   </TaskContext.Provider>
                                 </FormIsReadOnlyContext.Provider>
                               </AttachmentBlobsProvider>

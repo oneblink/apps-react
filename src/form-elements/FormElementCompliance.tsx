@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
 import useToggleComplianceChildren from '../hooks/useToggleComplianceChildren'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import OptionButton from './OptionButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import ComplianceButton from './ComplianceButton'
@@ -17,7 +17,6 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
-import { onUploadAttachmentConfiguration } from '../types/attachments'
 
 interface Props extends IsDirtyProps {
   id: string
@@ -31,10 +30,6 @@ interface Props extends IsDirtyProps {
     | undefined
   isEven?: boolean
   onUpdateFormElements: UpdateFormElementsHandler
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 export interface Value {
@@ -63,7 +58,6 @@ function FormElementCompliance({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
-  onUploadAttachment,
 }: Props) {
   const typedValue = value as Value | undefined
 
@@ -277,7 +271,6 @@ function FormElementCompliance({
                 element={filesElement}
                 isDirty={isDirty}
                 setIsDirty={setIsDirty}
-                onUploadAttachment={onUploadAttachment}
               />
             </div>
           )}

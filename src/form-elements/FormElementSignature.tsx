@@ -1,16 +1,13 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
 import useResizeObserver, { ObservedSize } from 'use-resize-observer'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 
 import scrollingService from '../services/scrolling-service'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import OnLoading from '../components/renderer/OnLoading'
 import useAttachment from '../hooks/attachments/useAttachment'
-import {
-  FormElementBinaryStorageValue,
-  onUploadAttachmentConfiguration,
-} from '../types/attachments'
+import { FormElementBinaryStorageValue } from '../types/attachments'
 import { prepareNewAttachment } from '../services/attachments'
 import AttachmentStatus from '../components/renderer/attachments/AttachmentStatus'
 import { canvasToBlob } from '../services/blob-utils'
@@ -19,6 +16,7 @@ import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import { IsDirtyProps } from '../types/form'
+import useOnUploadAttachmentContext from '../hooks/useOnUploadAttachment'
 
 type Props = {
   id: string
@@ -27,10 +25,6 @@ type Props = {
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 } & IsDirtyProps
 
 function FormElementSignature({
@@ -42,7 +36,6 @@ function FormElementSignature({
   displayValidationMessage,
   setIsDirty,
   isDirty,
-  onUploadAttachment,
 }: Props) {
   const isPageVisible = useIsPageVisible()
 
@@ -70,7 +63,6 @@ function FormElementSignature({
               element={element}
               value={value}
               onChange={handleChange}
-              onUploadAttachment={onUploadAttachment}
             />
           ) : isPageVisible ? (
             <SignatureDrawing element={element} onChange={handleChange} />
@@ -194,13 +186,12 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
   element,
   value,
   onChange,
-  onUploadAttachment,
 }: {
   element: Props['element']
   value: Props['value']
   onChange: Props['onChange']
-  onUploadAttachment: Props['onUploadAttachment']
 }) {
+  const onUploadAttachment = useOnUploadAttachmentContext()
   const result = useAttachment(
     value,
     element,

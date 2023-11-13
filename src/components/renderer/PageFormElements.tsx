@@ -13,7 +13,6 @@ import {
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
-import { onUploadAttachmentConfiguration } from '../../types/attachments'
 
 export type Props = {
   formId: number
@@ -25,10 +24,6 @@ export type Props = {
   formElementsValidation: FormElementsValidation | undefined
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 function PageFormElements({
@@ -41,7 +36,6 @@ function PageFormElements({
   formElementsValidation,
   onChange,
   setFormSubmission,
-  onUploadAttachment,
 }: Props) {
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
@@ -148,7 +142,6 @@ function PageFormElements({
             onLookup={handleLookup}
             onUpdateFormElements={handleUpdateFormElements}
             idPrefix=""
-            onUploadAttachment={onUploadAttachment}
           />
         </div>
       </FlatpickrGuidProvider>

@@ -1,10 +1,10 @@
 import * as React from 'react'
 import downloadAttachment from '../services/download-file'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../hooks/attachments/useAttachment'
 import FileCard from '../components/renderer/attachments/FileCard'
 import { attachmentsService } from '@oneblink/apps'
-import { onUploadAttachmentConfiguration } from '../types/attachments'
+import useOnUploadAttachmentContext from '../hooks/useOnUploadAttachment'
 
 type Props = {
   element: FormTypes.FilesElement
@@ -12,10 +12,6 @@ type Props = {
   file: attachmentsService.Attachment
   disableUpload: boolean
   onChange: OnChange
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
 }
 
 const FormElementFile = ({
@@ -24,8 +20,9 @@ const FormElementFile = ({
   file,
   onChange,
   disableUpload,
-  onUploadAttachment,
 }: Props) => {
+  const onUploadAttachment = useOnUploadAttachmentContext()
+
   const attachmentResult = useAttachment(
     file,
     element,
