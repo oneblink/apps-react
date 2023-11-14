@@ -8,6 +8,7 @@ import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
+import useOnUploadAttachmentContext from '../useOnUploadAttachment'
 
 export type OnChange = (
   id: string,
@@ -23,6 +24,7 @@ export default function useAttachment(
   const isPrivate = element.storageType !== 'public'
   const form = useFormDefinition()
   const isOffline = useIsOffline()
+  const onUploadAttachment = useOnUploadAttachmentContext()
   const { isLoggedIn, isUsingFormsKey } = useAuth()
   const { storeAttachmentBlobLocally, getAttachmentBlobLocally } =
     useAttachmentBlobs()
@@ -67,7 +69,7 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = await attachmentsService.uploadAttachment(
+        const upload = await onUploadAttachment(
           {
             formId,
             fileName: newAttachment.fileName,
@@ -119,6 +121,7 @@ export default function useAttachment(
     isPrivate,
     onChange,
     onProgress,
+    onUploadAttachment,
     storeAttachmentBlobLocally,
     value,
   ])

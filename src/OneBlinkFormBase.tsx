@@ -47,6 +47,7 @@ import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
+import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -110,7 +111,7 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    */
   isPendingQueueEnabled: boolean
   /**
-   * The function to call when the user wishes to save there submission data as
+   * The function to call when the user wishes to save their submission data as
    * a draft submission. If not specified, drafts cannot be saved. See
    * [NewDraftSubmission](https://oneblink.github.io/apps/modules/submissionService.html#NewDraftSubmission)
    * for the structure of the argument.
@@ -129,6 +130,11 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * "CALCULATED"
    */
   isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
+  /** The function to call when a user uploads an attachment through an element that
+   * allows attachment upload. See [uploadAttachment](https://oneblink.github.io/apps/modules/attachmentsService.html#uploadAttachment)
+   * for the structure of the argument and a sample function to be used.
+   */
+  onUploadAttachment?: typeof attachmentsService.uploadAttachment
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -175,6 +181,7 @@ function OneBlinkFormBase({
   task,
   taskGroup,
   taskGroupInstance,
+  onUploadAttachment,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -960,31 +967,39 @@ function OneBlinkFormBase({
                                   <TaskContext.Provider
                                     value={taskContextValue}
                                   >
-                                    {visiblePages.map(
-                                      (pageElement: FormTypes.PageElement) => (
-                                        <PageFormElements
-                                          key={pageElement.id}
-                                          isActive={
-                                            pageElement.id === currentPage.id
-                                          }
-                                          formId={definition.id}
-                                          formElementsConditionallyShown={
-                                            formElementsConditionallyShown
-                                          }
-                                          formElementsValidation={
-                                            formElementsValidation
-                                          }
-                                          displayValidationMessages={
-                                            hasAttemptedSubmit ||
-                                            isDisplayingCurrentPageError
-                                          }
-                                          pageElement={pageElement}
-                                          onChange={handleChange}
-                                          model={submission}
-                                          setFormSubmission={setFormSubmission}
-                                        />
-                                      ),
-                                    )}
+                                    <OnUploadAttachmentContext.Provider
+                                      value={onUploadAttachment}
+                                    >
+                                      {visiblePages.map(
+                                        (
+                                          pageElement: FormTypes.PageElement,
+                                        ) => (
+                                          <PageFormElements
+                                            key={pageElement.id}
+                                            isActive={
+                                              pageElement.id === currentPage.id
+                                            }
+                                            formId={definition.id}
+                                            formElementsConditionallyShown={
+                                              formElementsConditionallyShown
+                                            }
+                                            formElementsValidation={
+                                              formElementsValidation
+                                            }
+                                            displayValidationMessages={
+                                              hasAttemptedSubmit ||
+                                              isDisplayingCurrentPageError
+                                            }
+                                            pageElement={pageElement}
+                                            onChange={handleChange}
+                                            model={submission}
+                                            setFormSubmission={
+                                              setFormSubmission
+                                            }
+                                          />
+                                        ),
+                                      )}
+                                    </OnUploadAttachmentContext.Provider>
                                   </TaskContext.Provider>
                                 </FormIsReadOnlyContext.Provider>
                               </AttachmentBlobsProvider>
