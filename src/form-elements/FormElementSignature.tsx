@@ -16,7 +16,6 @@ import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import { IsDirtyProps } from '../types/form'
-import useOnUploadAttachmentContext from '../hooks/useOnUploadAttachment'
 
 type Props = {
   id: string
@@ -191,7 +190,6 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
   value: Props['value']
   onChange: Props['onChange']
 }) {
-  const onUploadAttachment = useOnUploadAttachmentContext()
   const result = useAttachment(
     value,
     element,
@@ -203,7 +201,6 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
       },
       [element, onChange],
     ),
-    onUploadAttachment,
   )
 
   const handleRetry = React.useMemo(() => {

@@ -1,16 +1,14 @@
 import * as React from 'react'
 import { attachmentsService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
-import {
-  FormElementBinaryStorageValue,
-  onUploadAttachmentConfiguration,
-} from '../../types/attachments'
+import { FormElementBinaryStorageValue } from '../../types/attachments'
 import { checkIfContentTypeIsImage } from '../../services/attachments'
 import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
+import useOnUploadAttachmentContext from '../useOnUploadAttachment'
 
 export type OnChange = (
   id: string,
@@ -21,15 +19,12 @@ export default function useAttachment(
   value: FormElementBinaryStorageValue,
   element: FormTypes.FormElementBinaryStorage,
   onChange: OnChange,
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>,
   disableUpload?: boolean,
 ) {
   const isPrivate = element.storageType !== 'public'
   const form = useFormDefinition()
   const isOffline = useIsOffline()
+  const onUploadAttachment = useOnUploadAttachmentContext()
   const { isLoggedIn, isUsingFormsKey } = useAuth()
   const { storeAttachmentBlobLocally, getAttachmentBlobLocally } =
     useAttachmentBlobs()
@@ -74,29 +69,17 @@ export default function useAttachment(
           'Attempting to upload attachment...',
           newAttachment.fileName,
         )
-        const upload = onUploadAttachment
-          ? await onUploadAttachment(
-              {
-                formId,
-                fileName: newAttachment.fileName,
-                contentType: data.type,
-                data,
-                isPrivate,
-                onProgress,
-              },
-              abortController.signal,
-            )
-          : await attachmentsService.uploadAttachment(
-              {
-                formId,
-                fileName: newAttachment.fileName,
-                contentType: data.type,
-                data,
-                isPrivate,
-                onProgress,
-              },
-              abortController.signal,
-            )
+        const upload = await onUploadAttachment(
+          {
+            formId,
+            fileName: newAttachment.fileName,
+            contentType: data.type,
+            data,
+            isPrivate,
+            onProgress,
+          },
+          abortController.signal,
+        )
         if (ignore) {
           return
         }

@@ -1,15 +1,13 @@
 import * as React from 'react'
-import { onUploadAttachmentConfiguration } from '../types/attachments'
-import { SubmissionTypes } from '@oneblink/types'
+import { attachmentsService } from '@oneblink/apps'
 
 export const OnUploadAttachmentContext = React.createContext<
-  | ((
-      upload: onUploadAttachmentConfiguration,
-      abortSignal?: AbortSignal,
-    ) => Promise<SubmissionTypes.FormSubmissionAttachment>)
-  | undefined
+  typeof attachmentsService.uploadAttachment | undefined
 >(undefined)
 
 export default function useOnUploadAttachmentContext() {
-  return React.useContext(OnUploadAttachmentContext)
+  return (
+    React.useContext(OnUploadAttachmentContext) ||
+    attachmentsService.uploadAttachment
+  )
 }

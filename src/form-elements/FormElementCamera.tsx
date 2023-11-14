@@ -22,7 +22,6 @@ import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
-import useOnUploadAttachmentContext from '../hooks/useOnUploadAttachment'
 
 type Props = {
   id: string
@@ -58,8 +57,6 @@ function FormElementCamera({
       value: undefined,
     })
   }, [element, onChange])
-
-  const onUploadAttachment = useOnUploadAttachmentContext()
 
   const fileChange = React.useCallback(
     async (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,7 +184,6 @@ function FormElementCamera({
       },
       [element, onChange],
     ),
-    onUploadAttachment,
   )
 
   const handleRetry = React.useMemo(() => {

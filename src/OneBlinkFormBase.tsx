@@ -47,7 +47,6 @@ import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
 import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
-import { onUploadAttachmentConfiguration } from './types/attachments'
 import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 
 export type OneBlinkReadOnlyFormProps = {
@@ -135,10 +134,7 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * allows attachment upload. See [uploadAttachment](https://oneblink.github.io/apps/modules/attachmentsService.html#uploadAttachment)
    * for the structure of the argument and a sample function to be used.
    */
-  onUploadAttachment?: (
-    upload: onUploadAttachmentConfiguration,
-    abortSignal?: AbortSignal,
-  ) => Promise<SubmissionTypes.FormSubmissionAttachment>
+  onUploadAttachment?: typeof attachmentsService.uploadAttachment
 }
 
 export type OneBlinkFormUncontrolledProps = {
