@@ -13,8 +13,21 @@
     max-height: 300px;
   }
 
+  .ob-figure__barcode-scanner,
   video {
+    min-height: 300px;
     max-height: 450px;
+  }
+
+  .figure-content-absolute-center {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .figure-content {

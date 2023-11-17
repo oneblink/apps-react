@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import { Html5Qrcode, CameraDevice } from 'html5-qrcode'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
@@ -9,6 +9,8 @@ import useLookupNotification, {
   LookupNotificationContext,
 } from '../hooks/useLookupNotification'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import useLoadDataState from '../hooks/useLoadDataState'
+import OnLoading from '../components/renderer/OnLoading'
 
 type Props = {
   id: string
@@ -99,7 +101,7 @@ function FormElementBarcodeScanner({
         )}
 
         {isCameraOpen ? (
-          <BarcodeScanner
+          <BarcodeScannerSupported
             id={`${id}==BARCODE_SCANNER`}
             onScan={handleScan}
             onClose={stopBarcodeScanner}
@@ -175,46 +177,164 @@ type BarcodeScannerProps = {
   onClose: () => void
 }
 
-function BarcodeScanner({ id, onScan, onClose }: BarcodeScannerProps) {
-  const [html5QrcodeScanner, setHtml5QrcodeScanner] =
-    React.useState<Html5QrcodeScanner | null>(null)
+function BarcodeScannerSupported({ id, onScan, onClose }: BarcodeScannerProps) {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    return (
+      <BarcodeScannerFigure onClose={onClose}>
+        <BarcodeScannerError
+          title="Unsupported Device"
+          message="Your device does not support accessing your camera."
+        />
+      </BarcodeScannerFigure>
+    )
+  }
+
+  return (
+    <BarcodeScannerCameraLoader id={id} onScan={onScan} onClose={onClose} />
+  )
+}
+
+function BarcodeScannerCameraLoader({
+  id,
+  onScan,
+  onClose,
+}: BarcodeScannerProps) {
+  const [state] = useLoadDataState(Html5Qrcode.getCameras)
+  switch (state.status) {
+    case 'LOADING': {
+      return (
+        <BarcodeScannerFigure onClose={onClose}>
+          <div className="figure-content has-text-centered">
+            <OnLoading small />
+          </div>
+        </BarcodeScannerFigure>
+      )
+    }
+    case 'ERROR': {
+      return (
+        <BarcodeScannerFigure onClose={onClose}>
+          <BarcodeScannerError
+            title="Whoops..."
+            message={
+              state.error.name === 'NotAllowedError'
+                ? 'Cannot scan for barcodes without granting the application access to the camera.'
+                : state.error.message
+            }
+          />
+        </BarcodeScannerFigure>
+      )
+    }
+  }
+
+  if (!state.result.length) {
+    return (
+      <BarcodeScannerFigure onClose={onClose}>
+        <BarcodeScannerError
+          title="No Cameras Available"
+          message="Your device does not have an accessible camera."
+        />
+      </BarcodeScannerFigure>
+    )
+  }
+
+  return (
+    <BarcodeScanner
+      id={id}
+      onScan={onScan}
+      onClose={onClose}
+      cameraDevices={state.result}
+    />
+  )
+}
+
+function BarcodeScanner({
+  id,
+  onScan,
+  onClose,
+  cameraDevices,
+}: BarcodeScannerProps & {
+  cameraDevices: CameraDevice[]
+}) {
+  const [html5Qrcode, setHtml5Qrcode] = React.useState<Html5Qrcode | null>(null)
+  const [selectedCameraDeviceId, setSelectedCameraDeviceId] = React.useState(
+    cameraDevices[0].id,
+  )
+
+  const handleSwitchCamera = React.useCallback(() => {
+    // We will just be rotating between the available cameras.
+    setSelectedCameraDeviceId((currentCameraDeviceId) => {
+      const nextDeviceIndex =
+        cameraDevices.findIndex(
+          (cameraDevice) => cameraDevice.id === currentCameraDeviceId,
+        ) + 1
+      const nextDevice = cameraDevices[nextDeviceIndex] || cameraDevices[0]
+      return nextDevice.id
+    })
+  }, [cameraDevices])
 
   React.useEffect(() => {
-    const verbose = true
-    const newHtml5QrcodeScanner = new Html5QrcodeScanner(
-      id,
-      {
-        fps: 20,
-        qrbox: {
-          width: 400,
-          height: 400,
-        },
-      },
+    const verbose = !!localStorage.getItem('BARCODE_SCANNER_VERBOSE')
+    const newHtml5Qrcode = new Html5Qrcode(id, {
       verbose,
-    )
-    setHtml5QrcodeScanner(newHtml5QrcodeScanner)
+      formatsToSupport: undefined, // TODO add restrictions
+    })
+    setHtml5Qrcode(newHtml5Qrcode)
     return () => {
-      newHtml5QrcodeScanner.clear()
+      newHtml5Qrcode.stop().catch((error) => {
+        console.warn('Failed to stop barcode scanner', error)
+      })
     }
   }, [id])
 
   React.useEffect(() => {
-    html5QrcodeScanner?.render(
-      function onScanSuccess(decodedText, decodedResult) {
-        console.log(`Code matched = ${decodedText}`, decodedResult)
-        onScan(decodedText)
-      },
-      function onScanFailure() {
-        // do nothing and keep scanning
-      },
-    )
-  }, [html5QrcodeScanner, onScan])
+    html5Qrcode
+      ?.start(
+        selectedCameraDeviceId,
+        {
+          fps: 20,
+          qrbox: {
+            width: 400,
+            height: 400,
+          },
+        },
+        function onScanSuccess(decodedText, decodedResult) {
+          console.log('Barcode scanner decoded result:', decodedResult)
+          onScan(decodedText)
+        },
+        function onScanFailure() {
+          // do nothing and keep scanning
+        },
+      )
+      .catch((error) => {
+        console.warn('Failed to start scanning', error)
+      })
+  }, [html5Qrcode, onScan, selectedCameraDeviceId])
 
   return (
+    <BarcodeScannerFigure
+      onClose={onClose}
+      onSwitchCamera={cameraDevices.length > 1 ? handleSwitchCamera : undefined}
+    >
+      <div className="figure-content-absolute-center">
+        <OnLoading small />
+      </div>
+      <div id={id} className="ob-figure__barcode-scanner" />
+    </BarcodeScannerFigure>
+  )
+}
+
+function BarcodeScannerFigure({
+  onClose,
+  onSwitchCamera,
+  children,
+}: {
+  onClose: () => void
+  onSwitchCamera?: () => void
+  children: React.ReactNode
+}) {
+  return (
     <div>
-      <figure className="ob-figure">
-        <div id={id} />
-      </figure>
+      <figure className="ob-figure">{children}</figure>
       <div className="buttons ob-buttons">
         <button
           type="button"
@@ -223,6 +343,36 @@ function BarcodeScanner({ id, onScan, onClose }: BarcodeScannerProps) {
         >
           Cancel
         </button>
+        {onSwitchCamera && (
+          <button
+            type="button"
+            className="button ob-button ob-button__switch-camera is-primary cypress-switch-camera-button"
+            onClick={onSwitchCamera}
+          >
+            Switch Camera
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function BarcodeScannerError({
+  title,
+  message,
+}: {
+  title: string
+  message: string
+}) {
+  return (
+    <div className="figure-content has-text-centered">
+      <div>
+        <h4 className="title is-4">{title}</h4>
+        <p className="has-margin-bottom-6">{message}</p>
+        <p>
+          Please click <b>Cancel</b> below and type in the barcode value
+          manually.
+        </p>
       </div>
     </div>
   )
