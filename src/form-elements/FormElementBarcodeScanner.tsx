@@ -1,5 +1,9 @@
 import * as React from 'react'
-import { Html5Qrcode, CameraDevice } from 'html5-qrcode'
+import {
+  Html5Qrcode,
+  CameraDevice,
+  Html5QrcodeSupportedFormats,
+} from 'html5-qrcode'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
 import LookupButton from '../components/renderer/LookupButton'
@@ -103,6 +107,11 @@ function FormElementBarcodeScanner({
         {isCameraOpen ? (
           <BarcodeScannerSupported
             id={`${id}==BARCODE_SCANNER`}
+            restrictedBarcodeTypes={
+              element.restrictBarcodeTypes
+                ? element.restrictedBarcodeTypes
+                : undefined
+            }
             onScan={handleScan}
             onClose={stopBarcodeScanner}
           />
@@ -173,11 +182,13 @@ export default React.memo(FormElementBarcodeScanner)
 
 type BarcodeScannerProps = {
   id: string
+  restrictedBarcodeTypes: FormTypes.BarcodeScannerElement['restrictedBarcodeTypes']
   onScan: (barcode: string | undefined) => void
   onClose: () => void
 }
 
-function BarcodeScannerSupported({ id, onScan, onClose }: BarcodeScannerProps) {
+function BarcodeScannerSupported(props: BarcodeScannerProps) {
+  const { onClose } = props
   if (!navigator.mediaDevices?.getUserMedia) {
     return (
       <BarcodeScannerFigure onClose={onClose}>
@@ -189,16 +200,11 @@ function BarcodeScannerSupported({ id, onScan, onClose }: BarcodeScannerProps) {
     )
   }
 
-  return (
-    <BarcodeScannerCameraLoader id={id} onScan={onScan} onClose={onClose} />
-  )
+  return <BarcodeScannerCameraLoader {...props} />
 }
 
-function BarcodeScannerCameraLoader({
-  id,
-  onScan,
-  onClose,
-}: BarcodeScannerProps) {
+function BarcodeScannerCameraLoader(props: BarcodeScannerProps) {
+  const { onClose } = props
   const [state] = useLoadDataState(Html5Qrcode.getCameras)
   switch (state.status) {
     case 'LOADING': {
@@ -237,18 +243,12 @@ function BarcodeScannerCameraLoader({
     )
   }
 
-  return (
-    <BarcodeScanner
-      id={id}
-      onScan={onScan}
-      onClose={onClose}
-      cameraDevices={state.result}
-    />
-  )
+  return <BarcodeScanner {...props} cameraDevices={state.result} />
 }
 
 function BarcodeScanner({
   id,
+  restrictedBarcodeTypes,
   onScan,
   onClose,
   cameraDevices,
@@ -273,18 +273,31 @@ function BarcodeScanner({
   }, [cameraDevices])
 
   React.useEffect(() => {
-    const verbose = !!localStorage.getItem('BARCODE_SCANNER_VERBOSE')
+    const formatsToSupport = restrictedBarcodeTypes?.reduce<
+      Html5QrcodeSupportedFormats[]
+    >((memo, barcodeType) => {
+      const format =
+        Html5QrcodeSupportedFormats[
+          barcodeType as keyof typeof Html5QrcodeSupportedFormats
+        ]
+      if (format !== undefined) {
+        memo.push(format)
+      }
+      return memo
+    }, [])
+
     const newHtml5Qrcode = new Html5Qrcode(id, {
-      verbose,
-      formatsToSupport: undefined, // TODO add restrictions
+      verbose: !!localStorage.getItem('BARCODE_SCANNER_VERBOSE'),
+      formatsToSupport: formatsToSupport?.length ? formatsToSupport : undefined,
     })
     setHtml5Qrcode(newHtml5Qrcode)
+
     return () => {
       newHtml5Qrcode.stop().catch((error) => {
         console.warn('Failed to stop barcode scanner', error)
       })
     }
-  }, [id])
+  }, [id, restrictedBarcodeTypes])
 
   React.useEffect(() => {
     html5Qrcode
