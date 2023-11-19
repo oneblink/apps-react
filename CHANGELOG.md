@@ -9,13 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `onUploadAttachment` has been added as am optional prop to `OneBlinkForms`
+- `onUploadAttachment` has been added as an optional prop to `OneBlinkForms`
 - `continueWithAutosave` automatic autosave population in `OneBlinkAutoSaveForm`
 
-### Updated
+### Changed
 
 - NodeJS to version 20
 - NPM to version 10
+
+### Removed
+
+- **Switch Camera** button from barcode scanner
 
 ## [5.3.0] - 2023-11-01
 

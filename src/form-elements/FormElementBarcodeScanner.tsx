@@ -251,58 +251,36 @@ function BarcodeScanner({
   restrictedBarcodeTypes,
   onScan,
   onClose,
-  cameraDevices,
 }: BarcodeScannerProps & {
   cameraDevices: CameraDevice[]
 }) {
-  const [html5Qrcode, setHtml5Qrcode] = React.useState<Html5Qrcode | null>(null)
-  const [selectedCameraDeviceId, setSelectedCameraDeviceId] = React.useState(
-    cameraDevices[0].id,
-  )
-
-  const handleSwitchCamera = React.useCallback(() => {
-    // We will just be rotating between the available cameras.
-    setSelectedCameraDeviceId((currentCameraDeviceId) => {
-      const nextDeviceIndex =
-        cameraDevices.findIndex(
-          (cameraDevice) => cameraDevice.id === currentCameraDeviceId,
-        ) + 1
-      const nextDevice = cameraDevices[nextDeviceIndex] || cameraDevices[0]
-      return nextDevice.id
-    })
-  }, [cameraDevices])
+  const formatsToSupport = React.useMemo(() => {
+    return restrictedBarcodeTypes?.reduce<Html5QrcodeSupportedFormats[]>(
+      (memo, barcodeType) => {
+        const format =
+          Html5QrcodeSupportedFormats[
+            barcodeType as keyof typeof Html5QrcodeSupportedFormats
+          ]
+        if (format !== undefined) {
+          memo.push(format)
+        }
+        return memo
+      },
+      [],
+    )
+  }, [restrictedBarcodeTypes])
 
   React.useEffect(() => {
-    const formatsToSupport = restrictedBarcodeTypes?.reduce<
-      Html5QrcodeSupportedFormats[]
-    >((memo, barcodeType) => {
-      const format =
-        Html5QrcodeSupportedFormats[
-          barcodeType as keyof typeof Html5QrcodeSupportedFormats
-        ]
-      if (format !== undefined) {
-        memo.push(format)
-      }
-      return memo
-    }, [])
-
-    const newHtml5Qrcode = new Html5Qrcode(id, {
+    const html5Qrcode = new Html5Qrcode(id, {
       verbose: !!localStorage.getItem('BARCODE_SCANNER_VERBOSE'),
       formatsToSupport: formatsToSupport?.length ? formatsToSupport : undefined,
     })
-    setHtml5Qrcode(newHtml5Qrcode)
 
-    return () => {
-      newHtml5Qrcode.stop().catch((error) => {
-        console.warn('Failed to stop barcode scanner', error)
-      })
-    }
-  }, [id, restrictedBarcodeTypes])
-
-  React.useEffect(() => {
     html5Qrcode
-      ?.start(
-        selectedCameraDeviceId,
+      .start(
+        {
+          facingMode: 'environment',
+        },
         {
           fps: 20,
           qrbox: {
@@ -321,13 +299,16 @@ function BarcodeScanner({
       .catch((error) => {
         console.warn('Failed to start scanning', error)
       })
-  }, [html5Qrcode, onScan, selectedCameraDeviceId])
+
+    return () => {
+      html5Qrcode.stop().catch((error) => {
+        console.warn('Failed to stop barcode scanner', error)
+      })
+    }
+  }, [formatsToSupport, id, onScan])
 
   return (
-    <BarcodeScannerFigure
-      onClose={onClose}
-      onSwitchCamera={cameraDevices.length > 1 ? handleSwitchCamera : undefined}
-    >
+    <BarcodeScannerFigure onClose={onClose}>
       <div className="figure-content-absolute-center">
         <OnLoading small />
       </div>
@@ -338,11 +319,9 @@ function BarcodeScanner({
 
 function BarcodeScannerFigure({
   onClose,
-  onSwitchCamera,
   children,
 }: {
   onClose: () => void
-  onSwitchCamera?: () => void
   children: React.ReactNode
 }) {
   return (
@@ -356,15 +335,6 @@ function BarcodeScannerFigure({
         >
           Cancel
         </button>
-        {onSwitchCamera && (
-          <button
-            type="button"
-            className="button ob-button ob-button__switch-camera is-primary cypress-switch-camera-button"
-            onClick={onSwitchCamera}
-          >
-            Switch Camera
-          </button>
-        )}
       </div>
     </div>
   )
