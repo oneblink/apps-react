@@ -67,38 +67,34 @@ function OneBlinkAutoSaveForm({
   }
 
   if (isAutoSaveSubmissionAvailable) {
-    if(form.continueWithAutosave) {
-      continueAutoSaveSubmission()
-    } else {
-      return (
-        <Modal
-          isOpen
-          title="Continue?"
-          cardClassName="cypress-continue-auto-save"
-          actions={
-            <>
-              <button
-                type="button"
-                className="button ob-button is-light cypress-continue-auto-save-start-again-button"
-                onClick={startNewSubmission}
-              >
-                Start Again
-              </button>
-              <button
-                type="button"
-                className="button ob-button is-primary cypress-continue-auto-save-continue-button"
-                onClick={continueAutoSaveSubmission}
-              >
-                Continue
-              </button>
-            </>
-          }
-        >
-          We found an in progress submission, would you like to pick up where you
-          left off or start again?
-        </Modal>
-      )
-    }
+    return (
+      <Modal
+        isOpen
+        title="Continue?"
+        cardClassName="cypress-continue-auto-save"
+        actions={
+          <>
+            <button
+              type="button"
+              className="button ob-button is-light cypress-continue-auto-save-start-again-button"
+              onClick={startNewSubmission}
+            >
+              Start Again
+            </button>
+            <button
+              type="button"
+              className="button ob-button is-primary cypress-continue-auto-save-continue-button"
+              onClick={continueAutoSaveSubmission}
+            >
+              Continue
+            </button>
+          </>
+        }
+      >
+        We found an in progress submission, would you like to pick up where you
+        left off or start again?
+      </Modal>
+    )
   }
 
   return (
