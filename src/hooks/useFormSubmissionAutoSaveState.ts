@@ -232,13 +232,20 @@ export default function useFormSubmissionAutoSaveState({
     })
   }, [autoSaveSubmission, setFormSubmission, autoSaveElement])
 
+  React.useEffect(() => {
+    if (form.continueWithAutosave) {
+      continueAutoSaveSubmission()
+    }
+  }, [continueAutoSaveSubmission, form.continueWithAutosave])
+
   return {
     definition,
     submission,
     lastElementUpdated,
     executedLookups,
     isLoadingAutoSaveSubmission,
-    isAutoSaveSubmissionAvailable: autoSaveSubmission !== null,
+    isAutoSaveSubmissionAvailable:
+      autoSaveSubmission !== null && !form.continueWithAutosave,
     startNewSubmission,
     continueAutoSaveSubmission,
     handleSubmit,
