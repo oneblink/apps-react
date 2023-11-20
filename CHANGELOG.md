@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.0] - 2023-11-20
+
 ### Added
 
 - `onUploadAttachment` has been added as an optional prop to `OneBlinkForms`
@@ -20,6 +22,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - **Switch Camera** button from barcode scanner
+
+### Dependencies
+
+- update [@emotion/react](https://www.npmjs.com/package/@emotion/react) to [11.11.1](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.10.6](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@emotion/styled](https://www.npmjs.com/package/@emotion/styled) to [11.11.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.10.6](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material) to [5.14.16](https://github.com/mui/material-ui/releases/tag/v5.14.16) (from [5.11.11](https://github.com/mui/material-ui/releases/tag/v5.11.11))
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [5.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [5.0.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update [@react-google-maps/api](https://www.npmjs.com/package/@react-google-maps/api) to 2.19.2 (from 2.18.1)
+
+- update [clsx](https://www.npmjs.com/package/clsx) to [2.0.0](https://github.com/lukeed/clsx/releases/tag/v2.0.0) (from [1.2.1](https://github.com/lukeed/clsx/releases/tag/v1.2.1))
+
+- update [date-fns](https://www.npmjs.com/package/date-fns) to [2.30.0](https://github.com/date-fns/date-fns/releases/tag/v2.30.0) (from [2.29.3](https://github.com/date-fns/date-fns/releases/tag/v2.29.3))
+
+- no longer depend upon [jsqr](https://www.npmjs.com/package/jsqr)
+
+- no longer depend upon [quagga](https://www.npmjs.com/package/quagga)
+
+- update [query-string](https://www.npmjs.com/package/query-string) to [8.1.0](https://github.com/sindresorhus/query-string/releases/tag/v8.1.0) (from [7.1.1](https://github.com/sindresorhus/query-string/releases/tag/v7.1.1))
+
+- update [react-google-recaptcha](https://www.npmjs.com/package/react-google-recaptcha) to [3.1.0](https://github.com/dozoisch/react-google-recaptcha/blob/master/CHANGELOG.md) (from [2.1.0](https://github.com/dozoisch/react-google-recaptcha/blob/master/CHANGELOG.md))
+
+- update [sanitize-html](https://www.npmjs.com/package/sanitize-html) to [2.11.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.10.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- update [uuid](https://www.npmjs.com/package/uuid) to [9.0.1](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md) (from [9.0.0](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md))
+
+- update [xml2js](https://www.npmjs.com/package/xml2js) to 0.6.2 (from 0.5.0)
+
+- depend upon [html5-qrcode](https://www.npmjs.com/package/html5-qrcode) [2.3.8](https://github.com/mebjas/html5-qrcode/releases/tag/v2.3.8)
 
 ## [5.3.0] - 2023-11-01
 
