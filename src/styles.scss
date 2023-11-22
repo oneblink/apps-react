@@ -5,6 +5,8 @@
 $green: #4caf50;
 $primary: #4c8da7;
 $warning: #ff6f00;
+//bulma grey is #7A7A7A which is slightly too light
+$grey: #757575;
 
 // Elevations for Box Shadows
 $elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
@@ -64,6 +66,11 @@ $modal-background-background-color: $secondary;
 @import 'bulma/sass/components/modal.sass';
 @import 'bulma/sass/components/card.sass';
 @import 'bulma/sass/components/dropdown.sass';
+
+//
+// Extension overrides
+//
+$steps-maker-default-color: $grey;
 
 //
 // Extensions Styles
