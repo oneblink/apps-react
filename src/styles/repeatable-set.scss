@@ -2,10 +2,13 @@
   .ob-repeatable-set__container {
     position: relative;
     padding: $size-5;
+    padding-top: $size-7;
     margin-bottom: $size-5;
 
     > .ob-button_remove {
       margin-bottom: $size-8;
+      border: $grey solid 1px;
+      background: $white;
 
       @media only screen and (min-width: $desktop) {
         float: right;
@@ -13,6 +16,10 @@
         min-width: 0;
         margin-left: $size-7;
       }
+    }
+
+    .ob-element:nth-child(2) {
+      margin-top: $size-6;
     }
   }
 
