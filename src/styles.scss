@@ -6,6 +6,7 @@ $green: #4caf50;
 $primary: #4c8da7;
 $warning: #ff6f00;
 
+
 // Elevations for Box Shadows
 $elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
   0 2px 1px -1px rgba(0, 0, 0, 0.12);
@@ -27,7 +28,8 @@ $size-9: 0.25rem;
 //
 $mobile: $tablet - 1px;
 $secondary: $grey-lighter;
-
+$input-icon-color: $grey;
+$input-icon-active-color: $grey-darker;
 //
 // Bulma Styles
 //
