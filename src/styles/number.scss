@@ -1,5 +1,5 @@
 .ob-number__output {
-  background-color: $grey-light;
+  background-color: $grey;
   color: $white;
   text-align: center;
   padding: $size-8;
@@ -22,7 +22,7 @@
     margin: 0 auto;
     width: 0;
     height: 0;
-    border-top: solid 6px $grey-light;
+    border-top: solid 6px $grey;
     border-left: solid 6px transparent;
     border-right: solid 6px transparent;
     -webkit-transition: border-top-color 0.2s ease;
