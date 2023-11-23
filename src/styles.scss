@@ -3,8 +3,8 @@
 //
 
 $green: #4caf50;
-$primary: #4c8da7;
-$warning: #ff6f00;
+$primary: #407E8C;
+$warning: #B85000;
 //bulma grey is #7A7A7A which is slightly too light
 $grey: #757575;
 $info: #2D7AB9;
@@ -45,6 +45,7 @@ $input-shadow: none;
 $input-focus-box-shadow-size: none;
 $slider-thumb-background: $primary;
 $slider-thumb-border: 1px solid $primary;
+
 @import 'bulma/sass/form/_all.sass';
 @import 'bulma/sass/elements/container.sass';
 @import 'bulma/sass/elements/other.sass';
