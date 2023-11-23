@@ -56,15 +56,15 @@
   height: auto;
   border-style: dashed;
   border-width: 3px;
-  border-color: $grey-lighter;
-  color: $grey-lighter;
+  border-color: $grey-dark;
+  color: $grey-dark;
   background-color: $white-ter;
 
   &:active,
   &:focus,
   &:hover {
-    border-color: $grey-light;
-    color: $grey-light;
+    border-color: $grey-darker;
+    color: $grey-darker;
   }
 }
 

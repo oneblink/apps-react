@@ -57,7 +57,7 @@ export function HintTooltip({ hint }: { hint: string }) {
       enterTouchDelay={0}
       leaveTouchDelay={10000}
     >
-      <i className="material-icons has-text-grey-light ob-label__hint">info</i>
+      <i className="material-icons has-text-grey ob-label__hint">info</i>
     </Tooltip>
   )
 }
