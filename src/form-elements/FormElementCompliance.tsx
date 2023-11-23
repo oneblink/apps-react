@@ -28,7 +28,6 @@ interface Props extends IsDirtyProps {
   conditionallyShownOptionsElement:
     | FormElementConditionallyShownElement
     | undefined
-  isEven?: boolean
   onUpdateFormElements: UpdateFormElementsHandler
 }
 
@@ -54,7 +53,6 @@ function FormElementCompliance({
   conditionallyShownOptionsElement,
   validationMessage,
   displayValidationMessage,
-  isEven,
   onUpdateFormElements,
   isDirty,
   setIsDirty,
@@ -183,7 +181,7 @@ function FormElementCompliance({
   return (
     <div className="cypress-compliance-element">
       <FormElementLabelContainer
-        className={`ob-compliance ${!isEven ? 'even' : 'odd'}`}
+        className={`ob-compliance`}
         id={id}
         element={element}
         required={element.required}
