@@ -24,11 +24,13 @@ export default function useFlatpickr(
     value,
     onChange,
     dateOnly,
+    label,
   }: {
     id: string
     value: unknown | undefined
     onChange: (value: string | undefined) => void
     dateOnly?: boolean
+    label?: string
   },
   fpOpts: FlatpickrOptions,
   htmlElement: { current: HTMLElement | null },
@@ -41,6 +43,11 @@ export default function useFlatpickr(
       ...fpOpts,
       static: true,
       appendTo: htmlElement.current || undefined,
+      onReady: (a, b, fp) => {
+        if (label) {
+          fp.altInput!.setAttribute('aria-label', label)
+        }
+      },
       formatDate: (date: Date | undefined, format: string) => {
         if (date) {
           return Flatpickr.formatDate(date, format)
@@ -73,7 +80,7 @@ export default function useFlatpickr(
         newVp.destroy()
       }
     }
-  }, [dateOnly, flatpickrGuid, fpOpts, htmlElement, id, onChange])
+  }, [dateOnly, flatpickrGuid, fpOpts, htmlElement, id, label, onChange])
 
   // Sync value with flatpickr when value is changed outside of component
   React.useEffect(() => {
