@@ -74,6 +74,7 @@ function FormElementDateTime({
       id,
       value,
       onChange: handleChange,
+      label: element.label,
     },
     flatpickrOptions,
     htmlDivElementRef,
