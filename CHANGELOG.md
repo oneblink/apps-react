@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - optional prop `label` to `useFlatpickr`
+- `RadioGroup` to place radio buttons in groups for accessibility tabbing
 
 ## [5.4.0] - 2023-11-20
 

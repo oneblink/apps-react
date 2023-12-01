@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Radio } from '@mui/material'
+import { Radio, RadioGroup } from '@mui/material'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -65,7 +65,7 @@ function FormElementRadio({
           conditionallyShownOptionsElement={conditionallyShownOptionsElement}
         >
           {!element.buttons ? (
-            <div className="ob-radio-container">
+            <RadioGroup className="ob-radio-container">
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
                   <label
@@ -94,7 +94,7 @@ function FormElementRadio({
                   </label>
                 </div>
               ))}
-            </div>
+            </RadioGroup>
           ) : (
             <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
               {filteredOptions.map((option) => {
