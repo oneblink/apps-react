@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - optional prop `label` to `useFlatpickr`
 - `RadioGroup` to place radio buttons in groups for accessibility tabbing
+- `aria-label` for failure lookup close button
 
 ## [5.4.0] - 2023-11-20
 

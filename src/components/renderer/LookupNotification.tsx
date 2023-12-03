@@ -378,6 +378,7 @@ function LookupNotificationComponent({
                 type="button"
                 className="delete fade-in"
                 onClick={() => setIsLookingUp(false)}
+                aria-label="lookup-failure-close-button"
               />
 
               <div>
