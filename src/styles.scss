@@ -6,7 +6,7 @@ $green: #3A833C;
 $primary: #407E8C;
 $warning: #B85000;
 $info: #2D7AB9;
-$success: #3A833C;
+$success: $green;
 $danger: #E8113C;
 //bulma grey is #7A7A7A which is slightly too light
 $grey: #757575;
@@ -33,6 +33,7 @@ $size-9: 0.25rem;
 $mobile: $tablet - 1px;
 $secondary: $grey-lighter;
 $input-icon-color: $grey;
+$button-static-color: $grey-darker;
 $input-icon-active-color: $grey-darker;
 //
 // Bulma Styles
