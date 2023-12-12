@@ -54,7 +54,7 @@ function FileCard({
     <div className="column is-one-quarter">
       <div className="ob-files__box">
         <div className="ob-files__content">
-          <FileCardContent imageUrl={imageUrl} />
+          <FileCardContent imageUrl={imageUrl} fileName={fileName} />
         </div>
         <DropdownMenu
           element={element}

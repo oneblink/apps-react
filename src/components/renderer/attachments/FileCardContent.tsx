@@ -2,13 +2,15 @@ import * as React from 'react'
 
 const FileCardContent = ({
   imageUrl,
+  fileName,
 }: {
   imageUrl: string | undefined | null
+  fileName: string
 }) => {
   if (imageUrl) {
     return (
       <div className="ob-files__content-image">
-        <img className="ob-files__image" src={imageUrl} />
+        <img className="ob-files__image" src={imageUrl} alt={fileName} />
       </div>
     )
   }

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `role` attribute to `<DropdownMenu />` component for accessibility
+- `alt` attribute to file image previews for accessibility
 
 ## [5.5.0] - 2023-12-12
 
