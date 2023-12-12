@@ -51,6 +51,7 @@ const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
                 hideMore()
                 onRetry()
               }}
+              role="menuitem"
             >
               Retry
             </a>
@@ -62,6 +63,7 @@ const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
                 hideMore()
                 onDownload()
               }}
+              role="menuitem"
             >
               Download
             </a>
@@ -74,6 +76,7 @@ const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
               hideMore()
               onRemove()
             }}
+            role="menuitem"
           >
             Remove
           </a>
