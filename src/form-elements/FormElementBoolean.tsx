@@ -53,7 +53,6 @@ function FormElementBoolean({
                 value: e.target.checked,
               })
             }}
-            disableRipple
           />
         }
       >

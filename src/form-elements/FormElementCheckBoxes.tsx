@@ -167,7 +167,6 @@ function FormElementCheckboxes({
                         classes={{
                           checked: 'ob-checkbox__input-checked',
                         }}
-                        disableRipple
                         value={option.value}
                         id={`${id}_${option.value}`}
                         checked={isSelected}

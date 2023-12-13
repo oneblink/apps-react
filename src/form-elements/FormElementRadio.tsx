@@ -78,7 +78,6 @@ function FormElementRadio({
                       classes={{
                         checked: 'ob-radio__input-checked',
                       }}
-                      disableRipple
                       value={option.value || ''}
                       id={`${id}_${option.value}`}
                       disabled={element.readOnly}

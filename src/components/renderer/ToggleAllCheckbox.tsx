@@ -55,7 +55,6 @@ const ToggleAllCheckbox = ({
         }}
         className="ob-checkbox__input cypress-checkbox-control"
         id={`${id}_select-all`}
-        disableRipple
         checked={allSelected}
         indeterminate={!!selected.length && !allSelected}
         onChange={(e) => handleToggleAll(e.target.checked)}

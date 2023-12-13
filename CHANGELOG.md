@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed 
+
+- All instances of `disableRipple` on MUI components. This prop was responsible for disabling visual feedback when focusing an element
+
 ### Added
 
 - `role` attribute to `<DropdownMenu />` component for accessibility
