@@ -22,6 +22,7 @@ type Props = {
   onDownload?: () => void
   onRetry?: () => void
   progress: undefined | number
+  index: number
 }
 
 function FileCard({
@@ -37,6 +38,7 @@ function FileCard({
   onRemove,
   onRetry,
   progress,
+  index,
 }: Props) {
   const uploadError = React.useMemo(() => {
     if (!checkFileNameIsValid(element, fileName)) {
@@ -54,7 +56,10 @@ function FileCard({
     <div className="column is-one-quarter">
       <div className="ob-files__box">
         <div className="ob-files__content">
-          <FileCardContent imageUrl={imageUrl} fileName={fileName} />
+          <FileCardContent
+            imageUrl={imageUrl}
+            alt={`${element.label}: Attachment ${index + 1}`}
+          />
         </div>
         <DropdownMenu
           element={element}

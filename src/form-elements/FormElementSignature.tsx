@@ -225,7 +225,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
     <>
       <figure className="ob-figure">
         <div className="figure-content">
-          <DisplayImage {...result} />
+          <DisplayImage {...result} alt={`${element.label}: Signature`} />
         </div>
       </figure>
 
@@ -257,13 +257,16 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
 })
 
 const DisplayImage = React.memo(function DisplayImage({
+  alt,
   uploadErrorMessage,
   isUploading,
   isLoadingImageUrl,
   imageUrl,
   loadImageUrlError,
   progress,
-}: ReturnType<typeof useAttachment>) {
+}: ReturnType<typeof useAttachment> & {
+  alt: string
+}) {
   if (uploadErrorMessage) {
     return (
       <>
@@ -304,6 +307,7 @@ const DisplayImage = React.memo(function DisplayImage({
         <img
           src={imageUrl}
           className="cypress-signature-image ob-signature__img"
+          alt={alt}
         />
         <ProgressBar progress={progress} isShowing={isUploading} />
       </>
