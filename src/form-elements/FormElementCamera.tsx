@@ -475,6 +475,7 @@ const DisplayImage = React.memo(function DisplayImage({
           src={imageUrl}
           className="cypress-camera-image ob-camera__img"
           crossOrigin="anonymous"
+          alt={`${element.label}: Attachment`}
         />
         <button
           type="button"

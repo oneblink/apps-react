@@ -82,7 +82,7 @@ function FormElementFiles({
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline">
-            {attachments.map((attachment) => {
+            {attachments.map((attachment, index) => {
               return (
                 <FormElementFile
                   key={attachment.type ? attachment._id : attachment.id}
@@ -96,6 +96,7 @@ function FormElementFiles({
                     !checkFileNameIsValid(element, attachment.fileName) ||
                     !checkFileNameExtensionIsValid(element, attachment.fileName)
                   }
+                  index={index}
                 />
               )
             })}

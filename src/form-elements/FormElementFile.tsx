@@ -11,6 +11,7 @@ type Props = {
   file: attachmentsService.Attachment
   disableUpload: boolean
   onChange: OnChange
+  index: number
 }
 
 const FormElementFile = ({
@@ -19,6 +20,7 @@ const FormElementFile = ({
   file,
   onChange,
   disableUpload,
+  index,
 }: Props) => {
   const attachmentResult = useAttachment(file, element, onChange, disableUpload)
 
@@ -61,6 +63,7 @@ const FormElementFile = ({
       onRemove={handleRemove}
       onRetry={handleRetry}
       progress={attachmentResult.progress}
+      index={index}
     />
   )
 }
