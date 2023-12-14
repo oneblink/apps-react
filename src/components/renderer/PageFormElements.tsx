@@ -44,7 +44,7 @@ function PageFormElements({
       const currentFocusedElement = document.activeElement
       if (currentFocusedElement?.getAttribute('data-nav-button') === 'next') {
         const selector =
-          'a:not([disabled]), button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
+          'a:not([disabled]), button:not([disabled]), input:not([disabled], [hidden]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
         const focusableElementsOnPage = document
           .getElementById(pageElement.id)
           ?.querySelectorAll(selector)
