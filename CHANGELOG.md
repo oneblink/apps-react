@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Removed 
+### Removed
 
 - All instances of `disableRipple` on MUI components. This prop was responsible for disabling visual feedback when focusing an element
 
 ### Added
 
+- Section element header to tabindex
+- Focusing of first element on a page when Next button is focused and used to nav forwards
 - `role` attribute to `<DropdownMenu />` component for accessibility
 - `alt` attribute to file image previews for accessibility
 
