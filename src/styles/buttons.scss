@@ -8,5 +8,5 @@
 
 .button:focus-visible {
   outline-offset: $size-9;
-  outline: $button-focus-border-color auto 3px;
+  outline: $input-focus-border-color auto 3px;
 }
