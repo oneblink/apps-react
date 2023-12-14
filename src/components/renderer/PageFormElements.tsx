@@ -37,6 +37,28 @@ function PageFormElements({
   onChange,
   setFormSubmission,
 }: Props) {
+  // Effect responsible for focusing the first element on a page when the next button is focused and used to nav forwards a page
+  React.useEffect(() => {
+    if (isActive) {
+      console.log(`${pageElement.label} page became active`)
+      const currentFocusedElement = document.activeElement
+      if (currentFocusedElement?.getAttribute('data-nav-button') === 'next') {
+        const selector =
+          'a:not([disabled]), button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
+        const focusableElementsOnPage = document
+          .getElementById(pageElement.id)
+          ?.querySelectorAll(selector)
+        if (focusableElementsOnPage?.length) {
+          const firstElementOnPage = focusableElementsOnPage[0]
+          if (firstElementOnPage) {
+            // @ts-expect-error Does have a focus method
+            firstElementOnPage.focus()
+          }
+        }
+      }
+    }
+  }, [isActive, pageElement.id, pageElement.label])
+
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
       setFormSubmission((currentFormSubmission) => {
@@ -125,6 +147,7 @@ function PageFormElements({
     <IsPageVisibleProvider isPageVisible={isActive}>
       <FlatpickrGuidProvider>
         <div
+          id={pageElement.id}
           key={pageElement.id}
           className={clsx('ob-page step-content is-active cypress-page', {
             'is-invisible': !isActive,

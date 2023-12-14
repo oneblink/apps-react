@@ -1017,6 +1017,7 @@ function OneBlinkFormBase({
                             onClick={goToPreviousPage}
                             disabled={isFirstVisiblePage}
                             className="button is-light cypress-pages-previous"
+                            data-nav-button="previous"
                           >
                             <span className="icon">
                               <i className="material-icons">
@@ -1048,6 +1049,7 @@ function OneBlinkFormBase({
                             onClick={goToNextPage}
                             disabled={isLastVisiblePage}
                             className="button is-light cypress-pages-next"
+                            data-nav-button="next"
                           >
                             <span>Next</span>
                             <span className="icon">
