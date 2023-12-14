@@ -40,19 +40,15 @@ function PageFormElements({
   // Effect responsible for focusing the first element on a page when the next button is focused and used to nav forwards a page
   React.useEffect(() => {
     if (isActive) {
-      console.log(`${pageElement.label} page became active`)
-      const currentFocusedElement = document.activeElement
-      if (currentFocusedElement?.getAttribute('data-nav-button') === 'next') {
-        const selector =
-          'a:not([disabled]), button:not([disabled]), input:not([disabled], [hidden]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
-        const focusableElementsOnPage = document
-          .getElementById(pageElement.id)
-          ?.querySelectorAll(selector)
-        if (focusableElementsOnPage?.length) {
-          const firstElementOnPage = focusableElementsOnPage[0]
-          if (firstElementOnPage instanceof HTMLElement) {
-            firstElementOnPage.focus()
-          }
+      const selector =
+        'a:not([disabled]), button:not([disabled]), input:not([disabled], [hidden]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
+      const focusableElementsOnPage = document
+        .getElementById(pageElement.id)
+        ?.querySelectorAll(selector)
+      if (focusableElementsOnPage?.length) {
+        const firstElementOnPage = focusableElementsOnPage[0]
+        if (firstElementOnPage instanceof HTMLElement) {
+          firstElementOnPage.focus()
         }
       }
     }
