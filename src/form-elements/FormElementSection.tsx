@@ -112,6 +112,12 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       <div
         className="ob-section__header cypress-section-header"
         onClick={toggle}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            toggle()
+          }
+        }}
       >
         <h3 className="ob-section__header-text title is-3">
           {element.label}

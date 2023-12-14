@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Section element header to tabindex
 - Focusing of first element on a page when Next button is focused and used to nav forwards
 - `role` attribute to `<DropdownMenu />` component for accessibility
 - `alt` attribute to file image previews for accessibility
