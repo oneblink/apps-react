@@ -50,8 +50,7 @@ function PageFormElements({
           ?.querySelectorAll(selector)
         if (focusableElementsOnPage?.length) {
           const firstElementOnPage = focusableElementsOnPage[0]
-          if (firstElementOnPage) {
-            // @ts-expect-error Does have a focus method
+          if (firstElementOnPage instanceof HTMLElement) {
             firstElementOnPage.focus()
           }
         }
