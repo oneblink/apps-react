@@ -991,6 +991,7 @@ function OneBlinkFormBase({
                                               isDisplayingCurrentPageError
                                             }
                                             pageElement={pageElement}
+                                            isFormReadOnly={isReadOnly}
                                             onChange={handleChange}
                                             model={submission}
                                             setFormSubmission={

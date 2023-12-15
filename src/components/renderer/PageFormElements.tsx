@@ -24,6 +24,7 @@ export type Props = {
   formElementsValidation: FormElementsValidation | undefined
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
+  isFormReadOnly: boolean
 }
 
 function PageFormElements({
@@ -34,12 +35,13 @@ function PageFormElements({
   displayValidationMessages,
   formElementsConditionallyShown,
   formElementsValidation,
+  isFormReadOnly,
   onChange,
   setFormSubmission,
 }: Props) {
   // Effect responsible for focusing the first element on a page when the next button is focused and used to nav forwards a page
   React.useEffect(() => {
-    if (isActive) {
+    if (isActive && !isFormReadOnly) {
       const selector =
         'a:not([disabled]), button:not([disabled]), input:not([disabled], [hidden]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
       const focusableElementsOnPage = document
@@ -52,7 +54,7 @@ function PageFormElements({
         }
       }
     }
-  }, [isActive, pageElement.id, pageElement.label])
+  }, [isActive, pageElement.id, pageElement.label, isFormReadOnly])
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
