@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Focusing of first element on a page when Next button is focused and used to nav forwards
 - `role` attribute to `<DropdownMenu />` component for accessibility
 - `alt` attribute to file image previews for accessibility
-- `focus-visible` for buttons to make tabbing more prominent
+- `focus-visible` for buttons and number slider to make tabbing more prominent
 
 ## [5.5.0] - 2023-12-12
 
