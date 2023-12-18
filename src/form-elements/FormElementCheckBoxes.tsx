@@ -172,6 +172,7 @@ function FormElementCheckboxes({
                         checked={isSelected}
                         onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
+                        edge="start"
                       />{' '}
                       {option.label}
                     </label>

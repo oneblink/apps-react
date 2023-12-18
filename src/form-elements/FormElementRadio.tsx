@@ -88,6 +88,7 @@ function FormElementRadio({
                           value: e.target.value,
                         })
                       }}
+                      edge="start"
                     />
                     {` ${option.label}`}
                   </label>
