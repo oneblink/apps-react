@@ -2,11 +2,9 @@
 .ob-checkbox__input-label {
   display: inline-flex;
   align-items: center;
-  margin-bottom: $size-7;
 
   > .ob-checkbox__input,
   > .ob-radio__input {
-    padding: 0;
     margin-right: $size-8;
   }
 }
