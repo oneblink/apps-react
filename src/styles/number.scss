@@ -47,9 +47,9 @@
 
 // Works for all other major browser except Firefox
 input[type="range"]:focus-visible::-webkit-slider-thumb {
-    outline-offset: $size-9;
-    outline: $input-focus-border-color auto 3px;
-  }
+  outline-offset: $size-9;
+  outline: $input-focus-border-color auto 3px;
+}
 // Works for Firefox
 input[type="range"]:focus-visible::-moz-range-thumb {
   outline-offset: $size-9;
