@@ -41,12 +41,8 @@ const ToggleAllCheckbox = ({
 
   return (
     <label
-      className="checkbox ob-checkbox__input-label cypress-checkbox-label"
+      className="checkbox ob-checkbox__input-label ob-label__input-toggle-all cypress-checkbox-label"
       htmlFor={`${id}_select-all`}
-      style={{
-        fontStyle: 'italic',
-        marginBottom: '1.25rem',
-      }}
     >
       <Checkbox
         color="default"
@@ -59,6 +55,7 @@ const ToggleAllCheckbox = ({
         indeterminate={!!selected.length && !allSelected}
         onChange={(e) => handleToggleAll(e.target.checked)}
         disabled={disabled}
+        edge="start"
       />
       {allSelected ? 'Deselect All' : 'Select All'}
     </label>
