@@ -57,7 +57,7 @@
     "@types/lodash.clonedeep": "^4.5.8",
     "@types/lodash.debounce": "^4.0.8",
     "@types/lodash.throttle": "^4.1.8",
-    "@types/react": "^17.0.43",
+    "@types/react": "^17.0.73",
     "@types/react-google-recaptcha": "^2.1.7",
     "@types/react-input-mask": "^3.0.4",
     "@types/react-router-dom": "^5.3.3",
