@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "5.5.1-beta.8",
+  "version": "5.5.1-beta.9",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -129,7 +129,7 @@
     "format": "prettier --write .",
     "prepare": "npm run build",
     "pretest": "npm run fixpack && npm run eslint && npm run typescript",
-    "release": "oneblink-release --no-name",
+    "release": "oneblink-release repository --no-name",
     "start": "tsc-watch",
     "test": "jest",
     "types": "npm i -D github:oneblink/types",
