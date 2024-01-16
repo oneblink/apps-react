@@ -2149,10 +2149,10 @@ describe('generateDefaultData()', () => {
   })
 
   describe('"apiNSWLiquorLicence" element type', () => {
-    const element: FormTypes.APINSWLiquorLicenseElement = {
+    const element: FormTypes.APINSWLiquorLicenceElement = {
       name: 'apiNSWLiquorLicence',
       label: 'API NSW Liquor Licence',
-      type: 'apiNSWLiquorLicense',
+      type: 'apiNSWLiquorLicence',
       required: false,
       id: '6b7a8936-a6ac-417a-85b3-2d7d428be5ec',
       conditionallyShow: false,
