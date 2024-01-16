@@ -1,4 +1,4 @@
-import { FormTypes } from '@oneblink/types'
+import { APINSWTypes, FormTypes } from '@oneblink/types'
 import generateDefaultData from '../../src/services/generate-default-data'
 
 describe('generateDefaultData()', () => {
@@ -2144,6 +2144,73 @@ describe('generateDefaultData()', () => {
 
       expect(result).toEqual({
         civicaNameRecord,
+      })
+    })
+  })
+
+  describe('"apiNSWLiquorLicence" element type', () => {
+    const element: FormTypes.APINSWLiquorLicenseElement = {
+      name: 'apiNSWLiquorLicence',
+      label: 'API NSW Liquor Licence',
+      type: 'apiNSWLiquorLicense',
+      required: false,
+      id: '6b7a8936-a6ac-417a-85b3-2d7d428be5ec',
+      conditionallyShow: false,
+      requiresAllConditionallyShowPredicates: false,
+      readOnly: false,
+      isDataLookup: false,
+      isElementLookup: false,
+    }
+
+    test('it should remove invalid pre-fill data', () => {
+      const result = generateDefaultData([element], {
+        apiNSWLiquorLicence: {},
+      })
+
+      expect(result).toEqual({
+        apiNSWLiquorLicence: undefined,
+      })
+    })
+
+    test('it should set default value', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: {
+              licenceDetail: {
+                licenceNumber: '123abc',
+              },
+            },
+          },
+        ],
+        {},
+      )
+
+      expect(result).toEqual({
+        apiNSWLiquorLicence: {
+          licenceDetail: {
+            licenceNumber: '123abc',
+          },
+        },
+      })
+    })
+
+    test('it should set valid pre-fill data', () => {
+      const result = generateDefaultData([element], {
+        apiNSWLiquorLicence: {
+          licenceDetail: {
+            licenceNumber: 'abc123',
+          },
+        },
+      })
+
+      expect(result).toEqual({
+        apiNSWLiquorLicence: {
+          licenceDetail: {
+            licenceNumber: 'abc123',
+          },
+        },
       })
     })
   })
