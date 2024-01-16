@@ -56,11 +56,8 @@ function FormElementAPINSWLiquorLicence({
   isDirty,
   setIsDirty,
 }: Props) {
-  console.log('Liquor Element')
   const isMounted = useIsMounted()
-  // const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
   const [label, setLabel] = React.useState('')
-  // const [isFocused, setIsFocused, removeFocus] = useBooleanState(false)
   const [{ isLoading, error }, setState] = React.useState<{
     isLoading: boolean
     error: Error | null

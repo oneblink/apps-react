@@ -113,7 +113,6 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   model,
   parentElement,
 }: Props<T>) {
-  console.log(elements)
   return (
     <FormSubmissionModelContextProvider
       elements={parentElement.elements}
