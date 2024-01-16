@@ -349,6 +349,15 @@ function parsePreFillData(
         }
       })
     }
+    case 'apiNSWLiquorLicence': {
+      return parseUnknownAsRecord(value, (record) => {
+        return parseUnknownAsRecord(record.licenceDetail, (licenceDetail) => {
+          if (parseStringValue(licenceDetail.licenceNumber)) {
+            return record
+          }
+        })
+      })
+    }
     case 'image':
     case 'html':
     case 'summary':
@@ -469,7 +478,8 @@ export default function generateDefaultData(
         case 'email':
         case 'telephone':
         case 'textarea':
-        case 'location': {
+        case 'location':
+        case 'apiNSWLiquorLicence': {
           if (el.defaultValue) {
             m[el.name] = el.defaultValue
           }

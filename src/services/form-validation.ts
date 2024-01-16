@@ -381,7 +381,8 @@ export function generateValidationSchema(
         case 'civicaStreetName':
         case 'autocomplete':
         case 'radio':
-        case 'select': {
+        case 'select':
+        case 'apiNSWLiquorLicence': {
           return {
             presence: presence(formElement, 'Required'),
             lookups: {

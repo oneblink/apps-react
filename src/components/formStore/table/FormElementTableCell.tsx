@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Link, Typography } from '@mui/material'
 import { localisationService } from '@oneblink/apps'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { APINSWTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
 import { abnService } from '@oneblink/sdk-core'
 import {
   FileChip,
@@ -403,6 +403,19 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
             <i>{abnService.displayBusinessNameFromABNRecord(value)}</i>
           </Link>
           <TableCellCopyButton isHidden={!allowCopy} text={abnNumber} />
+        </>
+      )
+    }
+    case 'apiNSWLiquorLicence': {
+      const value = unknown as APINSWTypes.LiquorLicenceDetails
+      const licenceNumber = value.licenceDetail?.licenceNumber
+      if (typeof licenceNumber !== 'string') {
+        break
+      }
+      return (
+        <>
+          {licenceNumber}
+          <TableCellCopyButton isHidden={!allowCopy} text={licenceNumber} />
         </>
       )
     }

@@ -44,6 +44,7 @@ import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNa
 import FormElementFreshdeskDependentField from '../../form-elements/FormElementFreshdeskDependentField'
 
 import {
+  APINSWTypes,
   CivicaTypes,
   FormTypes,
   GeoscapeTypes,
@@ -66,6 +67,7 @@ import {
   UpdateFormElementsHandler,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
+import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -907,6 +909,30 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
         />
+      )
+    }
+    case 'apiNSWLiquorLicence': {
+      const v = value as APINSWTypes.LiquorLicenceDetails | undefined
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={element}
+          onLookup={onLookup}
+        >
+          <FormElementAPINSWLiquorLicence
+            id={id}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementAPINSWLiquorLicence
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
+          />
+        </LookupNotification>
       )
     }
     default: {
