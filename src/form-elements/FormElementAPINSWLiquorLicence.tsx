@@ -1,14 +1,14 @@
 import * as React from 'react'
 import { FormTypes, APINSWTypes } from '@oneblink/types'
+import { formService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
-import AutocompleteDropdown, {
-  AutocompleteOption,
-} from '../components/renderer/AutocompleteDropdown'
+import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import useIsMounted from '../hooks/useIsMounted'
 
 type Props = {
+  formId: number
   id: string
   element: FormTypes.APINSWLiquorLicenceElement
   value: APINSWTypes.LiquorLicenceDetails | undefined
@@ -17,36 +17,8 @@ type Props = {
   validationMessage: string | undefined
 } & IsDirtyProps
 
-const mockLicences: AutocompleteOption<APINSWTypes.LiquorLicenceDetails>[] = [
-  {
-    label: 'Licence 1',
-    value: 'licencenumber1',
-    data: {
-      licenceDetail: {
-        licenceNumber: 'licencenumber1',
-      },
-    },
-  },
-  {
-    label: 'Licence 2',
-    value: 'licencenumber2',
-    data: {
-      licenceDetail: {
-        licenceNumber: 'licencenumber2',
-      },
-    },
-  },
-]
-const browseLiquorLicences = async () => {
-  return mockLicences
-}
-
-const fetchSingleLiquorLicence = async (licenceNumber: string) => {
-  const licence = mockLicences.find((l) => l.value === licenceNumber)
-  return licence
-}
-
 function FormElementAPINSWLiquorLicence({
+  formId,
   id,
   element,
   value,
@@ -66,18 +38,27 @@ function FormElementAPINSWLiquorLicence({
     error: null,
   })
 
-  const handleSearch = React.useCallback(async () =>
-    // TODO - Use these
-    //v: string,
-    //abortSignal: AbortSignal
-    {
+  const handleSearch = React.useCallback(
+    async (searchText: string, abortSignal: AbortSignal) => {
       setState((current) => ({
         ...current,
         error: null,
       }))
 
-      return browseLiquorLicences()
-    }, [])
+      const results = await formService.searchAPINSWLiquorLicences(
+        { formId, searchText },
+        abortSignal,
+      )
+
+      return results.map((result, index) => ({
+        value: result.licenceID || index.toString(),
+        label:
+          `${result.licenceNumber} ${result.licenceName}`.trim() ||
+          index.toString(),
+      }))
+    },
+    [formId],
+  )
 
   const fetchAndSelectSingleLicence = React.useCallback(
     async (newValue: string | undefined) => {
@@ -92,10 +73,12 @@ function FormElementAPINSWLiquorLicence({
       }))
 
       try {
-        // TODO - Real Fetch
-        const result = await fetchSingleLiquorLicence(newValue)
+        const result = await formService.getAPINSWLiquorLicence(
+          formId,
+          newValue,
+        )
         if (result) {
-          onChange(element, { value: result.data })
+          onChange(element, { value: result })
         }
         if (isMounted.current) {
           setState({
@@ -112,7 +95,7 @@ function FormElementAPINSWLiquorLicence({
         }
       }
     },
-    [element, isMounted, onChange],
+    [element, formId, isMounted, onChange],
   )
 
   const { isLookingUp } = React.useContext(LookupNotificationContext)
@@ -145,19 +128,12 @@ function FormElementAPINSWLiquorLicence({
           hasError={!!error}
           onChangeLabel={setLabel}
           searchDebounceMs={750}
-          searchMinCharacters={4}
+          searchMinCharacters={2}
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
         />
 
-        {value && (
-          <div className="control ob-api-nsw-liquor-licence__record-control">
-            <div className="button is-static ob-api-nsw-liquor-licence__record-display">
-              TODO: Display Card
-            </div>
-          </div>
-        )}
         {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
@@ -166,6 +142,12 @@ function FormElementAPINSWLiquorLicence({
           </div>
         )}
       </FormElementLabelContainer>
+
+      {value && (
+        <div className="ob-api-nsw-liquor-licence__record-display">
+          <pre>{JSON.stringify(value, null, 2)}</pre>
+        </div>
+      )}
     </div>
   )
 }

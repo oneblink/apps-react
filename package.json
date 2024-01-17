@@ -46,7 +46,7 @@
     "@mui/lab": "^5.0.0-alpha.152",
     "@mui/material": "^5.14.17",
     "@mui/x-date-pickers": "^6.18.0",
-    "@oneblink/apps": "^7.1.0-beta.1",
+    "@oneblink/apps": "^8.1.0-beta.1",
     "@oneblink/release-cli": "^3.0.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.16.4",
