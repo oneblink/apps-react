@@ -18,6 +18,7 @@ type Props = {
   validationMessage: string | undefined
 } & IsDirtyProps
 
+const licenceDetailGridItemClassPrefix = 'ob-api-nsw-liquor-licence__'
 function FormElementAPINSWLiquorLicence({
   formId,
   id,
@@ -149,15 +150,21 @@ function FormElementAPINSWLiquorLicence({
       <Collapse in={!!value}>
         <div className="notification ob-api-nsw-liquor-licence__record-display has-margin-top-6">
           <Grid container spacing={1}>
+            {value?.licenceDetail?.licenceName && (
+              <Grid
+                item
+                xs={12}
+                className={`${licenceDetailGridItemClassPrefix}licenceName`}
+              >
+                <h6 className="is-size-5 has-text-weight-semibold ob-api-nsw-liquor-licence__name">
+                  {value?.licenceDetail?.licenceName}
+                </h6>
+              </Grid>
+            )}
             <LicenceDetailGridItem
               label="Licence Number"
               value={value?.licenceDetail?.licenceNumber}
               classNameSuffix="licenceNumber"
-            />
-            <LicenceDetailGridItem
-              label="Licence Name"
-              value={value?.licenceDetail?.licenceName}
-              classNameSuffix="licenceName"
             />
             <LicenceDetailGridItem
               label="Licence Type"
@@ -243,7 +250,7 @@ function LicenceDetailGridItem({
       xs={12}
       sm={fullWidth ? 12 : 6}
       lg={fullWidth ? 12 : 4}
-      className={`ob-api-nsw-liquor-licence__${classNameSuffix}`}
+      className={`${licenceDetailGridItemClassPrefix}${classNameSuffix}`}
     >
       <label className="is-size-6 has-text-weight-semibold ob-api-nsw-liquor-licence__detail-label">
         {label}
