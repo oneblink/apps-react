@@ -6,7 +6,7 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'
 import { LookupNotificationContext } from '../../hooks/useLookupNotification'
 
-export type AutocompleteOption<T> = {
+type AutocompleteOption<T> = {
   label: string
   value: string
   data?: T
