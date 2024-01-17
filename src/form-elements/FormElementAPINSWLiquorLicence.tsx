@@ -3,7 +3,6 @@ import { FormTypes, APINSWTypes } from '@oneblink/types'
 import { formService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
-import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import useIsMounted from '../hooks/useIsMounted'
 import { Collapse, Grid } from '@mui/material'
@@ -101,14 +100,6 @@ function FormElementAPINSWLiquorLicence({
     [element, formId, isMounted, onChange],
   )
 
-  const { isLookingUp } = React.useContext(LookupNotificationContext)
-  const isDisplayingValidationMessage =
-    (((isDirty || displayValidationMessage) &&
-      !!validationMessage &&
-      !isLoading) ||
-      error) &&
-    !isLookingUp
-
   return (
     <div className="cypress-api-nsw-liquor-licence-element">
       <FormElementLabelContainer
@@ -137,10 +128,10 @@ function FormElementAPINSWLiquorLicence({
           setIsDirty={setIsDirty}
         />
 
-        {isDisplayingValidationMessage && (
+        {error && (
           <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {error?.message || validationMessage}
+            <div className="has-text-danger ob-error__text cypress-api-nsw-liquor-licence-error-message">
+              {error.toString()}
             </div>
           </div>
         )}
