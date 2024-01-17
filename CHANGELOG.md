@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `alt` attribute to file image previews for accessibility
 - `focus-visible` for buttons and number slider to make tabbing more prominent
 
+### Fixed
+
+- DateTime element not showing validation message
+
 ## [5.5.0] - 2023-12-12
 
 ### Fixed
