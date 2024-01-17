@@ -408,8 +408,9 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
     case 'apiNSWLiquorLicence': {
       const value = unknown as APINSWTypes.LiquorLicenceDetails
-      const licenceNumber = value.licenceDetail?.licenceNumber
-      if (typeof licenceNumber !== 'string') {
+      const licenceNumber =
+        `${value.licenceDetail?.licenceNumber} | ${value.licenceDetail?.licenceName}`.trim()
+      if (!licenceNumber) {
         break
       }
       return (

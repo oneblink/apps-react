@@ -6,6 +6,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import useIsMounted from '../hooks/useIsMounted'
+import { Collapse, Grid } from '@mui/material'
 
 type Props = {
   formId: number
@@ -29,7 +30,9 @@ function FormElementAPINSWLiquorLicence({
   setIsDirty,
 }: Props) {
   const isMounted = useIsMounted()
-  const [label, setLabel] = React.useState('')
+  const [label, setLabel] = React.useState(() =>
+    `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim(),
+  )
   const [{ isLoading, error }, setState] = React.useState<{
     isLoading: boolean
     error: Error | null
@@ -53,7 +56,7 @@ function FormElementAPINSWLiquorLicence({
       return results.map((result, index) => ({
         value: result.licenceID || index.toString(),
         label:
-          `${result.licenceNumber} ${result.licenceName}`.trim() ||
+          `${result.licenceNumber} | ${result.licenceName}`.trim() ||
           index.toString(),
       }))
     },
@@ -143,12 +146,110 @@ function FormElementAPINSWLiquorLicence({
         )}
       </FormElementLabelContainer>
 
-      {value && (
-        <div className="ob-api-nsw-liquor-licence__record-display">
-          <pre>{JSON.stringify(value, null, 2)}</pre>
+      <Collapse in={!!value}>
+        <div className="notification ob-api-nsw-liquor-licence__record-display has-margin-top-6">
+          <Grid container spacing={1}>
+            <LicenceDetailGridItem
+              label="Licence Number"
+              value={value?.licenceDetail?.licenceNumber}
+              classNameSuffix="licenceNumber"
+            />
+            <LicenceDetailGridItem
+              label="Licence Name"
+              value={value?.licenceDetail?.licenceName}
+              classNameSuffix="licenceName"
+            />
+            <LicenceDetailGridItem
+              label="Licence Type"
+              value={value?.licenceDetail?.licenceTypeName}
+              classNameSuffix="licenceTypeName"
+            />
+            <LicenceDetailGridItem
+              label="Licensee"
+              value={value?.licenceDetail?.licensee}
+              classNameSuffix="licensee"
+            />
+            <LicenceDetailGridItem
+              label="Licensee Birth Date"
+              value={value?.licenceDetail?.licenseeBirthdate}
+              classNameSuffix="licenseeBirthdate"
+            />
+            <LicenceDetailGridItem
+              label="Licencee ABN"
+              value={value?.licenceDetail?.licenceeABN}
+              classNameSuffix="licenceeABN"
+            />
+            <LicenceDetailGridItem
+              label="Licencee ACN"
+              value={value?.licenceDetail?.licenceeACN}
+              classNameSuffix="licenceeACN"
+            />
+            <LicenceDetailGridItem
+              label="Refused Date"
+              value={value?.licenceDetail?.refusedDate}
+              classNameSuffix="refusedDate"
+            />
+            <LicenceDetailGridItem
+              label="Start Date"
+              value={value?.licenceDetail?.startDate}
+              classNameSuffix="startDate"
+            />
+            <LicenceDetailGridItem
+              label="Expiry Date"
+              value={value?.licenceDetail?.expiryDate}
+              classNameSuffix="expiryDate"
+            />
+            <LicenceDetailGridItem
+              label="Status"
+              value={value?.licenceDetail?.status}
+              classNameSuffix="status"
+            />
+            <LicenceDetailGridItem
+              label="Address Type"
+              value={value?.licenceDetail?.addressType}
+              classNameSuffix="addressType"
+            />
+            <LicenceDetailGridItem
+              label="Address"
+              value={value?.licenceDetail?.address}
+              classNameSuffix="address"
+              fullWidth
+            />
+          </Grid>
         </div>
-      )}
+      </Collapse>
     </div>
+  )
+}
+
+function LicenceDetailGridItem({
+  label,
+  value,
+  classNameSuffix,
+  fullWidth,
+}: {
+  label: string
+  value: string | undefined
+  classNameSuffix: string
+  fullWidth?: boolean
+}) {
+  if (!value) {
+    return null
+  }
+
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={fullWidth ? 12 : 6}
+      lg={fullWidth ? 12 : 4}
+      className={`ob-api-nsw-liquor-licence__${classNameSuffix}`}
+    >
+      <label className="is-size-6 has-text-weight-semibold ob-api-nsw-liquor-licence__detail-label">
+        {label}
+      </label>
+      <div className="ob-api-nsw-liquor-licence__detail-value">{value}</div>
+    </Grid>
   )
 }
 
