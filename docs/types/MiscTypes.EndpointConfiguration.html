@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>OneBlinkAPISubmissionEventConfiguration | @oneblink/apps-react</title><meta name="description" content="Documentation for @oneblink/apps-react"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>EndpointConfiguration | @oneblink/apps-react</title><meta name="description" content="Documentation for @oneblink/apps-react"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -13,36 +13,12 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
 <li><a href="../modules.html">@oneblink/apps-react</a></li>
-<li><a href="../modules/SubmissionEventTypes.html">SubmissionEventTypes</a></li>
-<li><a href="SubmissionEventTypes.OneBlinkAPISubmissionEventConfiguration.html">OneBlinkAPISubmissionEventConfiguration</a></li></ul>
-<h1>Type alias OneBlinkAPISubmissionEventConfiguration</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">One<wbr/>BlinkAPISubmission<wbr/>Event<wbr/>Configuration</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">apiEnvironment</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">apiEnvironmentRoute</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">apiId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">secret</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
-<div class="tsd-type-declaration">
-<h4>Type declaration</h4>
-<ul class="tsd-parameters">
-<li class="tsd-parameter">
-<h5><span class="tsd-kind-property">api<wbr/>Environment</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>The environment of the specified OneBlink hosted API to recieve the callback.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
-<li class="tsd-parameter">
-<h5><span class="tsd-kind-property">api<wbr/>Environment<wbr/>Route</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>The route of the specified API and Environment to recieve the callback payload.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
-<li class="tsd-parameter">
-<h5><span class="tsd-kind-property">api<wbr/>Id</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>The ID of the OneBlink hosted API that a callback is made to on submission.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li>
-<li class="tsd-parameter">
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-property">secret</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>Secret string used for verifying the authenticity of the request made from
-the OneBlink system.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div></li></ul></div><aside class="tsd-sources">
+<li><a href="../modules/MiscTypes.html">MiscTypes</a></li>
+<li><a href="MiscTypes.EndpointConfiguration.html">EndpointConfiguration</a></li></ul>
+<h1>Type alias EndpointConfiguration</h1></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">Endpoint<wbr/>Configuration</span><span class="tsd-signature-symbol">:</span> <a href="MiscTypes.EndpointConfigurationCallback.html" class="tsd-signature-type tsd-kind-type-alias">EndpointConfigurationCallback</a><span class="tsd-signature-symbol"> | </span><a href="MiscTypes.EndpointConfigurationAPI.html" class="tsd-signature-type tsd-kind-type-alias">EndpointConfigurationAPI</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in node_modules/@oneblink/types/typescript/submissionEvents.d.ts:129</li></ul></aside></div>
+<li>Defined in node_modules/@oneblink/types/typescript/misc.d.ts:186</li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -58,6 +34,7 @@ the OneBlink system.</p>
 <details class="tsd-index-accordion" data-key="Namespaces"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Namespaces</span></summary>
 <div class="tsd-accordion-details">
 <ul class="tsd-nested-navigation">
+<li><a href="../modules/APINSWTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>APINSWTypes</span></a></li>
 <li><a href="../modules/APITypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>APITypes</span></a></li>
 <li><a href="../modules/AWSTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>AWSTypes</span></a></li>
 <li><a href="../modules/ApprovalTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Approval<wbr/>Types</span></a></li>
@@ -72,69 +49,36 @@ the OneBlink system.</p>
 <li><a href="../modules/GeoscapeTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Geoscape<wbr/>Types</span></a></li>
 <li><a href="../modules/IntegrationTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Integration<wbr/>Types</span></a></li>
 <li><a href="../modules/KeyTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Key<wbr/>Types</span></a></li>
-<li><a href="../modules/MiscTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Misc<wbr/>Types</span></a></li>
+<li>
+<details class="tsd-index-accordion" open data-key="MiscTypes"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><a href="../modules/MiscTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Misc<wbr/>Types</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li>
+<details class="tsd-index-accordion" data-key="MiscTypes$Interfaces"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Interfaces</span></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="../interfaces/MiscTypes.ABNValue.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g></svg><span>ABNValue</span></a></li>
+<li><a href="../interfaces/MiscTypes.QueryParameters.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Query<wbr/>Parameters</span></a></li>
+<li><a href="../interfaces/MiscTypes.UserProfile.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>User<wbr/>Profile</span></a></li></ul></div></details></li>
+<li>
+<details class="tsd-index-accordion" data-key="MiscTypes$Type Aliases"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Type Aliases</span></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="MiscTypes.ABNRecord.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>ABNRecord</span></a></li>
+<li><a href="MiscTypes.BSBRecord.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>BSBRecord</span></a></li>
+<li><a href="MiscTypes.BaseSearchResult.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Base<wbr/>Search<wbr/>Result</span></a></li>
+<li><a href="MiscTypes.EndpointConfiguration.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Endpoint<wbr/>Configuration</span></a></li>
+<li><a href="MiscTypes.EndpointConfigurationAPI.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Endpoint<wbr/>ConfigurationAPI</span></a></li>
+<li><a href="MiscTypes.EndpointConfigurationCallback.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Endpoint<wbr/>Configuration<wbr/>Callback</span></a></li>
+<li><a href="MiscTypes.GenericObject.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Generic<wbr/>Object</span></a></li>
+<li><a href="MiscTypes.IdResource.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Id<wbr/>Resource</span></a></li></ul></div></details></li></ul></div></details></li>
 <li><a href="../modules/OrganisationTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Organisation<wbr/>Types</span></a></li>
 <li><a href="../modules/PDFConversionTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>PDFConversion<wbr/>Types</span></a></li>
 <li><a href="../modules/PDFTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>PDFTypes</span></a></li>
 <li><a href="../modules/PointTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Point<wbr/>Types</span></a></li>
 <li><a href="../modules/ScheduledTasksTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Scheduled<wbr/>Tasks<wbr/>Types</span></a></li>
 <li><a href="../modules/SchedulingTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Scheduling<wbr/>Types</span></a></li>
-<li>
-<details class="tsd-index-accordion" open data-key="SubmissionEventTypes"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><a href="../modules/SubmissionEventTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Submission<wbr/>Event<wbr/>Types</span></a></summary>
-<div class="tsd-accordion-details">
-<ul class="tsd-nested-navigation">
-<li>
-<details class="tsd-index-accordion" data-key="SubmissionEventTypes$Interfaces"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Interfaces</span></summary>
-<div class="tsd-accordion-details">
-<ul class="tsd-nested-navigation">
-<li><a href="../interfaces/SubmissionEventTypes.S3SubmissionTags.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g></svg><span>S3<wbr/>Submission<wbr/>Tags</span></a></li></ul></div></details></li>
-<li>
-<details class="tsd-index-accordion" data-key="SubmissionEventTypes$Type Aliases"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Type Aliases</span></summary>
-<div class="tsd-accordion-details">
-<ul class="tsd-nested-navigation">
-<li><a href="SubmissionEventTypes.ApprovalFormsInclusionConfiguration.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Approval<wbr/>Forms<wbr/>Inclusion<wbr/>Configuration</span></a></li>
-<li><a href="SubmissionEventTypes.BPOINTSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>BPOINTSubmission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.BaseFormSubmissionProcessing.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Base<wbr/>Form<wbr/>Submission<wbr/>Processing</span></a></li>
-<li><a href="SubmissionEventTypes.CPHCMSSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>CPHCMSSubmission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.CPPaySubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>CPPay<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.CallbackSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Callback<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.CivicaCrmSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Civica<wbr/>Crm<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.CivicaCrmSubmissionEventMapping.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Civica<wbr/>Crm<wbr/>Submission<wbr/>Event<wbr/>Mapping</span></a></li>
-<li><a href="SubmissionEventTypes.CivicaCustomerContactMethod.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Civica<wbr/>Customer<wbr/>Contact<wbr/>Method</span></a></li>
-<li><a href="SubmissionEventTypes.CivicaRecord.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Civica<wbr/>Record</span></a></li>
-<li><a href="SubmissionEventTypes.EmailConfiguration.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Email<wbr/>Configuration</span></a></li>
-<li><a href="SubmissionEventTypes.EmailOnlySubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Email<wbr/>Only<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormEventBase.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Event<wbr/>Base</span></a></li>
-<li><a href="SubmissionEventTypes.FormEventConditional.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Event<wbr/>Conditional</span></a></li>
-<li><a href="SubmissionEventTypes.FormEventType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Event<wbr/>Type</span></a></li>
-<li><a href="SubmissionEventTypes.FormPaymentEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Payment<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormPaymentEventType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Payment<wbr/>Event<wbr/>Type</span></a></li>
-<li><a href="SubmissionEventTypes.FormSchedulingEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Scheduling<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormSchedulingEventType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Scheduling<wbr/>Event<wbr/>Type</span></a></li>
-<li><a href="SubmissionEventTypes.FormSubmissionProcessing.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Submission<wbr/>Processing</span></a></li>
-<li><a href="SubmissionEventTypes.FormSubmissionProcessingEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Submission<wbr/>Processing<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormSubmissionProcessingFormStore.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Submission<wbr/>Processing<wbr/>Form<wbr/>Store</span></a></li>
-<li><a href="SubmissionEventTypes.FormSubmissionProcessingJob.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Submission<wbr/>Processing<wbr/>Job</span></a></li>
-<li><a href="SubmissionEventTypes.FormWorkflowEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Workflow<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FormWorkflowEventType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Form<wbr/>Workflow<wbr/>Event<wbr/>Type</span></a></li>
-<li><a href="SubmissionEventTypes.FreshdeskAddNoteToTicketSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Freshdesk<wbr/>Add<wbr/>Note<wbr/>To<wbr/>Ticket<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FreshdeskCreateTicketSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Freshdesk<wbr/>Create<wbr/>Ticket<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.FreshdeskSubmissionEventFieldMapping.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Freshdesk<wbr/>Submission<wbr/>Event<wbr/>Field<wbr/>Mapping</span></a></li>
-<li><a href="SubmissionEventTypes.NSWGovPaySubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>NSWGov<wbr/>Pay<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.NewWebhookSubscription.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>New<wbr/>Webhook<wbr/>Subscription</span></a></li>
-<li><a href="SubmissionEventTypes.OneBlinkAPISubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>One<wbr/>BlinkAPISubmission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.OneBlinkAPISubmissionEventConfiguration.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>One<wbr/>BlinkAPISubmission<wbr/>Event<wbr/>Configuration</span></a></li>
-<li><a href="SubmissionEventTypes.PDFConfiguration.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>PDFConfiguration</span></a></li>
-<li><a href="SubmissionEventTypes.PdfSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Pdf<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.PdfSubmissionEventEmailTemplateMapping.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Pdf<wbr/>Submission<wbr/>Event<wbr/>Email<wbr/>Template<wbr/>Mapping</span></a></li>
-<li><a href="SubmissionEventTypes.PowerAutomateFlowSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Power<wbr/>Automate<wbr/>Flow<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.SchedulingSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Scheduling<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.TrimSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Trim<wbr/>Submission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.TrimUriOption.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Trim<wbr/>Uri<wbr/>Option</span></a></li>
-<li><a href="SubmissionEventTypes.WebhookSubmissionEventPayload.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Webhook<wbr/>Submission<wbr/>Event<wbr/>Payload</span></a></li>
-<li><a href="SubmissionEventTypes.WebhookSubscription.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Webhook<wbr/>Subscription</span></a></li>
-<li><a href="SubmissionEventTypes.WestpacQuickWebSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Westpac<wbr/>Quick<wbr/>Web<wbr/>Submission<wbr/>Event</span></a></li></ul></div></details></li></ul></div></details></li>
+<li><a href="../modules/SubmissionEventTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Submission<wbr/>Event<wbr/>Types</span></a></li>
 <li><a href="../modules/SubmissionTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Submission<wbr/>Types</span></a></li>
 <li><a href="../modules/TeamMemberTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Team<wbr/>Member<wbr/>Types</span></a></li></ul></div></details></li>
 <li>
