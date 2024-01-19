@@ -16,7 +16,7 @@
 <li><a href="../modules/SubmissionEventTypes.html">SubmissionEventTypes</a></li>
 <li><a href="SubmissionEventTypes.PDFConfiguration.html">PDFConfiguration</a></li></ul>
 <h1>Type alias PDFConfiguration</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">PDFConfiguration</span><span class="tsd-signature-symbol">:</span> <a href="SubmissionEventTypes.ApprovalFormsInclusionConfiguration.html" class="tsd-signature-type tsd-kind-type-alias">ApprovalFormsInclusionConfiguration</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">excludedCSSClasses</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">excludedElementIds</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includeExternalIdInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includePaymentInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includeSubmissionIdInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">pdfFileName</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">usePagesAsBreaks</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">PDFConfiguration</span><span class="tsd-signature-symbol">:</span> <a href="SubmissionEventTypes.ApprovalFormsInclusionConfiguration.html" class="tsd-signature-type tsd-kind-type-alias">ApprovalFormsInclusionConfiguration</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">excludedCSSClasses</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">excludedElementIds</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includeExternalIdInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includePaymentInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">includeSubmissionIdInPdf</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">pdfFileName</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">pdfSize</span><span class="tsd-signature-symbol">?: </span><a href="PDFTypes.FormSubmissionPDFPageSize.html" class="tsd-signature-type tsd-kind-type-alias">FormSubmissionPDFPageSize</a><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">usePagesAsBreaks</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
@@ -54,12 +54,17 @@ to <code>false</code>).</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-property">pdf<wbr/>Size</span><span class="tsd-signature-symbol">?: </span><a href="PDFTypes.FormSubmissionPDFPageSize.html" class="tsd-signature-type tsd-kind-type-alias">FormSubmissionPDFPageSize</a></h5>
+<div class="tsd-comment tsd-typography"><p>The page size of the Generated PDF.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-property">use<wbr/>Pages<wbr/>As<wbr/>Breaks</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 <div class="tsd-comment tsd-typography"><p>Whether pages in the form submission should translate to page breaks in the PDF.</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in node_modules/@oneblink/types/typescript/submissionEvents.d.ts:75</li></ul></aside></div>
+<li>Defined in node_modules/@oneblink/types/typescript/submissionEvents.d.ts:71</li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -75,6 +80,7 @@ to <code>false</code>).</p>
 <details class="tsd-index-accordion" data-key="Namespaces"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Namespaces</span></summary>
 <div class="tsd-accordion-details">
 <ul class="tsd-nested-navigation">
+<li><a href="../modules/APINSWTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>APINSWTypes</span></a></li>
 <li><a href="../modules/APITypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>APITypes</span></a></li>
 <li><a href="../modules/AWSTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>AWSTypes</span></a></li>
 <li><a href="../modules/ApprovalTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Approval<wbr/>Types</span></a></li>
@@ -141,7 +147,6 @@ to <code>false</code>).</p>
 <li><a href="SubmissionEventTypes.NSWGovPaySubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>NSWGov<wbr/>Pay<wbr/>Submission<wbr/>Event</span></a></li>
 <li><a href="SubmissionEventTypes.NewWebhookSubscription.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>New<wbr/>Webhook<wbr/>Subscription</span></a></li>
 <li><a href="SubmissionEventTypes.OneBlinkAPISubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>One<wbr/>BlinkAPISubmission<wbr/>Event</span></a></li>
-<li><a href="SubmissionEventTypes.OneBlinkAPISubmissionEventConfiguration.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>One<wbr/>BlinkAPISubmission<wbr/>Event<wbr/>Configuration</span></a></li>
 <li><a href="SubmissionEventTypes.PDFConfiguration.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>PDFConfiguration</span></a></li>
 <li><a href="SubmissionEventTypes.PdfSubmissionEvent.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Pdf<wbr/>Submission<wbr/>Event</span></a></li>
 <li><a href="SubmissionEventTypes.PdfSubmissionEventEmailTemplateMapping.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Pdf<wbr/>Submission<wbr/>Event<wbr/>Email<wbr/>Template<wbr/>Mapping</span></a></li>

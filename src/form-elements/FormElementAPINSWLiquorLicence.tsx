@@ -30,9 +30,7 @@ function FormElementAPINSWLiquorLicence({
   setIsDirty,
 }: Props) {
   const isMounted = useIsMounted()
-  const [label, setLabel] = React.useState(() =>
-    `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim(),
-  )
+  const [label, setLabel] = React.useState('')
   const [{ isLoading, error }, setState] = React.useState<{
     isLoading: boolean
     error: Error | null
@@ -101,6 +99,18 @@ function FormElementAPINSWLiquorLicence({
     [element, formId, isMounted, onChange],
   )
 
+  // Ensure the label is set if the value is set outside of this component
+  React.useEffect(() => {
+    if (value) {
+      const newLabel =
+        `${value?.licenceDetail?.licenceNumber} | ${value?.licenceDetail?.licenceName}`.trim()
+      if (label !== newLabel) {
+        setLabel(newLabel || '')
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
   return (
     <div className="cypress-api-nsw-liquor-licence-element">
       <FormElementLabelContainer
@@ -128,16 +138,15 @@ function FormElementAPINSWLiquorLicence({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
         />
-
-        {error && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-api-nsw-liquor-licence-error-message">
-              {error.toString()}
-            </div>
-          </div>
-        )}
       </FormElementLabelContainer>
 
+      {error && (
+        <div role="alert" className="has-margin-top-8">
+          <div className="has-text-danger ob-error__text cypress-api-nsw-liquor-licence-error-message">
+            {error.toString()}
+          </div>
+        </div>
+      )}
       <Collapse in={!!value}>
         <div
           className={`notification ${liquorLicenceClassPrefix}record-display has-margin-top-6`}

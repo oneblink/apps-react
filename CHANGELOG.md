@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- DateTime element not showing validation message
+
+## [5.6.0] - 2024-01-18
+
 ### Removed
 
 - All instances of `disableRipple` on MUI components. This prop was responsible for disabling visual feedback when focusing an element
@@ -20,9 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `alt` attribute to file image previews for accessibility
 - `focus-visible` for buttons and number slider to make tabbing more prominent
 
-### Fixed
+### Dependencies
 
-- DateTime element not showing validation message
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [5.2.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [5.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [5.5.0] - 2023-12-12
 
