@@ -68,9 +68,19 @@ export default function useFlatpickr(
     // trigger the onChange event:
     // https://github.com/flatpickr/flatpickr/issues/1957
     if (fpOpts.enableTime) {
-      newVp.set('onClose', (selectedDates: Date[]) => {
-        onChange(getDateValue(selectedDates?.[0], dateOnly))
-      })
+      newVp.set(
+        'onClose',
+        (
+          selectedDates: Date[],
+          currentDateString: string,
+          self: FlatpickrInstance,
+        ) => {
+          onChange(getDateValue(selectedDates?.[0], dateOnly))
+          if (typeof fpOpts.onClose === 'function') {
+            fpOpts.onClose(selectedDates, currentDateString, self)
+          }
+        },
+      )
     }
     vpRef.current = newVp
     return () => {
