@@ -101,6 +101,7 @@ function WestpacQuickStreamPaymentForm({
   })
 
   React.useEffect(() => {
+    const abortController = new AbortController()
     const scriptEle = document.createElement('script')
     scriptEle.type = 'text/javascript'
     scriptEle.async = true
@@ -113,13 +114,25 @@ function WestpacQuickStreamPaymentForm({
 
         await new Promise((resolve, reject) => {
           try {
-            scriptEle.addEventListener('load', () => {
-              resolve(undefined)
-            })
+            scriptEle.addEventListener(
+              'load',
+              () => {
+                resolve(undefined)
+              },
+              {
+                signal: abortController.signal,
+              },
+            )
 
-            scriptEle.addEventListener('error', () => {
-              reject(new Error(`Failed to load the script ${scriptEle.src}`))
-            })
+            scriptEle.addEventListener(
+              'error',
+              () => {
+                reject(new Error(`Failed to load the script ${scriptEle.src}`))
+              },
+              {
+                signal: abortController.signal,
+              },
+            )
 
             document.body.appendChild(scriptEle)
           } catch (error) {
@@ -203,21 +216,26 @@ function WestpacQuickStreamPaymentForm({
           })
         })
 
-        setLoadState({
-          isLoading: false,
-          loadError: null,
-        })
+        if (!abortController.signal.aborted) {
+          setLoadState({
+            isLoading: false,
+            loadError: null,
+          })
+        }
       } catch (error) {
-        setLoadState({
-          isLoading: false,
-          loadError: error as Error,
-        })
+        if (!abortController.signal.aborted) {
+          setLoadState({
+            isLoading: false,
+            loadError: error as Error,
+          })
+        }
       }
     }
 
     run()
 
     return () => {
+      abortController.abort()
       document.body.appendChild(scriptEle)
     }
   }, [
