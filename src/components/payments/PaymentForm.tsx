@@ -3,7 +3,7 @@ import { SubmissionTypes } from '@oneblink/types'
 import React from 'react'
 import WestpacQuickStreamPaymentForm from './WestpacQuickStreamPaymentForm'
 import useQuery from '../../hooks/useQuery'
-import { useLoadDataState } from '../../typedoc'
+import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
 
 function PaymentForm({
