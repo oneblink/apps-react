@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DateTime element not showing validation message
 
+### Changed
+
+- Modal component to use MUI Modal component for handling focus
+
 ## [5.6.0] - 2024-01-18
 
 ### Removed
