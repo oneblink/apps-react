@@ -186,7 +186,8 @@ function PaymentReceipt({
         amount: submissionResult.payment.amount,
         formSubmissionResult: submissionResult,
         paymentSubmissionEvent,
-        paymentReceiptUrl: `${window.location.origin}${window.location.pathname}`,
+        paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
+        paymentFormUrl: submissionResult.payment.paymentFormUrl,
       })
       await submissionService.executePostSubmissionAction(
         submissionResult,
