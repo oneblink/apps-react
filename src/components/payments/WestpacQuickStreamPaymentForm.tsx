@@ -236,7 +236,7 @@ function WestpacQuickStreamPaymentForm({
 
     return () => {
       abortController.abort()
-      document.body.appendChild(scriptEle)
+      document.body.removeChild(scriptEle)
     }
   }, [
     formSubmissionPaymentId,
