@@ -85,6 +85,7 @@ function OneBlinkAutoSaveForm({
               type="button"
               className="button ob-button is-primary cypress-continue-auto-save-continue-button"
               onClick={continueAutoSaveSubmission}
+              autoFocus
             >
               Continue
             </button>

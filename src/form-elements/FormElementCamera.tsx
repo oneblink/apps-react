@@ -392,6 +392,7 @@ function FormElementCamera({
               type="button"
               className="button ob-button is-primary cypress-close-error-button"
               onClick={() => setState({ isLoading: false })}
+              autoFocus
             >
               Okay
             </button>

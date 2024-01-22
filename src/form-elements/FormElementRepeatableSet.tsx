@@ -441,6 +441,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                   cancelRemove()
                   onRemove(index)
                 }}
+                autoFocus
               >
                 Yes
               </button>

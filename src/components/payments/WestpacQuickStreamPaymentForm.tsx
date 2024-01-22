@@ -348,6 +348,7 @@ function WestpacQuickStreamPaymentForm({
               type="button"
               className="button ob-button cypress-payment-error-close-button is-light"
               onClick={clearCompleteTransactionError}
+              autoFocus
             >
               Okay
             </button>
@@ -378,6 +379,7 @@ function WestpacQuickStreamPaymentForm({
               type="button"
               className="button ob-button cypress-cancel-error-close-button is-light"
               onClick={clearCancelError}
+              autoFocus
             >
               Okay
             </button>
