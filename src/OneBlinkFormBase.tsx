@@ -1152,6 +1152,7 @@ function OneBlinkFormBase({
                           type="button"
                           className="button ob-button is-primary cypress-cancel-confirm-discard"
                           onClick={handleDiscardUnsavedChanges}
+                          autoFocus
                         >
                           <CustomisableButtonInner
                             label={buttons?.cancelPromptYes?.label || 'Discard'}
@@ -1186,6 +1187,7 @@ function OneBlinkFormBase({
                           type="button"
                           className="button ob-button is-primary cypress-attachments-confirm-continue"
                           onClick={handleContinueWithAttachments}
+                          autoFocus
                         >
                           Continue
                         </button>
@@ -1237,6 +1239,7 @@ function OneBlinkFormBase({
                             setPromptOfflineSubmissionAttempt(false)
                             handleSubmit(e, false)
                           }}
+                          autoFocus
                         >
                           Try Again
                         </button>

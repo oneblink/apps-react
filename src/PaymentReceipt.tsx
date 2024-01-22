@@ -308,6 +308,7 @@ function PaymentReceipt({
               type="button"
               className="button ob-button is-primary cypress-payment-receipt-retry-error-okay-button"
               onClick={clearRetryError}
+              autoFocus
             >
               Okay
             </button>
@@ -327,6 +328,7 @@ function PaymentReceipt({
               type="button"
               className="button ob-button is-primary cypress-payment-receipt-retry-error-okay-button"
               onClick={clearPostSubmissionError}
+              autoFocus
             >
               Okay
             </button>
