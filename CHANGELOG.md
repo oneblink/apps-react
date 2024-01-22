@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Modal component to use MUI Modal component for handling focus
 
+### Added
+
+- `<PaymentForm />` component
+
 ## [5.6.0] - 2024-01-18
 
 ### Removed

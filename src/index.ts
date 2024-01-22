@@ -48,5 +48,6 @@ export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmis
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as PaymentReceipt } from './PaymentReceipt'
+export { default as PaymentForm } from './components/payments/PaymentForm'
 
 export * from './types/form'
