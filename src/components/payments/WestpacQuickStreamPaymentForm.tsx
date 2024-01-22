@@ -339,7 +339,7 @@ function WestpacQuickStreamPaymentForm({
       </section>
 
       <Modal
-        isOpen
+        isOpen={!!completeTransactionError}
         title="Payment Issue"
         className="cypress-payment-error-close-button"
         actions={
@@ -369,7 +369,7 @@ function WestpacQuickStreamPaymentForm({
       </Modal>
 
       <Modal
-        isOpen
+        isOpen={!!cancelError}
         title="Cancel Issue"
         className="cypress-cancel-error-close-button"
         actions={
