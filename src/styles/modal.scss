@@ -22,7 +22,8 @@
 
 .modal-card {
   box-shadow: $elevation-3;
-  border-radius: $radius-small;
+  border-radius: $radius-small;  
+  outline: none;
 }
 
 .modal-card-foot {

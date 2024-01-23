@@ -11,7 +11,6 @@ type Props = {
   cardClassName?: string
   titleClassName?: string
   bodyClassName?: string
-  disableAutoFocus?: boolean
 }
 
 function Modal({
@@ -23,10 +22,7 @@ function Modal({
   titleClassName,
   bodyClassName,
   actions,
-  disableAutoFocus,
 }: Props) {
-  const modalContentRef = React.useRef<HTMLDivElement>(null)
-
   return (
     <MuiModal
       className={clsx('modal ob-modal', className, {
@@ -36,9 +32,8 @@ function Modal({
       slots={{
         backdrop: () => <div className="modal-background-faded"></div>,
       }}
-      disableAutoFocus={!!disableAutoFocus}
     >
-      <div className={clsx('modal-card', cardClassName)} ref={modalContentRef}>
+      <div className={clsx('modal-card', cardClassName)}>
         {title && (
           <header className="modal-card-head">
             <p className={clsx('modal-card-title', titleClassName)}>{title}</p>
