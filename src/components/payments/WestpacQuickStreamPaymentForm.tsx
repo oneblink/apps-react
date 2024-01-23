@@ -174,7 +174,6 @@ function WestpacQuickStreamPaymentForm({
                   style: {
                     border: '1px solid #dedede',
                     'border-radius': '2px',
-                    'margin-bottom': '0.75rem',
                     'min-height': '400px',
                     padding: '1.5rem',
                     width: '100%',
@@ -346,7 +345,10 @@ function WestpacQuickStreamPaymentForm({
             handleSubmit()
           }}
         >
-          <div data-quickstream-api="creditCardContainer"></div>
+          <div
+            data-quickstream-api="creditCardContainer"
+            className="quickstream-container"
+          ></div>
 
           {!isLoading && !loadError && (
             <>
@@ -359,7 +361,7 @@ function WestpacQuickStreamPaymentForm({
                     displayCaptchaRequired: newValue === null,
                   }))
                 }}
-                className="ob-input cypress-captcha-control"
+                className="ob-input cypress-captcha-control westpac-payment-captcha"
               />
               {displayCaptchaRequired && (
                 <div role="alert" className="has-margin-top-8">
@@ -369,25 +371,27 @@ function WestpacQuickStreamPaymentForm({
                 </div>
               )}
 
-              <button
-                type="button"
-                disabled={isCompletingTransaction || isCancellingTransaction}
-                onClick={handleCancel}
-                className={clsx('button ob-button is-outlined', {
-                  'is-loading': isCancellingTransaction,
-                })}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isCompletingTransaction || isCancellingTransaction}
-                className={clsx('button ob-button is-success', {
-                  'is-loading': isCompletingTransaction,
-                })}
-              >
-                Make Payment
-              </button>
+              <div className="payment-form-actions">
+                <button
+                  type="button"
+                  disabled={isCompletingTransaction || isCancellingTransaction}
+                  onClick={handleCancel}
+                  className={clsx('button ob-button is-outlined', {
+                    'is-loading': isCancellingTransaction,
+                  })}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCompletingTransaction || isCancellingTransaction}
+                  className={clsx('button ob-button is-success', {
+                    'is-loading': isCompletingTransaction,
+                  })}
+                >
+                  Make Payment
+                </button>
+              </div>
             </>
           )}
         </form>
