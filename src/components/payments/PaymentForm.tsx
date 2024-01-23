@@ -7,9 +7,11 @@ import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
 
 function PaymentForm({
+  captchaSiteKey,
   onCompleted,
   onCancelled,
 }: {
+  captchaSiteKey: string
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
     paymentReceiptUrl: string
@@ -57,6 +59,7 @@ function PaymentForm({
                 supplierBusinessCode={supplierBusinessCode}
                 publishableApiKey={publishableApiKey}
                 isTestMode={isTestMode}
+                captchaSiteKey={captchaSiteKey}
                 onCompleted={onCompleted}
                 onCancelled={onCancelled}
               />
@@ -65,7 +68,7 @@ function PaymentForm({
         }
       }
     },
-    [onCancelled, onCompleted, query.formSubmissionPaymentId],
+    [captchaSiteKey, onCancelled, onCompleted, query.formSubmissionPaymentId],
   )
 
   const [state] = useLoadDataState(loadPaymentFormConfiguration)

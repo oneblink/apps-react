@@ -6,6 +6,7 @@ import {
 import { SubmissionTypes, SubmissionEventTypes } from '@oneblink/types'
 import clsx from 'clsx'
 import React from 'react'
+import ReCAPTCHA from 'react-google-recaptcha'
 import OnLoading from '../renderer/OnLoading'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import Modal from '../renderer/Modal'
@@ -59,6 +60,7 @@ function WestpacQuickStreamPaymentForm({
   supplierBusinessCode,
   publishableApiKey,
   isTestMode,
+  captchaSiteKey,
   onCompleted,
   onCancelled,
 }: {
@@ -68,6 +70,7 @@ function WestpacQuickStreamPaymentForm({
   supplierBusinessCode: string
   publishableApiKey: string
   isTestMode: boolean
+  captchaSiteKey: string
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
     paymentReceiptUrl: string
@@ -75,30 +78,43 @@ function WestpacQuickStreamPaymentForm({
   onCancelled: (result: { paymentReceiptUrl: string }) => void
 }) {
   const [
-    { isCompletingTransaction, completeTransactionError },
+    {
+      isCompletingTransaction,
+      completeTransactionError,
+      captchaToken,
+      displayCaptchaRequired,
+    },
     setCompleteTransactionState,
   ] = React.useState<{
+    captchaToken: string | null
+    displayCaptchaRequired: boolean
     isCompletingTransaction: boolean
     completeTransactionError: Error | null
   }>({
     isCompletingTransaction: false,
     completeTransactionError: null,
+    captchaToken: null,
+    displayCaptchaRequired: false,
   })
 
   const clearCompleteTransactionError = React.useCallback(() => {
-    setCompleteTransactionState({
+    setCompleteTransactionState((currentState) => ({
+      ...currentState,
       isCompletingTransaction: false,
       completeTransactionError: null,
-    })
+    }))
   }, [])
 
-  const [{ isLoading, loadError }, setLoadState] = React.useState<{
-    isLoading: boolean
-    loadError: Error | null
-  }>({
-    isLoading: true,
-    loadError: null,
-  })
+  const [{ trustedFrame, isLoading, loadError }, setLoadState] =
+    React.useState<{
+      trustedFrame: TrustedFrame | null
+      isLoading: boolean
+      loadError: Error | null
+    }>({
+      trustedFrame: null,
+      isLoading: true,
+      loadError: null,
+    })
 
   React.useEffect(() => {
     const abortController = new AbortController()
@@ -144,7 +160,7 @@ function WestpacQuickStreamPaymentForm({
         window.QuickstreamAPI.init({
           publishableApiKey,
         })
-        const trustedFrame = await new Promise<TrustedFrame>(
+        const newTrustedFrame = await new Promise<TrustedFrame>(
           (resolve, reject) => {
             window.QuickstreamAPI.creditCards.createTrustedFrame(
               {
@@ -178,46 +194,10 @@ function WestpacQuickStreamPaymentForm({
             )
           },
         )
-        const westpacQuickStreamForm = document.getElementById(
-          'westpac-quick-stream-form-id',
-        )
-        westpacQuickStreamForm?.addEventListener('submit', (event) => {
-          event.preventDefault()
-
-          setCompleteTransactionState({
-            isCompletingTransaction: true,
-            completeTransactionError: null,
-          })
-
-          trustedFrame.submitForm((errors, data) => {
-            if (errors) {
-              console.log('Invalid payment form submission', errors)
-              setCompleteTransactionState({
-                isCompletingTransaction: false,
-                completeTransactionError: null,
-              })
-              return
-            }
-
-            paymentService.westpacQuickStream
-              .completeTransaction({
-                singleUseTokenId: data.singleUseToken.singleUseTokenId,
-                formSubmissionResult,
-                formSubmissionPaymentId,
-                paymentSubmissionEvent,
-              })
-              .then(onCompleted)
-              .catch((error) => {
-                setCompleteTransactionState({
-                  isCompletingTransaction: false,
-                  completeTransactionError: error,
-                })
-              })
-          })
-        })
 
         if (!abortController.signal.aborted) {
           setLoadState({
+            trustedFrame: newTrustedFrame,
             isLoading: false,
             loadError: null,
           })
@@ -225,6 +205,7 @@ function WestpacQuickStreamPaymentForm({
       } catch (error) {
         if (!abortController.signal.aborted) {
           setLoadState({
+            trustedFrame: null,
             isLoading: false,
             loadError: error as Error,
           })
@@ -238,14 +219,64 @@ function WestpacQuickStreamPaymentForm({
       abortController.abort()
       document.body.removeChild(scriptEle)
     }
+  }, [isTestMode, publishableApiKey, supplierBusinessCode])
+
+  const handleSubmit = React.useCallback(async () => {
+    if (!trustedFrame) {
+      return
+    }
+
+    if (!captchaToken) {
+      setCompleteTransactionState({
+        captchaToken: null,
+        displayCaptchaRequired: true,
+        isCompletingTransaction: false,
+        completeTransactionError: null,
+      })
+      return
+    }
+
+    setCompleteTransactionState((currentState) => ({
+      ...currentState,
+      isCompletingTransaction: true,
+      completeTransactionError: null,
+    }))
+
+    trustedFrame.submitForm((errors, data) => {
+      if (errors) {
+        console.log('Invalid payment form submission', errors)
+        setCompleteTransactionState((currentState) => ({
+          ...currentState,
+          isCompletingTransaction: false,
+          completeTransactionError: null,
+        }))
+        return
+      }
+
+      paymentService.westpacQuickStream
+        .completeTransaction({
+          singleUseTokenId: data.singleUseToken.singleUseTokenId,
+          formSubmissionResult,
+          formSubmissionPaymentId,
+          paymentSubmissionEvent,
+          captchaToken,
+        })
+        .then(onCompleted)
+        .catch((error) => {
+          setCompleteTransactionState((currentState) => ({
+            ...currentState,
+            isCompletingTransaction: false,
+            completeTransactionError: error,
+          }))
+        })
+    })
   }, [
+    captchaToken,
     formSubmissionPaymentId,
     formSubmissionResult,
-    isTestMode,
     onCompleted,
     paymentSubmissionEvent,
-    publishableApiKey,
-    supplierBusinessCode,
+    trustedFrame,
   ])
 
   const [{ isCancellingTransaction, cancelError }, setCancelState] =
@@ -309,11 +340,35 @@ function WestpacQuickStreamPaymentForm({
       )}
 
       <section>
-        <form id="westpac-quick-stream-form-id">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleSubmit()
+          }}
+        >
           <div data-quickstream-api="creditCardContainer"></div>
 
           {!isLoading && !loadError && (
             <>
+              <ReCAPTCHA
+                sitekey={captchaSiteKey}
+                onChange={(newValue) => {
+                  setCompleteTransactionState((currentState) => ({
+                    ...currentState,
+                    captchaToken: newValue,
+                    displayCaptchaRequired: newValue === null,
+                  }))
+                }}
+                className="ob-input cypress-captcha-control"
+              />
+              {displayCaptchaRequired && (
+                <div role="alert" className="has-margin-top-8">
+                  <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
+                    Please complete the CAPTCHA successfully
+                  </div>
+                </div>
+              )}
+
               <button
                 type="button"
                 disabled={isCompletingTransaction || isCancellingTransaction}
@@ -346,7 +401,7 @@ function WestpacQuickStreamPaymentForm({
           <>
             <button
               type="button"
-              className="button ob-button cypress-payment-error-close-button is-light"
+              className="button ob-button cypress-payment-error-close-button is-primary"
               onClick={clearCompleteTransactionError}
               autoFocus
             >
@@ -377,7 +432,7 @@ function WestpacQuickStreamPaymentForm({
           <>
             <button
               type="button"
-              className="button ob-button cypress-cancel-error-close-button is-light"
+              className="button ob-button cypress-cancel-error-close-button is-primary"
               onClick={clearCancelError}
               autoFocus
             >
