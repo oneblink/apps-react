@@ -1,0 +1,9 @@
+.payment-form-actions {
+    display: flex;
+    gap: $size-8;
+    justify-content: flex-end;
+}
+
+.westpac-payment-captcha {
+    margin: $size-7 0;
+}
