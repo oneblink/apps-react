@@ -2,6 +2,7 @@ import {
   OneBlinkAppsError,
   paymentService,
   submissionService,
+  localisationService,
 } from '@oneblink/apps'
 import { SubmissionTypes, SubmissionEventTypes } from '@oneblink/types'
 import clsx from 'clsx'
@@ -169,15 +170,8 @@ function WestpacQuickStreamPaymentForm({
                   threeDS2: true,
                 },
                 iframe: {
-                  width: '100%',
-                  height: '100%',
                   style: {
-                    border: '1px solid #dedede',
-                    'border-radius': '2px',
-                    'min-height': '400px',
-                    padding: '1.5rem',
                     width: '100%',
-                    'background-color': 'white',
                   },
                 },
                 showAcceptedCards: true,
@@ -326,13 +320,13 @@ function WestpacQuickStreamPaymentForm({
       )}
 
       {loadError && (
-        <section className="cypress-payment-receipt-loading-error-message">
-          <div className="ob-payment-receipt__error-icon-container has-text-centered has-margin-bottom-8">
-            <i className="ob-payment-receipt__error-icon material-icons has-text-danger icon-x-large">
+        <section className="cypress-payment-form-loading-error-message">
+          <div className="ob-payment-form__error-icon-container has-text-centered has-margin-bottom-8">
+            <i className="ob-payment-form__error-icon material-icons has-text-danger icon-x-large">
               error
             </i>
           </div>
-          <p className="ob-payment-receipt__error-message has-text-centered has-margin-bottom-4">
+          <p className="ob-payment-form__error-message has-text-centered has-margin-bottom-4">
             {loadError.message}
           </p>
         </section>
@@ -345,11 +339,20 @@ function WestpacQuickStreamPaymentForm({
             handleSubmit()
           }}
         >
-          <div
-            data-quickstream-api="creditCardContainer"
-            className="quickstream-container"
-          ></div>
-
+          <div className="ob-payment-form__westpac-quickstream-container">
+            <div className="ob-payment-form__westpac-quickstream-amount">
+              <div>Amount</div>
+              <div>
+                {localisationService.formatCurrency(
+                  formSubmissionResult.payment?.amount ?? 0,
+                )}
+              </div>
+            </div>
+            <div
+              data-quickstream-api="creditCardContainer"
+              className="quickstream-credit-card-container"
+            ></div>
+          </div>
           {!isLoading && !loadError && (
             <>
               <ReCAPTCHA
