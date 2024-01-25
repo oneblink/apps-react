@@ -342,7 +342,7 @@ function WestpacQuickStreamPaymentForm({
           <div className="ob-payment-form__westpac-quickstream-container">
             <div className="ob-payment-form__westpac-quickstream-amount">
               <div>Amount</div>
-              <div>
+              <div className="ob-payment-form__westpac-quickstream-amount-value">
                 {localisationService.formatCurrency(
                   formSubmissionResult.payment?.amount ?? 0,
                 )}
@@ -352,50 +352,51 @@ function WestpacQuickStreamPaymentForm({
               data-quickstream-api="creditCardContainer"
               className="quickstream-credit-card-container"
             ></div>
+            {!isLoading && !loadError && (
+              <>
+                <ReCAPTCHA
+                  sitekey={captchaSiteKey}
+                  onChange={(newValue) => {
+                    setCompleteTransactionState((currentState) => ({
+                      ...currentState,
+                      captchaToken: newValue,
+                      displayCaptchaRequired: newValue === null,
+                    }))
+                  }}
+                  className="ob-input cypress-captcha-control ob-payment-form__westpac-quickstream-captcha"
+                />
+                {displayCaptchaRequired && (
+                  <div role="alert" className="has-margin-top-8">
+                    <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
+                      Please complete the CAPTCHA successfully
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
           {!isLoading && !loadError && (
-            <>
-              <ReCAPTCHA
-                sitekey={captchaSiteKey}
-                onChange={(newValue) => {
-                  setCompleteTransactionState((currentState) => ({
-                    ...currentState,
-                    captchaToken: newValue,
-                    displayCaptchaRequired: newValue === null,
-                  }))
-                }}
-                className="ob-input cypress-captcha-control westpac-payment-captcha"
-              />
-              {displayCaptchaRequired && (
-                <div role="alert" className="has-margin-top-8">
-                  <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
-                    Please complete the CAPTCHA successfully
-                  </div>
-                </div>
-              )}
-
-              <div className="payment-form-actions">
-                <button
-                  type="button"
-                  disabled={isCompletingTransaction || isCancellingTransaction}
-                  onClick={handleCancel}
-                  className={clsx('button ob-button is-outlined', {
-                    'is-loading': isCancellingTransaction,
-                  })}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCompletingTransaction || isCancellingTransaction}
-                  className={clsx('button ob-button is-success', {
-                    'is-loading': isCompletingTransaction,
-                  })}
-                >
-                  Make Payment
-                </button>
-              </div>
-            </>
+            <div className="ob-payment-form__westpac-quickstream-form-actions">
+              <button
+                type="button"
+                disabled={isCompletingTransaction || isCancellingTransaction}
+                onClick={handleCancel}
+                className={clsx('button ob-button is-outlined', {
+                  'is-loading': isCancellingTransaction,
+                })}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isCompletingTransaction || isCancellingTransaction}
+                className={clsx('button ob-button is-success', {
+                  'is-loading': isCompletingTransaction,
+                })}
+              >
+                Make Payment
+              </button>
+            </div>
           )}
         </form>
       </section>
