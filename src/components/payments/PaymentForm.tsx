@@ -10,6 +10,8 @@ function PaymentForm({
   captchaSiteKey,
   onCompleted,
   onCancelled,
+  appImageUrl,
+  title,
 }: {
   captchaSiteKey: string
   onCompleted: (result: {
@@ -17,6 +19,8 @@ function PaymentForm({
     paymentReceiptUrl: string
   }) => void
   onCancelled: (result: { paymentReceiptUrl: string }) => void
+  appImageUrl?: string
+  title?: string
 }) {
   const query = useQuery()
 
@@ -62,13 +66,22 @@ function PaymentForm({
                 captchaSiteKey={captchaSiteKey}
                 onCompleted={onCompleted}
                 onCancelled={onCancelled}
+                appImageUrl={appImageUrl}
+                title={title}
               />
             ),
           }
         }
       }
     },
-    [captchaSiteKey, onCancelled, onCompleted, query.formSubmissionPaymentId],
+    [
+      appImageUrl,
+      captchaSiteKey,
+      onCancelled,
+      onCompleted,
+      query.formSubmissionPaymentId,
+      title,
+    ],
   )
 
   const [state] = useLoadDataState(loadPaymentFormConfiguration)

@@ -53,7 +53,6 @@ declare global {
     }
   }
 }
-
 function WestpacQuickStreamPaymentForm({
   formSubmissionResult,
   paymentSubmissionEvent,
@@ -64,6 +63,8 @@ function WestpacQuickStreamPaymentForm({
   captchaSiteKey,
   onCompleted,
   onCancelled,
+  appImageUrl,
+  title,
 }: {
   formSubmissionResult: submissionService.FormSubmissionResult
   paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent
@@ -77,6 +78,8 @@ function WestpacQuickStreamPaymentForm({
     paymentReceiptUrl: string
   }) => void
   onCancelled: (result: { paymentReceiptUrl: string }) => void
+  appImageUrl?: string
+  title?: string
 }) {
   const [
     {
@@ -340,6 +343,24 @@ function WestpacQuickStreamPaymentForm({
           }}
         >
           <div className="ob-payment-form__westpac-quickstream-container">
+            {!!appImageUrl && (
+              <figure className="image is-128x128 has-margin-bottom-6 ml-auto mr-auto">
+                <img
+                  alt="Application Icon"
+                  className="is-rounded"
+                  src={appImageUrl}
+                />
+              </figure>
+            )}
+            {!!title && (
+              <h3 className="title is-3 is-size-3-mobile ob-header__heading has-text-centered">
+                {title}
+              </h3>
+            )}
+            <label className="label ob-label has-text-centered">
+              Fill out the form below to complete your secure payment.
+            </label>
+
             <div className="ob-payment-form__westpac-quickstream-amount">
               <div>Amount</div>
               <div className="ob-payment-form__westpac-quickstream-amount-value">
