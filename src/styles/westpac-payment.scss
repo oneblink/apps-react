@@ -1,34 +1,43 @@
-.payment-form-actions {
-    display: flex;
-    gap: $size-8;
-    justify-content: flex-end;
+.ob-payment-form__westpac-quickstream-form-actions {
+  display: flex;
+  gap: $size-8;
+  justify-content: flex-end;
+  margin-top: $size-5;
 }
 
-.westpac-payment-captcha {
-    margin: $size-7 0;
+.ob-payment-form__westpac-quickstream-captcha {
+  display: flex;
+  justify-content: center;
 }
 
 .ob-payment-form__westpac-quickstream-container {
-    border: 1px solid #dedede;
-    border-radius: 2px;
-    background: #fff;
-    padding: 1.5rem;
+  border: 1px solid #dedede;
+  border-radius: 2px;
+  background: #fff;
+  padding: 1.5rem;
 }
 
-.ob-payment-form__westpac-quickstream-container .ob-payment-form__westpac-quickstream-amount {
-    padding-bottom: 1.5rem;
-    font-size: 13px;
-    font-weight: 400;
-    color: #2d373e
+.ob-payment-form__westpac-quickstream-container
+  .ob-payment-form__westpac-quickstream-amount {
+  padding-bottom: 1.5rem;
+  font-size: 13px;
+  font-weight: 400;
+  color: #2d373e;
+}
+
+.ob-payment-form__westpac-quickstream-container
+  .ob-payment-form__westpac-quickstream-amount
+  .ob-payment-form__westpac-quickstream-amount-value {
+  font-weight: 700;
 }
 
 .quickstream-credit-card-container {
-    container-type: inline-size;
-    container-name: quickstream-credit-card-container;
+  container-type: inline-size;
+  container-name: quickstream-credit-card-container;
 }
 
-@container quickstream-credit-card-container (max-width: 767px){
-    #trustedFrame-creditCard {
-        min-height: 350px;
-    }
+@container quickstream-credit-card-container (max-width: 767px) {
+  #trustedFrame-creditCard {
+    min-height: 350px;
+  }
 }
