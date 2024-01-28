@@ -13,6 +13,27 @@ type Props = {
   bodyClassName?: string
 }
 
+export const ModalContainerContext =
+  React.createContext<React.RefObject<HTMLDivElement> | null>(null)
+
+export function ModalContainerProvider({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  const modalRef = React.useRef<HTMLDivElement>(null)
+
+  return (
+    <ModalContainerContext.Provider value={modalRef}>
+      <div ref={modalRef} className={className}>
+        {children}
+      </div>
+    </ModalContainerContext.Provider>
+  )
+}
+
 function Modal({
   isOpen,
   title,
@@ -23,6 +44,7 @@ function Modal({
   bodyClassName,
   actions,
 }: Props) {
+  const ref = React.useContext(ModalContainerContext)
   return (
     <MuiModal
       className={clsx('modal ob-modal', className, {
@@ -32,6 +54,7 @@ function Modal({
       slots={{
         backdrop: () => <div className="modal-background-faded"></div>,
       }}
+      container={ref?.current}
     >
       <div className={clsx('modal-card', cardClassName)}>
         {title && (
