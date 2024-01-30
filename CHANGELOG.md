@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Some @media queries to @container queries to account for the preview in the console.
+
 ### Fixed
 
 - DateTime element not showing validation message

@@ -251,10 +251,25 @@ function LicenceDetailGridItem({
   return (
     <Grid
       item
-      xs={12}
-      sm={fullWidth ? 12 : 6}
-      lg={fullWidth ? 12 : 4}
       className={`${liquorLicenceClassPrefix}${classNameSuffix}`}
+      sx={(theme) => ({
+        flexBasis: '100%',
+        flexGrow: 0,
+        maxWidth: '100%',
+
+        ...(fullWidth
+          ? {}
+          : {
+              [theme.breakpoints.up('sm').replace('@media', '@container')]: {
+                flexBasis: '50%',
+                maxWidth: '50%',
+              },
+              [theme.breakpoints.up('lg').replace('@media', '@container')]: {
+                flexBasis: '33.33%',
+                maxWidth: '33.33%',
+              },
+            }),
+      })}
     >
       <label
         className={`is-size-6 has-text-weight-semibold ${liquorLicenceClassPrefix}detail-label`}
