@@ -9,7 +9,9 @@
     overflow-y: auto;
 
     a.dropdown-item {
-      transition: background-color 0.25s, color 0.25s;
+      transition:
+        background-color 0.25s,
+        color 0.25s;
     }
   }
 }

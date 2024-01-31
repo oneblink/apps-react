@@ -1,9 +1,9 @@
 .ob-compliance {
-  &.odd>.ob-compliance__container {
+  &.odd > .ob-compliance__container {
     background-color: $white;
   }
 
-  &.even>.ob-compliance__container {
+  &.even > .ob-compliance__container {
     background-color: $white-bis;
   }
 }

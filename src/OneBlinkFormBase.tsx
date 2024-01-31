@@ -130,8 +130,10 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * "CALCULATED"
    */
   isInfoPage?: 'YES' | 'NO' | 'CALCULATED'
-  /** The function to call when a user uploads an attachment through an element that
-   * allows attachment upload. See [uploadAttachment](https://oneblink.github.io/apps/modules/attachmentsService.html#uploadAttachment)
+  /**
+   * The function to call when a user uploads an attachment through an element
+   * that allows attachment upload. See
+   * [uploadAttachment](https://oneblink.github.io/apps/modules/attachmentsService.html#uploadAttachment)
    * for the structure of the argument and a sample function to be used.
    */
   onUploadAttachment?: typeof attachmentsService.uploadAttachment
