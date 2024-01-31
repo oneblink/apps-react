@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Some @media queries to @container queries to account for the preview in the console.
 
+### Fixed
+
+- repeatable set elements not being treated as readonly inside the `<OneBlinkReadOnlyForm />` component
+
 ## [5.7.0] - 2024-01-30
 
 ### Fixed

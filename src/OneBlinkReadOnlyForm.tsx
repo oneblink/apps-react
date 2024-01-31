@@ -21,6 +21,7 @@ function recursivelySetReadOnly(
       ) {
         return {
           ...element,
+          readOnly: true,
           elements: recursivelySetReadOnly(element.elements) || [],
         }
       }
