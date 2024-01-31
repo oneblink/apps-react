@@ -75,3 +75,10 @@
 .attachment__status-wrapper {
   display: inherit;
 }
+
+@container ob-form-container (min-width: $mobile) {
+  .column.is-one-quarter-ob {
+    flex: none;
+    width: 25%;
+  }
+}

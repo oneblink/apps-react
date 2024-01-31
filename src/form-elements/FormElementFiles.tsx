@@ -103,7 +103,7 @@ function FormElementFiles({
             {!element.readOnly &&
               (!element.maxEntries ||
                 attachments.length < element.maxEntries) && (
-                <div className="column is-one-quarter">
+                <div className="column is-one-quarter-ob">
                   <button
                     type="button"
                     className="button ob-files__add-new-button"

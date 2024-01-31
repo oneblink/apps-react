@@ -53,7 +53,7 @@ function FileCard({
   }, [element, fileName, uploadErrorMessage])
 
   return (
-    <div className="column is-one-quarter">
+    <div className="column is-one-quarter-ob">
       <div className="ob-files__box">
         <div className="ob-files__content">
           <FileCardContent
