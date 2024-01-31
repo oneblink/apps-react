@@ -487,9 +487,8 @@ export default function useLogin({
     }))
 
     try {
-      const resetPasswordResponse = await resetTemporaryPasswordCallback(
-        newPassword,
-      )
+      const resetPasswordResponse =
+        await resetTemporaryPasswordCallback(newPassword)
       if (isMounted.current) {
         setLoginState((currentState) => ({
           ...currentState,

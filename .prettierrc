@@ -1,4 +1,7 @@
 {
+  "plugins": [
+    "prettier-plugin-jsdoc"
+  ],
   "singleQuote": true,
   "trailingComma": "all",
   "semi": false

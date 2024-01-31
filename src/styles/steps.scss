@@ -200,10 +200,18 @@
     box-shadow: none;
     max-height: 0;
     overflow-y: auto;
-    -webkit-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    -moz-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    -o-transition: box-shadow 0.2s ease, max-height 0.2s ease;
-    transition: box-shadow 0.2s ease, max-height 0.2s ease;
+    -webkit-transition:
+      box-shadow 0.2s ease,
+      max-height 0.2s ease;
+    -moz-transition:
+      box-shadow 0.2s ease,
+      max-height 0.2s ease;
+    -o-transition:
+      box-shadow 0.2s ease,
+      max-height 0.2s ease;
+    transition:
+      box-shadow 0.2s ease,
+      max-height 0.2s ease;
 
     &.is-active {
       box-shadow: $elevation-3;

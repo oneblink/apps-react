@@ -2,12 +2,12 @@
 // Overrides
 //
 
-$green: #3A833C;
-$primary: #407E8C;
-$warning: #B85000;
-$info: #2D7AB9;
+$green: #3a833c;
+$primary: #407e8c;
+$warning: #b85000;
+$info: #2d7ab9;
 $success: $green;
-$danger: #E8113C;
+$danger: #e8113c;
 //bulma grey is #7A7A7A which is slightly too light
 $grey: #757575;
 
@@ -16,11 +16,17 @@ $button-focus-border-color: inherit;
 $button-focus-box-shadow-size: 0 0;
 
 // Elevations for Box Shadows
-$elevation-1: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+$elevation-1:
+  0 1px 3px 0 rgba(0, 0, 0, 0.2),
+  0 1px 1px 0 rgba(0, 0, 0, 0.14),
   0 2px 1px -1px rgba(0, 0, 0, 0.12);
-$elevation-2: 0 1px 5px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+$elevation-2:
+  0 1px 5px 0 rgba(0, 0, 0, 0.2),
+  0 2px 2px 0 rgba(0, 0, 0, 0.14),
   0 3px 1px -2px rgba(0, 0, 0, 0.12);
-$elevation-3: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.14),
+$elevation-3:
+  0 1px 8px 0 rgba(0, 0, 0, 0.2),
+  0 3px 4px 0 rgba(0, 0, 0, 0.14),
   0 3px 3px -2px rgba(0, 0, 0, 0.12);
 
 $size-0: 3.25rem;
