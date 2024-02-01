@@ -5,11 +5,12 @@
       height: auto;
     }
   }
+}
 
-  @media only screen and (max-width: 500px) {
-    .ob-button-radio-container {
-      width: 100%;
-
+@container ob-form-container (max-width: 500px) {
+  .ob-button-radio-container {
+    width: 100%;
+    .ob-buttons-radio {
       .ob-button {
         width: 100%;
         margin-right: 0;
