@@ -9,13 +9,6 @@
       margin-bottom: $size-8;
       border: $grey solid 1px;
       background: $white;
-
-      @media only screen and (min-width: $desktop) {
-        float: right;
-        margin-bottom: 0;
-        min-width: 0;
-        margin-left: $size-7;
-      }
     }
 
     .ob-element:nth-child(2) {
@@ -34,5 +27,18 @@
 
   &.even > .ob-repeatable-set__container {
     background-color: $white-bis;
+  }
+}
+
+@container ob-form-container (min-width: #{$desktop}) {
+  .ob-repeatable-set {
+    .ob-repeatable-set__container {
+      > .ob-button_remove {
+        float: right;
+        margin-bottom: 0;
+        min-width: 0;
+        margin-left: $size-7;
+      }
+    }
   }
 }
