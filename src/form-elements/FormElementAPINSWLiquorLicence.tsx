@@ -151,7 +151,11 @@ function FormElementAPINSWLiquorLicence({
         <div
           className={`notification ${liquorLicenceClassPrefix}record-display has-margin-top-6`}
         >
-          <Grid container spacing={1}>
+          <Grid
+            container
+            spacing={1}
+            className={`${liquorLicenceClassPrefix}container`}
+          >
             {value?.licenceDetail?.licenceName && (
               <Grid
                 item

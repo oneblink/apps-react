@@ -35,8 +35,6 @@
       margin-bottom: 0;
     }
   }
-  container-name: ob-form-container;
-  container-type: inline-size;
 }
 
 .ob-element:not(:last-child) {
@@ -47,7 +45,7 @@
   flex: 1;
 }
 
-@container ob-form-container (max-width: #{$mobile}) {
+@media only screen and (max-width: $mobile) {
   .ob-form-container {
     .ob-button {
       flex: 1;
@@ -57,7 +55,14 @@
       }
     }
   }
+}
 
+.ob-buttons-submit {
+  container-name: ob-buttons-submit;
+  container-type: inline-size;
+}
+
+@container ob-buttons-submit (max-width: #{$mobile}) {
   .ob-buttons-submit {
     .ob-button {
       flex: unset;

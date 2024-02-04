@@ -81,7 +81,7 @@ function FormElementFiles({
           }
         />
         <div className="control cypress-files-control">
-          <div className="columns is-multiline">
+          <div className="columns is-multiline ob-columns-container">
             {attachments.map((attachment, index) => {
               return (
                 <FormElementFile
