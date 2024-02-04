@@ -4,41 +4,31 @@
     padding: $size-5;
     padding-top: $size-7;
     margin-bottom: $size-5;
-
     > .ob-button_remove {
       margin-bottom: $size-8;
       border: $grey solid 1px;
       background: $white;
-    }
 
-    .ob-element:nth-child(2) {
-      margin-top: $size-6;
-    }
-  }
-
-  > .ob-button__add {
-    margin-bottom: 0;
-    min-width: 0;
-  }
-
-  &.odd > .ob-repeatable-set__container {
-    background-color: $white;
-  }
-
-  &.even > .ob-repeatable-set__container {
-    background-color: $white-bis;
-  }
-}
-
-@container ob-form-container (min-width: #{$desktop}) {
-  .ob-repeatable-set {
-    .ob-repeatable-set__container {
-      > .ob-button_remove {
+      @media only screen and (min-width: $desktop) {
         float: right;
         margin-bottom: 0;
         min-width: 0;
         margin-left: $size-7;
       }
     }
+
+    .ob-element:nth-child(2) {
+      margin-top: $size-6;
+    }
+  }
+  > .ob-button__add {
+    margin-bottom: 0;
+    min-width: 0;
+  }
+  &.odd > .ob-repeatable-set__container {
+    background-color: $white;
+  }
+  &.even > .ob-repeatable-set__container {
+    background-color: $white-bis;
   }
 }

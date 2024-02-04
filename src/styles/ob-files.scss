@@ -76,7 +76,12 @@
   display: inherit;
 }
 
-@container ob-form-container (min-width: #{$mobile}) {
+.ob-columns-container {
+  container-name: ob-columns-container;
+  container-type: inline-size;
+}
+
+@container ob-columns-container (min-width: #{$mobile}) {
   .column.is-one-quarter-ob {
     flex: none;
     width: 25%;
