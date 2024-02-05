@@ -29,8 +29,9 @@
       background-color: $white-bis;
     }
 
-    &:focus {
-      outline: none;
+    &:focus-visible {
+      outline-offset: $size-9;
+      outline: $input-focus-border-color auto 3px;
     }
   }
 }
