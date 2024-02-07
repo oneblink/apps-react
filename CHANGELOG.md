@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.8.0] - 2024-02-07
+
 ### Changed
 
 - Some @media queries to @container queries to account for the preview in the console.
@@ -14,6 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - repeatable set elements not being treated as readonly inside the `<OneBlinkReadOnlyForm />` component
+
+### Dependencies
+
+- update [@emotion/react](https://www.npmjs.com/package/@emotion/react) to [11.11.3](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.11.1](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material) to [5.15.6](https://github.com/mui/material-ui/releases/tag/v5.15.6) (from [5.14.16](https://github.com/mui/material-ui/releases/tag/v5.14.16))
+
+- update [bulma](https://www.npmjs.com/package/bulma) to [0.9.4](https://github.com/jgthms/bulma/releases/tag/0.9.4) (from [0.9.3](https://github.com/jgthms/bulma/releases/tag/0.9.3))
+
+- update [bulma-toast](https://www.npmjs.com/package/bulma-toast) to [2.4.3](https://github.com/rfoel/bulma-toast/releases/tag/v2.4.3) (from [2.4.1](https://github.com/rfoel/bulma-toast/releases/tag/v2.4.1))
+
+- update [clsx](https://www.npmjs.com/package/clsx) to [2.1.0](https://github.com/lukeed/clsx/releases/tag/v2.1.0) (from [2.0.0](https://github.com/lukeed/clsx/releases/tag/v2.0.0))
 
 ## [5.7.0] - 2024-01-30
 
