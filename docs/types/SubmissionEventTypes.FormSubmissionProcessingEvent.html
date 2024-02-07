@@ -16,7 +16,7 @@
 <li><a href="../modules/SubmissionEventTypes.html">SubmissionEventTypes</a></li>
 <li><a href="SubmissionEventTypes.FormSubmissionProcessingEvent.html">FormSubmissionProcessingEvent</a></li></ul>
 <h1>Type alias FormSubmissionProcessingEvent&lt;T&gt;</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">Form<wbr/>Submission<wbr/>Processing<wbr/>Event</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">:</span> <a href="SubmissionEventTypes.BaseFormSubmissionProcessing.html" class="tsd-signature-type tsd-kind-type-alias">BaseFormSubmissionProcessing</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">formSubmissionWorkflowEventId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">submissionEvent</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;EVENT&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">Form<wbr/>Submission<wbr/>Processing<wbr/>Event</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">:</span> <a href="SubmissionEventTypes.BaseFormSubmissionProcessing.html" class="tsd-signature-type tsd-kind-type-alias">BaseFormSubmissionProcessing</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">attempt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">delayInSeconds</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">formSubmissionWorkflowEventId</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">maxAttempts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">submissionEvent</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;EVENT&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
@@ -26,13 +26,33 @@
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
+<h5><span class="tsd-kind-property">attempt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>A number representing the attempt. First attempt will be 1, second attempt
+will be 2, and so on.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">delay<wbr/>In<wbr/>Seconds</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>The delay in seconds before the event will be processed. This is to allow
+for retries to be delayed to give third party systems time to recover.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li class="tsd-parameter">
 <h5><span class="tsd-kind-property">form<wbr/>Submission<wbr/>Workflow<wbr/>Event<wbr/>Id</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">max<wbr/>Attempts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Represents the number of failed attempts before an error will be reported
+to the customer. If the event succeeds before reaching the maximum
+attempts, the customer will be notified. If the event is not configured to
+allow retries, the <code>maxAttempts</code> should be 1.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">submission<wbr/>Event</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type tsd-kind-type-parameter">T</span></h5></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;EVENT&quot;</span></h5></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in node_modules/@oneblink/types/typescript/submissionEvents.d.ts:445</li></ul></aside></div>
+<li>Defined in node_modules/@oneblink/types/typescript/submissionEvents.d.ts:450</li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
