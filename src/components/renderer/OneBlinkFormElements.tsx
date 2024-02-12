@@ -42,6 +42,7 @@ import FormElementBoolean from '../../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
 import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
 import FormElementFreshdeskDependentField from '../../form-elements/FormElementFreshdeskDependentField'
+import FormElementArcGISWebMap from '../../form-elements/FormElementArcGISWebMap'
 
 import {
   APINSWTypes,
@@ -935,6 +936,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           />
         </LookupNotification>
       )
+    }
+    case 'arcGISWebMap': {
+      return <FormElementArcGISWebMap id={id} element={element} />
     }
     default: {
       console.warn('Invalid element', element)
