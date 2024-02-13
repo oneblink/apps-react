@@ -496,6 +496,7 @@ export default function generateDefaultData(
         case 'infoPage':
         case 'calculation':
         case 'summary':
+        case 'arcGISWebMap':
           break
         default: {
           console.warn('Default value is not supported for element type', el)

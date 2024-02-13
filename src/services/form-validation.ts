@@ -292,7 +292,8 @@ export function generateValidationSchema(
       case 'calculation':
       case 'image':
       case 'html':
-      case 'heading': {
+      case 'heading':
+      case 'arcGISWebMap': {
         return partialSchema
       }
     }
