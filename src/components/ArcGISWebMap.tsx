@@ -66,6 +66,7 @@ function FormElementArcGISWebMap({ element }: Props) {
           view,
           content: layerList,
           expanded: element.showLayerPanel,
+          mode: 'floating',
         }),
         'top-right',
       )
@@ -77,6 +78,7 @@ function FormElementArcGISWebMap({ element }: Props) {
           expandIcon: 'basemap',
           view,
           content: baseMapGallery,
+          mode: 'floating',
         }),
         'bottom-right',
       )
