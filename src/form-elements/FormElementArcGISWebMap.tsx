@@ -3,6 +3,7 @@ import { FormTypes } from '@oneblink/types'
 import OnLoading from '../components/renderer/OnLoading'
 import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
+import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
@@ -13,6 +14,11 @@ type Props = {
 
 function FormElementArcGISWebMap({ id, element }: Props) {
   const isOffline = useIsOffline()
+  const isFormReadOnly = useFormIsReadOnly()
+
+  if (isFormReadOnly) {
+    return null
+  }
 
   return (
     <div className="cypress-arcgis-web-map">
