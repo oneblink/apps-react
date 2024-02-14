@@ -16,6 +16,7 @@ type Props = {
 
 function FormElementArcGISWebMap({ element }: Props) {
   const [loadError, setLoadError] = React.useState<Error>()
+  const ref = React.useRef<HTMLDivElement | null>(null)
 
   React.useEffect(() => {
     let view: MapView
@@ -31,7 +32,7 @@ function FormElementArcGISWebMap({ element }: Props) {
 
         view = new MapView({
           map: map,
-          container: 'arcGISMapView',
+          container: ref.current || undefined,
         })
 
         // remove default widgets
@@ -114,7 +115,7 @@ function FormElementArcGISWebMap({ element }: Props) {
     )
   }
 
-  return <div className="arcgis-web-map" id="arcGISMapView" />
+  return <div className="arcgis-web-map" ref={ref} />
 }
 
 export default React.memo(FormElementArcGISWebMap)
