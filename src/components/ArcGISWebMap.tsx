@@ -15,73 +15,80 @@ type Props = {
 }
 
 function FormElementArcGISWebMap({ element }: Props) {
+  const [loadError, setLoadError] = React.useState<Error>()
+
   React.useEffect(() => {
     let view: MapView
 
     const loadMap = async () => {
-      const map = new WebMap({
-        portalItem: {
-          id: element.webMapId,
-        },
-      })
-      await map.load()
+      try {
+        const map = new WebMap({
+          portalItem: {
+            id: element.webMapId,
+          },
+        })
+        await map.load()
 
-      view = new MapView({
-        map: map,
-        container: 'arcGISMapView',
-      })
+        view = new MapView({
+          map: map,
+          container: 'arcGISMapView',
+        })
 
-      // remove default widgets
-      const components = view.ui.getComponents()
-      for (const component of components) {
-        view.ui.remove(component)
+        // remove default widgets
+        const components = view.ui.getComponents()
+        for (const component of components) {
+          view.ui.remove(component)
+        }
+
+        view.ui.add(
+          new Search({
+            view,
+          }),
+          'top-left',
+        )
+        view.ui.add(
+          new Home({
+            view,
+          }),
+          'top-left',
+        )
+        view.ui.add(
+          new Zoom({
+            view,
+          }),
+          'bottom-left',
+        )
+
+        const layerList = new LayerList({
+          view,
+        })
+
+        view.ui.add(
+          new Expand({
+            expandIcon: 'layers',
+            view,
+            content: layerList,
+            expanded: element.showLayerPanel,
+            mode: 'floating',
+          }),
+          'top-right',
+        )
+
+        const baseMapGallery = new BaseMapGallery({ view })
+
+        view.ui.add(
+          new Expand({
+            expandIcon: 'basemap',
+            view,
+            content: baseMapGallery,
+            mode: 'floating',
+          }),
+          'bottom-right',
+        )
+      } catch (e) {
+        console.warn('Error while trying to load arcgis web map ', e)
+        setLoadError(e as Error)
       }
-
-      view.ui.add(
-        new Search({
-          view,
-        }),
-        'top-left',
-      )
-      view.ui.add(
-        new Home({
-          view,
-        }),
-        'top-left',
-      )
-      view.ui.add(
-        new Zoom({
-          view,
-        }),
-        'bottom-left',
-      )
-
-      const layerList = new LayerList({
-        view,
-      })
-
-      view.ui.add(
-        new Expand({
-          expandIcon: 'layers',
-          view,
-          content: layerList,
-          expanded: element.showLayerPanel,
-          mode: 'floating',
-        }),
-        'top-right',
-      )
-
-      const baseMapGallery = new BaseMapGallery({ view })
-
-      view.ui.add(
-        new Expand({
-          expandIcon: 'basemap',
-          view,
-          content: baseMapGallery,
-          mode: 'floating',
-        }),
-        'bottom-right',
-      )
     }
 
     loadMap()
@@ -92,6 +99,20 @@ function FormElementArcGISWebMap({ element }: Props) {
       }
     }
   }, [element])
+
+  if (loadError) {
+    return (
+      <figure className="ob-figure">
+        <div className="figure-content has-text-centered">
+          <i className="material-icons icon-large has-margin-bottom-6 has-text-warning">
+            error
+          </i>
+          <h4 className="title is-4">We were unable to display your web map</h4>
+          <p>{loadError.message}</p>
+        </div>
+      </figure>
+    )
+  }
 
   return <div className="arcgis-web-map" id="arcGISMapView" />
 }
