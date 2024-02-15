@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- portal to `CopyToClipboardIconButton` snackbar
+
+### Added
+
 - ArcGIS Web Map element
 
 ## [5.8.0] - 2024-02-07
