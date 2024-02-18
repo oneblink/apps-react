@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.9.0] - 2024-02-18
+
 ### Added
 
 - ArcGIS Web Map element
+
+### Dependencies
+
+- depend upon [@arcgis/core](https://www.npmjs.com/package/@arcgis/core) 4.28.10
 
 ## [5.8.0] - 2024-02-07
 

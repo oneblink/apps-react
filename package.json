@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "5.9.0-beta.6",
+  "version": "5.9.0",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
