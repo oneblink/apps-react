@@ -427,6 +427,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     case 'captcha':
     case 'image':
     case 'heading':
+    case 'arcGISWebMap':
     case 'summary': {
       return null
     }
