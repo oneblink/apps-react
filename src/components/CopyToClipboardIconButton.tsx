@@ -1,6 +1,6 @@
 import * as React from 'react'
 import copy from 'copy-to-clipboard'
-import { IconButton, Tooltip, Snackbar, SxProps } from '@mui/material'
+import { IconButton, Tooltip, Snackbar, SxProps, Portal } from '@mui/material'
 import FileCopy from '@mui/icons-material/FileCopy'
 
 type Props = {
@@ -45,26 +45,28 @@ export function CopyToClipBoardIconButton({
           <FileCopy sx={large ? undefined : { fontSize: 18 }} />
         </IconButton>
       </Tooltip>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        open={isCopyToClipboardOpen}
-        onClose={handleClose}
-        autoHideDuration={1500}
-        ContentProps={{
-          'aria-describedby': 'copy-clip-board-message-id',
-        }}
-        message={
-          <span
-            id="copy-clip-board-message-id"
-            data-cypress="copied-text-to-clip-board-message"
-          >
-            Copied to Clipboard
-          </span>
-        }
-      />
+      <Portal>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          open={isCopyToClipboardOpen}
+          onClose={handleClose}
+          autoHideDuration={1500}
+          ContentProps={{
+            'aria-describedby': 'copy-clip-board-message-id',
+          }}
+          message={
+            <span
+              id="copy-clip-board-message-id"
+              data-cypress="copied-text-to-clip-board-message"
+            >
+              Copied to Clipboard
+            </span>
+          }
+        />
+      </Portal>
     </>
   )
 }
