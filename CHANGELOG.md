@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.10.0] - 2024-02-21
+
 ### Added
 
 - portal to `CopyToClipboardIconButton` snackbar
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [5.4.0](https://github.com/oneblink/sdk-core-js/releases/tag/v5.4.0) (from [5.3.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [5.9.0] - 2024-02-18
 
