@@ -5,7 +5,9 @@ import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 
-const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
+const ArcGISWebMap = React.lazy(
+  () => import(/* webpackChunkName: "ArcGIS" */ '../components/ArcGISWebMap'),
+)
 
 type Props = {
   id: string
