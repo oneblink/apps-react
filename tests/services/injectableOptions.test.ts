@@ -5,8 +5,8 @@ describe('processInjectableOption()', () => {
     const options = processInjectableOption({
       option: {
         id: '1edcce9e-3635-407b-8adc-ce614fde742c',
-        label: '{ELEMENT:Name}, {ELEMENT:Set|Set_2|SetText_2}',
-        value: '{ELEMENT:Email} | {ELEMENT:Set|Set_2|SetNum_2}',
+        label: '{ELEMENT:First_Name} {ELEMENT:Last_Name}',
+        value: '{ELEMENT:Email}',
       },
       submission: {
         First_Name: 'John',
