@@ -3,7 +3,6 @@ import { formElementsService } from '@oneblink/sdk-core'
 
 import { localisationService, authService } from '@oneblink/apps'
 import { v4 as uuidv4 } from 'uuid'
-import { matchElementsTagRegex } from '@oneblink/sdk-core/dist/formElementsService'
 
 type MatchesResult = {
   elementPaths: string[][]
@@ -83,19 +82,22 @@ const getMatches = (text: string) => {
   const elementPaths: string[][] = []
   let nextText = text
 
-  matchElementsTagRegex(text, ({ elementMatch, elementName }) => {
-    const elementPath = elementName.split('|')
-    elementPaths.push(elementPath)
-    // Need to replace the repeatable set injectables with this,
-    // so they are not picked up when we replace the submission values at the root level.
-    // They will then be set back as they should to be replaced.
-    if (elementPath.length > 1) {
-      nextText = nextText.replace(
-        elementMatch,
-        `{ELEMENT_NESTED:${elementMatch.split('{ELEMENT:')[1]}`,
-      )
-    }
-  })
+  formElementsService.matchElementsTagRegex(
+    text,
+    ({ elementMatch, elementName }) => {
+      const elementPath = elementName.split('|')
+      elementPaths.push(elementPath)
+      // Need to replace the repeatable set injectables with this,
+      // so they are not picked up when we replace the submission values at the root level.
+      // They will then be set back as they should to be replaced.
+      if (elementPath.length > 1) {
+        nextText = nextText.replace(
+          elementMatch,
+          `{ELEMENT_NESTED:${elementMatch.split('{ELEMENT:')[1]}`,
+        )
+      }
+    },
+  )
 
   return { elementPaths, text: nextText }
 }
@@ -118,8 +120,11 @@ const generateInjectedOptions = ({
   repeatableSetEntries: unknown[] | undefined
 }) => {
   const iterableEntries = repeatableSetEntries ?? [{}]
-  return iterableEntries.reduce<FormTypes.ChoiceElementOption[]>(
-    (generatedOptions, entry) => {
+  const { generatedOptions } = iterableEntries.reduce<{
+    values: Set<string>
+    generatedOptions: FormTypes.ChoiceElementOption[]
+  }>(
+    ({ values, generatedOptions }, entry) => {
       if (typeof entry === 'object' && !!entry && !Array.isArray(entry)) {
         const commonReplaceableParams = {
           userProfile: authService.getUserProfile() || undefined,
@@ -151,7 +156,7 @@ const generateInjectedOptions = ({
           '{ELEMENT:',
         )
 
-        matchElementsTagRegex(
+        formElementsService.matchElementsTagRegex(
           replacedLabel,
           ({ elementMatch, elementName }) => {
             const elementPath = elementName.split('|')
@@ -162,7 +167,7 @@ const generateInjectedOptions = ({
             )
           },
         )
-        matchElementsTagRegex(
+        formElementsService.matchElementsTagRegex(
           replacedValue,
           ({ elementMatch, elementName }) => {
             const elementPath = elementName.split('|')
@@ -191,17 +196,24 @@ const generateInjectedOptions = ({
             ...commonReplaceableParams,
           },
         )
-        generatedOptions.push({
-          ...option,
-          id: iterableEntries.length === 1 ? option.id : uuidv4(),
-          label: replacedLabel,
-          value: replacedValue,
-        })
+        if (!values.has(replacedValue)) {
+          generatedOptions.push({
+            ...option,
+            id: iterableEntries.length === 1 ? option.id : uuidv4(),
+            label: replacedLabel,
+            value: replacedValue,
+          })
+          values.add(replacedValue)
+        }
       }
-      return generatedOptions
+      return { generatedOptions, values }
     },
-    [],
+    {
+      values: new Set(),
+      generatedOptions: [],
+    },
   )
+  return generatedOptions
 }
 
 const getRepeatableSetEntries = (
