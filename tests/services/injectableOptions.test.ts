@@ -79,6 +79,18 @@ describe('processInjectableOption()', () => {
               },
             ],
           },
+          {
+            Set_2: [
+              {
+                SetText_2: 'Third Text',
+                SetNum_2: 3,
+              },
+              {
+                SetText_2: 'Fourth Text',
+                SetNum_2: 4,
+              },
+            ],
+          },
         ],
       },
       formElements: [
@@ -284,10 +296,14 @@ describe('processInjectableOption()', () => {
       ],
     })
 
-    expect(options.length).toBe(2)
+    expect(options.length).toBe(4)
     expect(options[0].label).toBe('John, First Text')
     expect(options[0].value).toBe('john@smith.com | 1')
     expect(options[1].label).toBe('John, Second Text')
     expect(options[1].value).toBe('john@smith.com | 2')
+    expect(options[2].label).toBe('John, Third Text')
+    expect(options[2].value).toBe('john@smith.com | 3')
+    expect(options[3].label).toBe('John, Fourth Text')
+    expect(options[3].value).toBe('john@smith.com | 4')
   })
 })
