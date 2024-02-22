@@ -53,21 +53,20 @@ const processInjectableOption = ({
     return []
   }
 
-  const repeatableSetRef: string[] | undefined = allRepeatableSetRefs[0]
-  if (!repeatableSetRef) {
-    return []
-  }
+  const repeatableSetRef = allRepeatableSetRefs[0] as string[] | undefined
 
-  const repeatableSetEntries = getRepeatableSetEntries(
-    repeatableSetRef.slice(0, -1),
-    submission,
-  )
+  const repeatableSetEntries = !repeatableSetRef
+    ? undefined
+    : getRepeatableSetEntries(repeatableSetRef.slice(0, -1), submission)
 
-  const repeatableSetElement = formElementsService.findFormElement(
-    formElements,
-    (e) =>
-      e.type === 'repeatableSet' && e.name === repeatableSetRef.reverse()[1],
-  ) as FormTypes.RepeatableSetElement
+  const repeatableSetElement = !repeatableSetRef
+    ? undefined
+    : (formElementsService.findFormElement(
+        formElements,
+        (e) =>
+          e.type === 'repeatableSet' &&
+          e.name === repeatableSetRef.reverse()[1],
+      ) as FormTypes.RepeatableSetElement)
   return generateInjectedOptions({
     label: labelMatchResult,
     value: valueMatchResult,
@@ -90,10 +89,12 @@ const getMatches = (text: string) => {
     // Need to replace the repeatable set injectables with this,
     // so they are not picked up when we replace the submission values at the root level.
     // They will then be set back as they should to be replaced.
-    nextText = nextText.replace(
-      elementMatch,
-      `{ELEMENT_NESTED:${elementMatch.split('{ELEMENT:')[1]}`,
-    )
+    if (elementPath.length > 1) {
+      nextText = nextText.replace(
+        elementMatch,
+        `{ELEMENT_NESTED:${elementMatch.split('{ELEMENT:')[1]}`,
+      )
+    }
   })
 
   return { elementPaths, text: nextText }
@@ -116,7 +117,8 @@ const generateInjectedOptions = ({
   submission: SubmissionTypes.S3SubmissionData['submission']
   repeatableSetEntries: unknown[] | undefined
 }) => {
-  return (repeatableSetEntries ?? [{}]).reduce<FormTypes.ChoiceElementOption[]>(
+  const iterableEntries = repeatableSetEntries ?? [{}]
+  return iterableEntries.reduce<FormTypes.ChoiceElementOption[]>(
     (generatedOptions, entry) => {
       if (typeof entry === 'object' && !!entry && !Array.isArray(entry)) {
         const commonReplaceableParams = {
@@ -191,7 +193,7 @@ const generateInjectedOptions = ({
         )
         generatedOptions.push({
           ...option,
-          id: uuidv4(),
+          id: iterableEntries.length === 1 ? option.id : uuidv4(),
           label: replacedLabel,
           value: replacedValue,
         })
