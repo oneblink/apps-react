@@ -53,16 +53,20 @@ const processInjectableOption = ({
     return []
   }
 
+  const repeatableSetRef: string[] | undefined = allRepeatableSetRefs[0]
+  if (!repeatableSetRef) {
+    return []
+  }
+
   const repeatableSetEntries = getRepeatableSetEntries(
-    allRepeatableSetRefs[0].slice(0, -1),
+    repeatableSetRef.slice(0, -1),
     submission,
   )
 
   const repeatableSetElement = formElementsService.findFormElement(
     formElements,
     (e) =>
-      e.type === 'repeatableSet' &&
-      e.name === allRepeatableSetRefs[0].reverse()[1],
+      e.type === 'repeatableSet' && e.name === repeatableSetRef.reverse()[1],
   ) as FormTypes.RepeatableSetElement
   return generateInjectedOptions({
     label: labelMatchResult,
