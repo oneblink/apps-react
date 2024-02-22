@@ -56,7 +56,7 @@ describe('processInjectableOption()', () => {
     ])
   })
 
-  it('should return correct values for root element with repeatable set entries', () => {
+  it('should return correct values for root element with repeatable set entries. (De-duplication)', () => {
     const options = processInjectableOption({
       option: {
         id: '1edcce9e-3635-407b-8adc-ce614fde742c',
@@ -152,11 +152,9 @@ describe('processInjectableOption()', () => {
       ],
     })
 
-    expect(options.length).toBe(2)
+    expect(options.length).toBe(1)
     expect(options[0].label).toBe('John, Letter A')
     expect(options[0].value).toBe('john@smith.com')
-    expect(options[1].label).toBe('John, Letter B')
-    expect(options[1].value).toBe('john@smith.com')
   })
 
   it('should return correct values for root element with nested repeatable set entries', () => {
