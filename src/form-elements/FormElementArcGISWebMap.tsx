@@ -6,7 +6,10 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 
 const ArcGISWebMap = React.lazy(
-  () => import(/* webpackChunkName: "ArcGIS" */ '../components/ArcGISWebMap'),
+  () => import(
+    /* webpackChunkName: "ArcGIS" */ 
+    /* webpackMode: "lazy-once" */
+  '../components/ArcGISWebMap'),
 )
 
 type Props = {
