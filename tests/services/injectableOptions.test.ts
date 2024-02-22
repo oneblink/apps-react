@@ -49,7 +49,7 @@ describe('processInjectableOption()', () => {
 
     expect(options).toEqual([
       {
-        id: 'id',
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
         label: 'John Smith',
         value: 'john@smith.com',
       },
