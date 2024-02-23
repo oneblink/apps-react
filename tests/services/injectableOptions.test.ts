@@ -152,9 +152,116 @@ describe('processInjectableOption()', () => {
       ],
     })
 
-    expect(options.length).toBe(1)
+    expect(options).toEqual([
+      {
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+        label: 'John, Letter A',
+        value: 'john@smith.com',
+      },
+    ])
+  })
+
+  it('should return correct values for root element with repeatable set entries.', () => {
+    const options = processInjectableOption({
+      option: {
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+        label: '{ELEMENT:Name}, {ELEMENT:Set|SetText}',
+        value: '{ELEMENT:Set|SetText}',
+      },
+      submission: {
+        Name: 'John',
+        Email: 'john@smith.com',
+        Set: [
+          {
+            SetText: 'Letter A',
+          },
+          {
+            SetText: 'Letter B',
+          },
+        ],
+      },
+      formElements: [
+        {
+          name: 'Name',
+          label: 'Name',
+          type: 'text',
+          required: true,
+          id: '9331449b-46de-4573-82cd-b9494b01d126',
+          conditionallyShow: false,
+          requiredMessage: 'You must name your character!',
+          readOnly: false,
+          isDataLookup: true,
+          isElementLookup: false,
+          dataLookupId: 290,
+          lookupButton: {
+            icon: 'search',
+            label: 'Find',
+          },
+          hintPosition: 'BELOW_LABEL',
+          hint: '<div>Search for your character name to find pre-existing character data</div>',
+        },
+        {
+          name: 'Email',
+          label: 'Email',
+          type: 'email',
+          required: false,
+          id: 'd0902113-3f77-4070-adbd-ca3ae95ce091',
+          conditionallyShow: false,
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+        },
+        {
+          name: 'Set',
+          label: 'Set',
+          type: 'repeatableSet',
+          id: '18dcd3e0-6e2f-462e-803b-e24562d9fa6d',
+          conditionallyShow: false,
+          elements: [
+            {
+              name: 'SetText',
+              label: 'SetText',
+              type: 'text',
+              required: false,
+              id: 'f128138b-b6f5-4856-9e6c-9b3013b16c1b',
+              conditionallyShow: false,
+              readOnly: false,
+              isDataLookup: false,
+              isElementLookup: false,
+            },
+          ],
+          readOnly: false,
+        },
+        {
+          name: 'Select',
+          label: 'Select',
+          type: 'select',
+          required: false,
+          id: 'ad7ff12d-57f3-44a8-999b-d1716ed4e988',
+          conditionallyShow: false,
+          options: [
+            {
+              id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+              label: '{ELEMENT:Name}, {ELEMENT:Set|SetText}',
+              value: '{ELEMENT:Set|SetText}',
+              displayAlways: false,
+            },
+          ],
+          readOnly: false,
+          isDataLookup: false,
+          isElementLookup: false,
+          multi: false,
+          optionsType: 'CUSTOM',
+          conditionallyShowOptions: false,
+        },
+      ],
+    })
+
+    expect(options.length).toBe(2)
     expect(options[0].label).toBe('John, Letter A')
-    expect(options[0].value).toBe('john@smith.com')
+    expect(options[0].value).toBe('Letter A')
+    expect(options[1].label).toBe('John, Letter B')
+    expect(options[1].value).toBe('Letter B')
   })
 
   it('should return correct values for root element with nested repeatable set entries', () => {
