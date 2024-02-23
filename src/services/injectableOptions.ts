@@ -300,11 +300,12 @@ export const injectOptionsAcrossAllElements = ({
     switch (e.type) {
       case 'repeatableSet':
       case 'page':
-      case 'section': {
+      case 'section':
+      case 'form': {
         return {
           ...e,
           elements: injectOptionsAcrossAllElements({
-            elements: e.elements,
+            elements: e.elements ?? [],
             submission,
             taskContext,
             userProfile,
