@@ -3,7 +3,7 @@
     "target": "ES2019",
     "module": "ES2020",
     "moduleResolution": "Node",
-    "lib": ["ES6", "webworker", "dom"],
+    "lib": ["ES2021", "webworker", "dom"],
     "jsx": "react",
     "allowJs": true,
     "declaration": true,
@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "inlineSources": true
+    "inlineSources": true,
   },
   "include": ["./src"],
   "typedocOptions": {
@@ -27,9 +27,9 @@
     "hideGenerator": true,
     "navigation": {
       "includeCategories": true,
-      "includeGroups": true
+      "includeGroups": true,
     },
     "categorizeByGroup": true,
-    "visibilityFilters": {}
-  }
+    "visibilityFilters": {},
+  },
 }
