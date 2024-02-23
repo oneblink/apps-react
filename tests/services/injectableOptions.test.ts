@@ -1,5 +1,12 @@
 import processInjectableOption from '../../src/services/injectableOptions'
-
+const otherArgs = {
+  taskContext: {
+    task: undefined,
+    taskGroup: undefined,
+    taskGroupInstance: undefined,
+  },
+  userProfile: undefined,
+}
 describe('processInjectableOption()', () => {
   it('should return correct values for root element', () => {
     const options = processInjectableOption({
@@ -45,6 +52,7 @@ describe('processInjectableOption()', () => {
           conditionallyShow: false,
         },
       ],
+      ...otherArgs,
     })
 
     expect(options).toEqual([
@@ -150,6 +158,7 @@ describe('processInjectableOption()', () => {
           conditionallyShowOptions: false,
         },
       ],
+      ...otherArgs,
     })
 
     expect(options).toEqual([
@@ -255,6 +264,7 @@ describe('processInjectableOption()', () => {
           conditionallyShowOptions: false,
         },
       ],
+      ...otherArgs,
     })
 
     expect(options.length).toBe(2)
@@ -410,6 +420,7 @@ describe('processInjectableOption()', () => {
           conditionallyShowOptions: false,
         },
       ],
+      ...otherArgs,
     })
 
     expect(options.length).toBe(4)
@@ -573,6 +584,7 @@ describe('processInjectableOption()', () => {
           conditionallyShowOptions: false,
         },
       ],
+      ...otherArgs,
     })
 
     expect(options.length).toBe(4)

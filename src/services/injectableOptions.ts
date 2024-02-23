@@ -1,8 +1,10 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { formElementsService, typeCastService } from '@oneblink/sdk-core'
 
-import { localisationService, authService } from '@oneblink/apps'
+import { localisationService } from '@oneblink/apps'
 import { v4 as uuidv4 } from 'uuid'
+import { TaskContext } from '../hooks/useTaskContext'
+import { MiscTypes } from '@oneblink/types'
 
 type MatchesResult = {
   elementPaths: string[][]
@@ -13,10 +15,14 @@ const processInjectableOption = ({
   option,
   submission,
   formElements,
+  taskContext,
+  userProfile,
 }: {
   option: FormTypes.ChoiceElementOption
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElements: FormTypes.FormElement[]
+  taskContext: TaskContext
+  userProfile: MiscTypes.UserProfile | undefined
 }): FormTypes.ChoiceElementOption[] => {
   const labelMatchResult = getMatches(option.label)
   const valueMatchResult = getMatches(option.value)
@@ -77,6 +83,8 @@ const processInjectableOption = ({
     repeatableSetEntries,
     repeatableSetFormElements: repeatableSetElement?.elements ?? [],
     submission,
+    userProfile,
+    taskContext,
   })
 }
 export default processInjectableOption
@@ -113,6 +121,8 @@ const generateInjectedOptions = ({
   value,
   submission,
   repeatableSetEntries,
+  taskContext,
+  userProfile,
 }: {
   rootFormElements: FormTypes.FormElement[]
   repeatableSetFormElements: FormTypes.FormElement[]
@@ -121,6 +131,8 @@ const generateInjectedOptions = ({
   value: MatchesResult
   submission: SubmissionTypes.S3SubmissionData['submission']
   repeatableSetEntries: unknown[] | undefined
+  taskContext: TaskContext
+  userProfile: MiscTypes.UserProfile | undefined
 }) => {
   const iterableEntries = repeatableSetEntries ?? [{}]
   const { generatedOptions } = iterableEntries.reduce<{
@@ -130,10 +142,10 @@ const generateInjectedOptions = ({
     ({ values, generatedOptions }, entry) => {
       if (typeof entry === 'object' && !!entry && !Array.isArray(entry)) {
         const commonReplaceableParams = {
-          userProfile: authService.getUserProfile() || undefined,
-          task: undefined,
-          taskGroup: undefined,
-          taskGroupInstance: undefined,
+          userProfile,
+          task: taskContext.task,
+          taskGroup: taskContext.taskGroup,
+          taskGroupInstance: taskContext.taskGroupInstance,
         }
 
         // Replace any root level elements first
@@ -273,10 +285,17 @@ const flattenSetEntries = (
   return entryValues
 }
 
-export const injectOptionsAcrossAllElements = (
-  elements: FormTypes.FormElement[],
-  submission: SubmissionTypes.S3SubmissionData['submission'],
-): FormTypes.FormElement[] => {
+export const injectOptionsAcrossAllElements = ({
+  elements,
+  submission,
+  taskContext,
+  userProfile,
+}: {
+  elements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  taskContext: TaskContext
+  userProfile: MiscTypes.UserProfile | undefined
+}): FormTypes.FormElement[] => {
   return elements.map<FormTypes.FormElement>((e) => {
     switch (e.type) {
       case 'repeatableSet':
@@ -284,7 +303,12 @@ export const injectOptionsAcrossAllElements = (
       case 'section': {
         return {
           ...e,
-          elements: injectOptionsAcrossAllElements(e.elements, submission),
+          elements: injectOptionsAcrossAllElements({
+            elements: e.elements,
+            submission,
+            taskContext,
+            userProfile,
+          }),
         } as FormTypes.FormElement
       }
       default: {
@@ -299,6 +323,8 @@ export const injectOptionsAcrossAllElements = (
                 option: o,
                 submission,
                 formElements: elements,
+                taskContext,
+                userProfile,
               })
               newOptions.push(...injected)
               return newOptions

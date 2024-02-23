@@ -187,7 +187,7 @@ function OneBlinkFormBase({
   onUploadAttachment,
 }: Props) {
   const isOffline = useIsOffline()
-  const { isUsingFormsKey } = useAuth()
+  const { isUsingFormsKey, userProfile } = useAuth()
 
   const theme = React.useMemo(
     () =>
@@ -210,6 +210,14 @@ function OneBlinkFormBase({
     }
     return formElementsService.determineIsInfoPage(definition)
   }, [definition, isInfoPageProp])
+
+  const taskContextValue = React.useMemo(() => {
+    return {
+      task,
+      taskGroup,
+      taskGroupInstance,
+    }
+  }, [task, taskGroup, taskGroupInstance])
 
   //
   //
@@ -591,10 +599,12 @@ function OneBlinkFormBase({
       allowNavigation()
 
       // transplant injected options on the definition
-      const elementsWithInjectedOptions = injectOptionsAcrossAllElements(
-        definition.elements,
-        submissionData.submission,
-      )
+      const elementsWithInjectedOptions = injectOptionsAcrossAllElements({
+        elements: definition.elements,
+        submission: submissionData.submission,
+        taskContext: taskContextValue,
+        userProfile: userProfile ?? undefined,
+      })
       onSubmit({
         definition: {
           ...definition,
@@ -611,13 +621,15 @@ function OneBlinkFormBase({
       checkBsbAreValidating,
       formElementsValidation,
       checkBsbsCanBeSubmitted,
+      checkAttachmentsCanBeSubmitted,
       definition,
       attachmentRetentionInDays,
       isOffline,
       isPendingQueueEnabled,
       allowNavigation,
+      taskContextValue,
+      userProfile,
       onSubmit,
-      checkAttachmentsCanBeSubmitted,
       setFormSubmission,
     ],
   )
@@ -763,14 +775,6 @@ function OneBlinkFormBase({
   // #endregion
   //
   //
-
-  const taskContextValue = React.useMemo(() => {
-    return {
-      task,
-      taskGroup,
-      taskGroupInstance,
-    }
-  }, [task, taskGroup, taskGroupInstance])
 
   const lastElementUpdatedExistsOnForm = React.useMemo(() => {
     return !!formElementsService.findFormElement(
