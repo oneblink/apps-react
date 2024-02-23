@@ -48,6 +48,7 @@ import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
 import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
+import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -589,8 +590,16 @@ function OneBlinkFormBase({
 
       allowNavigation()
 
+      // transplant injected options on the definition
+      const elementsWithInjectedOptions = injectOptionsAcrossAllElements(
+        definition.elements,
+        submissionData.submission,
+      )
       onSubmit({
-        definition,
+        definition: {
+          ...definition,
+          elements: elementsWithInjectedOptions,
+        },
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })

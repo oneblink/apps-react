@@ -6,7 +6,6 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { useLoadDynamicOptionsEffect } from './useDynamicOptionsLoaderState'
-import { formElementsService } from '@oneblink/sdk-core'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import processInjectableOption from '../services/injectableOptions'
 
@@ -49,14 +48,6 @@ export default function useFormElementOptions<T>({
   const withInjectedOptions = React.useMemo(() => {
     return shownOptions.reduce<FormTypes.ChoiceElementOption[]>(
       (memo, option) => {
-        //No replaceable stuff
-        if (
-          !formElementsService.ElementWYSIWYGRegex.test(option.label) &&
-          !formElementsService.ElementWYSIWYGRegex.test(option.value)
-        ) {
-          memo.push(option)
-          return memo
-        }
         const newOptions = processInjectableOption({
           option,
           submission: formSubmissionModel,

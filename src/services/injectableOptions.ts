@@ -1,5 +1,5 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { formElementsService } from '@oneblink/sdk-core'
+import { formElementsService, typeCastService } from '@oneblink/sdk-core'
 
 import { localisationService, authService } from '@oneblink/apps'
 import { v4 as uuidv4 } from 'uuid'
@@ -20,8 +20,11 @@ const processInjectableOption = ({
 }): FormTypes.ChoiceElementOption[] => {
   const labelMatchResult = getMatches(option.label)
   const valueMatchResult = getMatches(option.value)
-  if (!labelMatchResult || !valueMatchResult) {
-    return []
+  if (
+    !labelMatchResult.elementPaths.length &&
+    !valueMatchResult.elementPaths.length
+  ) {
+    return [option]
   }
 
   // References to elements in repeatable sets, must be sourced from the same repeatable set
@@ -263,4 +266,42 @@ const flattenSetEntries = (
     }
   }
   return entryValues
+}
+
+export const injectOptionsAcrossAllElements = (
+  elements: FormTypes.FormElement[],
+  submission: SubmissionTypes.S3SubmissionData['submission'],
+): FormTypes.FormElement[] => {
+  return elements.map<FormTypes.FormElement>((e) => {
+    switch (e.type) {
+      case 'repeatableSet':
+      case 'page':
+      case 'section': {
+        return {
+          ...e,
+          elements: injectOptionsAcrossAllElements(e.elements, submission),
+        } as FormTypes.FormElement
+      }
+      default: {
+        const optionsElement = typeCastService.formElements.toOptionsElement(e)
+        if (optionsElement) {
+          return {
+            ...optionsElement,
+            options: optionsElement.options?.reduce<
+              FormTypes.ChoiceElementOption[]
+            >((newOptions, o) => {
+              const injected = processInjectableOption({
+                option: o,
+                submission,
+                formElements: elements,
+              })
+              newOptions.push(...injected)
+              return newOptions
+            }, []),
+          }
+        }
+        return e
+      }
+    }
+  })
 }
