@@ -199,7 +199,7 @@ const generateInjectedOptions = ({
         if (!values.has(replacedValue)) {
           generatedOptions.push({
             ...option,
-            id: iterableEntries.length === 1 ? option.id : uuidv4(),
+            id: uuidv4(),
             label: replacedLabel,
             value: replacedValue,
           })
@@ -213,6 +213,11 @@ const generateInjectedOptions = ({
       generatedOptions: [],
     },
   )
+
+  if (generatedOptions.length === 1) {
+    generatedOptions[0].id = option.id
+  }
+
   return generatedOptions
 }
 
