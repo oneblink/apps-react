@@ -19,7 +19,7 @@ export default function useReplaceableText(text: string) {
         taskGroup,
         taskGroupInstance,
       },
-    )
+    ).text
   }, [
     elements,
     formSubmissionModel,
