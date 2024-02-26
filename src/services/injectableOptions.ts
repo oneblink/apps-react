@@ -7,25 +7,7 @@ import { TaskContext } from '../hooks/useTaskContext'
 
 type Option = Pick<FormTypes.ChoiceElementOption, 'value' | 'label'>
 
-type Match = Map<string, Match | undefined>
-
-function groupElementNames(memo: Match, rootElementNames: string[]): Match {
-  const [repeatableSetElementName, ...elementNames] = rootElementNames
-  if (elementNames.length) {
-    const currentMap = memo.get(repeatableSetElementName)
-    memo.set(
-      repeatableSetElementName,
-      groupElementNames(
-        currentMap instanceof Map ? currentMap : new Map(),
-        elementNames,
-      ),
-    )
-  } else {
-    memo.set(repeatableSetElementName, undefined)
-  }
-
-  return memo
-}
+type Match = Map<string, boolean>
 
 function getNestedElementMatches(option: Option) {
   const matches: Match = new Map()
@@ -35,7 +17,8 @@ function getNestedElementMatches(option: Option) {
       excludeNestedElements: false,
     },
     ({ elementName }) => {
-      groupElementNames(matches, elementName.split('|'))
+      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
+      matches.set(repeatableSetElementName, !!elementNames.length)
     },
   )
   return matches
@@ -83,8 +66,8 @@ function processInjectableDynamicOption({
   })
 
   if (matches.size) {
-    matches.forEach((match, repeatableSetElementName) => {
-      if (match instanceof Map && match.size) {
+    matches.forEach((hasNestedFormElements, repeatableSetElementName) => {
+      if (hasNestedFormElements) {
         // Attempt to create a new option for each entry in the repeatable set.
         const entries = submission?.[repeatableSetElementName]
         if (Array.isArray(entries)) {
