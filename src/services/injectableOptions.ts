@@ -7,23 +7,6 @@ import { TaskContext } from '../hooks/useTaskContext'
 
 type Option = Pick<FormTypes.ChoiceElementOption, 'value' | 'label'>
 
-type Match = Map<string, boolean>
-
-function getNestedElementMatches(option: Option) {
-  const matches: Match = new Map()
-  formElementsService.matchElementsTagRegex(
-    {
-      text: option.label + ' ' + option.value,
-      excludeNestedElements: false,
-    },
-    ({ elementName }) => {
-      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
-      matches.set(repeatableSetElementName, !!elementNames.length)
-    },
-  )
-  return matches
-}
-
 function processInjectableDynamicOption({
   option,
   submission,
@@ -73,10 +56,17 @@ function processInjectableDynamicOption({
   }
 
   // Find nested form elements
-  const matches = getNestedElementMatches({
-    label,
-    value,
-  })
+  const matches: Map<string, boolean> = new Map()
+  formElementsService.matchElementsTagRegex(
+    {
+      text: label + ' ' + value,
+      excludeNestedElements: false,
+    },
+    ({ elementName }) => {
+      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
+      matches.set(repeatableSetElementName, !!elementNames.length)
+    },
+  )
 
   if (matches.size) {
     matches.forEach((hasNestedFormElements, repeatableSetElementName) => {
