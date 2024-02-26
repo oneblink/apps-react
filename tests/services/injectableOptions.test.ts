@@ -5,9 +5,84 @@ const otherArgs = {
     taskGroup: undefined,
     taskGroupInstance: undefined,
   },
-  userProfile: undefined,
+  userProfile: {
+    userId: 'userId',
+    username: 'username',
+    email: 'user@name.com',
+  },
 }
 describe('processInjectableOption()', () => {
+  it('should return user information', () => {
+    const options = processInjectableOption({
+      option: {
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+        label: '{USER:email}',
+        value: '{USER:username}',
+      },
+      submission: {},
+      formElements: [],
+      ...otherArgs,
+    })
+
+    expect(options).toEqual([
+      {
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+        label: otherArgs.userProfile.email,
+        value: otherArgs.userProfile.username,
+      },
+    ])
+  })
+
+  it.skip('should return no options if any of the replaceable parameters are missing', () => {
+    const options = processInjectableOption({
+      option: {
+        id: '1edcce9e-3635-407b-8adc-ce614fde742c',
+        label: '{ELEMENT:First_Name} {ELEMENT:Last_Name}',
+        value: '{ELEMENT:Email}',
+      },
+      submission: {
+        First_Name: 'John',
+        Last_Name: undefined,
+        Email: 'john@smith.com',
+      },
+      formElements: [
+        {
+          id: 'bef56860-60d7-11e9-8720-a17b002a77a6',
+          name: 'First_Name',
+          type: 'text',
+          label: 'First Name',
+          isDataLookup: false,
+          isElementLookup: false,
+          required: false,
+          conditionallyShow: false,
+        },
+        {
+          id: 'bef56860-60d7-11e9-8720-a17b002a77a7',
+          name: 'Last_Name',
+          type: 'text',
+          label: 'Last Name',
+          isDataLookup: false,
+          isElementLookup: false,
+          required: false,
+          conditionallyShow: false,
+        },
+        {
+          id: 'bef56860-60d7-11e9-8720-a17b002a7766',
+          name: 'Email',
+          type: 'email',
+          label: 'Email',
+          isDataLookup: false,
+          isElementLookup: false,
+          required: false,
+          conditionallyShow: false,
+        },
+      ],
+      ...otherArgs,
+    })
+
+    expect(options).toEqual([])
+  })
+
   it('should return correct values for root element', () => {
     const options = processInjectableOption({
       option: {
@@ -434,41 +509,42 @@ describe('processInjectableOption()', () => {
     expect(options[3].value).toBe('john@smith.com | 4')
   })
 
-  it.skip('should return correct values for root element with repeatable set entries and nested repeatable set entries', () => {
+  it('should return correct values for root element with repeatable set entries and nested repeatable set entries', () => {
     const options = processInjectableOption({
       option: {
         id: '1edcce9e-3635-407b-8adc-ce614fde742c',
         label:
-          '{ELEMENT:Name}, {ELEMENT:Set|SetText} + {ELEMENT:Set|Set_2|SetText_2}',
-        value: '{ELEMENT:Email} | {ELEMENT:Set|Set_2|SetNum_2}',
+          '{ELEMENT:Name}, {ELEMENT:Parents|Parent_Nickname} + {ELEMENT:Parents|Grand_Parents|Grand_Parent_Nickname}',
+        value:
+          '{ELEMENT:Email} | {ELEMENT:Parents|Grand_Parents|Grand_Parent_Age}',
       },
       submission: {
         Name: 'John',
         Email: 'john@smith.com',
-        Set: [
+        Parents: [
           {
-            SetText: 'Letter A',
-            Set_2: [
+            Parent_Nickname: 'Mum',
+            Grand_Parents: [
               {
-                SetText_2: 'First Text',
-                SetNum_2: 1,
+                Grand_Parent_Nickname: 'Grandma',
+                Grand_Parent_Age: 1,
               },
               {
-                SetText_2: 'Second Text',
-                SetNum_2: 2,
+                Grand_Parent_Nickname: 'Grandpa',
+                Grand_Parent_Age: 2,
               },
             ],
           },
           {
-            SetText: 'Letter B',
-            Set_2: [
+            Parent_Nickname: 'Dad',
+            Grand_Parents: [
               {
-                SetText_2: 'Third Text',
-                SetNum_2: 3,
+                Grand_Parent_Nickname: 'Granny',
+                Grand_Parent_Age: 3,
               },
               {
-                SetText_2: 'Fourth Text',
-                SetNum_2: 4,
+                Grand_Parent_Nickname: 'Pop',
+                Grand_Parent_Age: 4,
               },
             ],
           },
@@ -506,15 +582,15 @@ describe('processInjectableOption()', () => {
           isElementLookup: false,
         },
         {
-          name: 'Set',
-          label: 'Set',
+          name: 'Parents',
+          label: 'Parents',
           type: 'repeatableSet',
           id: '18dcd3e0-6e2f-462e-803b-e24562d9fa6d',
           conditionallyShow: false,
           elements: [
             {
-              name: 'SetText',
-              label: 'SetText',
+              name: 'Parent_Nickname',
+              label: 'Parent Nickname',
               type: 'text',
               required: false,
               id: 'f128138b-b6f5-4856-9e6c-9b3013b16c1b',
@@ -524,15 +600,15 @@ describe('processInjectableOption()', () => {
               isElementLookup: false,
             },
             {
-              name: 'Set_2',
-              label: 'Set 2',
+              name: 'Grand_Parents',
+              label: 'Grand Parents',
               type: 'repeatableSet',
               id: '4f54c954-7340-4be9-b8fc-3cfddaab26f7',
               conditionallyShow: false,
               elements: [
                 {
-                  name: 'SetText_2',
-                  label: 'SetText 2',
+                  name: 'Grand_Parent_Nickname',
+                  label: 'GrandParent Nickname',
                   type: 'text',
                   required: false,
                   id: '286283f1-75eb-4225-be4e-05975cc47453',
@@ -542,8 +618,8 @@ describe('processInjectableOption()', () => {
                   isElementLookup: false,
                 },
                 {
-                  name: 'SetNum_2',
-                  label: 'SetNum 2',
+                  name: 'Grand_Parent_Age',
+                  label: 'Grand Parent Age',
                   type: 'number',
                   required: false,
                   id: 'c36ba384-23f5-402e-b9fb-4df0e94f1fa7',
@@ -571,8 +647,9 @@ describe('processInjectableOption()', () => {
             {
               id: '1edcce9e-3635-407b-8adc-ce614fde742c',
               label:
-                '{ELEMENT:Name}, {ELEMENT:Set|SetText} + {ELEMENT:Set|Set_2|SetText_2}',
-              value: '{ELEMENT:Email} | {ELEMENT:Set|Set_2|SetNum_2}',
+                '{ELEMENT:Name}, {ELEMENT:Parents|Parent_Nickname} + {ELEMENT:Parents|Grand_Parents|Grand_Parent_Nickname}',
+              value:
+                '{ELEMENT:Email} | {ELEMENT:Parents|Grand_Parents|Grand_Parent_Age}',
               displayAlways: false,
             },
           ],
@@ -588,13 +665,13 @@ describe('processInjectableOption()', () => {
     })
 
     expect(options.length).toBe(4)
-    expect(options[0].label).toBe('John, Letter A + First Text')
+    expect(options[0].label).toBe('John, Mum + Grandma')
     expect(options[0].value).toBe('john@smith.com | 1')
-    expect(options[1].label).toBe('John, Letter A + Second Text')
+    expect(options[1].label).toBe('John, Mum + Grandpa')
     expect(options[1].value).toBe('john@smith.com | 2')
-    expect(options[2].label).toBe('John, Letter B + Third Text')
+    expect(options[2].label).toBe('John, Dad + Granny')
     expect(options[2].value).toBe('john@smith.com | 3')
-    expect(options[3].label).toBe('John, Letter B + Fourth Text')
+    expect(options[3].label).toBe('John, Dad + Pop')
     expect(options[3].value).toBe('john@smith.com | 4')
   })
 })
