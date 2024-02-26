@@ -36,6 +36,8 @@ function processInjectableDynamicOption({
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
 }): Map<string, string> {
+  const newOptions: Map<string, string> = new Map()
+
   // Replace root level form element values
   const replaceableParams: Parameters<
     typeof localisationService.replaceInjectablesWithElementValues
@@ -48,16 +50,27 @@ function processInjectableDynamicOption({
     taskGroupInstance: params.taskContext.taskGroupInstance,
     excludeNestedElements: true,
   }
-  const label = localisationService.replaceInjectablesWithElementValues(
+  const {
+    text: label,
+    hadAllInjectablesReplaced: hadAllInjectablesReplacedInLabel,
+  } = localisationService.replaceInjectablesWithElementValues(
     option.label,
     replaceableParams,
   )
-  const value = localisationService.replaceInjectablesWithElementValues(
+  if (!hadAllInjectablesReplacedInLabel) {
+    return newOptions
+  }
+
+  const {
+    text: value,
+    hadAllInjectablesReplaced: hadAllInjectablesReplacedInValue,
+  } = localisationService.replaceInjectablesWithElementValues(
     option.value,
     replaceableParams,
   )
-
-  const newOptions: Map<string, string> = new Map()
+  if (!hadAllInjectablesReplacedInValue) {
+    return newOptions
+  }
 
   // Find nested form elements
   const matches = getNestedElementMatches({

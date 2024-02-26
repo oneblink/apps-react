@@ -33,7 +33,7 @@ describe('processInjectableOption()', () => {
     ])
   })
 
-  it.skip('should return no options if any of the replaceable parameters are missing', () => {
+  it('should return no options if any of the replaceable parameters are missing', () => {
     const options = processInjectableOption({
       option: {
         id: '1edcce9e-3635-407b-8adc-ce614fde742c',
