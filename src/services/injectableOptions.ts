@@ -277,9 +277,10 @@ export function injectOptionsAcrossAllElements({
   userProfile: MiscTypes.UserProfile | undefined
 }): FormTypes.FormElement[] {
   // We iterate over entries as an array of submission objects because
-  // elements with options within repeatable sets need to include all
-  // of the options from each entry within the set. Otherwise we will
-  // not have the labels for each available option to display the submission.
+  // child elements of a repeatable set that have injected options
+  // need to include all of the injected options from the same elements
+  // in sibling entries within the set. Otherwise we will not have the
+  // labels for each available option to display the submission.
   return injectOptionsAcrossEntriesElements({
     ...params,
     entries: [submission],
