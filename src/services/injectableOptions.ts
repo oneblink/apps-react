@@ -158,55 +158,130 @@ export default function processInjectableOption({
   return generatedOptions
 }
 
-export const injectOptionsAcrossAllElements = ({
+function injectOptionsAcrossEntriesElements({
   elements,
-  submission,
+  entries,
   taskContext,
   userProfile,
 }: {
   elements: FormTypes.FormElement[]
-  submission: SubmissionTypes.S3SubmissionData['submission']
+  entries: SubmissionTypes.S3SubmissionData['submission'][]
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
-}): FormTypes.FormElement[] => {
+}): FormTypes.FormElement[] {
   return elements.map<FormTypes.FormElement>((e) => {
     switch (e.type) {
-      case 'repeatableSet':
       case 'page':
-      case 'section':
-      case 'form': {
+      case 'section': {
         return {
           ...e,
-          elements: injectOptionsAcrossAllElements({
-            elements: e.elements ?? [],
-            submission,
+          elements: injectOptionsAcrossEntriesElements({
+            elements: e.elements,
+            entries,
             taskContext,
             userProfile,
           }),
-        } as FormTypes.FormElement
+        }
+      }
+      case 'form': {
+        if (Array.isArray(e.elements)) {
+          return {
+            ...e,
+            elements: injectOptionsAcrossEntriesElements({
+              elements: e.elements,
+              entries: entries.reduce<
+                SubmissionTypes.S3SubmissionData['submission'][]
+              >((memo, entry) => {
+                if (entry[e.name]) {
+                  memo.push(
+                    entry[
+                      e.name
+                    ] as SubmissionTypes.S3SubmissionData['submission'],
+                  )
+                }
+                return memo
+              }, []),
+              taskContext,
+              userProfile,
+            }),
+          }
+        } else {
+          return e
+        }
+      }
+      case 'repeatableSet': {
+        return {
+          ...e,
+          elements: injectOptionsAcrossEntriesElements({
+            elements: e.elements,
+            entries: entries.reduce<
+              SubmissionTypes.S3SubmissionData['submission'][]
+            >((memo, entry) => {
+              const nestedEntries = entry[e.name]
+              if (Array.isArray(nestedEntries)) {
+                memo.push(
+                  ...(nestedEntries as SubmissionTypes.S3SubmissionData['submission'][]),
+                )
+              }
+              return memo
+            }, []),
+            taskContext,
+            userProfile,
+          }),
+        }
       }
       default: {
         const optionsElement = typeCastService.formElements.toOptionsElement(e)
         if (optionsElement) {
           return {
             ...optionsElement,
-            options: optionsElement.options?.reduce<
-              FormTypes.ChoiceElementOption[]
-            >((newOptions, o) => {
-              const injected = processInjectableOption({
-                option: o,
-                submission,
-                formElements: elements,
-                taskContext,
-                userProfile,
-              })
-              newOptions.push(...injected)
-              return newOptions
-            }, []),
+            options: entries.reduce<FormTypes.ChoiceElementOption[]>(
+              (newOptions, submission) => {
+                optionsElement.options?.forEach((o) => {
+                  const injected = processInjectableOption({
+                    option: o,
+                    submission,
+                    formElements: elements,
+                    taskContext,
+                    userProfile,
+                  })
+
+                  newOptions.push(
+                    ...injected.filter((generatedOption) => {
+                      return !newOptions.some(
+                        (addedOption) =>
+                          addedOption.value === generatedOption.value,
+                      )
+                    }),
+                  )
+                })
+                return newOptions
+              },
+              [],
+            ),
           }
         }
         return e
       }
     }
+  })
+}
+
+export function injectOptionsAcrossAllElements({
+  submission,
+  ...params
+}: {
+  elements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  taskContext: TaskContext
+  userProfile: MiscTypes.UserProfile | undefined
+}): FormTypes.FormElement[] {
+  // We iterate over entries as an array of submission objects because
+  // elements with options within repeatable sets need to include all
+  // of the options from each entry within the set. Otherwise we will
+  // not have the labels for each available option to display the submission.
+  return injectOptionsAcrossEntriesElements({
+    ...params,
+    entries: [submission],
   })
 }
