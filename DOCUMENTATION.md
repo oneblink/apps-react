@@ -22,3 +22,49 @@ npm install react@17 react-dom@17 @oneblink/apps-react --save
 - [@mui/lab](https://www.npmjs.com/package/@mui/lab)
 - [@mui/material](https://www.npmjs.com/package/@mui/material)
 - [@mui/x-date-pickers](https://www.npmjs.com/package/@mui/x-date-pickers)
+
+## Build Tool Considerations
+
+This library utilises React's lazy loading with dynamic imports for certain components. Depending on your choice of build tool, this can result in a large amount of chunked Javascript files once your project is built.
+
+Below are some examples for common build tools on how to manage these chunks:
+
+### Using Webpack v5
+
+```js
+module.exports = {
+  //...,
+  optimization: {
+    moduleIds: 'deterministic',
+    runtimeChunk: 'single',
+    splitChunks: {
+      cacheGroups: {
+        arcgis: {
+          test: /[\\/]node_modules[\\/]((@arcgis)|(@esri))[\\/]/,
+          name: 'arcgis',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+}
+```
+
+### Using Vite v4
+
+```js
+export default defineConfig(() => ({
+  build: {
+    //...,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('@arcgis') || id.includes('@esri')) {
+            return 'arcgis'
+          }
+        },
+      },
+    },
+  },
+}))
+```
