@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - support for injectable option `label` and `value`
+- build tool chunking examples to docs
 
 ## [5.10.0] - 2024-02-21
 
