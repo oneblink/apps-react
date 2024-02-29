@@ -55,6 +55,7 @@ function Modal({
         backdrop: () => <div className="modal-background-faded"></div>,
       }}
       container={ref?.current}
+      disableScrollLock={true}
     >
       <div className={clsx('modal-card', cardClassName)}>
         {title && (
