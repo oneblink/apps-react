@@ -8,6 +8,7 @@ import Zoom from '@arcgis/core/widgets/Zoom'
 import LayerList from '@arcgis/core/widgets/LayerList'
 import Expand from '@arcgis/core/widgets/Expand'
 import BaseMapGallery from '@arcgis/core/widgets/BasemapGallery'
+import OnLoading from '../components/renderer/OnLoading'
 import '../styles/arcgis-external.css'
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 function FormElementArcGISWebMap({ element }: Props) {
   const [loadError, setLoadError] = React.useState<Error>()
   const ref = React.useRef<HTMLDivElement | null>(null)
+  const [isLoading, setIsLoading] = React.useState<boolean>(true)
 
   React.useEffect(() => {
     let view: MapView
@@ -86,9 +88,15 @@ function FormElementArcGISWebMap({ element }: Props) {
           }),
           'bottom-right',
         )
+
+        // once the view has loaded
+        view.when(() => {
+          setIsLoading(false)
+        })
       } catch (e) {
         console.warn('Error while trying to load arcgis web map ', e)
         setLoadError(e as Error)
+        setIsLoading(false)
       }
     }
 
@@ -115,7 +123,12 @@ function FormElementArcGISWebMap({ element }: Props) {
     )
   }
 
-  return <div className="arcgis-web-map" ref={ref} />
+  return (
+    <>
+      {isLoading && <OnLoading />}
+      <div className="arcgis-web-map" ref={ref} />
+    </>
+  )
 }
 
 export default React.memo(FormElementArcGISWebMap)

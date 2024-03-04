@@ -37,7 +37,14 @@ function FormElementArcGISWebMap({ id, element }: Props) {
             </div>
           </figure>
         ) : (
-          <Suspense fallback={<OnLoading />}>
+          <Suspense
+            fallback={
+              <>
+                <OnLoading />
+                <div className="arcgis-web-map" />
+              </>
+            }
+          >
             <ArcGISWebMap element={element} />
           </Suspense>
         )}
