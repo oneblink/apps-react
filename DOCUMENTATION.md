@@ -52,6 +52,8 @@ module.exports = {
 
 ### Using Vite v4
 
+While the following example will significantly reduce the amount of chunks generated, the resulting chunk will be requested on load of your application.
+
 ```js
 export default defineConfig(() => ({
   build: {
@@ -68,3 +70,31 @@ export default defineConfig(() => ({
   },
 }))
 ```
+
+If you'd prefer to keep the lazy-loading behaviour, you can omit the above. You may also need to adjust your precaching strategies depending on your service worker configuration, in order to prevent a large number of chunks being requested on load of your application. 
+
+Below is an example on how you can seperate these chunks in the build output: 
+
+```js
+export default defineConfig(() => ({
+  build: {
+    //...,
+    rollupOptions: {
+      output: {
+        chunkFileNames(chunkInfo) {
+          const isArcgis = chunkInfo.moduleIds.find(
+            (id) => id.includes('@arcgis') || id.includes('@esri'),
+          )
+          if (isArcgis) {
+            return `static/arcgis/[name].[hash].js`
+          }
+
+          return `static/[name].[hash].js`
+        },
+      },
+    },
+  },
+}))
+```
+
+You can then adjust your precaching configuration to omit files contained in the `static/arcgis` folder.
