@@ -343,7 +343,7 @@ const LocationImage = React.memo(function LocationImage({
   )
 })
 
-const LocationPicker = React.memo(function SummaryResult({
+const LocationPicker = React.memo(function LocationPicker({
   location,
   onChange,
 }: {
@@ -355,6 +355,23 @@ const LocationPicker = React.memo(function SummaryResult({
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: googleMapsApiKey ?? '',
   })
+
+  return (
+    <figure className="ob-figure">
+      {isLoaded && (
+        <GoogleLocationPicker location={location} onChange={onChange} />
+      )}
+    </figure>
+  )
+})
+
+const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
+  location,
+  onChange,
+}: {
+  location: Coords
+  onChange: (newLocation: Coords) => void
+}) {
   const [map, setMap] = React.useState<google.maps.Map | null>(null)
   const [marker, setMarker] = React.useState<google.maps.Marker | null>(null)
 
@@ -409,31 +426,27 @@ const LocationPicker = React.memo(function SummaryResult({
   )
 
   return (
-    <figure className="ob-figure">
-      {isLoaded && (
-        <GoogleMap
-          onLoad={(map) => setMap(map)}
-          onUnmount={() => setMap(null)}
-          mapContainerStyle={{
-            height: 300,
-          }}
-          center={originalCenter.current}
-          zoom={location.zoom}
-          onZoomChanged={onZoomChanged}
-          onClick={mapMouseEvent}
-          options={{ draggableCursor: 'pointer' }}
-        >
-          <Marker
-            onLoad={(marker) => setMarker(marker)}
-            onUnmount={() => setMarker(null)}
-            animation={markerAnimation}
-            position={originalCenter.current}
-            draggable
-            onDragEnd={mapMouseEvent}
-          ></Marker>
-        </GoogleMap>
-      )}
-    </figure>
+    <GoogleMap
+      onLoad={(map) => setMap(map)}
+      onUnmount={() => setMap(null)}
+      mapContainerStyle={{
+        height: 300,
+      }}
+      center={originalCenter.current}
+      zoom={location.zoom}
+      onZoomChanged={onZoomChanged}
+      onClick={mapMouseEvent}
+      options={{ draggableCursor: 'pointer' }}
+    >
+      <Marker
+        onLoad={(marker) => setMarker(marker)}
+        onUnmount={() => setMarker(null)}
+        animation={markerAnimation}
+        position={originalCenter.current}
+        draggable
+        onDragEnd={mapMouseEvent}
+      ></Marker>
+    </GoogleMap>
   )
 })
 
