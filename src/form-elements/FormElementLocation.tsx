@@ -382,22 +382,6 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
 
   const markerAnimation = React.useMemo(() => google.maps.Animation.DROP, [])
 
-  React.useEffect(() => {
-    if (!map) {
-      return
-    }
-    const latLng = { lat: location.latitude, lng: location.longitude }
-    map.panTo(latLng)
-    if (!marker) {
-      return
-    }
-    marker.setPosition(latLng)
-    //this enables the marker to animate after moving it
-    marker.setMap(null)
-    marker.setAnimation(markerAnimation)
-    marker.setMap(map)
-  }, [map, marker, markerAnimation, location.latitude, location.longitude])
-
   const onZoomChanged = React.useCallback(() => {
     if (!map) {
       return
@@ -410,7 +394,7 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
     })
   }, [location.latitude, location.longitude, map, onChange])
 
-  const mapMouseEvent = React.useCallback(
+  const handleDragEnd = React.useCallback(
     (e: google.maps.MapMouseEvent) => {
       if (!e.latLng) {
         return
@@ -421,8 +405,28 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
         longitude: lng,
         zoom: location.zoom,
       })
+      if (map) {
+        map.panTo(e.latLng)
+      }
     },
-    [onChange, location.zoom],
+    [location.zoom, map, onChange],
+  )
+
+  const handleClick = React.useCallback(
+    (e: google.maps.MapMouseEvent) => {
+      handleDragEnd(e)
+
+      if (!e.latLng || !marker) {
+        return
+      }
+
+      marker.setPosition(e.latLng)
+      // this enables the marker to animate after moving it
+      marker.setMap(null)
+      marker.setAnimation(markerAnimation)
+      marker.setMap(map)
+    },
+    [handleDragEnd, map, marker, markerAnimation],
   )
 
   return (
@@ -435,7 +439,7 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
       center={originalCenter.current}
       zoom={location.zoom}
       onZoomChanged={onZoomChanged}
-      onClick={mapMouseEvent}
+      onClick={handleClick}
       options={{ draggableCursor: 'pointer' }}
     >
       <Marker
@@ -444,7 +448,7 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
         animation={markerAnimation}
         position={originalCenter.current}
         draggable
-        onDragEnd={mapMouseEvent}
+        onDragEnd={handleDragEnd}
       ></Marker>
     </GoogleMap>
   )
