@@ -1,15 +1,16 @@
 import * as React from 'react'
+import { FormTypes } from '@oneblink/types'
+import { Sentry } from '@oneblink/apps'
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
+import queryString from 'query-string'
+
 import useBooleanState from '../hooks/useBooleanState'
 import useIsOffline from '../hooks/useIsOffline'
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import * as geolocation from '../services/geolocation'
-import queryString from 'query-string'
 import OnLoading from '../components/renderer/OnLoading'
 import defaultCoords from '../services/defaultCoordinates'
 import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
-import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import { Sentry } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 
@@ -355,13 +356,30 @@ const LocationPicker = React.memo(function SummaryResult({
     googleMapsApiKey: googleMapsApiKey ?? '',
   })
   const [map, setMap] = React.useState<google.maps.Map | null>(null)
+  const [marker, setMarker] = React.useState<google.maps.Marker | null>(null)
 
-  const center = React.useMemo(() => {
-    return {
-      lat: location.latitude,
-      lng: location.longitude,
+  const originalCenter = React.useRef<{ lat: number; lng: number }>({
+    lat: location.latitude,
+    lng: location.longitude,
+  })
+
+  const markerAnimation = React.useMemo(() => google.maps.Animation.DROP, [])
+
+  React.useEffect(() => {
+    if (!map) {
+      return
     }
-  }, [location.latitude, location.longitude])
+    const latLng = { lat: location.latitude, lng: location.longitude }
+    map.panTo(latLng)
+    if (!marker) {
+      return
+    }
+    marker.setPosition(latLng)
+    //this enables the marker to animate after moving it
+    marker.setMap(null)
+    marker.setAnimation(markerAnimation)
+    marker.setMap(map)
+  }, [map, marker, markerAnimation, location.latitude, location.longitude])
 
   const onZoomChanged = React.useCallback(() => {
     if (!map) {
@@ -375,6 +393,21 @@ const LocationPicker = React.memo(function SummaryResult({
     })
   }, [location.latitude, location.longitude, map, onChange])
 
+  const mapMouseEvent = React.useCallback(
+    (e: google.maps.MapMouseEvent) => {
+      if (!e.latLng) {
+        return
+      }
+      const { lat, lng } = e.latLng.toJSON()
+      onChange({
+        latitude: lat,
+        longitude: lng,
+        zoom: location.zoom,
+      })
+    },
+    [onChange, location.zoom],
+  )
+
   return (
     <figure className="ob-figure">
       {isLoaded && (
@@ -384,25 +417,19 @@ const LocationPicker = React.memo(function SummaryResult({
           mapContainerStyle={{
             height: 300,
           }}
-          center={center}
+          center={originalCenter.current}
           zoom={location.zoom}
           onZoomChanged={onZoomChanged}
+          onClick={mapMouseEvent}
+          options={{ draggableCursor: 'pointer' }}
         >
           <Marker
-            animation={google.maps.Animation.DROP}
-            position={center}
+            onLoad={(marker) => setMarker(marker)}
+            onUnmount={() => setMarker(null)}
+            animation={markerAnimation}
+            position={originalCenter.current}
             draggable
-            onDragEnd={(e) => {
-              if (!e.latLng) {
-                return
-              }
-              const { lat, lng } = e.latLng.toJSON()
-              onChange({
-                latitude: lat,
-                longitude: lng,
-                zoom: location.zoom,
-              })
-            }}
+            onDragEnd={mapMouseEvent}
           ></Marker>
         </GoogleMap>
       )}
