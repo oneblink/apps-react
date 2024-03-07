@@ -112,6 +112,7 @@ function FormElementDate({
               className="input ob-input cypress-date-control"
               onBlur={onBlur}
               autoComplete="off"
+              aria-describedby={`${id}-hint`}
             />
 
             <span className="ob-input-icon icon is-small is-right">

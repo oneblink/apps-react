@@ -45,7 +45,11 @@ function FormElementArcGISWebMap({ id, element }: Props) {
               </>
             }
           >
-            <ArcGISWebMap element={element} />
+            <ArcGISWebMap
+              element={element}
+              id={id}
+              aria-describedby={`${id}-hint`}
+            />
           </Suspense>
         )}
       </FormElementLabelContainer>

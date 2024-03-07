@@ -157,6 +157,7 @@ function FormElementBSB({
                 }
                 setIsDirty()
               }}
+              aria-describedby={`${id}-hint`}
             />
           </div>
           {bsbRecord && (

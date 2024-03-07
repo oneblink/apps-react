@@ -95,6 +95,7 @@ function FormElementTime({
               placeholder={element.placeholderValue}
               disabled={element.readOnly}
               className="input ob-input"
+              aria-describedby={`${id}-hint`}
             />
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">schedule</i>

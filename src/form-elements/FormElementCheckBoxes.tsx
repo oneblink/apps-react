@@ -146,6 +146,7 @@ function FormElementCheckboxes({
                           'is-light': !isSelected,
                         },
                       )}
+                      aria-describedby={`${id}-hint`}
                     />
                   )
                 })}
@@ -173,6 +174,7 @@ function FormElementCheckboxes({
                         onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
                         edge="start"
+                        aria-describedby={`${id}-hint`}
                       />{' '}
                       {option.label}
                     </label>

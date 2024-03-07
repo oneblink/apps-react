@@ -58,6 +58,7 @@ function FormElementTextarea({
             required={element.required}
             disabled={element.readOnly}
             onBlur={setIsDirty}
+            aria-describedby={`${id}-hint`}
           />
         </div>
 

@@ -318,6 +318,7 @@ function FormElementCamera({
             required={element.required}
             disabled={element.readOnly}
             onChange={fileChange}
+            aria-describedby={`${id}-hint`}
           />
           <div className="buttons ob-buttons">
             {value ? (

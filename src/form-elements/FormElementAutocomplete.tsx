@@ -134,6 +134,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             searchMinCharacters={0}
             isDirty={isDirty}
             setIsDirty={setIsDirty}
+            aria-describedby={`${id}-hint`}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -208,6 +209,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
+          aria-describedby={`${id}-hint`}
         />
       </FormElementLabelContainer>
     </div>

@@ -89,6 +89,7 @@ function FormElementRadio({
                         })
                       }}
                       edge="start"
+                      aria-describedby={`${id}-hint`}
                     />
                     {` ${option.label}`}
                   </label>

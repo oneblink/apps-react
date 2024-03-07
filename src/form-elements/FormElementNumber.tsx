@@ -83,6 +83,7 @@ function FormElementNumber({
                 onBlur={setIsDirty}
                 ref={htmlInputElementRef}
                 onWheel={handleWheel}
+                aria-describedby={`${id}-hint`}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <i className="material-icons is-size-5">tag</i>

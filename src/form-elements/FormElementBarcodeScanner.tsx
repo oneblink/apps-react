@@ -114,6 +114,7 @@ function FormElementBarcodeScanner({
             }
             onScan={handleScan}
             onClose={stopBarcodeScanner}
+            aria-describedby={`${id}-hint`}
           />
         ) : (
           <div>
@@ -134,6 +135,7 @@ function FormElementBarcodeScanner({
                   required={element.required}
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
+                  aria-describedby={`${id}-hint`}
                 />
                 <span className="ob-input-icon icon is-small is-right">
                   <i className="material-icons is-size-5">document_scanner</i>
@@ -185,6 +187,7 @@ type BarcodeScannerProps = {
   restrictedBarcodeTypes: FormTypes.BarcodeScannerElement['restrictedBarcodeTypes']
   onScan: (barcode: string | undefined) => void
   onClose: () => void
+  'aria-describedby'?: string
 }
 
 function BarcodeScannerSupported(props: BarcodeScannerProps) {
@@ -251,6 +254,7 @@ function BarcodeScanner({
   restrictedBarcodeTypes,
   onScan,
   onClose,
+  ...props
 }: BarcodeScannerProps & {
   cameraDevices: CameraDevice[]
 }) {
@@ -312,7 +316,11 @@ function BarcodeScanner({
       <div className="figure-content-absolute-center">
         <OnLoading small />
       </div>
-      <div id={id} className="ob-figure__barcode-scanner" />
+      <div
+        id={id}
+        className="ob-figure__barcode-scanner"
+        aria-describedby={props['aria-describedby']}
+      />
     </BarcodeScannerFigure>
   )
 }

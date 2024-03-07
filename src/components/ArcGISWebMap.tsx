@@ -13,9 +13,11 @@ import '../styles/arcgis-external.css'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
+  id: string
+  'aria-describedby'?: string
 }
 
-function FormElementArcGISWebMap({ element }: Props) {
+function FormElementArcGISWebMap({ element, id, ...props }: Props) {
   const [loadError, setLoadError] = React.useState<Error>()
   const ref = React.useRef<HTMLDivElement | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
@@ -126,7 +128,12 @@ function FormElementArcGISWebMap({ element }: Props) {
   return (
     <>
       {isLoading && <OnLoading />}
-      <div className="arcgis-web-map" ref={ref} />
+      <div
+        className="arcgis-web-map"
+        ref={ref}
+        id={id}
+        aria-describedby={props['aria-describedby']}
+      />
     </>
   )
 }

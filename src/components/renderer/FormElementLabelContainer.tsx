@@ -34,12 +34,12 @@ function FormElementLabelContainer({
         </label>
         {element.hint &&
           (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
-            <HintTooltip hint={element.hint} />
+            <HintTooltip hint={element.hint} inputId={id} />
           )}
       </div>
       {element.hint && element.hintPosition === 'BELOW_LABEL' && (
         <div className="ob-hint-text__container">
-          <HintBelowLabel hint={element.hint} />
+          <HintBelowLabel hint={element.hint} inputId={id} />
         </div>
       )}
       {children}
@@ -47,7 +47,13 @@ function FormElementLabelContainer({
   )
 }
 
-export function HintTooltip({ hint }: { hint: string }) {
+export function HintTooltip({
+  hint,
+  inputId,
+}: {
+  hint: string
+  inputId: string
+}) {
   const html = useReplaceableText(hint)
 
   return (
@@ -56,16 +62,25 @@ export function HintTooltip({ hint }: { hint: string }) {
       arrow
       enterTouchDelay={0}
       leaveTouchDelay={10000}
+      id={`${inputId}-hint`}
     >
       <i className="material-icons has-text-grey ob-label__hint">info</i>
     </Tooltip>
   )
 }
 
-export function HintBelowLabel({ hint }: { hint: string }) {
+export function HintBelowLabel({
+  hint,
+  inputId,
+}: {
+  hint: string
+  inputId: string
+}) {
   const html = useReplaceableText(hint)
 
-  return <QuillHTML html={html} className="ob-hint-text" />
+  return (
+    <QuillHTML html={html} className="ob-hint-text" id={`${inputId}-hint`} />
+  )
 }
 
 export default React.memo(FormElementLabelContainer)

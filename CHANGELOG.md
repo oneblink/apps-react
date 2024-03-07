@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Screen reader support for hints
+
+### Added
+
 - support for injectable option `label` and `value`
 - build tool chunking examples to docs
 - loading spinner to ArcGIS Web Map element
