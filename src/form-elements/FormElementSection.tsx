@@ -30,6 +30,8 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
 
+  const id = `${props['idPrefix']}${element.id}`
+
   React.useEffect(() => {
     if (isCollapsed && !isDisplayingError) {
       setIsDisplayingError(true)
@@ -123,7 +125,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           {element.label}
           {element.hint &&
             (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
-              <HintTooltip hint={element.hint} />
+              <HintTooltip hint={element.hint} inputId={id} />
             )}
         </h3>
         <div className="ob-section__header-icon-container">
@@ -144,7 +146,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         </div>
         {element.hint && element.hintPosition === 'BELOW_LABEL' && (
           <div className="ob-section__hint-text-container">
-            <HintBelowLabel hint={element.hint} />
+            <HintBelowLabel hint={element.hint} inputId={id} />
           </div>
         )}
       </div>
