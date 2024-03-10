@@ -73,7 +73,7 @@ export default function useAttachment(
           {
             formId,
             fileName: newAttachment.fileName,
-            contentType: data.type,
+            contentType: data.type || 'application/octet-stream',
             data,
             isPrivate,
             onProgress,
