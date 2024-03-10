@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `location` form element to support selecting a position as well as dragging a pin to a position
+
+## [5.11.0] - 2024-03-06
+
 ### Added
 
 - Screen reader support for hints
@@ -17,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - build tool chunking examples to docs
 - loading spinner to ArcGIS Web Map element
 - bulma icon styles
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [6.0.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [5.4.0](https://github.com/oneblink/sdk-core-js/releases/tag/v5.4.0))
 
 ## [5.10.0] - 2024-02-21
 
