@@ -215,6 +215,7 @@ function FormElementCompliance({
                           'is-light': !isSelected,
                         },
                       )}
+                      aria-describedby={`${id}-hint`}
                     />
                   </div>
                 )

@@ -79,6 +79,7 @@ function FormElementFiles({
               event.target.files ? Array.from(event.target.files) : [],
             )
           }
+          aria-describedby={`${id}-hint`}
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline ob-columns-container">

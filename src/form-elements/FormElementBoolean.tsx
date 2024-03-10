@@ -53,6 +53,7 @@ function FormElementBoolean({
                 value: e.target.checked,
               })
             }}
+            aria-describedby={`${id}-hint`}
           />
         }
       >

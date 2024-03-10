@@ -34,6 +34,7 @@ type Props<T> = {
     label: string,
     abortSignal: AbortSignal,
   ) => Promise<AutocompleteOption<T>[]>
+  'aria-describedby'?: string
 } & IsDirtyProps
 
 function AutocompleteDropdown<T>({
@@ -54,6 +55,7 @@ function AutocompleteDropdown<T>({
   onSearch,
   isDirty,
   setIsDirty,
+  ...props
 }: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
   const [currentFocusedOptionIndex, setCurrentFocusedOptionIndex] =
@@ -284,6 +286,7 @@ function AutocompleteDropdown<T>({
               onBlur={() => handleBlur({ label, value })}
               onKeyDown={onKeyDown}
               onChange={handleChangeLabel}
+              aria-describedby={props['aria-describedby']}
             />
             {isShowingValid && (
               <span className=" ob-input-icon icon is-small is-right">

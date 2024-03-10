@@ -97,6 +97,7 @@ function FormElementCivicaStreetName({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
+          aria-describedby={`${id}-hint`}
         />
       </FormElementLabelContainer>
 

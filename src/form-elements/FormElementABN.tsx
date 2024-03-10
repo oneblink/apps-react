@@ -236,6 +236,7 @@ function FormElementABN({
                 removeFocus()
               }}
               onFocus={setIsFocused}
+              aria-describedby={`${id}-hint`}
             />
           </div>
           {value && (

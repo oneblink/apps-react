@@ -56,6 +56,7 @@ function FormElementEmail({
               required={element.required}
               disabled={element.readOnly}
               onBlur={setIsDirty}
+              aria-describedby={`${id}-hint`}
             />
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">email</i>
