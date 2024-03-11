@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `location` form element to support selecting a position as well as dragging a pin to a position
+- Changed placeholder text colour and styled to italics
 
 ## [5.11.0] - 2024-03-06
 

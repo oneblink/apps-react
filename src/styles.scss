@@ -1,7 +1,10 @@
 //
 // Overrides
 //
-
+$input-placeholder-color: #767676;
+::placeholder {
+  font-style: italic;
+}
 $green: #3a833c;
 $primary: #407e8c;
 $warning: #b85000;
