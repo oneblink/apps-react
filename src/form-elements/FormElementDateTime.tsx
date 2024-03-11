@@ -11,6 +11,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
   id: string
@@ -113,7 +114,7 @@ function FormElementDateTime({
               aria-describedby={ariaDescribedby}
             />
             <span className="ob-input-icon icon is-small is-right">
-              <i className="material-icons is-size-5">date_range</i>
+              <MaterialIcon className="is-size-5">date_range</MaterialIcon>
             </span>
           </div>
           {!!element.readOnly && !!text && (

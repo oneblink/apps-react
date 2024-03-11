@@ -49,6 +49,7 @@ import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
 import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 import { injectOptionsAcrossAllElements } from './services/injectableOptions'
+import MaterialIcon from './components/MaterialIcon'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -822,7 +823,9 @@ function OneBlinkFormBase({
     return (
       <>
         <div className="has-text-centered">
-          <i className="material-icons has-text-warning icon-x-large">error</i>
+          <MaterialIcon className="has-text-warning icon-x-large">
+            error
+          </MaterialIcon>
           <h3 className="title is-3">Bad Form Configuration</h3>
           <p className="cypress-conditional-logic-error-message">
             {conditionalLogicError.message}
@@ -867,14 +870,14 @@ function OneBlinkFormBase({
                         onClick={toggleStepsNavigation}
                       >
                         <span className="icon is-invisible">
-                          <i className="material-icons">keyboard_arrow_down</i>
+                          <MaterialIcon>keyboard_arrow_down</MaterialIcon>
                         </span>
                         <div className="steps-header-active-page">
                           {isDisplayingCurrentPageError ? (
                             <span className="icon">
-                              <i className="material-icons has-text-danger is-size-4">
+                              <MaterialIcon className="has-text-danger is-size-4">
                                 warning
-                              </i>
+                              </MaterialIcon>
                             </span>
                           ) : (
                             <span className="steps-header-active-page-icon">
@@ -886,7 +889,7 @@ function OneBlinkFormBase({
                           </span>
                         </div>
                         <span className="dropdown icon">
-                          <i className="material-icons">keyboard_arrow_down</i>
+                          <MaterialIcon>keyboard_arrow_down</MaterialIcon>
                         </span>
                       </div>
 
@@ -927,9 +930,9 @@ function OneBlinkFormBase({
                                     {hasErrors ? (
                                       <Tooltip title="Page has errors">
                                         <span className="icon tooltip has-tooltip-top cypress-page-error">
-                                          <i className="material-icons has-text-danger is-size-3">
+                                          <MaterialIcon className="has-text-danger is-size-3">
                                             warning
-                                          </i>
+                                          </MaterialIcon>
                                         </span>
                                       </Tooltip>
                                     ) : (
@@ -1035,9 +1038,7 @@ function OneBlinkFormBase({
                             className="button is-light cypress-pages-previous"
                           >
                             <span className="icon">
-                              <i className="material-icons">
-                                keyboard_arrow_left
-                              </i>
+                              <MaterialIcon>keyboard_arrow_left</MaterialIcon>
                             </span>
                             <span>Back</span>
                           </button>
@@ -1067,9 +1068,7 @@ function OneBlinkFormBase({
                           >
                             <span>Next</span>
                             <span className="icon">
-                              <i className="material-icons">
-                                keyboard_arrow_right
-                              </i>
+                              <MaterialIcon>keyboard_arrow_right</MaterialIcon>
                             </span>
                           </button>
                         </div>
@@ -1275,9 +1274,9 @@ function OneBlinkFormBase({
                         </span>
                       )}
                     </p>
-                    <i className="material-icons has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
+                    <MaterialIcon className="has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
                       wifi_off
-                    </i>
+                    </MaterialIcon>
                   </Modal>
                 </React.Fragment>
               )}

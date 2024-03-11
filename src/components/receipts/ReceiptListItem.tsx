@@ -1,6 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import utilsService from '../../services/utils-service'
+import MaterialIcon from '../MaterialIcon'
 
 type Props = {
   className: string
@@ -23,7 +24,7 @@ function ReceiptListItem({
     <div className={clsx('ob-list__item', className)}>
       {!!icon && (
         <div className="ob-list__avatar">
-          <i className="material-icons icon-medium">{icon}</i>
+          <MaterialIcon className="icon-medium">{icon}</MaterialIcon>
         </div>
       )}
       <div className="ob-list__content-wrapper">
@@ -43,9 +44,9 @@ function ReceiptListItem({
             data-tooltip="Copy to clipboard"
           >
             <span className="icon has-text-grey">
-              <i className="material-icons icon-small ob-icon__copy has-text">
+              <MaterialIcon className="icon-small ob-icon__copy has-text">
                 file_copy
-              </i>
+              </MaterialIcon>
             </span>
           </button>
         </div>

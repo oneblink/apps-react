@@ -5,6 +5,7 @@ import WestpacQuickStreamPaymentForm from './WestpacQuickStreamPaymentForm'
 import useQuery from '../../hooks/useQuery'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
+import MaterialIcon from '../MaterialIcon'
 
 function PaymentForm({
   captchaSiteKey,
@@ -101,9 +102,9 @@ function PaymentForm({
       return (
         <section className="cypress-payment-form-loading-error-message">
           <div className="ob-payment-form__error-icon-container has-text-centered has-margin-bottom-8">
-            <i className="ob-payment-form__error-icon material-icons has-text-danger icon-x-large">
+            <MaterialIcon className="ob-payment-form__error-icon has-text-danger icon-x-large">
               error
-            </i>
+            </MaterialIcon>
           </div>
           <p className="ob-payment-form__error-message has-text-centered has-margin-bottom-4">
             {state.error.message}

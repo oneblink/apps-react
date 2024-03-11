@@ -1,5 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import MaterialIcon from '../MaterialIcon'
 
 type Props = {
   successIconClassName: string
@@ -22,24 +23,24 @@ function ReceiptList({
         <div className="ob-list__content-wrapper">
           <div className="ob-list__content">
             {!warningMessage ? (
-              <i
+              <MaterialIcon
                 className={clsx(
-                  'material-icons has-text-centered has-text-success icon-x-large',
+                  'has-text-centered has-text-success icon-x-large',
                   successIconClassName,
                 )}
               >
                 check_circle_outline
-              </i>
+              </MaterialIcon>
             ) : (
               <>
-                <i
+                <MaterialIcon
                   className={clsx(
-                    'material-icons has-text-centered has-text-danger icon-x-large',
+                    'has-text-centered has-text-danger icon-x-large',
                     warningIconClassName,
                   )}
                 >
                   warning
-                </i>
+                </MaterialIcon>
 
                 <p
                   className={clsx('has-text-centered', warningMessageClassName)}

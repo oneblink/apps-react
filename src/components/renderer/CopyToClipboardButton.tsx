@@ -2,6 +2,7 @@ import { Tooltip } from '@mui/material'
 import * as React from 'react'
 
 import utilsService from '../../services/utils-service'
+import MaterialIcon from '../MaterialIcon'
 
 type Props = {
   text: string
@@ -16,7 +17,7 @@ function CopyToClipboardButton({ className, text }: Props) {
     <Tooltip title="Copy to clipboard">
       <button onClick={copy} className={className} type="button">
         <span className="icon">
-          <i className="material-icons">file_copy</i>
+          <MaterialIcon>file_copy</MaterialIcon>
         </span>
       </button>
     </Tooltip>

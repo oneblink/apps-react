@@ -4,6 +4,8 @@ import useLookupNotification from '../../hooks/useLookupNotification'
 import { generateLookupValidationMessage } from '../../services/form-validation'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormsAppsTypes } from '@oneblink/types'
+import MaterialIcon from '../MaterialIcon'
+
 type Props = {
   value: unknown | undefined
   validationMessage: string | undefined
@@ -54,7 +56,7 @@ function LookupButton({
     >
       {isInputButton && <span></span>}
       <span className="icon">
-        <i className="material-icons">{lookupButtonConfig?.icon ?? 'search'}</i>
+        <MaterialIcon>{lookupButtonConfig?.icon ?? 'search'}</MaterialIcon>
       </span>
       <span className={isInputButton ? 'is-hidden-mobile' : undefined}>
         &nbsp;{lookupButtonConfig?.label ?? 'Lookup'}

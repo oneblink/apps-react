@@ -1,5 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import MaterialIcon from '../components/MaterialIcon'
 
 interface Props {
   onClick: () => void
@@ -26,9 +27,9 @@ const ComplianceButton = ({
       })}
       onClick={onClick}
     >
-      <i className="material-icons is-size-5 ob-button__compliance-icon">
+      <MaterialIcon className="is-size-5 ob-button__compliance-icon">
         {icon}
-      </i>
+      </MaterialIcon>
       {children}
     </button>
   )

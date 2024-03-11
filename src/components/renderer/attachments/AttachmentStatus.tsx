@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Tooltip } from '@mui/material'
 import useIsOffline from '../../../hooks/useIsOffline'
+import MaterialIcon from '../../MaterialIcon'
 
 const AttachmentStatus = ({
   isUploading,
@@ -36,7 +37,7 @@ const AttachmentStatus = ({
     return (
       <Tooltip title={uploadError.message}>
         <span className="attachment__status-wrapper">
-          <i className="material-icons has-text-danger">error</i>
+          <MaterialIcon className="has-text-danger">error</MaterialIcon>
         </span>
       </Tooltip>
     )
@@ -46,7 +47,7 @@ const AttachmentStatus = ({
     if (isUploadPaused) {
       return (
         <span className="attachment__status-wrapper">
-          <i className="material-icons">pause</i>
+          <MaterialIcon>pause</MaterialIcon>
         </span>
       )
     }
@@ -54,7 +55,7 @@ const AttachmentStatus = ({
       return (
         <Tooltip title="Upload will start when you connect to the internet">
           <div className="cypress-attachment-uploading">
-            <i className="material-icons has-text-warning">wifi_off</i>
+            <MaterialIcon className="has-text-warning">wifi_off</MaterialIcon>
           </div>
         </Tooltip>
       )
@@ -71,7 +72,7 @@ const AttachmentStatus = ({
   return (
     <Tooltip title={tooltip}>
       <span className="attachment__status-wrapper">
-        <i className="material-icons has-text-success">check_circle</i>
+        <MaterialIcon className="has-text-success">check_circle</MaterialIcon>
       </span>
     </Tooltip>
   )

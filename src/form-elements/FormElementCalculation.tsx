@@ -8,6 +8,8 @@ import { localisationService } from '@oneblink/apps'
 import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
+import MaterialIcon from '../components/MaterialIcon'
+
 type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
@@ -285,7 +287,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
           >
             <div className="columns is-vcentered">
               <div className="column is-narrow">
-                <i className="material-icons has-text-warning">error</i>
+                <MaterialIcon className="has-text-warning">error</MaterialIcon>
               </div>
               <div className="column">
                 <p>There is an error in the calculation for this element.</p>

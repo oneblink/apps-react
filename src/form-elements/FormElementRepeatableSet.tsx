@@ -19,6 +19,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
+import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
   formId: number
@@ -241,7 +242,7 @@ function FormElementRepeatableSet({
             disabled={element.readOnly}
           >
             <span className="icon">
-              <i className="material-icons">add</i>
+              <MaterialIcon>add</MaterialIcon>
             </span>
             {!!element.addSetEntryLabel && (
               <span>{element.addSetEntryLabel}</span>
@@ -465,7 +466,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             disabled={element.readOnly}
           >
             <span className="icon">
-              <i className="material-icons">delete_outline</i>
+              <MaterialIcon>delete_outline</MaterialIcon>
             </span>
             {!!element.removeSetEntryLabel && (
               <span>{element.removeSetEntryLabel}</span>

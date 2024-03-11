@@ -1,4 +1,6 @@
 import * as React from 'react'
+import MaterialIcon from '../MaterialIcon'
+
 type Props = {
   label: string
   icon?: string
@@ -8,7 +10,7 @@ const CustomisableButton = ({ label, icon }: Props) => {
   return (
     <>
       <span className="ob-customisable-button-inner">
-        {!!icon && <i className="material-icons">{icon}</i>}
+        {!!icon && <MaterialIcon>{icon}</MaterialIcon>}
         <span>{label}</span>
       </span>
     </>

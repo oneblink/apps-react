@@ -8,6 +8,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
   id: string
@@ -88,7 +89,7 @@ function FormElementNumber({
                 aria-describedby={ariaDescribedby}
               />
               <span className="ob-input-icon icon is-small is-right">
-                <i className="material-icons is-size-5">tag</i>
+                <MaterialIcon className="is-size-5">tag</MaterialIcon>
               </span>
             </div>
             {!!element.readOnly && !!text && (

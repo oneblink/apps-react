@@ -5,6 +5,7 @@ import { Sentry } from '@oneblink/apps'
 import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'
 import { LookupNotificationContext } from '../../hooks/useLookupNotification'
+import MaterialIcon from '../MaterialIcon'
 
 type AutocompleteOption<T> = {
   label: string
@@ -290,16 +291,16 @@ function AutocompleteDropdown<T>({
             />
             {isShowingValid && (
               <span className=" ob-input-icon icon is-small is-right">
-                <i className="material-icons is-size-5 has-text-success">
+                <MaterialIcon className="is-size-5 has-text-success">
                   check
-                </i>
+                </MaterialIcon>
               </span>
             )}
             {isShowingError && (
               <span className=" ob-input-icon icon is-small is-right">
-                <i className="material-icons is-size-5 has-text-danger">
+                <MaterialIcon className="is-size-5 has-text-danger">
                   error
-                </i>
+                </MaterialIcon>
               </span>
             )}
           </div>

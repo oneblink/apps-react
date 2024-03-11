@@ -9,6 +9,8 @@ import LayerList from '@arcgis/core/widgets/LayerList'
 import Expand from '@arcgis/core/widgets/Expand'
 import BaseMapGallery from '@arcgis/core/widgets/BasemapGallery'
 import OnLoading from '../components/renderer/OnLoading'
+import MaterialIcon from './MaterialIcon'
+
 import '../styles/arcgis-external.css'
 
 type Props = {
@@ -115,9 +117,9 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
     return (
       <figure className="ob-figure">
         <div className="figure-content has-text-centered">
-          <i className="material-icons icon-large has-margin-bottom-6 has-text-warning">
+          <MaterialIcon className="icon-large has-margin-bottom-6 has-text-warning">
             error
-          </i>
+          </MaterialIcon>
           <h4 className="title is-4">We were unable to display your web map</h4>
           <p>{loadError.message}</p>
         </div>

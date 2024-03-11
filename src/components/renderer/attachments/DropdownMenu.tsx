@@ -1,8 +1,9 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../../../hooks/useBooleanState'
 import useClickOutsideElement from '../../../hooks/useClickOutsideElement'
-import { FormTypes } from '@oneblink/types'
+import MaterialIcon from '../../MaterialIcon'
 
 interface Props {
   element: FormTypes.FilesElement
@@ -39,7 +40,7 @@ const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
           aria-controls="dropdown-menu"
           onClick={isShowingMore ? hideMore : showMore}
         >
-          <i className="material-icons ob-files__menu-icon">more_vert</i>
+          <MaterialIcon className="ob-files__menu-icon">more_vert</MaterialIcon>
         </button>
       </div>
       <div className="dropdown-menu" role="menu">

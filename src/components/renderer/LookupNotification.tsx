@@ -21,6 +21,7 @@ import mergeExecutedLookups from '../../utils/merge-executed-lookups'
 
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
+import MaterialIcon from '../MaterialIcon'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
@@ -384,9 +385,9 @@ function LookupNotificationComponent({
               <div>
                 {isOffline && isNotStaticLookup ? (
                   <div>
-                    <i className="material-icons fade-in has-text-warning">
+                    <MaterialIcon className="fade-in has-text-warning">
                       wifi_off
-                    </i>
+                    </MaterialIcon>
                     <p className="fade-in">
                       It looks like you&apos;re offline. Please try again when
                       connectivity is restored.
@@ -394,9 +395,9 @@ function LookupNotificationComponent({
                   </div>
                 ) : (
                   <div>
-                    <i className="material-icons fade-in has-text-danger">
+                    <MaterialIcon className="fade-in has-text-danger">
                       error_outline
-                    </i>
+                    </MaterialIcon>
                     <p
                       className="fade-in"
                       // eslint-disable-next-line react/no-danger
@@ -411,9 +412,9 @@ function LookupNotificationComponent({
           )}
 
           {hasLookupSucceeded && (
-            <i className="material-icons has-text-success fade-in">
+            <MaterialIcon className="has-text-success fade-in">
               check_circle_outline
-            </i>
+            </MaterialIcon>
           )}
 
           {!hasLookupSucceeded && !hasLookupFailed && <OnLoading small />}

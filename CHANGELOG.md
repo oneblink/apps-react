@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Screen reader support for hints
 - Alt text to be hidden for decorative images
+- <MaterialIcon> element
 
 ### Changed
 
