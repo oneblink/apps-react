@@ -11,7 +11,7 @@ function FormElementImage({ element }: Props) {
       <img
         className="ob-image__content cypress-image-element-content"
         src={element.defaultValue}
-        alt={element.label}
+        alt={!element.decorativeImage ? element.label : undefined}
       />
     </div>
   )
