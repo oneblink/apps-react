@@ -91,7 +91,9 @@ function FormElementRadio({
                         })
                       }}
                       edge="start"
-                      aria-describedby={ariaDescribedby}
+                      inputProps={{
+                        'aria-describedby': ariaDescribedby,
+                      }}
                     />
                     {` ${option.label}`}
                   </label>
