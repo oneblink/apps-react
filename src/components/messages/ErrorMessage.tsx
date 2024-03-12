@@ -1,9 +1,11 @@
 import * as React from 'react'
-import ErrorIcon from '@mui/icons-material/Error'
+// import ErrorIcon from '@mui/icons-material/Error'
 import LargeIconMessage, {
   Props as LargeIconMessageProps,
 } from './LargeIconMessage'
-import { Button } from '@mui/material'
+import { Button, styled } from '@mui/material'
+import MaterialIcon from '../MaterialIcon'
+import { Color } from '../../types/mui-color'
 type Props = {
   IconComponent?: LargeIconMessageProps['IconComponent']
   title: string
@@ -11,6 +13,29 @@ type Props = {
   gutterBottom?: boolean
   children?: React.ReactNode
   onTryAgain?: () => void
+}
+
+const StyledErrorIcon = styled(
+  ({
+    icon,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    color,
+    ...props
+  }: { icon: string; color?: Color } & React.ComponentProps<
+    typeof MaterialIcon
+  >) => <MaterialIcon {...props}>{icon}</MaterialIcon>,
+  {
+    shouldForwardProp: () => true,
+  },
+)(({ theme, color }) => ({
+  color: color ? theme.palette[color].main : undefined,
+}))
+
+function StyledIconComponent({
+  color,
+  ...props
+}: { color: Color } & React.ComponentProps<typeof MaterialIcon>) {
+  return <StyledErrorIcon color={color} {...props} icon="error" />
 }
 
 function ErrorMessage({
@@ -22,7 +47,7 @@ function ErrorMessage({
   onTryAgain,
 }: Props) {
   if (!IconComponent) {
-    IconComponent = ErrorIcon
+    IconComponent = StyledIconComponent
   }
 
   return (

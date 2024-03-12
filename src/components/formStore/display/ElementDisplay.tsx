@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { saveAs } from 'file-saver'
 import { Chip, CircularProgress, Grid } from '@mui/material'
-import { SaveAlt, AttachFile } from '@mui/icons-material'
 import ErrorSnackbar from '../../ErrorSnackbar'
 import { UnorderedList, ListItem } from '../../Lists'
 import { FormElementWithOptions } from '@oneblink/types/typescript/forms'
 import { getCognitoIdToken } from '@oneblink/apps/dist/services/cognito'
+import MaterialIcon from '../../MaterialIcon'
 
 async function fetchFile(url: string) {
   const idToken = await getCognitoIdToken()
@@ -72,10 +72,16 @@ export function FileChip({
     <>
       <Chip
         label={fileName}
-        deleteIcon={<SaveAlt />}
+        deleteIcon={<MaterialIcon>save_alt</MaterialIcon>}
         onDelete={handleDownload}
         variant="outlined"
-        icon={isDownloading ? <CircularProgress size={16} /> : <AttachFile />}
+        icon={
+          isDownloading ? (
+            <CircularProgress size={16} />
+          ) : (
+            <MaterialIcon>attach_file</MaterialIcon>
+          )
+        }
       />
       <ErrorSnackbar open={!!error} onClose={clearError}>
         <span data-cypress="download-legacy-file-error-message">

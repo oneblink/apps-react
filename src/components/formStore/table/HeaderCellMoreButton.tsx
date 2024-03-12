@@ -10,11 +10,7 @@ import {
   SxProps,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
-import {
-  FilterList as FilterListIcon,
-  MoreVert as MoreVertIcon,
-  VisibilityOff as VisibilityOffIcon,
-} from '@mui/icons-material'
+import MaterialIcon from '../../MaterialIcon'
 import { useIsHovering } from '../../../hooks/useIsHovering'
 import useNullableState from '../../../hooks/useNullableState'
 import ColumnFilters from './ColumnFilters'
@@ -22,6 +18,13 @@ import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(-1, -1, -1, 1),
+}))
+
+const StyledMoreVert = styled('span', {
+  shouldForwardProp: (propName) => propName === 'color',
+})(({ theme, color }) => ({
+  fontSize: theme.typography.subtitle1.fontSize,
+  color,
 }))
 
 const paperStyles: SxProps = {
@@ -48,10 +51,9 @@ function HeaderCellMoreButton({
           setAnchorEl(event.currentTarget)
         }}
       >
-        <MoreVertIcon
-          fontSize="small"
-          color={isHovering ? 'action' : 'disabled'}
-        />
+        <StyledMoreVert color={isHovering ? 'action' : 'disabled'}>
+          <MaterialIcon>more_vert</MaterialIcon>
+        </StyledMoreVert>
       </StyledIconButton>
       <Popover
         open={!!anchorEl}
@@ -92,7 +94,7 @@ function HeaderCellMoreButton({
                   disabled={headerGroup.filter.value === undefined}
                   onClick={() => headerGroup.filter?.onChange(undefined, false)}
                   size="small"
-                  startIcon={<FilterListIcon />}
+                  startIcon={<MaterialIcon>filter_list</MaterialIcon>}
                 >
                   Clear
                 </Button>
@@ -103,7 +105,7 @@ function HeaderCellMoreButton({
                 variant="outlined"
                 onClick={onHide}
                 size="small"
-                startIcon={<VisibilityOffIcon />}
+                startIcon={<MaterialIcon>visiblity_off</MaterialIcon>}
               >
                 Hide
               </Button>

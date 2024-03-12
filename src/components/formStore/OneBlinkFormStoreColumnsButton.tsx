@@ -17,10 +17,10 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import { Help, Settings as SettingsIcon } from '@mui/icons-material'
 import useBooleanState from '../../hooks/useBooleanState'
 import useFormStoreTableContext from './useFormStoreTableContext'
 import { ListItem, UnorderedList } from '../Lists'
+import MaterialIcon from '../MaterialIcon'
 
 function OneBlinkFormStoreColumnsButton(
   props: React.ComponentProps<typeof Button>,
@@ -51,7 +51,7 @@ function OneBlinkFormStoreColumnsButton(
     <>
       <Button
         className="ob-form-store-columns-button"
-        startIcon={<SettingsIcon />}
+        startIcon={() => <MaterialIcon>settings</MaterialIcon>}
         onClick={showColumnConfiguration}
         // eslint-disable-next-line react/no-children-prop
         children={<>Columns</>}
@@ -97,7 +97,7 @@ function OneBlinkFormStoreColumnsButton(
                 </Grid>
                 <Grid item>
                   <IconButton onClick={toggleHelp}>
-                    <Help />
+                    <MaterialIcon>help</MaterialIcon>
                   </IconButton>
                 </Grid>
               </Grid>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button } from '@mui/material'
-import { FilterList as FilterIcon } from '@mui/icons-material'
 import useFormStoreTableContext from './useFormStoreTableContext'
+import MaterialIcon from '../MaterialIcon'
 
 function OneBlinkFormStoreClearFiltersButton(
   props: React.ComponentProps<typeof Button>,
@@ -13,7 +13,7 @@ function OneBlinkFormStoreClearFiltersButton(
   return (
     <Button
       className="ob-form-store-clear-filters-button"
-      startIcon={<FilterIcon />}
+      startIcon={<MaterialIcon>filter_list</MaterialIcon>}
       disabled={isDisabled}
       onClick={() => {
         onChangeParameters(

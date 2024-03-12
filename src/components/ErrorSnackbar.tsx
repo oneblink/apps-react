@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Snackbar, IconButton } from '@mui/material'
-import { Close } from '@mui/icons-material'
 import MuiAlert, { AlertProps } from '@mui/material/Alert'
 import { styled } from '@mui/material/styles'
+import MaterialIcon from './MaterialIcon'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   function Alert(props, ref) {
@@ -48,7 +48,7 @@ function ErrorSnackbar({
             data-cypress="error-snackbar-close"
             size="large"
           >
-            <StyledCloseIcon />
+            <StyledCloseIcon>close</StyledCloseIcon>
           </IconButton>
         }
       >
@@ -58,7 +58,14 @@ function ErrorSnackbar({
   )
 }
 
-const StyledCloseIcon = styled(Close)(() => ({
+const StyledCloseIcon = styled(
+  ({
+    children,
+    ...props
+  }: React.PropsWithChildren<React.ComponentProps<typeof MaterialIcon>>) => (
+    <MaterialIcon {...props}>{children}</MaterialIcon>
+  ),
+)(() => ({
   fontSize: 20,
 }))
 
