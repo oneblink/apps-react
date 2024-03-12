@@ -320,7 +320,6 @@ function FormElementCamera({
             required={element.required}
             disabled={element.readOnly}
             onChange={fileChange}
-            aria-describedby={ariaDescribedby}
           />
           <div className="buttons ob-buttons">
             {value ? (
@@ -361,6 +360,7 @@ function FormElementCamera({
                 className="button ob-button ob-button__open is-primary cypress-open-camera"
                 onClick={openCamera}
                 disabled={element.readOnly || isLoading}
+                aria-describedby={ariaDescribedby}
               >
                 Open Camera
               </button>

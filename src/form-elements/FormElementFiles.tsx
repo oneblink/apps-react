@@ -81,7 +81,6 @@ function FormElementFiles({
               event.target.files ? Array.from(event.target.files) : [],
             )
           }
-          aria-describedby={ariaDescribedby}
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline ob-columns-container">
@@ -111,6 +110,7 @@ function FormElementFiles({
                     type="button"
                     className="button ob-files__add-new-button"
                     onClick={handleAdd}
+                    aria-describedby={ariaDescribedby}
                   >
                     <i className="material-icons icon-x-large">add</i>
                   </button>

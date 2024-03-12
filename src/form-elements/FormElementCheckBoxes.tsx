@@ -176,7 +176,9 @@ function FormElementCheckboxes({
                         onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
                         edge="start"
-                        aria-describedby={ariaDescribedby}
+                        inputProps={{
+                          'aria-describedby': ariaDescribedby,
+                        }}
                       />{' '}
                       {option.label}
                     </label>
