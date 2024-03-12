@@ -8,8 +8,9 @@ import {
   IconButton,
   Popover,
   SxProps,
+  styled,
+  TypeAction,
 } from '@mui/material'
-import { styled } from '@mui/material/styles'
 import MaterialIcon from '../../MaterialIcon'
 import { useIsHovering } from '../../../hooks/useIsHovering'
 import useNullableState from '../../../hooks/useNullableState'
@@ -20,11 +21,11 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(-1, -1, -1, 1),
 }))
 
-const StyledMoreVert = styled('span', {
-  shouldForwardProp: (propName) => propName === 'color',
-})(({ theme, color }) => ({
+const StyledMoreVert = styled(MaterialIcon)<{
+  color: Extract<keyof TypeAction, 'active' | 'disabled'>
+}>(({ theme, color }) => ({
   fontSize: theme.typography.subtitle1.fontSize,
-  color,
+  color: theme.palette.action[color],
 }))
 
 const paperStyles: SxProps = {
@@ -51,8 +52,8 @@ function HeaderCellMoreButton({
           setAnchorEl(event.currentTarget)
         }}
       >
-        <StyledMoreVert color={isHovering ? 'action' : 'disabled'}>
-          <MaterialIcon>more_vert</MaterialIcon>
+        <StyledMoreVert color={isHovering ? 'active' : 'disabled'}>
+          more_vert
         </StyledMoreVert>
       </StyledIconButton>
       <Popover

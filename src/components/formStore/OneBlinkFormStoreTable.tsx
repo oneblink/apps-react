@@ -7,18 +7,11 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 import { Color } from '../../types/mui-color'
 import MaterialIcon from '../MaterialIcon'
 
-const StyledIcon = styled(
-  ({
-    icon,
-  }: {
-    color: Color
-    icon: string
-    sortingDirection?: 'ascending' | 'descending'
-  }) => <MaterialIcon className="th-icon">{icon}</MaterialIcon>,
-  {
-    shouldForwardProp: () => true,
-  },
-)(({ theme, color, sortingDirection }) => ({
+const StyledIcon = styled(MaterialIcon)<{
+  color: Color
+  icon: string
+  sortingDirection?: 'ascending' | 'descending'
+}>(({ theme, color, sortingDirection }) => ({
   transition: theme.transitions.create('transform'),
   transform: sortingDirection === 'ascending' ? 'rotate(180deg)' : undefined,
   fontSize: theme.typography.subtitle1.fontSize,
@@ -199,6 +192,7 @@ function OneBlinkFormStoreTable() {
                           <span>{headerGroup.headerText}</span>
                           {sortingDirection && (
                             <StyledIcon
+                              className="th-icon"
                               sortingDirection="ascending"
                               color="primary"
                               icon="arrow_down"
@@ -210,10 +204,18 @@ function OneBlinkFormStoreTable() {
                                 headerGroup.filter?.validationMessage || ''
                               }
                             >
-                              <StyledIcon color="error" icon="warning" />
+                              <StyledIcon
+                                color="error"
+                                icon="warning"
+                                className="th-icon"
+                              />
                             </Tooltip>
                           ) : headerGroup.filter?.value ? (
-                            <StyledIcon color="primary" icon="filter_list" />
+                            <StyledIcon
+                              color="primary"
+                              icon="filter_list"
+                              className="th-icon"
+                            />
                           ) : null}
                         </div>
                         <HeaderCellMoreButton

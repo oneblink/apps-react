@@ -1,5 +1,4 @@
 import * as React from 'react'
-// import ErrorIcon from '@mui/icons-material/Error'
 import LargeIconMessage, {
   Props as LargeIconMessageProps,
 } from './LargeIconMessage'

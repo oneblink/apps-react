@@ -5,7 +5,7 @@ import { Color } from '../types/mui-color'
 
 const StyledMaterialIcon = styled(MaterialIcon)<{ color: Color; icon: string }>(
   ({ theme, color }) => ({
-    color: color ? theme.palette[color].main : undefined,
+    color: theme.palette[color]?.main,
   }),
 )
 
