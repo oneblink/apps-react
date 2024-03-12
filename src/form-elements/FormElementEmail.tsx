@@ -6,6 +6,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -26,6 +27,7 @@ function FormElementEmail({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
@@ -56,7 +58,7 @@ function FormElementEmail({
               required={element.required}
               disabled={element.readOnly}
               onBlur={setIsDirty}
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">email</i>

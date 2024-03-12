@@ -22,6 +22,7 @@ import { canvasToBlob, urlToBlobAsync } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -42,6 +43,7 @@ function FormElementCamera({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [{ cameraError, isLoading }, setState] = React.useState<{
     isLoading: boolean
     cameraError?: Error
@@ -318,7 +320,7 @@ function FormElementCamera({
             required={element.required}
             disabled={element.readOnly}
             onChange={fileChange}
-            aria-describedby={`${id}-hint`}
+            aria-describedby={ariaDescribedby}
           />
           <div className="buttons ob-buttons">
             {value ? (

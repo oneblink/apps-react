@@ -8,6 +8,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { formService } from '@oneblink/apps'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -32,6 +33,7 @@ function FormElementBSB({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
@@ -157,7 +159,7 @@ function FormElementBSB({
                 }
                 setIsDirty()
               }}
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
           </div>
           {bsbRecord && (

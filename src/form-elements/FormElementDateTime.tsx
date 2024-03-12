@@ -10,6 +10,7 @@ import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -30,6 +31,7 @@ function FormElementDateTime({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
@@ -108,7 +110,7 @@ function FormElementDateTime({
               placeholder={element.placeholderValue}
               disabled={element.readOnly}
               className="input ob-input"
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
             <span className="ob-input-icon icon is-small is-right">
               <i className="material-icons is-size-5">date_range</i>

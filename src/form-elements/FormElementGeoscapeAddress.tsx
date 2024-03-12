@@ -6,6 +6,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   formId: number
@@ -28,6 +29,7 @@ function FormElementGeoscapeAddress({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
   const [label, setLabel] = React.useState('')
   const [error, setError] = React.useState<Error | undefined>()
@@ -129,7 +131,7 @@ function FormElementGeoscapeAddress({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={ariaDescribedby}
         />
       </FormElementLabelContainer>
 

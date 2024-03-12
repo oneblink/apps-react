@@ -7,6 +7,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -27,6 +28,7 @@ function FormElementNumber({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isPageVisible = useIsPageVisible()
 
   const text = React.useMemo(
@@ -83,7 +85,7 @@ function FormElementNumber({
                 onBlur={setIsDirty}
                 ref={htmlInputElementRef}
                 onWheel={handleWheel}
-                aria-describedby={`${id}-hint`}
+                aria-describedby={ariaDescribedby}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <i className="material-icons is-size-5">tag</i>

@@ -10,6 +10,7 @@ import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -30,6 +31,7 @@ function FormElementDate({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
@@ -112,7 +114,7 @@ function FormElementDate({
               className="input ob-input cypress-date-control"
               onBlur={onBlur}
               autoComplete="off"
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
 
             <span className="ob-input-icon icon is-small is-right">

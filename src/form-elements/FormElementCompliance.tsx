@@ -17,6 +17,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 interface Props extends IsDirtyProps {
   id: string
@@ -59,6 +60,7 @@ function FormElementCompliance({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const typedValue = value as Value | undefined
 
   const notesElement = React.useMemo<FormTypes.TextareaElement>(
@@ -215,7 +217,7 @@ function FormElementCompliance({
                           'is-light': !isSelected,
                         },
                       )}
-                      aria-describedby={`${id}-hint`}
+                      aria-describedby={ariaDescribedby}
                     />
                   </div>
                 )

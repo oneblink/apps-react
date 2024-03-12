@@ -4,6 +4,7 @@ import OnLoading from '../components/renderer/OnLoading'
 import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
@@ -13,6 +14,7 @@ type Props = {
 }
 
 function FormElementArcGISWebMap({ id, element }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
   const isFormReadOnly = useFormIsReadOnly()
 
@@ -48,7 +50,7 @@ function FormElementArcGISWebMap({ id, element }: Props) {
             <ArcGISWebMap
               element={element}
               id={id}
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
           </Suspense>
         )}

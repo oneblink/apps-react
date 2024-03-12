@@ -16,6 +16,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -42,6 +43,7 @@ function FormElementCheckboxes({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const selectedValues = React.useMemo(() => {
     if (!Array.isArray(value)) return []
     return value
@@ -146,7 +148,7 @@ function FormElementCheckboxes({
                           'is-light': !isSelected,
                         },
                       )}
-                      aria-describedby={`${id}-hint`}
+                      aria-describedby={ariaDescribedby}
                     />
                   )
                 })}
@@ -174,7 +176,7 @@ function FormElementCheckboxes({
                         onChange={() => changeValues(option.value, isSelected)}
                         disabled={element.readOnly}
                         edge="start"
-                        aria-describedby={`${id}-hint`}
+                        aria-describedby={ariaDescribedby}
                       />{' '}
                       {option.label}
                     </label>
