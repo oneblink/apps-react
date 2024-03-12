@@ -10,6 +10,7 @@ import {
 import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 export function stringifyAttachments(
   value: attachmentsService.Attachment[] | undefined,
@@ -37,6 +38,7 @@ function FormElementFiles({
   displayValidationMessage: boolean
   validationMessage: string | undefined
 } & IsDirtyProps) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const { addAttachments, removeAttachment, changeAttachment } = useAttachments(
     element,
     onChange,
@@ -79,7 +81,7 @@ function FormElementFiles({
               event.target.files ? Array.from(event.target.files) : [],
             )
           }
-          aria-describedby={`${id}-hint`}
+          aria-describedby={ariaDescribedby}
         />
         <div className="control cypress-files-control">
           <div className="columns is-multiline ob-columns-container">

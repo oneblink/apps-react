@@ -15,6 +15,7 @@ import useLookupNotification, {
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useLoadDataState from '../hooks/useLoadDataState'
 import OnLoading from '../components/renderer/OnLoading'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -35,6 +36,7 @@ function FormElementBarcodeScanner({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [isCameraOpen, startBarcodeScanner, stopBarcodeScanner] =
     useBooleanState(false)
   const [error, setError] = React.useState<Error | null>(null)
@@ -114,7 +116,7 @@ function FormElementBarcodeScanner({
             }
             onScan={handleScan}
             onClose={stopBarcodeScanner}
-            aria-describedby={`${id}-hint`}
+            aria-describedby={ariaDescribedby}
           />
         ) : (
           <div>
@@ -135,7 +137,7 @@ function FormElementBarcodeScanner({
                   required={element.required}
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
-                  aria-describedby={`${id}-hint`}
+                  aria-describedby={ariaDescribedby}
                 />
                 <span className="ob-input-icon icon is-small is-right">
                   <i className="material-icons is-size-5">document_scanner</i>

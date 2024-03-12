@@ -6,6 +6,7 @@ import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -26,6 +27,7 @@ function FormElementTextarea({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const text = typeof value === 'string' ? value : ''
   const isDisplayingCopyButton = !!element.readOnly && !!value
   const isDisplayingLookupButton =
@@ -58,7 +60,7 @@ function FormElementTextarea({
             required={element.required}
             disabled={element.readOnly}
             onBlur={setIsDirty}
-            aria-describedby={`${id}-hint`}
+            aria-describedby={ariaDescribedby}
           />
         </div>
 

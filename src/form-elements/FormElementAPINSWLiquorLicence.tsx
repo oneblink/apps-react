@@ -6,6 +6,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import useIsMounted from '../hooks/useIsMounted'
 import { Collapse, Grid } from '@mui/material'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   formId: number
@@ -29,6 +30,7 @@ function FormElementAPINSWLiquorLicence({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
   const [label, setLabel] = React.useState('')
   const [{ isLoading, error }, setState] = React.useState<{
@@ -137,7 +139,7 @@ function FormElementAPINSWLiquorLicence({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={ariaDescribedby}
         />
       </FormElementLabelContainer>
 

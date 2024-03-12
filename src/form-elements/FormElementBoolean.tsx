@@ -4,6 +4,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { Switch } from '@mui/material'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -24,6 +25,7 @@ function FormElementBoolean({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
@@ -53,7 +55,7 @@ function FormElementBoolean({
                 value: e.target.checked,
               })
             }}
-            aria-describedby={`${id}-hint`}
+            aria-describedby={ariaDescribedby}
           />
         }
       >

@@ -13,6 +13,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -39,6 +40,7 @@ function FormElementSelect({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const filteredOptions = useFormElementOptions({
     element,
     value,
@@ -96,7 +98,7 @@ function FormElementSelect({
                     required={element.required}
                     disabled={element.readOnly}
                     onBlur={setIsDirty}
-                    aria-describedby={`${id}-hint`}
+                    aria-describedby={ariaDescribedby}
                   >
                     <option value="">Please choose</option>
                     {filteredOptions.map(({ label, value }) => (

@@ -14,6 +14,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -40,6 +41,7 @@ function FormElementRadio({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const filteredOptions = useFormElementOptions({
     element,
     value,
@@ -89,7 +91,7 @@ function FormElementRadio({
                         })
                       }}
                       edge="start"
-                      aria-describedby={`${id}-hint`}
+                      aria-describedby={ariaDescribedby}
                     />
                     {` ${option.label}`}
                   </label>

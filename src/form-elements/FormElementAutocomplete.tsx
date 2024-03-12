@@ -13,6 +13,7 @@ import {
   IsDirtyProps,
   UpdateFormElementsHandler,
 } from '../types/form'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type _BaseProps = {
   id: string
@@ -58,6 +59,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   isDirty,
   setIsDirty,
 }: AutocompleteFilterProps) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
 
   const onFilter = React.useCallback(
@@ -134,7 +136,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             searchMinCharacters={0}
             isDirty={isDirty}
             setIsDirty={setIsDirty}
-            aria-describedby={`${id}-hint`}
+            aria-describedby={ariaDescribedby}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -154,6 +156,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   isDirty,
   setIsDirty,
 }: AutocompleteFetchProps) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
 
   const handleSearch = React.useCallback(
@@ -209,7 +212,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={ariaDescribedby}
         />
       </FormElementLabelContainer>
     </div>

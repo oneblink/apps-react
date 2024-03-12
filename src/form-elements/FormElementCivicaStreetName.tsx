@@ -5,6 +5,7 @@ import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormTypes, CivicaTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   formId: number
@@ -27,6 +28,7 @@ function FormElementCivicaStreetName({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
   const [error, setError] = React.useState<Error | undefined>()
 
@@ -97,7 +99,7 @@ function FormElementCivicaStreetName({
           onSearch={handleSearch}
           isDirty={isDirty}
           setIsDirty={setIsDirty}
-          aria-describedby={`${id}-hint`}
+          aria-describedby={ariaDescribedby}
         />
       </FormElementLabelContainer>
 

@@ -11,6 +11,8 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useAbnLookupAuthenticationGuid from '../hooks/useAbnLookupAuthenticationGuid'
 import { abnService } from '@oneblink/sdk-core'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+
 type Props = {
   id: string
   element: FormTypes.ABNElement
@@ -30,6 +32,7 @@ function FormElementABN({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
   const [label, setLabel] = React.useState(
     value ? abnService.getABNNumberFromABNRecord(value) || '' : '',
@@ -236,7 +239,7 @@ function FormElementABN({
                 removeFocus()
               }}
               onFocus={setIsFocused}
-              aria-describedby={`${id}-hint`}
+              aria-describedby={ariaDescribedby}
             />
           </div>
           {value && (
