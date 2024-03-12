@@ -7,14 +7,23 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 import { Color } from '../../types/mui-color'
 import MaterialIcon from '../MaterialIcon'
 
-const StyledIcon = styled(MaterialIcon)<{
+const StyledIcon = styled(
+  ({
+    icon,
+    ...props
+  }: {
+    icon: string
+  } & React.ComponentProps<typeof MaterialIcon>) => (
+    <MaterialIcon {...props}>{icon}</MaterialIcon>
+  ),
+)<{
   color: Color
   icon: string
   sortingDirection?: 'ascending' | 'descending'
 }>(({ theme, color, sortingDirection }) => ({
   transition: theme.transitions.create('transform'),
   transform: sortingDirection === 'ascending' ? 'rotate(180deg)' : undefined,
-  fontSize: theme.typography.subtitle1.fontSize,
+  fontSize: theme.typography.h6.fontSize + '!important',
   color: theme.palette[color].main,
 }))
 
@@ -193,9 +202,9 @@ function OneBlinkFormStoreTable() {
                           {sortingDirection && (
                             <StyledIcon
                               className="th-icon"
-                              sortingDirection="ascending"
+                              sortingDirection={sortingDirection}
                               color="primary"
-                              icon="arrow_down"
+                              icon="arrow_downward"
                             />
                           )}
                           {headerGroup.filter?.isInvalid ? (

@@ -98,7 +98,7 @@ function OneBlinkFormStoreDownloadButton(
           type="button"
           loading={isDownloadingCsv}
           loadingPosition="start"
-          startIcon={() => <MaterialIcon>download</MaterialIcon>}
+          startIcon={<MaterialIcon>download</MaterialIcon>}
           onClick={promptDownloadCsv}
           // eslint-disable-next-line react/no-children-prop
           children={<>Download</>}

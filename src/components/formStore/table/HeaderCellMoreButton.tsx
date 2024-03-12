@@ -24,7 +24,7 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 const StyledMoreVert = styled(MaterialIcon)<{
   color: Extract<keyof TypeAction, 'active' | 'disabled'>
 }>(({ theme, color }) => ({
-  fontSize: theme.typography.subtitle1.fontSize,
+  fontSize: theme.typography.h6.fontSize + '!important',
   color: theme.palette.action[color],
 }))
 
@@ -106,7 +106,7 @@ function HeaderCellMoreButton({
                 variant="outlined"
                 onClick={onHide}
                 size="small"
-                startIcon={<MaterialIcon>visiblity_off</MaterialIcon>}
+                startIcon={<MaterialIcon>visibility_off</MaterialIcon>}
               >
                 Hide
               </Button>
