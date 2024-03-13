@@ -7,10 +7,6 @@ import useInfiniteScrollDataLoad from '../../hooks/useInfiniteScrollDataLoad'
 import useFormStoreTable from './table/useFormStoreTable'
 import { Box, Button, Grid } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import {
-  Settings as SettingsIcon,
-  ReadMore as LoadMoreIcon,
-} from '@mui/icons-material'
 import { FormTypes } from '@oneblink/types'
 import useSubmissionIdValidationMessage, {
   validateIsUUID,
@@ -20,6 +16,8 @@ import LoadingWithMessage from '../LoadingWithMessage'
 import NoResourcesYet from '../messages/NoResourcesYet'
 import FormStoreIcon from './display/FormStoreIcon'
 import { FormStoreTableContext } from './useFormStoreTableContext'
+import MaterialIcon from '../MaterialIcon'
+import IconComponent from '../IconComponent'
 
 const TABLE_PARAMETERS_FORM_STORE_KEY = 'REACT_TABLE_PARAMETERS_FORM_STORE'
 
@@ -164,7 +162,9 @@ export function FormStoreTableProvider({
         </>
       ) : (
         <NoResourcesYet
-          IconComponent={SettingsIcon}
+          IconComponent={(props) => (
+            <IconComponent {...props} icon="settings" />
+          )}
           title="No Columns Visible"
           gutterBottom
         >
@@ -212,7 +212,7 @@ export function FormStoreTableProvider({
               loading={isLoading === 'MORE'}
               size="large"
               loadingPosition="start"
-              startIcon={<LoadMoreIcon />}
+              startIcon={<MaterialIcon>read_more</MaterialIcon>}
               classes={{
                 loadingIndicator: 'ob-form-store-loading-more-indicator',
               }}

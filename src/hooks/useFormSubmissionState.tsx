@@ -2,7 +2,7 @@ import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import generateDefaultData from '../services/generate-default-data'
-import { ExecutedLookups } from '../typedoc'
+import { ExecutedLookups } from '../types/form'
 /**
  * This function is a simple wrapper around the react hook `useState()`. The
  * results can be passed to the [`<OneBlinkForm

@@ -16,6 +16,7 @@ import {
   ReceiptListItem,
   ReceiptButton,
 } from './components/receipts'
+import MaterialIcon from './components/MaterialIcon'
 
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
@@ -288,9 +289,9 @@ function PaymentReceipt({
       {loadError && (
         <section className="cypress-payment-receipt-loading-error-message">
           <div className="ob-payment-receipt__error-icon-container has-text-centered has-margin-bottom-8">
-            <i className="ob-payment-receipt__error-icon material-icons has-text-danger icon-x-large">
+            <MaterialIcon className="ob-payment-receipt__error-icon has-text-danger icon-x-large">
               error
-            </i>
+            </MaterialIcon>
           </div>
           <p className="ob-payment-receipt__error-message has-text-centered has-margin-bottom-4">
             {loadError.message}

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import MaterialIcon from '../../MaterialIcon'
 
 const FileCardContent = ({
   imageUrl,
@@ -17,9 +18,9 @@ const FileCardContent = ({
 
   return (
     <div className="ob-files__content-file has-text-centered">
-      <i className="material-icons icon-large ob-files__attach-icon has-text-grey">
+      <MaterialIcon className="icon-large ob-files__attach-icon has-text-grey">
         attach_file
-      </i>
+      </MaterialIcon>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
   id: string
@@ -100,7 +101,7 @@ function FormElementTime({
               aria-describedby={ariaDescribedby}
             />
             <span className="ob-input-icon icon is-small is-right">
-              <i className="material-icons is-size-5">schedule</i>
+              <MaterialIcon className="is-size-5">schedule</MaterialIcon>
             </span>
           </div>
           {!!element.readOnly && !!text && (

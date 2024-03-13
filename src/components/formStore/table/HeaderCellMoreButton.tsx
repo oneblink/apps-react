@@ -8,13 +8,10 @@ import {
   IconButton,
   Popover,
   SxProps,
+  styled,
+  TypeAction,
 } from '@mui/material'
-import { styled } from '@mui/material/styles'
-import {
-  FilterList as FilterListIcon,
-  MoreVert as MoreVertIcon,
-  VisibilityOff as VisibilityOffIcon,
-} from '@mui/icons-material'
+import MaterialIcon from '../../MaterialIcon'
 import { useIsHovering } from '../../../hooks/useIsHovering'
 import useNullableState from '../../../hooks/useNullableState'
 import ColumnFilters from './ColumnFilters'
@@ -22,6 +19,13 @@ import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(-1, -1, -1, 1),
+}))
+
+const StyledMoreVert = styled(MaterialIcon)<{
+  color: Extract<keyof TypeAction, 'active' | 'disabled'>
+}>(({ theme, color }) => ({
+  fontSize: theme.typography.h6.fontSize + '!important',
+  color: theme.palette.action[color],
 }))
 
 const paperStyles: SxProps = {
@@ -48,10 +52,9 @@ function HeaderCellMoreButton({
           setAnchorEl(event.currentTarget)
         }}
       >
-        <MoreVertIcon
-          fontSize="small"
-          color={isHovering ? 'action' : 'disabled'}
-        />
+        <StyledMoreVert color={isHovering ? 'active' : 'disabled'}>
+          more_vert
+        </StyledMoreVert>
       </StyledIconButton>
       <Popover
         open={!!anchorEl}
@@ -92,7 +95,7 @@ function HeaderCellMoreButton({
                   disabled={headerGroup.filter.value === undefined}
                   onClick={() => headerGroup.filter?.onChange(undefined, false)}
                   size="small"
-                  startIcon={<FilterListIcon />}
+                  startIcon={<MaterialIcon>filter_list</MaterialIcon>}
                 >
                   Clear
                 </Button>
@@ -103,7 +106,7 @@ function HeaderCellMoreButton({
                 variant="outlined"
                 onClick={onHide}
                 size="small"
-                startIcon={<VisibilityOffIcon />}
+                startIcon={<MaterialIcon>visibility_off</MaterialIcon>}
               >
                 Hide
               </Button>

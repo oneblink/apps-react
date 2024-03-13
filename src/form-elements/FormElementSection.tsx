@@ -17,6 +17,7 @@ import {
   HintTooltip,
 } from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
+import MaterialIcon from '../components/MaterialIcon'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
@@ -131,18 +132,18 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         <div className="ob-section__header-icon-container">
           {!valid && displayValidationMessage && (
             <Tooltip title="Section has errors">
-              <i className="material-icons has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
+              <MaterialIcon className="has-text-danger cypress-section-invalid-icon section-invalid-icon fade-in">
                 warning
-              </i>
+              </MaterialIcon>
             </Tooltip>
           )}
-          <i
-            className={clsx('ob-section__header-icon material-icons', {
+          <MaterialIcon
+            className={clsx('ob-section__header-icon', {
               'is-rotated': !isCollapsed,
             })}
           >
             expand_more
-          </i>
+          </MaterialIcon>
         </div>
         {element.hint && element.hintPosition === 'BELOW_LABEL' && (
           <div className="ob-section__hint-text-container">

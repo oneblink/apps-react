@@ -1,7 +1,7 @@
 import * as React from 'react'
 import copy from 'copy-to-clipboard'
 import { IconButton, Tooltip, Snackbar, SxProps, Portal } from '@mui/material'
-import FileCopy from '@mui/icons-material/FileCopy'
+import MaterialIcon from './MaterialIcon'
 
 type Props = {
   text: string
@@ -42,7 +42,9 @@ export function CopyToClipBoardIconButton({
           sx={noMarginY ? noMargin : undefined}
           {...rest}
         >
-          <FileCopy sx={large ? undefined : { fontSize: 18 }} />
+          <MaterialIcon style={large ? undefined : { fontSize: 18 }}>
+            file_copy
+          </MaterialIcon>
         </IconButton>
       </Tooltip>
       <Portal>

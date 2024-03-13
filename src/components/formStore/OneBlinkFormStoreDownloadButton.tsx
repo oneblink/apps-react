@@ -9,12 +9,12 @@ import {
   Button,
 } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import CsvIcon from '@mui/icons-material/Download'
 import ErrorSnackbar from '../ErrorSnackbar'
 import { ColumnInstance } from 'react-table'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
 import useFormStoreTableContext from './useFormStoreTableContext'
+import MaterialIcon from '../MaterialIcon'
 
 function OneBlinkFormStoreDownloadButton(
   props: React.ComponentProps<typeof LoadingButton>,
@@ -98,7 +98,7 @@ function OneBlinkFormStoreDownloadButton(
           type="button"
           loading={isDownloadingCsv}
           loadingPosition="start"
-          startIcon={<CsvIcon />}
+          startIcon={<MaterialIcon>download</MaterialIcon>}
           onClick={promptDownloadCsv}
           // eslint-disable-next-line react/no-children-prop
           children={<>Download</>}
@@ -132,7 +132,7 @@ function OneBlinkFormStoreDownloadButton(
           </Button>
           <Button
             onClick={downloadCsv}
-            startIcon={<CsvIcon />}
+            startIcon={<MaterialIcon>download</MaterialIcon>}
             color="primary"
             variant="contained"
           >

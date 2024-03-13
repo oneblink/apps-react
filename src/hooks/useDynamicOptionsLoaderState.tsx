@@ -9,7 +9,8 @@ import { FormTypes, FreshdeskTypes } from '@oneblink/types'
 import useLoadDataState, { LoadDataState } from './useLoadDataState'
 import OneBlinkAppsErrorOriginalMessage from '../components/renderer/OneBlinkAppsErrorOriginalMessage'
 import useFormDefinition from './useFormDefinition'
-import { UpdateFormElementsHandler } from '../typedoc'
+import MaterialIcon from '../components/MaterialIcon'
+import { UpdateFormElementsHandler } from '../types/form'
 
 type OptionsSetResult = {
   formElementOptionsSet: FormTypes.FormElementOptionSet
@@ -126,7 +127,9 @@ export function FormElementOptionsContextProvider({
     return (
       <>
         <div className="has-text-centered">
-          <i className="material-icons has-text-warning icon-x-large">error</i>
+          <MaterialIcon className="has-text-warning icon-x-large">
+            error
+          </MaterialIcon>
           <h3 className="title is-3">{error.title}</h3>
           <p>{error.message}</p>
           <p className="has-text-grey">

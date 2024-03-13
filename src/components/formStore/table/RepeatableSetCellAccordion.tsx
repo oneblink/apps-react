@@ -5,7 +5,7 @@ import {
   CustomAccordionDetails,
 } from '../../CustomAccordion'
 import { Typography } from '@mui/material'
-import { ExpandMore } from '@mui/icons-material'
+import MaterialIcon from '../../MaterialIcon'
 
 type Props = {
   isOpen: boolean
@@ -22,7 +22,7 @@ const RepeatableSetCell = ({ isOpen, onChange, title, children }: Props) => {
       data-cypress="form-store-repeatable-set-cell-accordion"
     >
       <CustomAccordionSummary
-        expandIcon={<ExpandMore />}
+        expandIcon={<MaterialIcon>expand_more</MaterialIcon>}
         data-cypress="form-store-repeatable-set-cell-accordion-summary"
       >
         <Typography>{title}</Typography>

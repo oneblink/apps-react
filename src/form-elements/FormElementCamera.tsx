@@ -23,6 +23,7 @@ import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePre
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
   id: string
@@ -348,7 +349,7 @@ function FormElementCamera({
                     onClick={handleDownload}
                   >
                     <span className="icon">
-                      <i className="material-icons">cloud_download</i>
+                      <MaterialIcon>cloud_download</MaterialIcon>
                     </span>
                     <span>&nbsp;Download</span>
                   </button>
@@ -488,7 +489,7 @@ const DisplayImage = React.memo(function DisplayImage({
           disabled={element.readOnly}
         >
           <span className="icon">
-            <i className="material-icons">brush</i>
+            <MaterialIcon>brush</MaterialIcon>
           </span>
         </button>
       </>

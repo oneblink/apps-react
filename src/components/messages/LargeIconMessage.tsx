@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { Typography, Grid, Container, useTheme, styled } from '@mui/material'
 import { CommonProps } from '@mui/material/OverridableComponent'
+import { Color } from '../../types/mui-color'
 
-type Variant = 'primary' | 'success' | 'error' | 'warning'
 export type Props = {
   IconComponent: React.ComponentType<{
-    color: Variant
+    color: Color
     style: React.CSSProperties
   }>
   title: string
-  variant: Variant
+  variant: Color
   gutterTop?: boolean
   gutterBottom?: boolean
   children?: React.ReactNode

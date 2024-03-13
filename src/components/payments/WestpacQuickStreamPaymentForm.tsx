@@ -11,6 +11,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import OnLoading from '../renderer/OnLoading'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import Modal from '../renderer/Modal'
+import MaterialIcon from '../MaterialIcon'
 
 interface TrustedFrame {
   submitForm(
@@ -325,9 +326,9 @@ function WestpacQuickStreamPaymentForm({
       {loadError && (
         <section className="cypress-payment-form-loading-error-message">
           <div className="ob-payment-form__error-icon-container has-text-centered has-margin-bottom-8">
-            <i className="ob-payment-form__error-icon material-icons has-text-danger icon-x-large">
+            <MaterialIcon className="ob-payment-form__error-icon has-text-danger icon-x-large">
               error
-            </i>
+            </MaterialIcon>
           </div>
           <p className="ob-payment-form__error-message has-text-centered has-margin-bottom-4">
             {loadError.message}

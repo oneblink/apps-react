@@ -4,7 +4,7 @@ import FormElementForm, { Props } from './FormElementForm'
 import generateFreshdeskDependentFieldElements, {
   getNestedOptions,
 } from '../services/generateFreshdeskDependentFieldElements'
-import { UpdateFormElementsHandler } from '../typedoc'
+import { UpdateFormElementsHandler } from '../types/form'
 import { typeCastService } from '@oneblink/sdk-core'
 
 function FormElementFreshdeskDependentField({

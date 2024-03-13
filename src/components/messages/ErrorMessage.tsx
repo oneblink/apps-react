@@ -1,9 +1,9 @@
 import * as React from 'react'
-import ErrorIcon from '@mui/icons-material/Error'
 import LargeIconMessage, {
   Props as LargeIconMessageProps,
 } from './LargeIconMessage'
 import { Button } from '@mui/material'
+import IconComponent from '../IconComponent'
 type Props = {
   IconComponent?: LargeIconMessageProps['IconComponent']
   title: string
@@ -12,6 +12,10 @@ type Props = {
   children?: React.ReactNode
   onTryAgain?: () => void
 }
+
+const ErrorIcon = (
+  props: Omit<React.ComponentProps<typeof IconComponent>, 'icon'>,
+) => <IconComponent {...props} icon="error" />
 
 function ErrorMessage({
   title,

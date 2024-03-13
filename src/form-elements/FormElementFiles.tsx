@@ -11,6 +11,7 @@ import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import MaterialIcon from '../components/MaterialIcon'
 
 export function stringifyAttachments(
   value: attachmentsService.Attachment[] | undefined,
@@ -112,7 +113,7 @@ function FormElementFiles({
                     onClick={handleAdd}
                     aria-describedby={ariaDescribedby}
                   >
-                    <i className="material-icons icon-x-large">add</i>
+                    <MaterialIcon className="icon-x-large">add</MaterialIcon>
                   </button>
                 </div>
               )}

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button } from '@mui/material'
-import { Sync as SyncIcon } from '@mui/icons-material'
 import useFormStoreTableContext from './useFormStoreTableContext'
+import MaterialIcon from '../MaterialIcon'
 
 function OneBlinkFormStoreRefreshButton(
   props: React.ComponentProps<typeof Button>,
@@ -11,7 +11,7 @@ function OneBlinkFormStoreRefreshButton(
   return (
     <Button
       className="ob-form-store-refresh-button"
-      startIcon={<SyncIcon />}
+      startIcon={<MaterialIcon>sync</MaterialIcon>}
       onClick={onRefresh}
       color="primary"
       variant="contained"

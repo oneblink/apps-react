@@ -2,12 +2,8 @@ import * as React from 'react'
 import { userService } from '@oneblink/sdk-core'
 import { UserProfile } from '@oneblink/types/typescript/misc'
 import { Chip, Avatar } from '@mui/material'
-import {
-  AccountCircle,
-  VpnKey as KeyIcon,
-  Help as HelpIcon,
-} from '@mui/icons-material'
 import TableCellCopyButton from './TableCellCopyButton'
+import MaterialIcon from '../../MaterialIcon'
 
 function ActionedByTableCell({
   userProfile,
@@ -59,7 +55,7 @@ function useActionedByChipProps({
           <Avatar alt={userProfile.fullName} src={userProfile.picture} />
         )
       } else {
-        emptyChipProps.icon = <AccountCircle />
+        emptyChipProps.icon = <MaterialIcon>account_circle</MaterialIcon>
       }
 
       emptyChipProps.label = userService.getUserFriendlyName(userProfile)
@@ -68,13 +64,13 @@ function useActionedByChipProps({
 
     if (developerKey) {
       return {
-        icon: <KeyIcon />,
+        icon: <MaterialIcon>vpn_key</MaterialIcon>,
         label: developerKey.name,
       }
     }
 
     return {
-      icon: <HelpIcon />,
+      icon: <MaterialIcon>help</MaterialIcon>,
       label: 'Anonymous',
     }
   }, [developerKey, userProfile])
