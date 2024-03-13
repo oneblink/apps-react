@@ -240,6 +240,7 @@ function FormElementRepeatableSet({
             className="button ob-button ob-button__add is-primary cypress-add-repeatable-set"
             onClick={handleAddEntry}
             disabled={element.readOnly}
+            aria-label={element.addSetEntryLabel ? undefined : 'Add Entry'}
           >
             <span className="icon">
               <MaterialIcon>add</MaterialIcon>
@@ -464,6 +465,9 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             className="button ob-button ob-button_remove is-light cypress-remove-repeatable-set-entry"
             onClick={confirmRemove}
             disabled={element.readOnly}
+            aria-label={
+              element.removeSetEntryLabel ? undefined : 'Remove Entry'
+            }
           >
             <span className="icon">
               <MaterialIcon>delete_outline</MaterialIcon>
