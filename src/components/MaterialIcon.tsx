@@ -5,9 +5,7 @@ export default function MaterialIcon({
   className,
   children,
   ...props
-}: React.PropsWithChildren<
-  { className?: string } & React.ComponentProps<'i'>
->) {
+}: React.ComponentProps<'i'>) {
   return (
     <i className={clsx('material-icons', className)} aria-hidden {...props}>
       {children}
