@@ -51,7 +51,7 @@ function OneBlinkFormStoreColumnsButton(
     <>
       <Button
         className="ob-form-store-columns-button"
-        startIcon={() => <MaterialIcon>settings</MaterialIcon>}
+        startIcon={<MaterialIcon>settings</MaterialIcon>}
         onClick={showColumnConfiguration}
         // eslint-disable-next-line react/no-children-prop
         children={<>Columns</>}
