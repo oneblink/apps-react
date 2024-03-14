@@ -1,12 +1,21 @@
 import * as React from 'react'
-import { Typography, Grid, Container, useTheme, styled } from '@mui/material'
+import {
+  Typography,
+  Grid,
+  Container,
+  useTheme,
+  styled,
+  Icon,
+} from '@mui/material'
 import { CommonProps } from '@mui/material/OverridableComponent'
 import { Color } from '../../types/mui-color'
 
+type IconProps = React.ComponentProps<typeof Icon>
+
 export type Props = {
   IconComponent: React.ComponentType<{
-    color: Color
-    style: React.CSSProperties
+    color: IconProps['color']
+    style: IconProps['style']
   }>
   title: string
   variant: Color

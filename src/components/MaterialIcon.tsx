@@ -1,14 +1,6 @@
 import * as React from 'react'
-import clsx from 'clsx'
+import { Icon } from '@mui/material'
 
-export default function MaterialIcon({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<'i'>) {
-  return (
-    <i className={clsx('material-icons', className)} aria-hidden {...props}>
-      {children}
-    </i>
-  )
+export default function MaterialIcon(props: React.ComponentProps<typeof Icon>) {
+  return <Icon aria-hidden {...props} />
 }

@@ -4,27 +4,10 @@ import { styled, Tooltip } from '@mui/material'
 import { IsHoveringProvider } from '../../hooks/useIsHovering'
 import HeaderCellMoreButton from './table/HeaderCellMoreButton'
 import useFormStoreTableContext from './useFormStoreTableContext'
-import { Color } from '../../types/mui-color'
 import MaterialIcon from '../MaterialIcon'
 
-const StyledIcon = styled(
-  ({
-    icon,
-    ...props
-  }: {
-    icon: string
-  } & React.ComponentProps<typeof MaterialIcon>) => (
-    <MaterialIcon {...props}>{icon}</MaterialIcon>
-  ),
-)<{
-  color: Color
-  icon: string
-  sortingDirection?: 'ascending' | 'descending'
-}>(({ theme, color, sortingDirection }) => ({
+const SortingIcon = styled(MaterialIcon)(({ theme }) => ({
   transition: theme.transitions.create('transform'),
-  transform: sortingDirection === 'ascending' ? 'rotate(180deg)' : undefined,
-  fontSize: theme.typography.h6.fontSize + '!important',
-  color: theme.palette[color].main,
 }))
 
 const Table = styled('div')(({ theme }) => ({
@@ -200,12 +183,20 @@ function OneBlinkFormStoreTable() {
                         <div className="th-label">
                           <span>{headerGroup.headerText}</span>
                           {sortingDirection && (
-                            <StyledIcon
-                              className="th-icon"
-                              sortingDirection={sortingDirection}
+                            <SortingIcon
+                              fontSize="small"
                               color="primary"
-                              icon="arrow_downward"
-                            />
+                              sx={
+                                sortingDirection === 'ascending'
+                                  ? {
+                                      transform: 'rotate(180deg)',
+                                    }
+                                  : undefined
+                              }
+                              className="th-icon"
+                            >
+                              arrow_downward
+                            </SortingIcon>
                           )}
                           {headerGroup.filter?.isInvalid ? (
                             <Tooltip
@@ -213,18 +204,22 @@ function OneBlinkFormStoreTable() {
                                 headerGroup.filter?.validationMessage || ''
                               }
                             >
-                              <StyledIcon
+                              <MaterialIcon
+                                fontSize="small"
                                 color="error"
-                                icon="warning"
                                 className="th-icon"
-                              />
+                              >
+                                warning
+                              </MaterialIcon>
                             </Tooltip>
                           ) : headerGroup.filter?.value ? (
-                            <StyledIcon
+                            <MaterialIcon
+                              fontSize="small"
                               color="primary"
-                              icon="filter_list"
                               className="th-icon"
-                            />
+                            >
+                              filter_list
+                            </MaterialIcon>
                           ) : null}
                         </div>
                         <HeaderCellMoreButton

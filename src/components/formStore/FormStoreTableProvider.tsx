@@ -17,7 +17,6 @@ import NoResourcesYet from '../messages/NoResourcesYet'
 import FormStoreIcon from './display/FormStoreIcon'
 import { FormStoreTableContext } from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
-import IconComponent from '../IconComponent'
 
 const TABLE_PARAMETERS_FORM_STORE_KEY = 'REACT_TABLE_PARAMETERS_FORM_STORE'
 
@@ -163,7 +162,7 @@ export function FormStoreTableProvider({
       ) : (
         <NoResourcesYet
           IconComponent={(props) => (
-            <IconComponent {...props} icon="settings" />
+            <MaterialIcon {...props}>settings</MaterialIcon>
           )}
           title="No Columns Visible"
           gutterBottom

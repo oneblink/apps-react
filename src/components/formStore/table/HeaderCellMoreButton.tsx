@@ -9,7 +9,6 @@ import {
   Popover,
   SxProps,
   styled,
-  TypeAction,
 } from '@mui/material'
 import MaterialIcon from '../../MaterialIcon'
 import { useIsHovering } from '../../../hooks/useIsHovering'
@@ -19,13 +18,6 @@ import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   margin: theme.spacing(-1, -1, -1, 1),
-}))
-
-const StyledMoreVert = styled(MaterialIcon)<{
-  color: Extract<keyof TypeAction, 'active' | 'disabled'>
-}>(({ theme, color }) => ({
-  fontSize: theme.typography.h6.fontSize + '!important',
-  color: theme.palette.action[color],
 }))
 
 const paperStyles: SxProps = {
@@ -52,9 +44,12 @@ function HeaderCellMoreButton({
           setAnchorEl(event.currentTarget)
         }}
       >
-        <StyledMoreVert color={isHovering ? 'active' : 'disabled'}>
+        <MaterialIcon
+          fontSize="small"
+          color={isHovering ? 'action' : 'disabled'}
+        >
           more_vert
-        </StyledMoreVert>
+        </MaterialIcon>
       </StyledIconButton>
       <Popover
         open={!!anchorEl}
