@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.12.0] - 2024-03-14
+
 ### Added
 
 - Screen reader support for hints
@@ -20,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `location` form element to support selecting a position as well as dragging a pin to a position
 - Changed placeholder text colour and styled to italics
+
+### Dependencies
+
+- no longer depend upon [@mui/icons-material](https://www.npmjs.com/package/@mui/icons-material)
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [6.0.1-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [6.0.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [5.11.0] - 2024-03-06
 
