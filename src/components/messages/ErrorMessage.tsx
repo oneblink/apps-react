@@ -3,7 +3,7 @@ import LargeIconMessage, {
   Props as LargeIconMessageProps,
 } from './LargeIconMessage'
 import { Button } from '@mui/material'
-import IconComponent from '../IconComponent'
+import MaterialIcon from '../MaterialIcon'
 type Props = {
   IconComponent?: LargeIconMessageProps['IconComponent']
   title: string
@@ -13,9 +13,9 @@ type Props = {
   onTryAgain?: () => void
 }
 
-const ErrorIcon = (
-  props: Omit<React.ComponentProps<typeof IconComponent>, 'icon'>,
-) => <IconComponent {...props} icon="error" />
+const ErrorIcon: LargeIconMessageProps['IconComponent'] = (
+  props: React.ComponentProps<typeof MaterialIcon>,
+) => <MaterialIcon {...props}>error</MaterialIcon>
 
 function ErrorMessage({
   title,
@@ -25,14 +25,10 @@ function ErrorMessage({
   IconComponent,
   onTryAgain,
 }: Props) {
-  if (!IconComponent) {
-    IconComponent = ErrorIcon
-  }
-
   return (
     <>
       <LargeIconMessage
-        IconComponent={IconComponent}
+        IconComponent={IconComponent || ErrorIcon}
         title={title}
         variant="error"
         gutterTop={gutterTop}
