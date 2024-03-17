@@ -22,13 +22,13 @@ type Props = {
   allowCopy: boolean
 }
 
-const {
-  shortDate: shortDateFormat,
-  time: timeFormat,
-  shortDateTime: shortDateTimeFormat,
-} = localisationService.getDateFnsFormats()
-
 function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
+  const {
+    shortDate: shortDateFormat,
+    time: timeFormat,
+    shortDateTime: shortDateTimeFormat,
+  } = localisationService.getDateFnsFormats()
+
   if (formElement.type === 'page' || formElement.type === 'section') {
     return null
   }
