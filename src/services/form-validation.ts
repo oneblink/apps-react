@@ -365,7 +365,10 @@ export function generateValidationSchema(
             ),
             length: formElement.requiredAll
               ? {
-                  is: formElement.options?.length,
+                  is:
+                    formElementConditionallyShown?.type === 'formElement'
+                      ? formElementConditionallyShown?.options?.length
+                      : formElement.options?.length,
                   message:
                     formElement.requiredMessage || requiredAllDefaultMessage,
                 }
