@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import useReplaceableText from '../../hooks/useReplaceableText'
 import QuillHTML from '../QuillHTML'
-//import MaterialIcon from '../MaterialIcon'
 
 function FormElementLabelContainer({
   className,
