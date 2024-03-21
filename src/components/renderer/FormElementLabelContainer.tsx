@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import useReplaceableText from '../../hooks/useReplaceableText'
 import QuillHTML from '../QuillHTML'
-import MaterialIcon from '../MaterialIcon'
 
 function FormElementLabelContainer({
   className,
@@ -65,7 +64,7 @@ export function HintTooltip({
       leaveTouchDelay={10000}
       id={`${inputId}-hint`}
     >
-      <MaterialIcon className="has-text-grey ob-label__hint">info</MaterialIcon>
+      <i className="material-icons has-text-grey ob-label__hint">info</i>
     </Tooltip>
   )
 }
