@@ -7,7 +7,7 @@
     "url": "https://github.com/oneblink/apps-react/issues"
   },
   "dependencies": {
-    "@arcgis/core": "^4.28.10",
+    "@arcgis/core": "4.28.10",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@oneblink/sdk-core": "^6.0.1-beta.2",
