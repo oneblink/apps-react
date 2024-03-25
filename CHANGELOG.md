@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - table cells using wrong date formats
 - `requiredAll` options validation when options are hidden
+- date format across timezones in data manager
 
 ## [5.12.1] - 2024-03-25
 

@@ -23,12 +23,6 @@ type Props = {
 }
 
 function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
-  const {
-    shortDate: shortDateFormat,
-    time: timeFormat,
-    shortDateTime: shortDateTimeFormat,
-  } = localisationService.getDateFnsFormats()
-
   if (formElement.type === 'page' || formElement.type === 'section') {
     return null
   }
@@ -110,11 +104,15 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       if (typeof unknown !== 'string') {
         break
       }
-      const date = new Date(unknown)
-      if (isNaN(date.getTime())) {
+      const date = localisationService.generateDate({
+        daysOffset: undefined,
+        value: unknown,
+        dateOnly: true,
+      })
+      if (!date) {
         break
       }
-      const text = format(date, shortDateFormat)
+      const text = localisationService.formatDate(date)
       return (
         <>
           {text}
@@ -131,6 +129,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       if (isNaN(date.getTime())) {
         break
       }
+      const { time: timeFormat } = localisationService.getDateFnsFormats()
       const text = format(date, timeFormat)
       return (
         <>
@@ -148,6 +147,8 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       if (isNaN(date.getTime())) {
         break
       }
+      const { shortDateTime: shortDateTimeFormat } =
+        localisationService.getDateFnsFormats()
       const text = format(date, shortDateTimeFormat)
       return (
         <>
