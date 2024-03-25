@@ -354,18 +354,26 @@ export function generateValidationSchema(
           }
         }
         case 'checkboxes': {
+          const optionsLength =
+            formElementConditionallyShown?.type === 'formElement' &&
+            formElementConditionallyShown?.options
+              ? formElementConditionallyShown?.options?.length
+              : formElement.options?.length
+
           const requiredAllDefaultMessage = 'All options are required'
           return {
             presence: presence(
               {
                 ...formElement,
-                required: formElement.required || !!formElement.requiredAll,
+                required:
+                  !!optionsLength &&
+                  (formElement.required || !!formElement.requiredAll),
               },
               formElement.requiredAll ? requiredAllDefaultMessage : 'Required',
             ),
             length: formElement.requiredAll
               ? {
-                  is: formElement.options?.length,
+                  is: optionsLength,
                   message:
                     formElement.requiredMessage || requiredAllDefaultMessage,
                 }
