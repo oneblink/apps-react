@@ -10,6 +10,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  value: string | undefined
 }
 
 function FormElementCaptcha({
@@ -17,8 +18,19 @@ function FormElementCaptcha({
   onChange,
   validationMessage,
   displayValidationMessage,
+  value,
 }: Props) {
   const captchaSiteKey = useCaptchaSiteKey()
+  const ref = React.useRef<ReCAPTCHA | null>(null)
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const refValue = ref.current.getValue()
+      if (refValue && !value) {
+        ref.current.reset()
+      }
+    }
+  }, [value])
 
   return (
     <div className="cypress-captcha-element">
@@ -31,6 +43,7 @@ function FormElementCaptcha({
             })
           }}
           className="ob-input cypress-captcha-control"
+          ref={ref}
         />
 
         {displayValidationMessage && !!validationMessage && (

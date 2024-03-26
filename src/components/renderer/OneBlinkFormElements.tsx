@@ -702,6 +702,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'captcha': {
       return (
         <FormElementCaptcha
+          value={value as string | undefined}
           element={element}
           onChange={
             onChange as React.ComponentProps<
