@@ -532,6 +532,19 @@ function OneBlinkFormBase({
     [definition],
   )
 
+  const resetRecaptchas = React.useCallback(() => {
+    const updatedModel = { ...submission }
+    formElementsService.forEachFormElement(definition.elements, (element) => {
+      if (element.type === 'captcha') {
+        updatedModel[element.name] = undefined
+      }
+    })
+    setHasAttemptedSubmit(false)
+    setFormSubmission((current) => {
+      return { ...current, submission: updatedModel }
+    })
+  }, [definition.elements, setFormSubmission, submission])
+
   const handleSubmit = React.useCallback(
     (
       event:
@@ -614,6 +627,7 @@ function OneBlinkFormBase({
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })
+      resetRecaptchas()
     },
     [
       disabled,
@@ -631,6 +645,7 @@ function OneBlinkFormBase({
       taskContextValue,
       userProfile,
       onSubmit,
+      resetRecaptchas,
       setFormSubmission,
     ],
   )
