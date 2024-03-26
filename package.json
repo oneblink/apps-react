@@ -7,7 +7,7 @@
     "url": "https://github.com/oneblink/apps-react/issues"
   },
   "dependencies": {
-    "@arcgis/core": "~4.28.10",
+    "@arcgis/core": "~4.29.10",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@oneblink/sdk-core": "^6.0.1-beta.2",
@@ -47,7 +47,7 @@
     "@mui/material": "^5.15.6",
     "@mui/x-date-pickers": "^6.19.2",
     "@oneblink/apps": "^11.0.1-beta.2",
-    "@oneblink/release-cli": "^3.0.1",
+    "@oneblink/release-cli": "^3.1.0",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
