@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - date format across timezones in data manager
 - recaptcha elements not resetting after a submission
 
+### Changed
+
+- stop focusing first element on form
+
 ## [5.12.1] - 2024-03-25
 
 ### Fixed
