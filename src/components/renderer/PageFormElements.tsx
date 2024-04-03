@@ -22,9 +22,10 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
+  isFormReadOnly: boolean
+  isFirstPage: boolean
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
-  isFormReadOnly: boolean
 }
 
 function PageFormElements({
@@ -36,6 +37,7 @@ function PageFormElements({
   formElementsConditionallyShown,
   formElementsValidation,
   isFormReadOnly,
+  isFirstPage = false,
   onChange,
   setFormSubmission,
 }: Props) {
@@ -47,14 +49,14 @@ function PageFormElements({
       const focusableElementsOnPage = document
         .getElementById(pageElement.id)
         ?.querySelectorAll(selector)
-      if (focusableElementsOnPage?.length) {
+      if (focusableElementsOnPage?.length && !isFirstPage) {
         const firstElementOnPage = focusableElementsOnPage[0]
         if (firstElementOnPage instanceof HTMLElement) {
           firstElementOnPage.focus()
         }
       }
     }
-  }, [isActive, pageElement.id, pageElement.label, isFormReadOnly])
+  }, [isActive, pageElement.id, pageElement.label, isFormReadOnly, isFirstPage])
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
