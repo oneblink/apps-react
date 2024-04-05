@@ -178,14 +178,6 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
         const formElementWithOptions =
           typeCastService.formElements.toOptionsElement(formElement)
 
-        // for read only forms we don't want to fetch if we don't have to
-        if (
-          formElementWithOptions?.optionsType === 'DYNAMIC' &&
-          formElementWithOptions.options?.length
-        ) {
-          return false
-        }
-
         return (
           formElementWithOptions?.optionsType === 'DYNAMIC' &&
           !formElementWithOptions.options?.length &&
