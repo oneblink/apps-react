@@ -177,8 +177,10 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
       (formElement) => {
         const formElementWithOptions =
           typeCastService.formElements.toOptionsElement(formElement)
+
         return (
           formElementWithOptions?.optionsType === 'DYNAMIC' &&
+          !formElementWithOptions.options?.length &&
           formElementWithOptions.dynamicOptionSetId ===
             optionsSetResult.formElementOptionsSet.id
         )

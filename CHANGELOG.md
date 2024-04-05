@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - No longer auto focusing first element on the first page of a form
+- No longer fetch dyamic options in read only forms if element contains options
 
 ### Fixed
 
