@@ -133,6 +133,7 @@
     "start": "tsc-watch",
     "test": "jest",
     "types": "npm i -D github:oneblink/types",
-    "typescript": "tsc --noEmit"
+    "typescript": "tsc --noEmit",
+    "update-dependents": "oneblink-release update-dependents"
   }
 }
