@@ -9,7 +9,6 @@ import { FormTypes, FreshdeskTypes } from '@oneblink/types'
 import useLoadDataState, { LoadDataState } from './useLoadDataState'
 import OneBlinkAppsErrorOriginalMessage from '../components/renderer/OneBlinkAppsErrorOriginalMessage'
 import useFormDefinition from './useFormDefinition'
-import useFormIsReadOnly from './useFormIsReadOnly'
 import MaterialIcon from '../components/MaterialIcon'
 import { UpdateFormElementsHandler } from '../types/form'
 
@@ -31,7 +30,6 @@ export function FormElementOptionsContextProvider({
   children: React.ReactNode
 }) {
   const form = useFormDefinition()
-  const formIsReadOnly = useFormIsReadOnly()
 
   const hasFreshdeskFields = React.useMemo<boolean>(() => {
     return !!formElementsService.findFormElement(
@@ -152,7 +150,6 @@ export function FormElementOptionsContextProvider({
             optionsSetResult={optionsSetResult}
             form={form}
             setOptionsSetResults={setOptionsSetResults}
-            formIsReadOnly={formIsReadOnly}
           />
         </React.Fragment>
       ))}
@@ -169,12 +166,10 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
   form,
   optionsSetResult,
   setOptionsSetResults,
-  formIsReadOnly,
 }: {
   form: FormTypes.Form
   optionsSetResult: OptionsSetResult
   setOptionsSetResults: React.Dispatch<React.SetStateAction<OptionsSetResult[]>>
-  formIsReadOnly: boolean
 }) {
   const hasOptionsSet = React.useMemo<boolean>(() => {
     return !!formElementsService.findFormElement(
@@ -185,7 +180,6 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
 
         // for read only forms we don't want to fetch if we don't have to
         if (
-          formIsReadOnly &&
           formElementWithOptions?.optionsType === 'DYNAMIC' &&
           formElementWithOptions.options?.length
         ) {
@@ -194,12 +188,13 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
 
         return (
           formElementWithOptions?.optionsType === 'DYNAMIC' &&
+          !formElementWithOptions.options?.length &&
           formElementWithOptions.dynamicOptionSetId ===
             optionsSetResult.formElementOptionsSet.id
         )
       },
     )
-  }, [form.elements, optionsSetResult.formElementOptionsSet.id, formIsReadOnly])
+  }, [form.elements, optionsSetResult.formElementOptionsSet.id])
 
   const setOptionsSetResult = React.useCallback(
     (result: OptionsSetResult['result']) => {
