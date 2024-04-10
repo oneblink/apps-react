@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.12.2] - 2024-04-10
+
 ### Changed
 
 - No longer auto focusing first element on the first page of a form
@@ -18,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `requiredAll` options validation when options are hidden
 - date format across timezones in data manager
 - recaptcha elements not resetting after a submission
+
+### Dependencies
+
+- update [@arcgis/core](https://www.npmjs.com/package/@arcgis/core) to 4.29.10 (from 4.28.10)
 
 ## [5.12.1] - 2024-03-25
 
