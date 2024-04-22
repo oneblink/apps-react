@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
+import clsx from 'clsx'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import queryString from 'query-string'
 
@@ -13,6 +14,7 @@ import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import { useReverseGeocodeContext } from '../components/renderer/ReverseGeocode'
 
 type Props = {
   id: string
@@ -35,7 +37,7 @@ export const stringifyLocation = (location: Coords | undefined) => {
   }
 }
 
-function parseLocationValue(value: unknown): Coords | undefined {
+export function parseLocationValue(value: unknown): Coords | undefined {
   if (!value || typeof value !== 'object') {
     return
   }
@@ -55,6 +57,7 @@ function parseLocationValue(value: unknown): Coords | undefined {
 const mapHeight = 300
 const initialMapZoom = 15
 const apiUrl = 'https://maps.googleapis.com/maps/api/staticmap'
+
 function FormElementLocation({
   id,
   element,
@@ -126,6 +129,9 @@ function FormElementLocation({
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
+  const { isReverseGeocoding, reverseGeocodingErrorMsg } =
+    useReverseGeocodeContext()
+
   return (
     <div className="cypress-location-element">
       <FormElementLabelContainer
@@ -143,21 +149,26 @@ function FormElementLocation({
           />
 
           <div className="buttons ob-buttons ob-location__buttons">
-            {isLocationPickerOpen ? (
+            {isLocationPickerOpen || isReverseGeocoding ? (
               <>
                 <button
                   type="button"
                   className="is-light button ob-button ob-button__cancel ob-location__button ob-location__button-cancel cypress-cancel-location-button"
                   onClick={onCancel}
-                  disabled={element.readOnly}
+                  disabled={element.readOnly || isReverseGeocoding}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="is-primary button ob-button ob-button__confirm ob-location__button ob-location__button-confirm cypress-confirm-location-button"
+                  className={clsx(
+                    'is-primary button ob-button ob-button__confirm ob-location__button ob-location__button-confirm cypress-confirm-location-button',
+                    {
+                      'is-loading': isReverseGeocoding,
+                    },
+                  )}
                   onClick={onConfirm}
-                  disabled={element.readOnly || !location}
+                  disabled={element.readOnly || !location || isReverseGeocoding}
                 >
                   Confirm
                 </button>
@@ -189,6 +200,13 @@ function FormElementLocation({
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
               {validationMessage}
+            </div>
+          </div>
+        )}
+        {reverseGeocodingErrorMsg && (
+          <div role="alert" className="has-margin-top-8">
+            <div className="has-text-danger ob-error__text cypress-validation-message">
+              {reverseGeocodingErrorMsg}
             </div>
           </div>
         )}

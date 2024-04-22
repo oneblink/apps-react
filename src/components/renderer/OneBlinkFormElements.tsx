@@ -2,6 +2,7 @@ import * as React from 'react'
 import clsx from 'clsx'
 
 import LookupNotification from './LookupNotification'
+import ReverseGeocode from './ReverseGeocode'
 
 import FormElementBarcodeScanner from '../../form-elements/FormElementBarcodeScanner'
 import FormElementEmail from '../../form-elements/FormElementEmail'
@@ -727,19 +728,21 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           element={element}
           onLookup={onLookup}
         >
-          <FormElementLocation
-            id={id}
-            element={element}
-            value={value}
-            onChange={
-              onChange as React.ComponentProps<
-                typeof FormElementLocation
-              >['onChange']
-            }
-            validationMessage={validationMessage}
-            displayValidationMessage={displayValidationMessage}
-            {...dirtyProps}
-          />
+          <ReverseGeocode value={value} element={element} onLookup={onLookup}>
+            <FormElementLocation
+              id={id}
+              element={element}
+              value={value}
+              onChange={
+                onChange as React.ComponentProps<
+                  typeof FormElementLocation
+                >['onChange']
+              }
+              validationMessage={validationMessage}
+              displayValidationMessage={displayValidationMessage}
+              {...dirtyProps}
+            />
+          </ReverseGeocode>
         </LookupNotification>
       )
     }
