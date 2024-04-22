@@ -99,7 +99,9 @@ export default function ReverseGeocode({
                 break
               }
             }
-            mergeReverseGeocodeData(reverseGeocodeResult)
+            if (!abortController.signal.aborted) {
+              mergeReverseGeocodeData(reverseGeocodeResult)
+            }
           }
         }
       } catch (e) {
