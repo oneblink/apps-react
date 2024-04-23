@@ -7,6 +7,7 @@ import { formElementsService } from '@oneblink/sdk-core'
 import { parseLocationValue } from '../../form-elements/FormElementLocation'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormDefinition from '../../hooks/useFormDefinition'
+import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormElementLookupHandler } from '../../types/form'
 import useIsOffline from '../../hooks/useIsOffline'
 
@@ -33,6 +34,7 @@ export default function ReverseGeocode({
 
   const formDefinition = useFormDefinition()
   const formSubmissionModel = useFormSubmissionModel()
+  const formIsReadOnly = useFormIsReadOnly()
 
   const formattedAddressElement = React.useMemo(() => {
     if (element.showStreetAddress && element.formattedAddressElementId) {
@@ -124,7 +126,9 @@ export default function ReverseGeocode({
       }
     }
 
-    effect()
+    if (!formIsReadOnly) {
+      effect()
+    }
 
     return () => abortController.abort()
   }, [
@@ -135,6 +139,7 @@ export default function ReverseGeocode({
     formattedAddressElement,
     mergeReverseGeocodeData,
     isOffline,
+    formIsReadOnly,
   ])
 
   return (
