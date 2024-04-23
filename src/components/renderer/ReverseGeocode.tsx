@@ -104,6 +104,9 @@ export default function ReverseGeocode({
             }
           }
         }
+        setReverseGeocodingState({
+          isReverseGeocoding: false,
+        })
       } catch (e) {
         let errorMsg = 'Could not find your address.'
         if (e instanceof OneBlinkAppsError && e.httpStatusCode !== 404) {
@@ -119,10 +122,6 @@ export default function ReverseGeocode({
           reverseGeocodingErrorMsg: errorMsg,
         }))
       }
-      setReverseGeocodingState((current) => ({
-        ...current,
-        isReverseGeocoding: false,
-      }))
     }
 
     effect()
