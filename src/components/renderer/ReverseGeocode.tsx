@@ -11,10 +11,14 @@ import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormElementLookupHandler } from '../../types/form'
 import useIsOffline from '../../hooks/useIsOffline'
 
-const ReverseGeocodeContext = React.createContext<{
+type ReverseGeocodeContextValue = {
   isReverseGeocoding: boolean
   reverseGeocodingErrorMsg?: string
-}>({ isReverseGeocoding: false })
+}
+
+const ReverseGeocodeContext = React.createContext<ReverseGeocodeContextValue>({
+  isReverseGeocoding: false,
+})
 
 export default function ReverseGeocode({
   value,
@@ -27,9 +31,10 @@ export default function ReverseGeocode({
   onLookup: FormElementLookupHandler
 }>) {
   const coords = React.useMemo(() => parseLocationValue(value), [value])
-  const [reverseGeocodingState, setReverseGeocodingState] = React.useState({
-    isReverseGeocoding: false,
-  })
+  const [reverseGeocodingState, setReverseGeocodingState] =
+    React.useState<ReverseGeocodeContextValue>({
+      isReverseGeocoding: false,
+    })
   const isOffline = useIsOffline()
 
   const formDefinition = useFormDefinition()
@@ -119,10 +124,10 @@ export default function ReverseGeocode({
           errorMsg =
             'It looks like you&apos;re offline. Please try again when connectivity is restored.'
         }
-        setReverseGeocodingState((current) => ({
-          ...current,
+        setReverseGeocodingState({
+          isReverseGeocoding: false,
           reverseGeocodingErrorMsg: errorMsg,
-        }))
+        })
       }
     }
 
