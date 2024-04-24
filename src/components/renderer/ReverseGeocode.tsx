@@ -42,15 +42,14 @@ export default function ReverseGeocode({
   const formIsReadOnly = useFormIsReadOnly()
 
   const formattedAddressElement = React.useMemo(() => {
-    if (element.showStreetAddress && element.formattedAddressElementId) {
+    if (element.reverseGeocoding?.formattedAddressElementId) {
       return formElementsService.findFormElement(
         formSubmissionModel.elements,
-        (el) => el.id === element.formattedAddressElementId,
+        (el) => el.id === element.reverseGeocoding?.formattedAddressElementId,
       )
     }
   }, [
-    element.formattedAddressElementId,
-    element.showStreetAddress,
+    element.reverseGeocoding?.formattedAddressElementId,
     formSubmissionModel.elements,
   ])
 
@@ -76,38 +75,30 @@ export default function ReverseGeocode({
       setReverseGeocodingState({ isReverseGeocoding: true })
       try {
         if (coords && formattedAddressElement) {
-          if (element.showStreetAddress && formattedAddressElement) {
-            const reverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission'] =
+          if (element.reverseGeocoding && formattedAddressElement) {
+            const mergeReverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission'] =
               {}
+            const { reverseGeocodeResult } =
+              await formService.getGoogleMapsReverseGeocoding({
+                lat: coords.latitude,
+                lng: coords.longitude,
+                formId: formDefinition.id,
+                abortSignal: abortController.signal,
+              })
             switch (formattedAddressElement.type) {
               case 'text': {
-                const {
-                  reverseGeocodeResult: { formatted_address },
-                } = await formService.getGoogleMapsReverseGeocoding({
-                  lat: coords.latitude,
-                  lng: coords.longitude,
-                  formId: formDefinition.id,
-                  abortSignal: abortController.signal,
-                })
-                reverseGeocodeResult[formattedAddressElement.name] =
-                  formatted_address
+                mergeReverseGeocodeResult[formattedAddressElement.name] =
+                  reverseGeocodeResult.formatted_address
                 break
               }
               case 'geoscapeAddress': {
-                const { reverseGeocodeResult: geoscapeReverseGeocodeResult } =
-                  await formService.getGeoscapeReverseGeocoding({
-                    lat: coords.latitude,
-                    lng: coords.longitude,
-                    formId: formDefinition.id,
-                    abortSignal: abortController.signal,
-                  })
-                reverseGeocodeResult[formattedAddressElement.name] =
-                  geoscapeReverseGeocodeResult
+                mergeReverseGeocodeResult[formattedAddressElement.name] =
+                  reverseGeocodeResult
                 break
               }
             }
             if (!abortController.signal.aborted) {
-              mergeReverseGeocodeData(reverseGeocodeResult)
+              mergeReverseGeocodeData(mergeReverseGeocodeResult)
             }
           }
         }
@@ -138,7 +129,7 @@ export default function ReverseGeocode({
     return () => abortController.abort()
   }, [
     coords,
-    element.showStreetAddress,
+    element.reverseGeocoding,
     formDefinition.id,
     formDefinition.organisationId,
     formattedAddressElement,
