@@ -28,6 +28,7 @@ export default function useConditionalLogic(
       })
     }, [definition.elements, submission, errorCallback])
 
+    console.log('formElementsConditionallyShown: ', formElementsConditionallyShown)
   return {
     conditionalLogicError,
     formElementsConditionallyShown,
