@@ -78,8 +78,8 @@ export default function ReverseGeocode({
           if (element.reverseGeocoding && formattedAddressElement) {
             const mergeReverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission'] =
               {}
-            const { reverseGeocodeResult } =
-              await formService.getGoogleMapsReverseGeocoding({
+            const reverseGeocodeResult =
+              await formService.getGeoscapeReverseGeocoding({
                 lat: coords.latitude,
                 lng: coords.longitude,
                 formId: formDefinition.id,
@@ -87,8 +87,10 @@ export default function ReverseGeocode({
               })
             switch (formattedAddressElement.type) {
               case 'text': {
-                mergeReverseGeocodeResult[formattedAddressElement.name] =
-                  reverseGeocodeResult.formatted_address
+                if (reverseGeocodeResult.addressDetails?.formattedAddress) {
+                  mergeReverseGeocodeResult[formattedAddressElement.name] =
+                    reverseGeocodeResult.addressDetails?.formattedAddress
+                }
                 break
               }
               case 'geoscapeAddress': {
