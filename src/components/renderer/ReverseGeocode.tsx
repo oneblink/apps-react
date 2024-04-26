@@ -78,7 +78,7 @@ export default function ReverseGeocode({
           if (element.reverseGeocoding && formattedAddressElement) {
             const mergeReverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission'] =
               {}
-            const reverseGeocodeResult =
+            const { reverseGeocodeResult } =
               await formService.getGeoscapeReverseGeocoding({
                 lat: coords.latitude,
                 lng: coords.longitude,
