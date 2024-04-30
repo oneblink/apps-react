@@ -16,7 +16,7 @@
 <li><a href="../modules/SubmissionTypes.html">SubmissionTypes</a></li>
 <li><a href="SubmissionTypes.FormsAppJob.html">FormsAppJob</a></li></ul>
 <h1>Type alias FormsAppJob</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">Forms<wbr/>App<wbr/>Job</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/SubmissionTypes.NewFormsAppJob.html" class="tsd-signature-type tsd-kind-interface">NewFormsAppJob</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">createdAt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isSubmitted</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">updatedAt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">Forms<wbr/>App<wbr/>Job</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/SubmissionTypes.NewFormsAppJob.html" class="tsd-signature-type tsd-kind-interface">NewFormsAppJob</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">createdAt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">id</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isSubmitted</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">submissionId</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">updatedAt</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
@@ -32,7 +32,14 @@
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">is<wbr/>Submitted</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-<div class="tsd-comment tsd-typography"><p>Determine if the Job has been submitted</p>
+<div class="tsd-comment tsd-typography">
+<h4>Deprecated</h4><p>Use the presence of the <code>submissionId</code> property to determine if
+  the job has been submitted. Will be <code>true</code> if the <code>submissionId</code> property
+  has a value for backward compatibility.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-property">submission<wbr/>Id</span><span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>The submission identifier to indicate that job has been submitted</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
@@ -92,6 +99,7 @@
 <li><a href="../interfaces/SubmissionTypes.JobSearchParameters.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Job<wbr/>Search<wbr/>Parameters</span></a></li>
 <li><a href="../interfaces/SubmissionTypes.NewFormsAppDraft.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>New<wbr/>Forms<wbr/>App<wbr/>Draft</span></a></li>
 <li><a href="../interfaces/SubmissionTypes.NewFormsAppJob.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>New<wbr/>Forms<wbr/>App<wbr/>Job</span></a></li>
+<li><a href="../interfaces/SubmissionTypes.NewS3SubmissionData.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>New<wbr/>S3<wbr/>Submission<wbr/>Data</span></a></li>
 <li><a href="../interfaces/SubmissionTypes.WestpacQuickStreamLinks.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Westpac<wbr/>Quick<wbr/>Stream<wbr/>Links</span></a></li></ul></div></details></li>
 <li>
 <details class="tsd-index-accordion" data-key="SubmissionTypes$Type Aliases"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Type Aliases</span></summary>
@@ -122,8 +130,7 @@
 <li><a href="SubmissionTypes.S3SubmissionDataDeviceCordova.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>S3<wbr/>Submission<wbr/>Data<wbr/>Device<wbr/>Cordova</span></a></li>
 <li><a href="SubmissionTypes.WestpacQuickStreamPayment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Westpac<wbr/>Quick<wbr/>Stream<wbr/>Payment</span></a></li>
 <li><a href="SubmissionTypes.WestpacQuickWebPayment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Westpac<wbr/>Quick<wbr/>Web<wbr/>Payment</span></a></li>
-<li><a href="SubmissionTypes._BaseFormStoreRecord.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>_<wbr/>Base<wbr/>Form<wbr/>Store<wbr/>Record</span></a></li>
-<li><a href="SubmissionTypes._FormSubmissionMeta.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>_<wbr/>Form<wbr/>Submission<wbr/>Meta</span></a></li></ul></div></details></li></ul></div></details></li>
+<li><a href="SubmissionTypes._BaseFormStoreRecord.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>_<wbr/>Base<wbr/>Form<wbr/>Store<wbr/>Record</span></a></li></ul></div></details></li></ul></div></details></li>
 <li><a href="../modules/TeamMemberTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Team<wbr/>Member<wbr/>Types</span></a></li></ul></div></details></li>
 <li>
 <details class="tsd-index-accordion" data-key="Interfaces"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Interfaces</span></summary>
