@@ -309,6 +309,7 @@ export default function useLogin({
   newPassword,
   newPasswordConfirmed,
   code,
+  formsAppId,
 }: {
   /** The email address entered by the user. */
   username: string
@@ -326,6 +327,8 @@ export default function useLogin({
    * "forgot password" process.
    */
   code: string
+  /** The identifier for the current forms app */
+  formsAppId?: number
 }): UseLoginValue {
   const isMounted = useIsMounted()
 
@@ -597,7 +600,7 @@ export default function useLogin({
 
     try {
       const newResetForgottenPasswordCallback =
-        await authService.forgotPassword(username)
+        await authService.forgotPassword(username, formsAppId)
       if (isMounted.current) {
         setForgotPasswordState({
           isSendingForgotPasswordCode: false,
@@ -617,7 +620,7 @@ export default function useLogin({
         })
       }
     }
-  }, [isMounted, username, usernameValidation.isInvalid])
+  }, [isMounted, username, usernameValidation.isInvalid, formsAppId])
 
   const resetForgottenPassword = React.useCallback(async () => {
     if (!resetForgottenPasswordCallback) {
