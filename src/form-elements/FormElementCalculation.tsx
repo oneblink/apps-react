@@ -207,6 +207,18 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       }
       return null
     })
+    exprParser.registerFunction('FLOOR', (value: number) => {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        return Math.floor(value)
+      }
+      return null
+    })
+    exprParser.registerFunction('CEILING', (value: number) => {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        return Math.ceil(value)
+      }
+      return null
+    })
     exprParser.registerFunction(
       'ISNULL',
       (value: unknown | undefined, defaultValue: number) => {
