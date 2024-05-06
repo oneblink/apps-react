@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Changed
+### Added
 
-- `useLogin` hook to receive an optional formsAppId for the forgot password flow
+- optional `formsAppId` parameter to `useLogin` hook for the forgot password flow
 
 ## [5.13.0] - 2024-04-30
 
