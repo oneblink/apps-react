@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `FLOOR` and `CEILING` commands to calculation elements
 - optional `formsAppId` parameter to `useLogin` hook for the forgot password flow
+- `ROUND_UP` and `ROUND_DOWN` commands to calculation elements
 
 ## [5.13.0] - 2024-04-30
 
