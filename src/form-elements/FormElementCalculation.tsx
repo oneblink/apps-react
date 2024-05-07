@@ -207,6 +207,18 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       }
       return null
     })
+    exprParser.registerFunction('ROUND_DOWN', (value: number) => {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        return Math.floor(value)
+      }
+      return null
+    })
+    exprParser.registerFunction('ROUND_UP', (value: number) => {
+      if (!Number.isNaN(value) && Number.isFinite(value)) {
+        return Math.ceil(value)
+      }
+      return null
+    })
     exprParser.registerFunction(
       'ISNULL',
       (value: unknown | undefined, defaultValue: number) => {
@@ -255,10 +267,24 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     }
   }, [element, registerProperty])
 
+  const calculateContent = React.useCallback(
+    (formSubmissionModel) => {
+      if (!calculation) {
+        return
+      }
+      try {
+        return calculation.eval(formSubmissionModel)
+      } catch {
+        //do nothing
+      }
+      return
+    },
+    [calculation],
+  )
+
   // MODEL LISTENER
   React.useEffect(() => {
-    if (!calculation) return
-    const newValue = calculation.eval(formSubmissionModel)
+    const newValue = calculateContent(formSubmissionModel)
     if (value === newValue || (value === undefined && isNaN(newValue))) {
       return
     }
@@ -271,7 +297,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         value: undefined,
       })
     }
-  }, [calculation, element, formSubmissionModel, onChange, value])
+  }, [element, formSubmissionModel, onChange, value, calculateContent])
 
   return (
     <div className="cypress-calculation-element">
