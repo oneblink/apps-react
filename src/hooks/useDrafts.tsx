@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { draftService, submissionService } from '@oneblink/apps'
-import { SubmissionTypes } from '@oneblink/types'
 import useAuth from './useAuth'
 import useIsMounted from './useIsMounted'
 import useIsOffline from './useIsOffline'
@@ -12,21 +11,26 @@ export type DraftsContextValue = {
   /** An Error object if loading drafts fails */
   loadError: Error | null
   /** The incomplete submissions that were saved for later */
-  drafts: SubmissionTypes.FormsAppDraft[]
+  drafts: draftService.LocalFormSubmissionDraft[]
   /** A function to trigger loading of the drafts */
   reloadDrafts: () => Promise<void>
   /** A function to clear Error object from loading drafts */
   clearLoadError: () => void
   /** `true` drafts are syncing with other devices */
   isSyncing: boolean
+  /**
+   * The date when the sync process last completed successfully, will be `null`
+   * until it has completed the first time.
+   */
+  lastSyncTime: Date | null
   /** A function to trigger syncing of the drafts */
-  syncDrafts: () => Promise<void>
+  syncDrafts: (abortSignal: AbortSignal | undefined) => Promise<void>
   /** An Error object if syncing drafts fails */
   syncError: Error | null
   /** A function to clear Error object from syncing drafts */
   clearSyncError: () => void
   /** A function to remove a draft */
-  deleteDraft: (draftId: string) => Promise<void>
+  deleteDraft: (formSubmissionDraftId: string) => Promise<void>
 }
 
 const defaultLoadState = {
@@ -36,6 +40,7 @@ const defaultLoadState = {
 }
 
 const defaultSyncState = {
+  lastSyncTime: null,
   isSyncing: false,
   syncError: null,
 }
@@ -99,6 +104,7 @@ export function DraftsContextProvider({
   const { isLoggedIn, isUsingFormsKey } = useAuth()
 
   const [syncState, setSyncState] = React.useState<{
+    lastSyncTime: Date | null
     isSyncing: boolean
     syncError: Error | null
   }>(defaultSyncState)
@@ -108,41 +114,47 @@ export function DraftsContextProvider({
       syncError: null,
     }))
   }, [])
-  const syncDrafts = React.useCallback(async () => {
-    if (!isDraftsEnabled || !isLoggedIn || isUsingFormsKey) {
-      return
-    }
+  const syncDrafts = React.useCallback(
+    async (abortSignal: AbortSignal | undefined) => {
+      if (!isDraftsEnabled || !isLoggedIn || isUsingFormsKey) {
+        return
+      }
 
-    if (isMounted.current) {
-      setSyncState({
-        isSyncing: true,
-        syncError: null,
-      })
-    }
+      if (isMounted.current) {
+        setSyncState((currentState) => ({
+          ...currentState,
+          isSyncing: true,
+          syncError: null,
+        }))
+      }
 
-    let newError = null
+      let newError = null
 
-    try {
-      await draftService.syncDrafts({
-        formsAppId,
-        throwError: false,
-      })
-    } catch (error) {
-      newError = error as Error
-    }
+      try {
+        await draftService.syncDrafts({
+          formsAppId,
+          throwError: false,
+          abortSignal,
+        })
+      } catch (error) {
+        newError = error as Error
+      }
 
-    if (isMounted.current) {
-      setSyncState({
-        isSyncing: false,
-        syncError: newError,
-      })
-    }
-  }, [formsAppId, isDraftsEnabled, isLoggedIn, isMounted, isUsingFormsKey])
+      if (isMounted.current) {
+        setSyncState({
+          lastSyncTime: new Date(),
+          isSyncing: false,
+          syncError: newError,
+        })
+      }
+    },
+    [formsAppId, isDraftsEnabled, isLoggedIn, isMounted, isUsingFormsKey],
+  )
 
   const [loadState, setLoadState] = React.useState<{
     isLoading: boolean
     loadError: Error | null
-    drafts: SubmissionTypes.FormsAppDraft[]
+    drafts: draftService.LocalFormSubmissionDraft[]
   }>(defaultLoadState)
   const clearLoadError = React.useCallback(() => {
     setLoadState((currentState) => ({
@@ -171,7 +183,7 @@ export function DraftsContextProvider({
     }
 
     let newError = null
-    let newDrafts: SubmissionTypes.FormsAppDraft[] = []
+    let newDrafts: draftService.LocalFormSubmissionDraft[] = []
 
     try {
       newDrafts = await draftService.getDrafts()
@@ -195,12 +207,13 @@ export function DraftsContextProvider({
     [formsAppId],
   )
 
-  const value = React.useMemo(
+  const value = React.useMemo<DraftsContextValue>(
     () => ({
       // Sync
       syncDrafts,
       isSyncing: syncState.isSyncing,
       syncError: syncState.syncError,
+      lastSyncTime: syncState.lastSyncTime,
       clearSyncError,
       // Load
       reloadDrafts,
@@ -212,20 +225,22 @@ export function DraftsContextProvider({
       deleteDraft,
     }),
     [
-      clearLoadError,
-      clearSyncError,
-      loadState.drafts,
-      loadState.isLoading,
-      loadState.loadError,
-      reloadDrafts,
       syncDrafts,
       syncState.isSyncing,
       syncState.syncError,
+      syncState.lastSyncTime,
+      clearSyncError,
+      reloadDrafts,
+      loadState.isLoading,
+      loadState.drafts,
+      loadState.loadError,
+      clearLoadError,
       deleteDraft,
     ],
   )
 
   React.useEffect(() => {
+    const abortController = new AbortController()
     reloadDrafts()
     const unregisterPendingQueueListener =
       submissionService.registerPendingQueueListener(reloadDrafts)
@@ -239,6 +254,7 @@ export function DraftsContextProvider({
       },
     )
     return () => {
+      abortController.abort()
       unregisterPendingQueueListener()
       unregisterDraftsListener()
     }
@@ -246,7 +262,11 @@ export function DraftsContextProvider({
 
   React.useEffect(() => {
     if (!isOffline) {
-      syncDrafts()
+      const abortController = new AbortController()
+      syncDrafts(abortController.signal)
+      return () => {
+        abortController.abort()
+      }
     }
   }, [isOffline, syncDrafts])
 
