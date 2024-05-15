@@ -6,16 +6,10 @@ import useIsOffline from './useIsOffline'
 
 /** The value returned from `useDrafts()` hook */
 export type DraftsContextValue = {
-  /** `true` drafts are currently loading. */
+  /** `true` if drafts are currently loading for the first time. */
   isLoading: boolean
-  /** An Error object if loading drafts fails */
-  loadError: Error | null
   /** The incomplete submissions that were saved for later */
   drafts: draftService.LocalFormSubmissionDraft[]
-  /** A function to trigger loading of the drafts */
-  reloadDrafts: () => Promise<void>
-  /** A function to clear Error object from loading drafts */
-  clearLoadError: () => void
   /** `true` drafts are syncing with other devices */
   isSyncing: boolean
   /**
@@ -31,18 +25,6 @@ export type DraftsContextValue = {
   clearSyncError: () => void
   /** A function to remove a draft */
   deleteDraft: (formSubmissionDraftId: string) => Promise<void>
-}
-
-const defaultLoadState = {
-  isLoading: false,
-  loadError: null,
-  drafts: [],
-}
-
-const defaultSyncState = {
-  lastSyncTime: null,
-  isSyncing: false,
-  syncError: null,
 }
 
 const DraftsContext = React.createContext<DraftsContextValue | undefined>(
@@ -107,7 +89,11 @@ export function DraftsContextProvider({
     lastSyncTime: Date | null
     isSyncing: boolean
     syncError: Error | null
-  }>(defaultSyncState)
+  }>({
+    lastSyncTime: null,
+    isSyncing: false,
+    syncError: null,
+  })
   const clearSyncError = React.useCallback(() => {
     setSyncState((currentState) => ({
       ...currentState,
@@ -151,54 +137,9 @@ export function DraftsContextProvider({
     [formsAppId, isDraftsEnabled, isLoggedIn, isMounted, isUsingFormsKey],
   )
 
-  const [loadState, setLoadState] = React.useState<{
-    isLoading: boolean
-    loadError: Error | null
-    drafts: draftService.LocalFormSubmissionDraft[]
-  }>(defaultLoadState)
-  const clearLoadError = React.useCallback(() => {
-    setLoadState((currentState) => ({
-      ...currentState,
-      loadError: null,
-    }))
-  }, [])
-  const reloadDrafts = React.useCallback(async () => {
-    if (!isLoggedIn) {
-      if (isMounted.current) {
-        setLoadState({
-          isLoading: false,
-          loadError: null,
-          drafts: [],
-        })
-      }
-      return
-    }
-
-    if (isMounted.current) {
-      setLoadState((currentState) => ({
-        isLoading: true,
-        loadError: null,
-        drafts: currentState.drafts,
-      }))
-    }
-
-    let newError = null
-    let newDrafts: draftService.LocalFormSubmissionDraft[] = []
-
-    try {
-      newDrafts = await draftService.getDrafts()
-    } catch (error) {
-      newError = error as Error
-    }
-
-    if (isMounted.current) {
-      setLoadState({
-        isLoading: false,
-        loadError: newError,
-        drafts: newDrafts,
-      })
-    }
-  }, [isMounted, isLoggedIn])
+  const [drafts, setDrafts] = React.useState<
+    draftService.LocalFormSubmissionDraft[] | null
+  >(null)
 
   const deleteDraft = React.useCallback(
     (draftId) => {
@@ -216,11 +157,8 @@ export function DraftsContextProvider({
       lastSyncTime: syncState.lastSyncTime,
       clearSyncError,
       // Load
-      reloadDrafts,
-      isLoading: loadState.isLoading,
-      drafts: loadState.drafts,
-      loadError: loadState.loadError,
-      clearLoadError,
+      isLoading: !drafts,
+      drafts: drafts || [],
       // Delete,
       deleteDraft,
     }),
@@ -230,35 +168,25 @@ export function DraftsContextProvider({
       syncState.syncError,
       syncState.lastSyncTime,
       clearSyncError,
-      reloadDrafts,
-      loadState.isLoading,
-      loadState.drafts,
-      loadState.loadError,
-      clearLoadError,
+      drafts,
       deleteDraft,
     ],
   )
 
   React.useEffect(() => {
     const abortController = new AbortController()
-    reloadDrafts()
     const unregisterPendingQueueListener =
-      submissionService.registerPendingQueueListener(reloadDrafts)
-    const unregisterDraftsListener = draftService.registerDraftsListener(
-      (drafts) => {
-        setLoadState({
-          isLoading: false,
-          drafts,
-          loadError: null,
-        })
-      },
-    )
+      submissionService.registerPendingQueueListener(() =>
+        syncDrafts(undefined),
+      )
+    const unregisterDraftsListener =
+      draftService.registerDraftsListener(setDrafts)
     return () => {
       abortController.abort()
       unregisterPendingQueueListener()
       unregisterDraftsListener()
     }
-  }, [reloadDrafts])
+  }, [syncDrafts])
 
   React.useEffect(() => {
     if (!isOffline) {
