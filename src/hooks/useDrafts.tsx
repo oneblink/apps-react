@@ -119,7 +119,7 @@ export function DraftsContextProvider({
       try {
         await draftService.syncDrafts({
           formsAppId,
-          throwError: false,
+          throwError: true,
           abortSignal,
         })
       } catch (error) {
