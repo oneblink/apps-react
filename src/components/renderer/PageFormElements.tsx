@@ -22,8 +22,6 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
-  isFormReadOnly: boolean
-  isFirstPage: boolean
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
 }
@@ -36,28 +34,9 @@ function PageFormElements({
   displayValidationMessages,
   formElementsConditionallyShown,
   formElementsValidation,
-  isFormReadOnly,
-  isFirstPage = false,
   onChange,
   setFormSubmission,
 }: Props) {
-  // Effect responsible for focusing the first element on a page when the next button is focused and used to nav forwards a page
-  React.useEffect(() => {
-    if (isActive && !isFormReadOnly) {
-      const selector =
-        'a:not([disabled]), button:not([disabled]), input:not([disabled], [hidden]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([disabled]):not([tabindex="-1"])'
-      const focusableElementsOnPage = document
-        .getElementById(pageElement.id)
-        ?.querySelectorAll(selector)
-      if (focusableElementsOnPage?.length && !isFirstPage) {
-        const firstElementOnPage = focusableElementsOnPage[0]
-        if (firstElementOnPage instanceof HTMLElement) {
-          firstElementOnPage.focus()
-        }
-      }
-    }
-  }, [isActive, pageElement.id, pageElement.label, isFormReadOnly, isFirstPage])
-
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
       setFormSubmission((currentFormSubmission) => {
