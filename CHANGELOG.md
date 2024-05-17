@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `useDrafts()` hook to cater for versions
 
+### Fixed
+
+- ArcGIS web map layer panel showing on other pages
+
 ## [5.14.0] - 2024-05-10
 
 ### Added

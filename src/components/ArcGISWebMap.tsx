@@ -12,6 +12,7 @@ import OnLoading from '../components/renderer/OnLoading'
 import MaterialIcon from './MaterialIcon'
 
 import '../styles/arcgis-external.css'
+import useIsPageVisible from '../hooks/useIsPageVisible'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
@@ -22,7 +23,9 @@ type Props = {
 function FormElementArcGISWebMap({ element, id, ...props }: Props) {
   const [loadError, setLoadError] = React.useState<Error>()
   const ref = React.useRef<HTMLDivElement | null>(null)
+  const layerPanelRef = React.useRef<Expand | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
+  const isPageVisible = useIsPageVisible()
 
   React.useEffect(() => {
     let view: MapView
@@ -70,16 +73,15 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
           view,
         })
 
-        view.ui.add(
-          new Expand({
-            expandIcon: 'layers',
-            view,
-            content: layerList,
-            expanded: element.showLayerPanel,
-            mode: 'floating',
-          }),
-          'top-right',
-        )
+        layerPanelRef.current = new Expand({
+          expandIcon: 'layers',
+          view,
+          content: layerList,
+          expanded: element.showLayerPanel,
+          mode: 'floating',
+        })
+
+        view.ui.add(layerPanelRef.current, 'top-right')
 
         const baseMapGallery = new BaseMapGallery({ view })
 
@@ -112,6 +114,14 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
       }
     }
   }, [element])
+
+  React.useEffect(() => {
+    if (isPageVisible && layerPanelRef.current) {
+      layerPanelRef.current.visible = true
+    } else if (!isPageVisible && layerPanelRef.current) {
+      layerPanelRef.current.visible = false
+    }
+  }, [isPageVisible])
 
   if (loadError) {
     return (
