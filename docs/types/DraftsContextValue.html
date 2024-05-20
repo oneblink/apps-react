@@ -15,40 +15,29 @@
 <li><a href="../modules.html">@oneblink/apps-react</a></li>
 <li><a href="DraftsContextValue.html">DraftsContextValue</a></li></ul>
 <h1>Type alias DraftsContextValue</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">Drafts<wbr/>Context<wbr/>Value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">clearLoadError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">clearSyncError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">deleteDraft</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">draftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">drafts</span><span class="tsd-signature-symbol">: </span><a href="SubmissionTypes.FormsAppDraft.html" class="tsd-signature-type tsd-kind-type-alias">FormsAppDraft</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isLoading</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isSyncing</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">loadError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">reloadDrafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">syncDrafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">syncError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">Drafts<wbr/>Context<wbr/>Value</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">clearSyncError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">deleteDraft</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">formSubmissionDraftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">drafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">draftService.LocalFormSubmissionDraft</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isLoading</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">isSyncing</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">lastSyncTime</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Date</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">syncDrafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">abortSignal</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">syncError</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>The value returned from <code>useDrafts()</code> hook</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">clear<wbr/>Load<wbr/>Error</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures">
-<li class="tsd-signature" id="__type.clearLoadError.__type-1.__type-2"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>A function to clear Error object from loading drafts</p>
-</div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-<div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
-<li class="tsd-parameter">
 <h5><span class="tsd-kind-property">clear<wbr/>Sync<wbr/>Error</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature" id="__type.clearSyncError.__type-3.__type-4"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+<li class="tsd-signature" id="__type.clearSyncError.__type-1.__type-2"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>A function to clear Error object from syncing drafts</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">delete<wbr/>Draft</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">draftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-property">delete<wbr/>Draft</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">formSubmissionDraftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature" id="__type.deleteDraft.__type-5.__type-6"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">draftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+<li class="tsd-signature" id="__type.deleteDraft.__type-3.__type-4"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">formSubmissionDraftId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>A function to remove a draft</p>
 </div>
@@ -56,17 +45,17 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">draftId</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">formSubmissionDraftId</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">drafts</span><span class="tsd-signature-symbol">: </span><a href="SubmissionTypes.FormsAppDraft.html" class="tsd-signature-type tsd-kind-type-alias">FormsAppDraft</a><span class="tsd-signature-symbol">[]</span></h5>
+<h5><span class="tsd-kind-property">drafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">draftService.LocalFormSubmissionDraft</span><span class="tsd-signature-symbol">[]</span></h5>
 <div class="tsd-comment tsd-typography"><p>The incomplete submissions that were saved for later</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">is<wbr/>Loading</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-<div class="tsd-comment tsd-typography"><p><code>true</code> drafts are currently loading.</p>
+<div class="tsd-comment tsd-typography"><p><code>true</code> if drafts are currently loading for the first time.</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
@@ -75,30 +64,25 @@
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">load<wbr/>Error</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
-<div class="tsd-comment tsd-typography"><p>An Error object if loading drafts fails</p>
+<h5><span class="tsd-kind-property">last<wbr/>Sync<wbr/>Time</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Date</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+<div class="tsd-comment tsd-typography"><p>The date when the sync process last completed successfully, will be <code>null</code>
+until it has completed the first time.</p>
 </div>
 <div class="tsd-comment tsd-typography"></div></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">reload<wbr/>Drafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
+<h5><span class="tsd-kind-property">sync<wbr/>Drafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">abortSignal</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter-signature">
 <ul class="tsd-signatures">
-<li class="tsd-signature" id="__type.reloadDrafts.__type-7.__type-8"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
-<li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>A function to trigger loading of the drafts</p>
-</div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
-<div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
-<li class="tsd-parameter">
-<h5><span class="tsd-kind-property">sync<wbr/>Drafts</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></h5>
-<ul class="tsd-parameters">
-<li class="tsd-parameter-signature">
-<ul class="tsd-signatures">
-<li class="tsd-signature" id="__type.syncDrafts.__type-9.__type-10"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+<li class="tsd-signature" id="__type.syncDrafts.__type-5.__type-6"><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">abortSignal</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>A function to trigger syncing of the drafts</p>
 </div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">abortSignal</span>: <span class="tsd-signature-type ">AbortSignal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div></li></ul></li></ul></li>
 <li class="tsd-parameter">
@@ -108,7 +92,7 @@
 <div class="tsd-comment tsd-typography"></div></li></ul></div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/85e8226/src/hooks/useDrafts.tsx#L9">src/hooks/useDrafts.tsx:9</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/e043612/src/hooks/useDrafts.tsx#L8">src/hooks/useDrafts.tsx:8</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -129,6 +113,7 @@
 <li><a href="../modules/AWSTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>AWSTypes</span></a></li>
 <li><a href="../modules/ApprovalTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Approval<wbr/>Types</span></a></li>
 <li><a href="../modules/CDNTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>CDNTypes</span></a></li>
+<li><a href="../modules/CPHCMSTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>CPHCMSTypes</span></a></li>
 <li><a href="../modules/CivicaTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Civica<wbr/>Types</span></a></li>
 <li><a href="../modules/ConditionTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Condition<wbr/>Types</span></a></li>
 <li><a href="../modules/EmailTemplateTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Email<wbr/>Template<wbr/>Types</span></a></li>
