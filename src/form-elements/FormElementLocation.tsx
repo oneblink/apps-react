@@ -372,6 +372,7 @@ const LocationPicker = React.memo(function LocationPicker({
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: googleMapsApiKey ?? '',
+    libraries: ['maps', 'marker', 'places'],
   })
 
   return (
