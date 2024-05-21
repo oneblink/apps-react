@@ -62,18 +62,11 @@ function FormElementGoogleAddress({
               input,
             },
             (predictions, status) => {
-              if (
-                status !== google.maps.places.PlacesServiceStatus.OK ||
-                !predictions
-              ) {
-                reject(
-                  google.maps.places.PlacesServiceStatus.OK
-                    ? 'Google Places did not return any suggestions'
-                    : 'Google Places service not available',
-                )
+              if (status !== google.maps.places.PlacesServiceStatus.OK) {
+                reject('Google Places service not available')
                 return
               }
-              resolve(predictions)
+              resolve(predictions ?? [])
               return
             },
           )
