@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { FormTypes, GoogleTypes } from '@oneblink/types'
-import { useJsApiLoader } from '@react-google-maps/api'
+import { OneBlinkAppsError, Sentry } from '@oneblink/apps'
 
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
+import useGoogle from '../hooks/useGoogle'
 import useIsMounted from '../hooks/useIsMounted'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
-import { OneBlinkAppsError, Sentry } from '@oneblink/apps'
 
 type Props = {
   formId: number
@@ -37,12 +36,7 @@ function FormElementGoogleAddress({
   const [isLoadingAddressDetails, setIsLoadingAddressDetails] =
     React.useState(false)
 
-  const googleMapsApiKey = useGoogleMapsApiKeyKey()
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: googleMapsApiKey ?? '',
-    libraries: ['maps', 'marker', 'places'],
-  })
+  const { isLoaded } = useGoogle()
 
   const autocompleteService = React.useMemo(() => {
     if (isLoaded) {

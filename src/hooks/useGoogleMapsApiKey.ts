@@ -4,6 +4,6 @@ export const GoogleMapsApiKeyContext = React.createContext<string | undefined>(
   undefined,
 )
 
-export default function useGoogleMapsApiKeyKey() {
+export default function useGoogleMapsApiKey() {
   return React.useContext(GoogleMapsApiKeyContext)
 }
