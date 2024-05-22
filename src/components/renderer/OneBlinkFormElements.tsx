@@ -39,6 +39,7 @@ import FormElementLocation, {
 import FormElementGeoscapeAddress from '../../form-elements/FormElementGeoscapeAddress'
 import FormElementCompliance from '../../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../../form-elements/FormElementPointAddress'
+import FormElementGoogleAddress from '../../form-elements/FormElementGoogleAddress'
 import FormElementBoolean from '../../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
 import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
@@ -50,6 +51,7 @@ import {
   CivicaTypes,
   FormTypes,
   GeoscapeTypes,
+  GoogleTypes,
   MiscTypes,
   PointTypes,
   SubmissionTypes,
@@ -837,6 +839,31 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementPointAddress
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'googleAddress': {
+      const v = value as GoogleTypes.GoogleMapsAddress | undefined
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={element}
+          onLookup={onLookup}
+        >
+          <FormElementGoogleAddress
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementGoogleAddress
               >['onChange']
             }
             validationMessage={validationMessage}

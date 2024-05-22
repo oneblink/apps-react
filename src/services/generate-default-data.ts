@@ -289,6 +289,13 @@ function parsePreFillData(
         }
       })
     }
+    case 'googleAddress': {
+      return parseUnknownAsRecord(value, (record) => {
+        if (parseStringValue(record.place_id)) {
+          return record
+        }
+      })
+    }
     case 'freshdeskDependentField': {
       return parseUnknownAsRecord(value, (record) => {
         if (
@@ -470,6 +477,7 @@ export default function generateDefaultData(
         case 'freshdeskDependentField':
         case 'geoscapeAddress':
         case 'pointAddress':
+        case 'googleAddress':
         case 'civicaStreetName':
         case 'abn':
         case 'bsb':

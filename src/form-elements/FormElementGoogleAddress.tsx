@@ -44,6 +44,12 @@ function FormElementGoogleAddress({
     }
   }, [isLoaded])
 
+  const dummyMap = React.useMemo(() => {
+    if (isLoaded) {
+      return new google.maps.Map(document.createElement('div'))
+    }
+  }, [isLoaded])
+
   const handleSearch = React.useCallback(
     async (input: string, abortSignal: AbortSignal) => {
       setError(undefined)
@@ -56,6 +62,12 @@ function FormElementGoogleAddress({
               input,
             },
             (predictions, status) => {
+              if (
+                status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS
+              ) {
+                resolve([])
+                return
+              }
               if (status !== google.maps.places.PlacesServiceStatus.OK) {
                 reject('Google Places service not available')
                 return
@@ -106,46 +118,70 @@ function FormElementGoogleAddress({
       setIsLoadingAddressDetails(true)
       try {
         //this should not happen, we can't get a place Id without google being present
-        if (!isLoaded) {
+        if (!isLoaded || !dummyMap) {
           throw new OneBlinkAppsError(
             'An unknown error has occurred. Please contact support if the problem persists.',
             {
               originalError: new Error(
-                'google places library has not be initialised',
+                'Google Places library has not be initialised',
               ),
             },
           )
         }
 
-        const placeService = new google.maps.places.Place({ id: placeId })
-        const { place } = await placeService.fetchFields({
-          fields: [
-            'id',
-            'displayName',
-            'formattedAddress',
-            'location',
-            'addressComponents',
-            'servesBeer',
-          ],
-        })
+        const placeService = new google.maps.places.PlacesService(dummyMap)
+        const place = await new Promise<GoogleTypes.GoogleMapsAddress>(
+          (resolve, reject) => {
+            placeService.getDetails(
+              {
+                placeId,
+                fields: [
+                  'place_id',
+                  'formatted_address',
+                  'geometry',
+                  'address_components',
+                ],
+              },
+              (place, status) => {
+                if (
+                  status !== google.maps.places.PlacesServiceStatus.OK ||
+                  !place
+                ) {
+                  reject(
+                    `Could not find address details for place with id: ${placeId}`,
+                  )
+                  return
+                }
+                resolve(place)
+              },
+            )
+          },
+        )
         onChange(element, { value: place })
       } catch (newError) {
         if (isMounted.current) {
-          setError(newError as Error)
+          setError(
+            new OneBlinkAppsError(
+              'An unknown error has occurred. Please contact support if the problem persists.',
+              {
+                originalError: newError as Error,
+              },
+            ),
+          )
         }
       }
       if (isMounted.current) {
         setIsLoadingAddressDetails(false)
       }
     },
-    [isMounted, onChange, element, isLoaded],
+    [isMounted, onChange, element, isLoaded, dummyMap],
   )
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (value) {
-      const newLabel = value.formattedAddress || value.id
-      setLabel(newLabel)
+      const newLabel = value.formatted_address || value.place_id
+      setLabel(newLabel ?? '')
     }
   }, [value])
 
