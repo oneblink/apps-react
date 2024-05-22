@@ -145,11 +145,8 @@ function FormElementGoogleAddress({
   React.useEffect(() => {
     if (value) {
       const newLabel = value.formattedAddress || value.id
-      if (label !== newLabel) {
-        setLabel(newLabel || '')
-      }
+      setLabel(newLabel)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   return (
