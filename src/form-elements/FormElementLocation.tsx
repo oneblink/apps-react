@@ -2,7 +2,7 @@ import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
 import { Sentry } from '@oneblink/apps'
 import clsx from 'clsx'
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap, Marker } from '@react-google-maps/api'
 import queryString from 'query-string'
 
 import useBooleanState from '../hooks/useBooleanState'
@@ -10,7 +10,8 @@ import useIsOffline from '../hooks/useIsOffline'
 import * as geolocation from '../services/geolocation'
 import OnLoading from '../components/renderer/OnLoading'
 import defaultCoords from '../services/defaultCoordinates'
-import useGoogleMapsApiKeyKey from '../hooks/useGoogleMapsApiKey'
+import useGoogle from '../hooks/useGoogle'
+import useGoogleMapsApiKey from '../hooks/useGoogleMapsApiKey'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
@@ -334,7 +335,7 @@ const LocationImage = React.memo(function LocationImage({
 }: {
   location: Coords
 }) {
-  const googleMapsApiKey = useGoogleMapsApiKeyKey()
+  const googleMapsApiKey = useGoogleMapsApiKey()
 
   const staticUrl = React.useMemo(() => {
     const center = `${location.latitude},${location.longitude}`
@@ -368,11 +369,7 @@ const LocationPicker = React.memo(function LocationPicker({
   location: Coords
   onChange: (newLocation: Coords) => void
 }) {
-  const googleMapsApiKey = useGoogleMapsApiKeyKey()
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: googleMapsApiKey ?? '',
-  })
+  const { isLoaded } = useGoogle()
 
   return (
     <figure className="ob-figure">

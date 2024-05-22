@@ -102,6 +102,7 @@ function FormElementGeoscapeAddress({
         setLabel(newLabel || '')
       }
     }
+    // we don't need this to run again when the label changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
