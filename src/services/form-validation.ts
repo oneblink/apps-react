@@ -387,6 +387,7 @@ export function generateValidationSchema(
         case 'abn':
         case 'geoscapeAddress':
         case 'pointAddress':
+        case 'googleAddress':
         case 'civicaStreetName':
         case 'autocomplete':
         case 'radio':
