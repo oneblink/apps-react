@@ -14,4 +14,14 @@
         color 0.25s;
     }
   }
+
+  & .ob-autocomplete__drop-down-item-powered-by-google {
+    text-align: right;
+    padding-right: 16px;
+    color: #5f6368;
+
+    img {
+      vertical-align: middle;
+    }
+  }
 }
