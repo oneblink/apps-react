@@ -261,7 +261,6 @@ function AutocompleteDropdown<T>({
 
   return (
     <>
-      {branding}
       <div
         className={clsx('dropdown', {
           'is-active': isOpen && Array.isArray(options),
