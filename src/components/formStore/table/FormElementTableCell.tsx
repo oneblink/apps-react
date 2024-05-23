@@ -1,7 +1,12 @@
 import * as React from 'react'
 import { Link, Typography } from '@mui/material'
 import { localisationService } from '@oneblink/apps'
-import { APINSWTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
+import {
+  APINSWTypes,
+  FormTypes,
+  GoogleTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { abnService } from '@oneblink/sdk-core'
 import {
   FileChip,
@@ -361,6 +366,24 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       const fullAddress = value?.addressDetails?.formattedAddress || (
         <>
           NSW Point Address ID: <i>{value.addressId}</i>
+        </>
+      )
+      return (
+        <>
+          {fullAddress}
+          <TableCellCopyButton
+            isHidden={!allowCopy}
+            text={fullAddress as string}
+          />
+        </>
+      )
+    }
+
+    case 'googleAddress': {
+      const value = unknown as GoogleTypes.GoogleMapsAddress
+      const fullAddress = value?.formatted_address || (
+        <>
+          Google Address: <i>{value?.place_id}</i>
         </>
       )
       return (
