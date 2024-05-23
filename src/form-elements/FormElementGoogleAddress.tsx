@@ -212,6 +212,12 @@ function FormElementGoogleAddress({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          branding={
+            <a className="dropdown-item cypress-powered-by-google ob-autocomplete__drop-down-item-powered-by-google">
+              powered by{' '}
+              <img src="https://developers.google.com/static/maps/documentation/images/google_on_white.png" />
+            </a>
+          }
         />
       </FormElementLabelContainer>
 

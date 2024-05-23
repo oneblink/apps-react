@@ -36,6 +36,7 @@ type Props<T> = {
     abortSignal: AbortSignal,
   ) => Promise<AutocompleteOption<T>[]>
   'aria-describedby'?: string
+  branding?: React.ReactNode
 } & IsDirtyProps
 
 function AutocompleteDropdown<T>({
@@ -56,6 +57,7 @@ function AutocompleteDropdown<T>({
   onSearch,
   isDirty,
   setIsDirty,
+  branding,
   ...props
 }: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
@@ -347,6 +349,7 @@ function AutocompleteDropdown<T>({
                 <i>No matches found</i>
               </a>
             )}
+            {branding}
           </div>
         </div>
       </div>
