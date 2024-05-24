@@ -62,28 +62,38 @@ function FormElementGoogleAddress({
               input,
             },
             (predictions, status) => {
-              if (
-                status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS
-              ) {
-                resolve([])
-                return
+              switch (status) {
+                case google.maps.places.PlacesServiceStatus.ZERO_RESULTS: {
+                  resolve([])
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.REQUEST_DENIED: {
+                  reject(
+                    new OneBlinkAppsError(
+                      'Google Maps API key has not been configured correctly',
+                    ),
+                  )
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.OK: {
+                  resolve(predictions ?? [])
+                  break
+                }
+                default: {
+                  reject(
+                    new OneBlinkAppsError(
+                      'An unknown error has occurred. Please contact support if the problem persists.',
+                    ),
+                  )
+                }
               }
-              if (status !== google.maps.places.PlacesServiceStatus.OK) {
-                reject('Google Places service not available')
-                return
-              }
-              resolve(predictions ?? [])
-              return
             },
           )
         }).catch((e) => {
           if (!abortSignal.aborted) {
             Sentry.captureException(e)
           }
-          throw new OneBlinkAppsError(
-            'An unknown error has occurred. Please contact support if the problem persists.',
-            { originalError: e },
-          )
+          throw e
         })
 
         if (!abortSignal.aborted) {
@@ -148,7 +158,9 @@ function FormElementGoogleAddress({
                   !place
                 ) {
                   reject(
-                    `Could not find address details for place with id: ${placeId}`,
+                    new OneBlinkAppsError(
+                      `Could not find address details for place with id: ${placeId}`,
+                    ),
                   )
                   return
                 }
@@ -160,14 +172,7 @@ function FormElementGoogleAddress({
         onChange(element, { value: place })
       } catch (newError) {
         if (isMounted.current) {
-          setError(
-            new OneBlinkAppsError(
-              'An unknown error has occurred. Please contact support if the problem persists.',
-              {
-                originalError: newError as Error,
-              },
-            ),
-          )
+          setError(newError as Error)
         }
       }
       if (isMounted.current) {
@@ -224,7 +229,7 @@ function FormElementGoogleAddress({
       {error && (
         <div role="alert" className="has-margin-top-8">
           <div className="has-text-danger ob-error__text cypress-google-address-details-error-message">
-            {error.toString()}
+            {error.message}
           </div>
         </div>
       )}
