@@ -62,18 +62,27 @@ function FormElementGoogleAddress({
               input,
             },
             (predictions, status) => {
-              if (
-                status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS
-              ) {
-                resolve([])
-                return
+              switch (status) {
+                case google.maps.places.PlacesServiceStatus.ZERO_RESULTS: {
+                  resolve([])
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.REQUEST_DENIED: {
+                  reject(
+                    'Google Maps API key has not been configured correctly',
+                  )
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.OK: {
+                  resolve(predictions ?? [])
+                  break
+                }
+                default: {
+                  reject(
+                    'An unknown error has occurred. Please contact support if the problem persists.',
+                  )
+                }
               }
-              if (status !== google.maps.places.PlacesServiceStatus.OK) {
-                reject('Google Places service not available')
-                return
-              }
-              resolve(predictions ?? [])
-              return
             },
           )
         }).catch((e) => {
@@ -81,8 +90,7 @@ function FormElementGoogleAddress({
             Sentry.captureException(e)
           }
           throw new OneBlinkAppsError(
-            'An unknown error has occurred. Please contact support if the problem persists.',
-            { originalError: e },
+            e instanceof Error ? e.message : e.toString(),
           )
         })
 
@@ -162,7 +170,9 @@ function FormElementGoogleAddress({
         if (isMounted.current) {
           setError(
             new OneBlinkAppsError(
-              'An unknown error has occurred. Please contact support if the problem persists.',
+              newError instanceof Error
+                ? newError.message
+                : 'An unknown error has occurred. Please contact support if the problem persists.',
               {
                 originalError: newError as Error,
               },
@@ -224,7 +234,7 @@ function FormElementGoogleAddress({
       {error && (
         <div role="alert" className="has-margin-top-8">
           <div className="has-text-danger ob-error__text cypress-google-address-details-error-message">
-            {error.toString()}
+            {error.message}
           </div>
         </div>
       )}
