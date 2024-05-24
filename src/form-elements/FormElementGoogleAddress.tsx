@@ -69,7 +69,9 @@ function FormElementGoogleAddress({
                 }
                 case google.maps.places.PlacesServiceStatus.REQUEST_DENIED: {
                   reject(
-                    'Google Maps API key has not been configured correctly',
+                    new OneBlinkAppsError(
+                      'Google Maps API key has not been configured correctly',
+                    ),
                   )
                   break
                 }
@@ -79,7 +81,9 @@ function FormElementGoogleAddress({
                 }
                 default: {
                   reject(
-                    'An unknown error has occurred. Please contact support if the problem persists.',
+                    new OneBlinkAppsError(
+                      'An unknown error has occurred. Please contact support if the problem persists.',
+                    ),
                   )
                 }
               }
@@ -156,7 +160,9 @@ function FormElementGoogleAddress({
                   !place
                 ) {
                   reject(
-                    `Could not find address details for place with id: ${placeId}`,
+                    new OneBlinkAppsError(
+                      `Could not find address details for place with id: ${placeId}`,
+                    ),
                   )
                   return
                 }
