@@ -1006,7 +1006,6 @@ function OneBlinkFormBase({
                                       {visiblePages.map(
                                         (
                                           pageElement: FormTypes.PageElement,
-                                          index,
                                         ) => (
                                           <PageFormElements
                                             key={pageElement.id}
@@ -1025,13 +1024,11 @@ function OneBlinkFormBase({
                                               isDisplayingCurrentPageError
                                             }
                                             pageElement={pageElement}
-                                            isFormReadOnly={isReadOnly}
                                             onChange={handleChange}
                                             model={submission}
                                             setFormSubmission={
                                               setFormSubmission
                                             }
-                                            isFirstPage={index === 0}
                                           />
                                         ),
                                       )}

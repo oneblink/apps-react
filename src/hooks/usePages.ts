@@ -92,6 +92,9 @@ export default function usePages({
             })
           })
         }
+        //blur prev/next buttons after they've been clicked
+        const activeElement = document?.activeElement as HTMLElement
+        activeElement.blur()
       }
     },
     [closeStepsNavigation, currentPageId, isShowingMultiplePages],
