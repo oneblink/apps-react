@@ -93,9 +93,7 @@ function FormElementGoogleAddress({
           if (!abortSignal.aborted) {
             Sentry.captureException(e)
           }
-          throw new OneBlinkAppsError(
-            e instanceof Error ? e.message : e.toString(),
-          )
+          throw e
         })
 
         if (!abortSignal.aborted) {
@@ -174,16 +172,7 @@ function FormElementGoogleAddress({
         onChange(element, { value: place })
       } catch (newError) {
         if (isMounted.current) {
-          setError(
-            new OneBlinkAppsError(
-              newError instanceof Error
-                ? newError.message
-                : 'An unknown error has occurred. Please contact support if the problem persists.',
-              {
-                originalError: newError as Error,
-              },
-            ),
-          )
+          setError(newError as Error)
         }
       }
       if (isMounted.current) {
