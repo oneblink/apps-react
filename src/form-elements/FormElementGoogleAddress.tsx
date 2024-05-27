@@ -63,26 +63,39 @@ function FormElementGoogleAddress({
             },
             (predictions, status) => {
               switch (status) {
+                case google.maps.places.PlacesServiceStatus.OK:
                 case google.maps.places.PlacesServiceStatus.ZERO_RESULTS: {
-                  resolve([])
+                  resolve(predictions ?? [])
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT: {
+                  reject(
+                    new OneBlinkAppsError(
+                      'This application has gone over its Google Address querying quota. Please contact an administrator to rectify the issue or try again later.',
+                    ),
+                  )
+                  break
+                }
+                case google.maps.places.PlacesServiceStatus.INVALID_REQUEST: {
+                  reject(
+                    new OneBlinkAppsError(
+                      'Google Maps API key may not have been configured correctly, the request to retrieve address suggestions is invalid. Please contact an administrator to rectify the issue.',
+                    ),
+                  )
                   break
                 }
                 case google.maps.places.PlacesServiceStatus.REQUEST_DENIED: {
                   reject(
                     new OneBlinkAppsError(
-                      'Google Maps API key has not been configured correctly',
+                      'Google Maps API key has not been configured correctly. Please contact an administrator to rectify the issue.',
                     ),
                   )
-                  break
-                }
-                case google.maps.places.PlacesServiceStatus.OK: {
-                  resolve(predictions ?? [])
                   break
                 }
                 default: {
                   reject(
                     new OneBlinkAppsError(
-                      'An unknown error has occurred. Please contact support if the problem persists.',
+                      'An unknown error has occurred. Please try again and contact support if the problem persists.',
                     ),
                   )
                 }
@@ -140,7 +153,7 @@ function FormElementGoogleAddress({
         }
 
         const placeService = new google.maps.places.PlacesService(dummyMap)
-        const place = await new Promise<GoogleTypes.GoogleMapsAddress>(
+        const place = await new Promise<google.maps.places.PlaceResult>(
           (resolve, reject) => {
             placeService.getDetails(
               {
@@ -169,7 +182,17 @@ function FormElementGoogleAddress({
             )
           },
         )
-        onChange(element, { value: place })
+        onChange(element, {
+          value: {
+            place_id: place.place_id,
+            formatted_address: place.formatted_address,
+            address_components: place.address_components,
+            geometry: {
+              location: place.geometry?.location?.toJSON(),
+              viewport: place.geometry?.viewport?.toJSON(),
+            },
+          },
+        })
       } catch (newError) {
         if (isMounted.current) {
           setError(newError as Error)
