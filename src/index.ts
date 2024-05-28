@@ -45,6 +45,7 @@ export {
 export { default as useLoadResourcesState } from './hooks/useLoadResourcesState'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
 export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmissionAutoSaveState'
+export { default as useGoogleJsApiLoader } from './hooks/useGoogleJsApiLoader'
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as PaymentReceipt } from './PaymentReceipt'
