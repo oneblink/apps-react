@@ -614,6 +614,7 @@ function OneBlinkFormBase({
 
       // transplant injected options on the definition
       const elementsWithInjectedOptions = injectOptionsAcrossAllElements({
+        contextElements: definition.elements,
         elements: definition.elements,
         submission: submissionData.submission,
         taskContext: taskContextValue,

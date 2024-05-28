@@ -159,11 +159,13 @@ export default function processInjectableOption({
 }
 
 function injectOptionsAcrossEntriesElements({
+  contextElements,
   elements,
   entries,
   taskContext,
   userProfile,
 }: {
+  contextElements: FormTypes.FormElement[]
   elements: FormTypes.FormElement[]
   entries: SubmissionTypes.S3SubmissionData['submission'][]
   taskContext: TaskContext
@@ -176,6 +178,8 @@ function injectOptionsAcrossEntriesElements({
         return {
           ...e,
           elements: injectOptionsAcrossEntriesElements({
+            // info elements on other pages/sections will need the parent definition
+            contextElements,
             elements: e.elements,
             entries,
             taskContext,
@@ -188,6 +192,8 @@ function injectOptionsAcrossEntriesElements({
           return {
             ...e,
             elements: injectOptionsAcrossEntriesElements({
+              // sub-forms do not have context of parent elements
+              contextElements: e.elements,
               elements: e.elements,
               entries: entries.reduce<
                 SubmissionTypes.S3SubmissionData['submission'][]
@@ -213,6 +219,8 @@ function injectOptionsAcrossEntriesElements({
         return {
           ...e,
           elements: injectOptionsAcrossEntriesElements({
+            // repeatable set entries may only know about elements within entry
+            contextElements: e.elements,
             elements: e.elements,
             entries: entries.reduce<
               SubmissionTypes.S3SubmissionData['submission'][]
@@ -241,7 +249,7 @@ function injectOptionsAcrossEntriesElements({
                   const injected = processInjectableOption({
                     option: o,
                     submission,
-                    formElements: elements,
+                    formElements: contextElements,
                     taskContext,
                     userProfile,
                   })
@@ -272,6 +280,7 @@ export function injectOptionsAcrossAllElements({
   ...params
 }: {
   elements: FormTypes.FormElement[]
+  contextElements: FormTypes.FormElement[]
   submission: SubmissionTypes.S3SubmissionData['submission']
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
