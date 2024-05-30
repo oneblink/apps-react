@@ -80,6 +80,7 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
           content: layerList,
           expanded: element.showLayerPanel,
           mode: 'floating',
+          visible: false,
         })
 
         view.ui.add(layerPanelRef.current, 'top-right')
@@ -91,6 +92,7 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
           view,
           content: baseMapGallery,
           mode: 'floating',
+          visible: false,
         })
 
         view.ui.add(mapGalleryPanelRef.current, 'bottom-right')
@@ -116,22 +118,24 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
   }, [element])
 
   React.useEffect(() => {
-    if (isPageVisible) {
-      if (layerPanelRef.current) {
-        layerPanelRef.current.visible = true
-      }
-      if (mapGalleryPanelRef.current) {
-        mapGalleryPanelRef.current.visible = true
-      }
-    } else if (!isPageVisible) {
-      if (layerPanelRef.current) {
-        layerPanelRef.current.visible = false
-      }
-      if (mapGalleryPanelRef.current) {
-        mapGalleryPanelRef.current.visible = false
+    if (!isLoading) {
+      if (isPageVisible) {
+        if (layerPanelRef.current) {
+          layerPanelRef.current.visible = true
+        }
+        if (mapGalleryPanelRef.current) {
+          mapGalleryPanelRef.current.visible = true
+        }
+      } else if (!isPageVisible) {
+        if (layerPanelRef.current) {
+          layerPanelRef.current.visible = false
+        }
+        if (mapGalleryPanelRef.current) {
+          mapGalleryPanelRef.current.visible = false
+        }
       }
     }
-  }, [isPageVisible])
+  }, [isPageVisible, isLoading])
 
   if (loadError) {
     return (
