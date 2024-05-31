@@ -730,7 +730,15 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           element={element}
           onLookup={onLookup}
         >
-          <ReverseGeocode value={value} element={element} onLookup={onLookup}>
+          <ReverseGeocode
+            value={value}
+            element={element}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof ReverseGeocode
+              >['onChange']
+            }
+          >
             <FormElementLocation
               id={id}
               element={element}

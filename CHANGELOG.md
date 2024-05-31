@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - injected options referenced from another page not being injected into HTML
 - ArcGIS web map layer panel showing if map is loaded on another page
+- reverse geocode not supporting sections
 
 ### Added
 

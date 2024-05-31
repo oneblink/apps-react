@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import { formService, OneBlinkAppsError } from '@oneblink/apps'
 import { formElementsService } from '@oneblink/sdk-core'
 
@@ -8,8 +8,7 @@ import { parseLocationValue } from '../../form-elements/FormElementLocation'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
-import { FormElementLookupHandler } from '../../types/form'
-import useIsOffline from '../../hooks/useIsOffline'
+import { FormElementValueChangeHandler } from '../../types/form'
 
 type ReverseGeocodeContextValue = {
   isReverseGeocoding: boolean
@@ -23,19 +22,20 @@ const ReverseGeocodeContext = React.createContext<ReverseGeocodeContextValue>({
 export default function ReverseGeocode({
   value,
   element,
-  onLookup,
+  onChange,
   children,
 }: React.PropsWithChildren<{
   value: unknown
   element: FormTypes.LocationElement
-  onLookup: FormElementLookupHandler
+  onChange: FormElementValueChangeHandler<
+    GeoscapeTypes.GeoscapeAddress | string
+  >
 }>) {
   const coords = React.useMemo(() => parseLocationValue(value), [value])
   const [reverseGeocodingState, setReverseGeocodingState] =
     React.useState<ReverseGeocodeContextValue>({
       isReverseGeocoding: false,
     })
-  const isOffline = useIsOffline()
 
   const formDefinition = useFormDefinition()
   const formSubmissionModel = useFormSubmissionModel()
@@ -43,80 +43,67 @@ export default function ReverseGeocode({
 
   const formattedAddressElement = React.useMemo(() => {
     if (element.reverseGeocoding?.formattedAddressElementId) {
-      return formElementsService.findFormElement(
-        formSubmissionModel.elements,
-        (el) => el.id === element.reverseGeocoding?.formattedAddressElementId,
-      )
+      return formElementsService
+        .flattenFormElements(formSubmissionModel.elements)
+        .find(
+          (el) => el.id === element.reverseGeocoding?.formattedAddressElementId,
+        )
     }
   }, [
     element.reverseGeocoding?.formattedAddressElementId,
     formSubmissionModel.elements,
   ])
 
-  const mergeReverseGeocodeData = React.useCallback(
-    (reverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission']) => {
-      onLookup(({ submission, elements, executedLookups }) => {
-        return {
-          elements,
-          submission: {
-            ...submission,
-            ...reverseGeocodeResult,
-          },
-          executedLookups,
-        }
-      })
-    },
-    [onLookup],
-  )
-
   React.useEffect(() => {
+    if (formIsReadOnly || !coords || !formattedAddressElement) {
+      return
+    }
+
     const abortController = new AbortController()
     const effect = async () => {
-      setReverseGeocodingState({ isReverseGeocoding: true })
       try {
-        if (coords && formattedAddressElement) {
-          if (element.reverseGeocoding && formattedAddressElement) {
-            const mergeReverseGeocodeResult: SubmissionTypes.S3SubmissionData['submission'] =
-              {}
-            const { reverseGeocodeResult } =
-              await formService.getGeoscapeReverseGeocoding({
-                lat: coords.latitude,
-                lng: coords.longitude,
-                formId: formDefinition.id,
-                abortSignal: abortController.signal,
+        setReverseGeocodingState({ isReverseGeocoding: true })
+        const { reverseGeocodeResult } =
+          await formService.getGeoscapeReverseGeocoding({
+            lat: coords.latitude,
+            lng: coords.longitude,
+            formId: formDefinition.id,
+            abortSignal: abortController.signal,
+          })
+        switch (formattedAddressElement.type) {
+          case 'text': {
+            if (reverseGeocodeResult.addressDetails?.formattedAddress) {
+              onChange(formattedAddressElement, {
+                value: reverseGeocodeResult.addressDetails?.formattedAddress,
               })
-            switch (formattedAddressElement.type) {
-              case 'text': {
-                if (reverseGeocodeResult.addressDetails?.formattedAddress) {
-                  mergeReverseGeocodeResult[formattedAddressElement.name] =
-                    reverseGeocodeResult.addressDetails?.formattedAddress
-                }
-                break
-              }
-              case 'geoscapeAddress': {
-                mergeReverseGeocodeResult[formattedAddressElement.name] =
-                  reverseGeocodeResult
-                break
-              }
             }
-            if (!abortController.signal.aborted) {
-              mergeReverseGeocodeData(mergeReverseGeocodeResult)
-            }
+            break
+          }
+          case 'geoscapeAddress': {
+            onChange(formattedAddressElement, {
+              value: reverseGeocodeResult,
+            })
+            break
           }
         }
         setReverseGeocodingState({
           isReverseGeocoding: false,
         })
       } catch (e) {
+        if (abortController.signal.aborted) {
+          return
+        }
+        console.warn('Error attempting to reverse geocode location', e)
         let errorMsg = 'Could not find your address.'
-        if (e instanceof OneBlinkAppsError && e.httpStatusCode !== 404) {
-          errorMsg = e.message
+        if (e instanceof OneBlinkAppsError) {
+          if (e.httpStatusCode !== 404) {
+            errorMsg = e.message
+          } else if (e.isOffline) {
+            errorMsg =
+              'It looks like you&apos;re offline. Please try again when connectivity is restored.'
+          }
         }
 
-        if (isOffline) {
-          errorMsg =
-            'It looks like you&apos;re offline. Please try again when connectivity is restored.'
-        }
         setReverseGeocodingState({
           isReverseGeocoding: false,
           reverseGeocodingErrorMsg: errorMsg,
@@ -124,20 +111,15 @@ export default function ReverseGeocode({
       }
     }
 
-    if (!formIsReadOnly) {
-      effect()
-    }
+    effect()
 
     return () => abortController.abort()
   }, [
     coords,
-    element.reverseGeocoding,
     formDefinition.id,
-    formDefinition.organisationId,
-    formattedAddressElement,
-    mergeReverseGeocodeData,
-    isOffline,
     formIsReadOnly,
+    formattedAddressElement,
+    onChange,
   ])
 
   return (
