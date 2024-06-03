@@ -12,6 +12,7 @@ function OneBlinkAutoSaveForm({
   autoSaveKey,
   removeAutoSaveDataBeforeSubmit,
   removeAutoSaveDataBeforeSaveDraft,
+  disabled,
   onCancel,
   onSubmit,
   onSaveDraft,
@@ -56,6 +57,7 @@ function OneBlinkAutoSaveForm({
     onCancel,
     onSubmit,
     onSaveDraft,
+    formIsDisabled: disabled,
   })
 
   if (isLoadingAutoSaveSubmission) {
