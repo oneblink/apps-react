@@ -22,6 +22,7 @@ export default function useFormSubmissionAutoSaveState({
   removeAutoSaveDataBeforeSubmit,
   removeAutoSaveDataBeforeSaveDraft,
   autoSaveKey,
+  formIsDisabled,
   onCancel,
   onSubmit,
   onSaveDraft,
@@ -30,6 +31,7 @@ export default function useFormSubmissionAutoSaveState({
   removeAutoSaveDataBeforeSubmit?: boolean
   removeAutoSaveDataBeforeSaveDraft?: boolean
   autoSaveKey: string
+  formIsDisabled?: boolean
   onCancel: () => unknown
   onSubmit: (newFormSubmission: submissionService.NewFormSubmission) => unknown
   initialSubmission?: SubmissionTypes.S3SubmissionData['submission']
@@ -197,15 +199,17 @@ export default function useFormSubmissionAutoSaveState({
             ? formSubmission(currentFormSubmission)
             : formSubmission
 
-        throttledAutoSave(
-          newFormSubmission.submission,
-          newFormSubmission.lastElementUpdated,
-        )
+        if (!formIsDisabled) {
+          throttledAutoSave(
+            newFormSubmission.submission,
+            newFormSubmission.lastElementUpdated,
+          )
+        }
 
         return newFormSubmission
       })
     },
-    [setFormSubmission, throttledAutoSave],
+    [setFormSubmission, throttledAutoSave, formIsDisabled],
   )
 
   const startNewSubmission = React.useCallback(() => {
