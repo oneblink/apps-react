@@ -7,7 +7,6 @@
     "url": "https://github.com/oneblink/apps-react/issues"
   },
   "dependencies": {
-    "@arcgis/core": "~4.29.10",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@oneblink/sdk-core": "^6.2.0-beta.5",
@@ -41,6 +40,7 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "@arcgis/core": "~4.29.10",
     "@babel/preset-env": "^7.23.9",
     "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@mui/lab": "^5.0.0-alpha.152",
