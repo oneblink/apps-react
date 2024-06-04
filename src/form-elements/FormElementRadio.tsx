@@ -67,7 +67,15 @@ function FormElementRadio({
           conditionallyShownOptionsElement={conditionallyShownOptionsElement}
         >
           {!element.buttons ? (
-            <RadioGroup className="ob-radio-container">
+            <RadioGroup
+              className="ob-radio-container"
+              aria-labelledby={`${id}-label`}
+              aria-describedby={
+                element.hint && element.hintPosition === 'BELOW_LABEL'
+                  ? `${id}-hint`
+                  : undefined
+              }
+            >
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
                   <label

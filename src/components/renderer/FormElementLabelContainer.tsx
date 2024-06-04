@@ -29,6 +29,7 @@ function FormElementLabelContainer({
             'ob-label__required is-required': required,
           })}
           htmlFor={id}
+          id={`${id}-label`}
         >
           {element.label}
         </label>

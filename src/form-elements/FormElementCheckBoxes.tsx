@@ -155,7 +155,15 @@ function FormElementCheckboxes({
               </div>
             </div>
           ) : (
-            <div className="ob-checkbox-container">
+            <div
+              className="ob-checkbox-container"
+              aria-labelledby={`${id}-label`}
+              aria-describedby={
+                element.hint && element.hintPosition === 'BELOW_LABEL'
+                  ? `${id}-hint`
+                  : undefined
+              }
+            >
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value)
                 return (
