@@ -156,6 +156,7 @@ function FormElementCheckboxes({
             </div>
           ) : (
             <div
+              role="group"
               className="ob-checkbox-container"
               aria-labelledby={`${id}-label`}
               aria-describedby={
