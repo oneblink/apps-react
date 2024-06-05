@@ -7,12 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- accessibility attributes for checkbox and radio labels
-
 ### Fixed
 
+- accessibility attributes for checkbox and radio labels
 - auto save occurring while form is disabled
 
 ## [6.1.0] - 2024-06-04
