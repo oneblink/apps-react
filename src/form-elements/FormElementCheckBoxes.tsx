@@ -131,7 +131,11 @@ function FormElementCheckboxes({
           )}
           {element.buttons ? (
             <div className="ob-button-radio-container">
-              <div className="buttons ob-buttons ob-buttons-radio">
+              <div
+                className="buttons ob-buttons ob-buttons-radio"
+                role="group"
+                aria-labelledby={`${id}-label`}
+              >
                 {filteredOptions.map((option, index) => {
                   const isSelected = selectedValues.includes(option.value)
                   return (
