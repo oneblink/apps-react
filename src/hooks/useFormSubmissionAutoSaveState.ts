@@ -64,27 +64,29 @@ export default function useFormSubmissionAutoSaveState({
         model: SubmissionTypes.S3SubmissionData['submission'],
         lastElementUpdated?: FormElement,
       ) => {
-        console.log('Auto saving...')
-        autoSaveService
-          .upsertAutoSaveData(definition.id, autoSaveKey, model)
-          .then(() => {
-            if (lastElementUpdated) {
-              return autoSaveService.upsertAutoSaveData<FormElement>(
-                definition.id,
-                `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
-                lastElementUpdated,
-              )
-            }
-          })
-          .catch((error) => {
-            console.warn('Error while auto saving', error)
-            Sentry.captureException(error)
-          })
+        if (!formIsDisabled) {
+          console.log('Auto saving...')
+          autoSaveService
+            .upsertAutoSaveData(definition.id, autoSaveKey, model)
+            .then(() => {
+              if (lastElementUpdated) {
+                return autoSaveService.upsertAutoSaveData<FormElement>(
+                  definition.id,
+                  `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+                  lastElementUpdated,
+                )
+              }
+            })
+            .catch((error) => {
+              console.warn('Error while auto saving', error)
+              Sentry.captureException(error)
+            })
+        }
       },
       9580, // https://en.wikipedia.org/wiki/100_metres
       { trailing: true, leading: false },
     )
-  }, [autoSaveKey, definition.id])
+  }, [autoSaveKey, definition.id, formIsDisabled])
 
   const cancelAutoSave = React.useCallback(() => {
     if (throttledAutoSave) {
@@ -199,17 +201,15 @@ export default function useFormSubmissionAutoSaveState({
             ? formSubmission(currentFormSubmission)
             : formSubmission
 
-        if (!formIsDisabled) {
-          throttledAutoSave(
-            newFormSubmission.submission,
-            newFormSubmission.lastElementUpdated,
-          )
-        }
+        throttledAutoSave(
+          newFormSubmission.submission,
+          newFormSubmission.lastElementUpdated,
+        )
 
         return newFormSubmission
       })
     },
-    [setFormSubmission, throttledAutoSave, formIsDisabled],
+    [setFormSubmission, throttledAutoSave],
   )
 
   const startNewSubmission = React.useCallback(() => {
