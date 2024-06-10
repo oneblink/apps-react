@@ -109,7 +109,11 @@ function FormElementRadio({
               ))}
             </RadioGroup>
           ) : (
-            <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
+            <div
+              className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group"
+              role="group"
+              aria-labelledby={`${id}-label`}
+            >
               {filteredOptions.map((option) => {
                 const isSelected = value === option.value
                 return (
