@@ -195,7 +195,12 @@ function FormElementCompliance({
             options={element.options}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
           >
-            <div className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group">
+            <div
+              className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group"
+              role="group"
+              aria-labelledby={`${id}-label`}
+              aria-describedby={ariaDescribedby}
+            >
               {filteredOptions.map((option) => {
                 const isSelected = typedValue?.value === option.value
                 return (

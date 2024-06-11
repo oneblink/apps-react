@@ -135,6 +135,7 @@ function FormElementCheckboxes({
                 className="buttons ob-buttons ob-buttons-radio"
                 role="group"
                 aria-labelledby={`${id}-label`}
+                aria-describedby={ariaDescribedby}
               >
                 {filteredOptions.map((option, index) => {
                   const isSelected = selectedValues.includes(option.value)
@@ -163,11 +164,7 @@ function FormElementCheckboxes({
               role="group"
               className="ob-checkbox-container"
               aria-labelledby={`${id}-label`}
-              aria-describedby={
-                element.hint && element.hintPosition === 'BELOW_LABEL'
-                  ? `${id}-hint`
-                  : undefined
-              }
+              aria-describedby={ariaDescribedby}
             >
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value)
