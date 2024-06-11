@@ -113,6 +113,11 @@ function FormElementRadio({
               className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group"
               role="group"
               aria-labelledby={`${id}-label`}
+              aria-describedby={
+                element.hint && element.hintPosition === 'BELOW_LABEL'
+                  ? `${id}-hint`
+                  : undefined
+              }
             >
               {filteredOptions.map((option) => {
                 const isSelected = value === option.value
