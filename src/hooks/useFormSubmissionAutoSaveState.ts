@@ -65,6 +65,13 @@ export default function useFormSubmissionAutoSaveState({
         lastElementUpdated?: FormElement,
       ) => {
         if (!formIsDisabled) {
+          switch (lastElementUpdated?.type) {
+            case 'summary':
+            case 'calculation':
+            case 'captcha': {
+              return
+            }
+          }
           console.log('Auto saving...')
           autoSaveService
             .upsertAutoSaveData(definition.id, autoSaveKey, model)
