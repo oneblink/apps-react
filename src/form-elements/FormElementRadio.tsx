@@ -70,11 +70,7 @@ function FormElementRadio({
             <RadioGroup
               className="ob-radio-container"
               aria-labelledby={`${id}-label`}
-              aria-describedby={
-                element.hint && element.hintPosition === 'BELOW_LABEL'
-                  ? `${id}-hint`
-                  : undefined
-              }
+              aria-describedby={ariaDescribedby}
             >
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
@@ -113,11 +109,7 @@ function FormElementRadio({
               className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group"
               role="group"
               aria-labelledby={`${id}-label`}
-              aria-describedby={
-                element.hint && element.hintPosition === 'BELOW_LABEL'
-                  ? `${id}-hint`
-                  : undefined
-              }
+              aria-describedby={ariaDescribedby}
             >
               {filteredOptions.map((option) => {
                 const isSelected = value === option.value

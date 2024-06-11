@@ -199,11 +199,7 @@ function FormElementCompliance({
               className="buttons ob-buttons ob-buttons-radio cypress-radio-button-group"
               role="group"
               aria-labelledby={`${id}-label`}
-              aria-describedby={
-                element.hint && element.hintPosition === 'BELOW_LABEL'
-                  ? `${id}-hint`
-                  : undefined
-              }
+              aria-describedby={ariaDescribedby}
             >
               {filteredOptions.map((option) => {
                 const isSelected = typedValue?.value === option.value
