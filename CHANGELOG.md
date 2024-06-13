@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.1.1] - 2024-06-13
+
 ### Fixed
 
 - accessibility attributes for checkbox and radio labels
