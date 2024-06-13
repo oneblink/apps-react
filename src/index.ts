@@ -43,6 +43,7 @@ export {
   LoadDataState,
 } from './hooks/useLoadDataState'
 export { default as useLoadResourcesState } from './hooks/useLoadResourcesState'
+export { default as useLoadDataEffect } from './hooks/useLoadDataEffect'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
 export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmissionAutoSaveState'
 export { default as useGoogleJsApiLoader } from './hooks/useGoogleJsApiLoader'
