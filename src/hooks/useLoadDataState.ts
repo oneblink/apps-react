@@ -1,5 +1,6 @@
 import * as React from 'react'
 import useIsMounted from './useIsMounted'
+import useLoadDataEffect from './useLoadDataEffect'
 
 export type LoadDataState<T> =
   | {
@@ -114,22 +115,7 @@ export default function useLoadDataState<T>(
     [],
   )
 
-  // We use a number to trigger the refresh function so that
-  // we can pass an abort controller using a useEffect and
-  // have it aborted if the refresh function is triggered again.
-  const [loadCount, setLoadCount] = React.useState(0)
-
-  const handleRefresh = React.useCallback(() => {
-    setLoadCount((currentLoadCount) => currentLoadCount + 1)
-  }, [])
-
-  React.useEffect(() => {
-    const abortController = new AbortController()
-    handleLoad(abortController.signal)
-    return () => {
-      abortController.abort()
-    }
-  }, [handleLoad, loadCount])
+  const handleRefresh = useLoadDataEffect(handleLoad)
 
   return [state, handleRefresh, setResult]
 }
