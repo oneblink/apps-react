@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `useLoadDataEffect()` hook
+- Pass `environmentId` when using Point Address service
 
 ## [6.1.1] - 2024-06-13
 

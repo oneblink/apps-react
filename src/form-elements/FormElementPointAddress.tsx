@@ -66,6 +66,7 @@ function FormElementPointAddress({
       const result = await formService.searchPointAddresses(
         formId,
         params,
+        element.environmentId,
         abortSignal,
       )
 
@@ -74,7 +75,12 @@ function FormElementPointAddress({
         label: suggestion.address || index.toString(),
       }))
     },
-    [element.addressTypeFilter, element.stateTerritoryFilter, formId],
+    [
+      element.addressTypeFilter,
+      element.stateTerritoryFilter,
+      formId,
+      element.environmentId,
+    ],
   )
 
   const handleChange = React.useCallback(
@@ -86,7 +92,11 @@ function FormElementPointAddress({
 
       setIsLoadingAddressDetails(true)
       try {
-        const result = await formService.getPointAddress(formId, addressId)
+        const result = await formService.getPointAddress(
+          formId,
+          addressId,
+          element.environmentId,
+        )
         onChange(element, { value: result })
       } catch (newError) {
         if (isMounted.current) {
