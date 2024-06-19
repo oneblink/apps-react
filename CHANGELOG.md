@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `useLoadDataEffect()` hook
 
+### Removed
+
+- Westpac QuickWeb
+
 ## [6.1.1] - 2024-06-13
 
 ### Fixed
