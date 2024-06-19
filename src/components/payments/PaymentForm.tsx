@@ -37,14 +37,6 @@ function PaymentForm({
       const { formSubmissionResult, paymentSubmissionEvent } =
         await paymentService.getFormSubmissionResultPayment()
       switch (paymentSubmissionEvent.type) {
-        case 'BPOINT':
-        case 'CP_PAY':
-        case 'NSW_GOV_PAY':
-        case 'WESTPAC_QUICK_WEB': {
-          throw new Error(
-            `"${paymentSubmissionEvent.type}" payment events do not support a custom payment form.`,
-          )
-        }
         case 'WESTPAC_QUICK_STREAM': {
           const { supplierBusinessCode, publishableApiKey, isTestMode } =
             await paymentService.westpacQuickStream.getPaymentFormConfiguration(
@@ -72,6 +64,11 @@ function PaymentForm({
               />
             ),
           }
+        }
+        default: {
+          throw new Error(
+            `"${paymentSubmissionEvent.type}" payment events do not support a custom payment form.`,
+          )
         }
       }
     },
