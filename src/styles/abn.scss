@@ -1,0 +1,48 @@
+.ob-abn__display-mobile {
+  display: none;
+  @media only screen and (max-width: $mobile) {
+    display: block;
+  }
+
+  .ob-abn__record-button {
+    border-top: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    width: 100%;
+  }
+}
+
+.ob-abn__display-desktop {
+  @media only screen and (max-width: $mobile) {
+    display: none;
+  }
+}
+
+.ob-abn .field .control:first-child .input {
+  @media only screen and (max-width: $mobile) {
+    border-bottom-left-radius: 0px;
+  }
+}
+
+/** Styles copy or lookup button */
+.ob-abn .field .control:last-child .button {
+  @media only screen and (max-width: $mobile) {
+    border-bottom-right-radius: 0px;
+  }
+}
+
+/** Styles input field when there are no copy or lookup buttons */
+.ob-abn
+  .field.has-addons.no-addons-mobile
+  .control:first-child:not(:only-child)
+  .input {
+  @media only screen and (max-width: $mobile) {
+    border-top-right-radius: 4px;
+  }
+}
+
+.field.no-addons-mobile .control:not(:last-child) {
+  @media only screen and (max-width: $mobile) {
+    margin-right: 0px;
+  }
+}

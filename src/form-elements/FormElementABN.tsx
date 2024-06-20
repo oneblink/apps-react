@@ -201,6 +201,8 @@ function FormElementABN({
       error) &&
     !isLookingUp
 
+  const hasCopyButton = !!value && !!element.readOnly
+  const hasLookupButton = element.isDataLookup || element.isElementLookup
   return (
     <div className="cypress-abn-element">
       <FormElementLabelContainer
@@ -209,7 +211,11 @@ function FormElementABN({
         element={element}
         required={element.required}
       >
-        <div className="field has-addons">
+        <div
+          className={clsx('field has-addons', {
+            'no-addons-mobile': !hasCopyButton && !hasLookupButton,
+          })}
+        >
           <div
             className={clsx('control is-expanded', {
               'is-loading': isLoading,
@@ -243,13 +249,13 @@ function FormElementABN({
             />
           </div>
           {value && (
-            <div className="control ob-abn__record-control">
+            <div className="control ob-abn__record-control ob-abn__display-desktop">
               <a className="button is-static ob-abn__record-button">
                 {abnService.displayBusinessNameFromABNRecord(value)}
               </a>
             </div>
           )}
-          {!!element.readOnly && !!value && (
+          {hasCopyButton && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -264,6 +270,13 @@ function FormElementABN({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
+        {value && (
+          <div className="control ob-abn__record-control ob-abn__display-mobile">
+            <a className="button is-static ob-abn__record-button">
+              {abnService.displayBusinessNameFromABNRecord(value)}
+            </a>
+          </div>
+        )}
         {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
