@@ -249,11 +249,7 @@ function FormElementABN({
             />
           </div>
           {value && (
-            <div className="control ob-abn__record-control ob-abn__display-desktop">
-              <a className="button is-static ob-abn__record-button">
-                {abnService.displayBusinessNameFromABNRecord(value)}
-              </a>
-            </div>
+            <ABNDisplay abnRecord={value} className="ob-abn__display-desktop" />
           )}
           {hasCopyButton && (
             <div className="control">
@@ -271,11 +267,7 @@ function FormElementABN({
           />
         </div>
         {value && (
-          <div className="control ob-abn__record-control ob-abn__display-mobile">
-            <a className="button is-static ob-abn__record-button">
-              {abnService.displayBusinessNameFromABNRecord(value)}
-            </a>
-          </div>
+          <ABNDisplay abnRecord={value} className="ob-abn__display-mobile" />
         )}
         {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
@@ -290,3 +282,19 @@ function FormElementABN({
 }
 
 export default React.memo(FormElementABN)
+
+const ABNDisplay = ({
+  abnRecord,
+  className,
+}: {
+  abnRecord: MiscTypes.ABNRecord
+  className: string
+}) => {
+  return (
+    <div className={`control ob-abn__record-control ${className}`}>
+      <a className="button is-static ob-abn__record-button">
+        {abnService.displayBusinessNameFromABNRecord(abnRecord)}
+      </a>
+    </div>
+  )
+}
