@@ -123,6 +123,8 @@ function FormElementBSB({
       errorMessage) &&
     !isLookingUp
 
+  const hasCopyButton = !!value && !!element.readOnly
+  const hasLookupButton = element.isDataLookup || element.isElementLookup
   return (
     <div className="cypress-bsb-element">
       <FormElementLabelContainer
@@ -131,7 +133,11 @@ function FormElementBSB({
         element={element}
         required={element.required}
       >
-        <div className="field has-addons">
+        <div
+          className={clsx('field has-addons', {
+            'no-addons-mobile': !hasCopyButton && !hasLookupButton,
+          })}
+        >
           <div
             className={clsx('control is-expanded', {
               'is-loading': isLoading,
@@ -163,13 +169,12 @@ function FormElementBSB({
             />
           </div>
           {bsbRecord && (
-            <div className="control ob-bsb__record-control">
-              <a className="button is-static ob-bsb__record-button">
-                {bsbRecord.financialInstitutionMnemonic} - {bsbRecord.name}
-              </a>
-            </div>
+            <BSBDisplay
+              bsbRecord={bsbRecord}
+              className="ob-bsb__display-desktop"
+            />
           )}
-          {!!element.readOnly && !!value && (
+          {hasCopyButton && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -184,6 +189,12 @@ function FormElementBSB({
             lookupButtonConfig={element.lookupButton}
           />
         </div>
+        {bsbRecord && (
+          <BSBDisplay
+            bsbRecord={bsbRecord}
+            className="ob-bsb__display-mobile"
+          />
+        )}
         {isDisplayingValidationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-validation-message">
@@ -196,4 +207,19 @@ function FormElementBSB({
   )
 }
 
+const BSBDisplay = ({
+  bsbRecord,
+  className,
+}: {
+  bsbRecord: MiscTypes.BSBRecord
+  className: string
+}) => {
+  return (
+    <div className={`control ob-bsb__record-control ${className}`}>
+      <a className="button is-static ob-bsb__record-button">
+        {bsbRecord.financialInstitutionMnemonic} - {bsbRecord.name}
+      </a>
+    </div>
+  )
+}
 export default React.memo(FormElementBSB)
