@@ -95,9 +95,6 @@ function FormElementRadio({
                         })
                       }}
                       edge="start"
-                      inputProps={{
-                        'aria-describedby': ariaDescribedby,
-                      }}
                     />
                     {` ${option.label}`}
                   </label>
@@ -132,6 +129,7 @@ function FormElementRadio({
                           'is-light': !isSelected,
                         },
                       )}
+                      aria-describedby={ariaDescribedby}
                     />
                   </div>
                 )
