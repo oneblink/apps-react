@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `aria-describedby` for `Radio` elements
+
 ## [6.2.0] - 2024-06-21
 
 ### Added
