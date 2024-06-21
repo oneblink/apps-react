@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Checkbox, FormGroup } from '@mui/material'
+import { Checkbox } from '@mui/material'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -160,11 +160,11 @@ function FormElementCheckboxes({
               </div>
             </div>
           ) : (
-            <FormGroup
+            <div
+              role="group"
               className="ob-checkbox-container"
               aria-labelledby={`${id}-label`}
               aria-description={ariaDescribedby}
-              role="group"
             >
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value)
@@ -195,7 +195,7 @@ function FormElementCheckboxes({
                   </div>
                 )
               })}
-            </FormGroup>
+            </div>
           )}
 
           <LookupButton
