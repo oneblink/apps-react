@@ -164,7 +164,7 @@ function FormElementCheckboxes({
               role="group"
               className="ob-checkbox-container"
               aria-labelledby={`${id}-label`}
-              aria-description={ariaDescribedby}
+              aria-describedby={ariaDescribedby}
             >
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value)
