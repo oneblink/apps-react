@@ -15,22 +15,27 @@
 <li><a href="../modules.html">@oneblink/apps-react</a></li>
 <li><a href="../modules/IntegrationTypes.html">IntegrationTypes</a></li>
 <li><a href="IntegrationTypes.IntegrationCPPay.html">IntegrationCPPay</a></li></ul>
-<h1>Type alias IntegrationCPPay</h1></div>
-<div class="tsd-signature"><span class="tsd-kind-type-alias">IntegrationCPPay</span><span class="tsd-signature-symbol">:</span> <a href="IntegrationTypes.IntegrationBase.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationBase</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">configuration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>        </span><span class="tsd-kind-property">baseUrl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>        </span><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CP_PAY&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<h1>Type alias IntegrationCPPay&lt;S&gt;</h1></div>
+<div class="tsd-signature"><span class="tsd-kind-type-alias">IntegrationCPPay</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">S</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">:</span> <a href="IntegrationTypes.IntegrationBase.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationBase</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">configuration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>        </span><span class="tsd-kind-property">baseUrl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>        </span><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">S</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CP_PAY&quot;</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<section class="tsd-panel">
+<h4>Type Parameters</h4>
+<ul class="tsd-type-parameter-list">
+<li>
+<h4><span class="tsd-kind-type-parameter">S</span> = <a href="IntegrationTypes.SavedSecret.html" class="tsd-signature-type tsd-kind-type-alias">SavedSecret</a></h4></li></ul></section>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">configuration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">baseUrl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></h5>
+<h5><span class="tsd-kind-property">configuration</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">baseUrl</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">S</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></h5>
 <ul class="tsd-parameters">
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">base<wbr/>Url</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5></li>
 <li class="tsd-parameter">
-<h5><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">[]</span></h5></li></ul></li>
+<h5><span class="tsd-kind-property">gateways</span><span class="tsd-signature-symbol">: </span><a href="IntegrationTypes.IntegrationCPPayGateway.html" class="tsd-signature-type tsd-kind-type-alias">IntegrationCPPayGateway</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type tsd-kind-type-parameter">S</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5></li></ul></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;CP_PAY&quot;</span></h5></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in node_modules/@oneblink/types/typescript/integrations.d.ts:61</li></ul></aside></div>
+<li>Defined in node_modules/@oneblink/types/typescript/integrations.d.ts:70</li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -69,7 +74,8 @@
 <details class="tsd-index-accordion" data-key="IntegrationTypes$Type Aliases"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><span>Type Aliases</span></summary>
 <div class="tsd-accordion-details">
 <ul class="tsd-nested-navigation">
-<li><a href="IntegrationTypes.DeleteIntegrationValidationResults.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Delete<wbr/>Integration<wbr/>Validation<wbr/>Results</span></a></li>
+<li><a href="IntegrationTypes.ConstrainedSecret.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4194304"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-type-alias)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)"></path></g></svg><span>Constrained<wbr/>Secret</span></a></li>
+<li><a href="IntegrationTypes.DeleteIntegrationValidationResults.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Delete<wbr/>Integration<wbr/>Validation<wbr/>Results</span></a></li>
 <li><a href="IntegrationTypes.Integration.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration</span></a></li>
 <li><a href="IntegrationTypes.IntegrationAPINSW.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IntegrationAPINSW</span></a></li>
 <li><a href="IntegrationTypes.IntegrationBPOINT.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IntegrationBPOINT</span></a></li>
@@ -88,6 +94,7 @@
 <li><a href="IntegrationTypes.IntegrationNSWGovPay.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IntegrationNSWGov<wbr/>Pay</span></a></li>
 <li><a href="IntegrationTypes.IntegrationNSWGovPayPrimaryAgency.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>IntegrationNSWGov<wbr/>Pay<wbr/>Primary<wbr/>Agency</span></a></li>
 <li><a href="IntegrationTypes.IntegrationPoint.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Point</span></a></li>
+<li><a href="IntegrationTypes.IntegrationPointEnvironment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Point<wbr/>Environment</span></a></li>
 <li><a href="IntegrationTypes.IntegrationRecaptcha.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Recaptcha</span></a></li>
 <li><a href="IntegrationTypes.IntegrationRecaptchaDomain.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Recaptcha<wbr/>Domain</span></a></li>
 <li><a href="IntegrationTypes.IntegrationScheduling.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Scheduling</span></a></li>
@@ -97,8 +104,9 @@
 <li><a href="IntegrationTypes.IntegrationType.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Type</span></a></li>
 <li><a href="IntegrationTypes.IntegrationWestpacQuickStream.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Westpac<wbr/>Quick<wbr/>Stream</span></a></li>
 <li><a href="IntegrationTypes.IntegrationWestpacQuickStreamEnvironment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Westpac<wbr/>Quick<wbr/>Stream<wbr/>Environment</span></a></li>
-<li><a href="IntegrationTypes.IntegrationWestpacQuickWeb.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Westpac<wbr/>Quick<wbr/>Web</span></a></li>
-<li><a href="IntegrationTypes.IntegrationWestpacQuickWebEnvironment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Integration<wbr/>Westpac<wbr/>Quick<wbr/>Web<wbr/>Environment</span></a></li></ul></div></details></li></ul></div></details></li>
+<li><a href="IntegrationTypes.RawSecret.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Raw<wbr/>Secret</span></a></li>
+<li><a href="IntegrationTypes.SavedSecret.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Saved<wbr/>Secret</span></a></li>
+<li><a href="IntegrationTypes.Secret.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4194304"></use></svg><span>Secret</span></a></li></ul></div></details></li></ul></div></details></li>
 <li><a href="../modules/KeyTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Key<wbr/>Types</span></a></li>
 <li><a href="../modules/MiscTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Misc<wbr/>Types</span></a></li>
 <li><a href="../modules/OrganisationTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>Organisation<wbr/>Types</span></a></li>
@@ -179,6 +187,7 @@
 <li><a href="../functions/useFormSubmissionState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Form<wbr/>Submission<wbr/>State</span></a></li>
 <li><a href="../functions/useIsMounted.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Is<wbr/>Mounted</span></a></li>
 <li><a href="../functions/useIsOffline.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Is<wbr/>Offline</span></a></li>
+<li><a href="../functions/useLoadDataEffect.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Load<wbr/>Data<wbr/>Effect</span></a></li>
 <li><a href="../functions/useLoadDataState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Load<wbr/>Data<wbr/>State</span></a></li>
 <li><a href="../functions/useLogin.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Login</span></a></li>
 <li><a href="../functions/useNullableState.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>use<wbr/>Nullable<wbr/>State</span></a></li>
