@@ -30,7 +30,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
-
+  const headerRef = React.useRef<HTMLDivElement>(null)
   const id = `${props['idPrefix']}${element.id}`
 
   React.useEffect(() => {
@@ -110,10 +110,20 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       [element.id, onUpdateFormElements],
     )
 
+  const handleClickBottomCollapseButton = React.useCallback(() => {
+    toggle()
+    headerRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'nearest',
+    })
+  }, [toggle])
   return (
     <div className={clsx('ob-section', validationClassName)}>
       <div
-        className="ob-section__header cypress-section-header"
+        className={clsx('ob-section__header cypress-section-header', {
+          'ob-section__header-filled': element.canCollapseFromBottom,
+        })}
         onClick={toggle}
         tabIndex={0}
         onKeyDown={(e) => {
@@ -121,6 +131,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             toggle()
           }
         }}
+        ref={headerRef}
       >
         <h3 className="ob-section__header-text title is-3">
           {element.label}
@@ -151,7 +162,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           </div>
         )}
       </div>
-      <hr className="ob-section__divider" />
+      {!element.canCollapseFromBottom && <hr className="ob-section__divider" />}
       <Collapse
         in={!isCollapsed}
         classes={{
@@ -160,16 +171,50 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           hidden: 'ob-section__collapsed',
         }}
       >
-        <OneBlinkFormElements
-          {...props}
-          displayValidationMessages={displayValidationMessage}
-          onLookup={handleLookup}
-          elements={element.elements}
-          onUpdateFormElements={handleUpdateNestedFormElements}
-        />
+        <SectionElementsWrapper
+          element={element}
+          onCollapse={handleClickBottomCollapseButton}
+        >
+          <OneBlinkFormElements
+            {...props}
+            displayValidationMessages={displayValidationMessage}
+            onLookup={handleLookup}
+            elements={element.elements}
+            onUpdateFormElements={handleUpdateNestedFormElements}
+          />
+        </SectionElementsWrapper>
       </Collapse>
     </div>
   )
 }
 
 export default React.memo(FormElementSection)
+
+const SectionElementsWrapper = ({
+  children,
+  element,
+  onCollapse,
+}: {
+  children: React.ReactNode
+  element: FormTypes.SectionElement
+  onCollapse: () => void
+}) => {
+  return element.canCollapseFromBottom ? (
+    <div className="ob-section__collapsible-content-container">
+      {children}
+
+      <button
+        type="button"
+        className="button is-rounded is-light ob-section__bottom-collapse-button"
+        onClick={onCollapse}
+      >
+        <span className="icon">
+          <MaterialIcon>expand_less</MaterialIcon>
+        </span>
+        <span>Collapse</span>
+      </button>
+    </div>
+  ) : (
+    <>{children}</>
+  )
+}

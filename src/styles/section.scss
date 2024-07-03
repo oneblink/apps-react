@@ -11,6 +11,16 @@
   }
 }
 
+.ob-section__header-filled {
+  background-color: $white-ter;
+  border-top-left-radius: $radius;
+  border-top-right-radius: $radius;
+
+  &:hover {
+    background-color: bulmaDarken($white-ter, 2.5%);
+  }
+}
+
 .ob-section__header-text {
   flex: 1;
 
@@ -44,4 +54,20 @@
 
 .ob-section__hint-text-container {
   width: 100%;
+}
+
+.ob-section__collapsible-content-container {
+  padding: $size-6;
+  border: 2px solid $white-ter;
+  border-top: 0px;
+  position: relative;
+  border-bottom-left-radius: $radius;
+  border-bottom-right-radius: $radius;
+}
+
+.ob-section__bottom-collapse-button {
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+  transform: translate(-50%, 50%);
 }
