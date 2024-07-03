@@ -171,28 +171,10 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           hidden: 'ob-section__collapsed',
         }}
       >
-        {element.canCollapseFromBottom ? (
-          <div className="ob-section__collapsible-content-container">
-            <OneBlinkFormElements
-              {...props}
-              displayValidationMessages={displayValidationMessage}
-              onLookup={handleLookup}
-              elements={element.elements}
-              onUpdateFormElements={handleUpdateNestedFormElements}
-            />
-
-            <button
-              type="button"
-              className="button is-rounded is-light ob-section__bottom-collapse-button"
-              onClick={handleClickBottomCollapseButton}
-            >
-              <span className="icon">
-                <MaterialIcon>{'expand_less'}</MaterialIcon>
-              </span>
-              <span>Collapse</span>
-            </button>
-          </div>
-        ) : (
+        <SectionElementsWrapper
+          element={element}
+          onCollapse={handleClickBottomCollapseButton}
+        >
           <OneBlinkFormElements
             {...props}
             displayValidationMessages={displayValidationMessage}
@@ -200,10 +182,39 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             elements={element.elements}
             onUpdateFormElements={handleUpdateNestedFormElements}
           />
-        )}
+        </SectionElementsWrapper>
       </Collapse>
     </div>
   )
 }
 
 export default React.memo(FormElementSection)
+
+const SectionElementsWrapper = ({
+  children,
+  element,
+  onCollapse,
+}: {
+  children: React.ReactNode
+  element: FormTypes.SectionElement
+  onCollapse: () => void
+}) => {
+  return element.canCollapseFromBottom ? (
+    <div className="ob-section__collapsible-content-container">
+      {children}
+
+      <button
+        type="button"
+        className="button is-rounded is-light ob-section__bottom-collapse-button"
+        onClick={onCollapse}
+      >
+        <span className="icon">
+          <MaterialIcon>expand_less</MaterialIcon>
+        </span>
+        <span>Collapse</span>
+      </button>
+    </div>
+  ) : (
+    <>{children}</>
+  )
+}
