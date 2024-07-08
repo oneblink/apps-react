@@ -12,7 +12,7 @@ import OnLoading from '../components/renderer/OnLoading'
 import MaterialIcon from './MaterialIcon'
 
 import '../styles/arcgis-external.css'
-import useIsPageVisible from '../hooks/useIsPageVisible'
+import usePage from '../hooks/usePage'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
@@ -26,7 +26,7 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
   const layerPanelRef = React.useRef<Expand | null>(null)
   const mapGalleryPanelRef = React.useRef<Expand | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
-  const isPageVisible = useIsPageVisible()
+  const isPageVisible = usePage()
 
   React.useEffect(() => {
     let view: MapView

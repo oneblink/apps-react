@@ -13,7 +13,7 @@ import AttachmentStatus from '../components/renderer/attachments/AttachmentStatu
 import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
-import useIsPageVisible from '../hooks/useIsPageVisible'
+import useIsPageVisible from '../hooks/usePage'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import { IsDirtyProps } from '../types/form'
 
