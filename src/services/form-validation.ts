@@ -240,7 +240,8 @@ type ValidateJSSchema = Record<string, unknown>
 const presence = (
   { required, requiredMessage }: FormTypes.FormElementRequired,
   message: string,
-) => (required ? { message: requiredMessage || message } : false)
+) =>
+  required ? { message: requiredMessage || message, allowEmpty: false } : false
 
 const escapeElementName = (elementName: string) => {
   const escapedName = elementName.replace(/\./g, '\\.')
