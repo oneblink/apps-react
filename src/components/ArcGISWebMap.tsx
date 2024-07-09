@@ -26,7 +26,7 @@ function FormElementArcGISWebMap({ element, id, ...props }: Props) {
   const layerPanelRef = React.useRef<Expand | null>(null)
   const mapGalleryPanelRef = React.useRef<Expand | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
-  const isPageVisible = usePage()
+  const { isPageVisible } = usePage()
 
   React.useEffect(() => {
     let view: MapView
