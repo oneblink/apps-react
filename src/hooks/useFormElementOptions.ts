@@ -90,7 +90,10 @@ export default function useFormElementOptions<T>({
       return
     }
 
-    if (!withInjectedOptions.some((option) => value === option.value)) {
+    if (
+      typeof value === 'string' &&
+      !withInjectedOptions.some((option) => value === option.value)
+    ) {
       onChange(element, {
         value: undefined,
       })
