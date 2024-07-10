@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- data look ups not generating default data for the whole form
+- elements with options allowing empty strings
 
 ## [6.2.2] - 2024-07-10
 
