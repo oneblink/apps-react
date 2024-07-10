@@ -154,6 +154,11 @@ function FormElementCheckboxes({
                         },
                       )}
                       aria-describedby={ariaDescribedby}
+                      onBlur={() => {
+                        if (index === filteredOptions.length - 1) {
+                          setIsDirty()
+                        }
+                      }}
                     />
                   )
                 })}
@@ -188,6 +193,11 @@ function FormElementCheckboxes({
                         edge="start"
                         inputProps={{
                           'aria-describedby': ariaDescribedby,
+                        }}
+                        onBlur={() => {
+                          if (index === filteredOptions.length - 1) {
+                            setIsDirty()
+                          }
                         }}
                       />{' '}
                       {option.label}
