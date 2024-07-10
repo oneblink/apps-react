@@ -71,6 +71,7 @@ function FormElementRadio({
               className="ob-radio-container"
               aria-labelledby={`${id}-label`}
               aria-describedby={ariaDescribedby}
+              onBlur={setIsDirty}
             >
               {filteredOptions.map((option) => (
                 <div className="control" key={option.value}>
@@ -108,7 +109,7 @@ function FormElementRadio({
               aria-labelledby={`${id}-label`}
               aria-describedby={ariaDescribedby}
             >
-              {filteredOptions.map((option) => {
+              {filteredOptions.map((option, index) => {
                 const isSelected = value === option.value
                 return (
                   <div className="ob-button-radio-container" key={option.value}>
@@ -130,6 +131,11 @@ function FormElementRadio({
                         },
                       )}
                       aria-describedby={ariaDescribedby}
+                      onBlur={() => {
+                        if (index === filteredOptions.length - 1) {
+                          setIsDirty()
+                        }
+                      }}
                     />
                   </div>
                 )

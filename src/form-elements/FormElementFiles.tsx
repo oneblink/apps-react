@@ -112,6 +112,7 @@ function FormElementFiles({
                     className="button ob-files__add-new-button"
                     onClick={handleAdd}
                     aria-describedby={ariaDescribedby}
+                    onBlur={setIsDirty}
                   >
                     <MaterialIcon className="icon-x-large">add</MaterialIcon>
                   </button>
