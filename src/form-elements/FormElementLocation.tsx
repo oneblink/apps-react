@@ -189,6 +189,7 @@ function FormElementLocation({
                   className="is-primary button ob-button ob-button__edit ob-location__button ob-location__button-edit cypress-locate-button"
                   onClick={onLocate}
                   disabled={element.readOnly}
+                  onBlur={setIsDirty}
                 >
                   Locate
                 </button>

@@ -362,6 +362,7 @@ function FormElementCamera({
                 onClick={openCamera}
                 disabled={element.readOnly || isLoading}
                 aria-describedby={ariaDescribedby}
+                onBlur={setIsDirty}
               >
                 Open Camera
               </button>

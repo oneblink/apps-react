@@ -56,6 +56,7 @@ function FormElementBoolean({
               })
             }}
             aria-describedby={ariaDescribedby}
+            onBlur={setIsDirty}
           />
         }
       >

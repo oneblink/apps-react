@@ -10,6 +10,7 @@ type Props = {
   isSelected: boolean
   onClick: () => void
   className: string
+  onBlur?: () => void
   'aria-describedby'?: string
 }
 const OptionButton = ({
@@ -18,6 +19,7 @@ const OptionButton = ({
   isSelected,
   onClick,
   className,
+  onBlur,
   ...props
 }: Props) => {
   const buttonContrastColor = useContrastColor(option.colour)
@@ -33,6 +35,7 @@ const OptionButton = ({
       disabled={element.readOnly}
       onClick={onClick}
       aria-describedby={props['aria-describedby']}
+      onBlur={onBlur}
     >
       {option.label}
     </button>
