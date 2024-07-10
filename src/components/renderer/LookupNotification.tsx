@@ -3,8 +3,6 @@ import clsx from 'clsx'
 import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
 import { Sentry, formService } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { formElementsService } from '@oneblink/sdk-core'
-import _cloneDeep from 'lodash.clonedeep'
 
 import useIsOffline from '../../hooks/useIsOffline'
 import OnLoading from './OnLoading'
@@ -19,7 +17,6 @@ import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import useIsMounted from '../../hooks/useIsMounted'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
-import usePage from '../../hooks/usePage'
 import mergeExecutedLookups from '../../utils/merge-executed-lookups'
 
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
@@ -98,8 +95,6 @@ function LookupNotificationComponent({
     )
   }, [formElementDataLookup, formElementElementLookup])
 
-  const { pageId } = usePage()
-
   const mergeLookupData = React.useCallback(
     ({
       newValue,
@@ -126,20 +121,20 @@ function LookupNotificationComponent({
         }
       }
 
-      onLookup(({ submission, elements: pageElements, executedLookups }) => {
-        let allElements: FormTypes.FormElement[] = pageElements
+      onLookup(({ submission, elements, executedLookups }) => {
+        let allElements: FormTypes.FormElement[] = elements
         if (
           Array.isArray(elementLookupResult) &&
           executedLookupResult !== false
         ) {
-          const indexOfElement = pageElements.findIndex(
+          const indexOfElement = elements.findIndex(
             ({ id }) => id === element.id,
           )
           if (indexOfElement === -1) {
             console.log('Could not find element', element)
           } else {
             // Filter out already injected elements if lookup was successful
-            allElements = pageElements.filter(
+            allElements = elements.filter(
               // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
               (e) => e.injectedByElementId !== element.id,
             )
@@ -155,17 +150,9 @@ function LookupNotificationComponent({
           }
         }
 
-        const clonedElements = _cloneDeep(definition.elements)
-
-        formElementsService.forEachFormElement(clonedElements, (el) => {
-          if (el.type === 'page' && el.id === pageId) {
-            el.elements = allElements
-          }
-        })
-
         return {
           elements: allElements,
-          submission: generateDefaultData(clonedElements, {
+          submission: generateDefaultData(allElements, {
             ...submission,
             [element.name]: newValue,
             ...dataLookupResult,
@@ -181,7 +168,7 @@ function LookupNotificationComponent({
         }
       })
     },
-    [element, injectPagesAfter, onLookup, definition.elements, pageId],
+    [element, injectPagesAfter, onLookup],
   )
 
   const isNotStaticLookup = React.useMemo(() => {

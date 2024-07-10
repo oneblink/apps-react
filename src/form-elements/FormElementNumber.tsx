@@ -5,7 +5,7 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
-import usePage from '../hooks/usePage'
+import useIsPageVisible from '../hooks/useIsPageVisible'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
@@ -30,7 +30,7 @@ function FormElementNumber({
   setIsDirty,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
-  const { isPageVisible } = usePage()
+  const isPageVisible = useIsPageVisible()
 
   const text = React.useMemo(
     () => (typeof value === 'number' ? value.toString() : ''),

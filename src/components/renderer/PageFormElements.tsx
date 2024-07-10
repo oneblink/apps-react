@@ -11,7 +11,7 @@ import {
   SetFormSubmission,
   UpdateFormElementsHandler,
 } from '../../types/form'
-import { PageProvider } from '../../hooks/usePage'
+import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
 
 export type Props = {
@@ -122,7 +122,7 @@ function PageFormElements({
   )
 
   return (
-    <PageProvider isPageVisible={isActive} pageId={pageElement.id}>
+    <IsPageVisibleProvider isPageVisible={isActive}>
       <FlatpickrGuidProvider>
         <div
           id={pageElement.id}
@@ -146,7 +146,7 @@ function PageFormElements({
           />
         </div>
       </FlatpickrGuidProvider>
-    </PageProvider>
+    </IsPageVisibleProvider>
   )
 }
 

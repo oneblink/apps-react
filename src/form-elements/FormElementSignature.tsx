@@ -13,7 +13,7 @@ import AttachmentStatus from '../components/renderer/attachments/AttachmentStatu
 import { canvasToBlob } from '../services/blob-utils'
 import ImagePreviewUnavailable from '../components/renderer/attachments/ImagePreviewUnavailable'
 import { FormElementValueChangeHandler } from '../types/form'
-import usePage from '../hooks/usePage'
+import useIsPageVisible from '../hooks/useIsPageVisible'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import { IsDirtyProps } from '../types/form'
 
@@ -36,7 +36,7 @@ function FormElementSignature({
   setIsDirty,
   isDirty,
 }: Props) {
-  const { isPageVisible } = usePage()
+  const isPageVisible = useIsPageVisible()
 
   const handleChange = React.useCallback<
     FormElementValueChangeHandler<FormElementBinaryStorageValue>
