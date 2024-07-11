@@ -7,12 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- onBlur validation for `boolean`, `camera`, `checkboxes`, `files`, `location` and `radio` elements
-
 ### Fixed
 
+- onBlur validation for `boolean`, `camera`, `checkboxes`, `files`, `location` and `radio` elements
 - elements with options allowing empty strings
 
 ## [6.2.2] - 2024-07-10
