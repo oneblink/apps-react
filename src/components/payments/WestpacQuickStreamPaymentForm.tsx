@@ -171,7 +171,6 @@ function WestpacQuickStreamPaymentForm({
               {
                 config: {
                   supplierBusinessCode,
-                  threeDS2: true,
                 },
                 iframe: {
                   style: {
