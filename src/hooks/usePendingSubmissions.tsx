@@ -200,6 +200,9 @@ export function PendingSubmissionsContextProvider({
             processPendingQueue()
             break
           }
+          case 'EDIT_CANCELLED': {
+            processPendingQueue()
+          }
         }
         setState({
           isLoading: false,
