@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.3] - 2024-08-07
+
 ### Fixed
 
 - onBlur validation for `boolean`, `camera`, `checkboxes`, `files`, `location` and `radio` elements
 - elements with options allowing empty strings
 - threeDS2 in quickstream trusted frame
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [6.3.1-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [6.3.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [6.2.2] - 2024-07-10
 
