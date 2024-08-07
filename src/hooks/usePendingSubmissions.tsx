@@ -196,7 +196,10 @@ export function PendingSubmissionsContextProvider({
             hideFailedNotification()
             break
           }
-          case 'ADDITION': {
+          // EDIT_CANCELLED is here for when beginnning edit offline and then hitting cancel while online
+          // among other use cases
+          case 'ADDITION':
+          case 'EDIT_CANCELLED': {
             processPendingQueue()
             break
           }
