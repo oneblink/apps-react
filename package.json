@@ -10,7 +10,7 @@
     "@arcgis/core": "~4.29.10",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@oneblink/sdk-core": "^6.3.1-beta.1",
+    "@oneblink/sdk-core": "^7.0.0-beta.1",
     "@react-google-maps/api": "2.19.2",
     "blueimp-load-image": "^5.16.0",
     "bulma": "^0.9.4",
