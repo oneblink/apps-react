@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `isHidden` functionality to form elements
+- processPendingQueue on `EDIT_CANCELLED` pending queue event
 
 ## [6.2.3] - 2024-08-07
 
