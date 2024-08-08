@@ -135,6 +135,9 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
               className={clsx(
                 'ob-element cypress-element-container',
                 element.customCssClasses,
+                {
+                  'is-hidden': element.isHidden,
+                },
               )}
             >
               <FormElementSection
@@ -213,8 +216,11 @@ function FormElementSwitchContainer(
       id={element.id}
       className={clsx(
         'ob-element cypress-element-container',
-        element.customCssClasses ? element.customCssClasses.join(' ') : '',
+        element.customCssClasses,
         validationClassName,
+        {
+          'is-hidden': element.isHidden,
+        },
       )}
       data-cypress-element-name={element.name}
       data-ob-name={element.name}
