@@ -12,6 +12,10 @@
     &.is-extended {
       max-height: calc(#{$size-5 * 2} + #{$size-7 * 2} + 50px + 68px);
 
+      &.is-retryable {
+        max-height: calc(#{$size-5 * 2} + #{$size-7 * 2} + 50px + 68px + 40px);
+      }
+
       .notification {
         max-height: 100%;
         overflow-y: auto;
@@ -25,5 +29,9 @@
 
   .material-icons {
     font-size: 50px;
+  }
+
+  .material-icons.refresh {
+    font-size: 24px;
   }
 }
