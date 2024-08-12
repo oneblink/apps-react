@@ -431,9 +431,7 @@ function LookupNotificationComponent({
                             refresh
                           </MaterialIcon>
                         </span>
-                        <span className="is-hidden-mobile">
-                          &nbsp;Retry Lookup
-                        </span>
+                        <span>&nbsp;Retry Lookup</span>
                       </button>
                     )}
                   </div>
