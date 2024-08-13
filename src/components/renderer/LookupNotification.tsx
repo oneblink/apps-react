@@ -338,6 +338,15 @@ function LookupNotificationComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoLookupValueString, isLoading])
 
+  const retryLookup = React.useCallback(() => {
+    const abortController = new AbortController()
+    triggerLookup({
+      newValue: autoLookupValue,
+      abortController,
+      continueLookupOnAbort: true,
+    })
+  }, [autoLookupValue, triggerLookup])
+
   const contextValue = React.useMemo(
     () => ({
       isLookup: true,
@@ -370,6 +379,7 @@ function LookupNotificationComponent({
           'is-looking-up': isLookingUp,
           'is-extended':
             hasLookupFailed || (isCancellable && !hasLookupSucceeded),
+          'is-retryable': hasLookupFailed && !!autoLookupValue,
         })}
       >
         <div className="notification has-margin-top-7 has-text-centered">
@@ -405,6 +415,25 @@ function LookupNotificationComponent({
                         __html: lookupErrorHTML || '',
                       }}
                     />
+                    {autoLookupValue && (
+                      <button
+                        type="button"
+                        className={clsx(
+                          'fade-in button is-primary ob-lookup__retry-button cypress-retry-lookup-button has-margin-top-8',
+                        )}
+                        onClick={() => retryLookup()}
+                        disabled={isDisabled || isLoading}
+                        aria-label="lookup-retry-button"
+                      >
+                        <span></span>
+                        <span className="icon">
+                          <MaterialIcon className="refresh">
+                            refresh
+                          </MaterialIcon>
+                        </span>
+                        <span>&nbsp;Retry Lookup</span>
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

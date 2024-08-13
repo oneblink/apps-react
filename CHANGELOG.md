@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Retry Lookup button for automatic lookup elements
+
 ## [6.3.0] - 2024-08-13
 
 ### Added
