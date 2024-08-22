@@ -11,11 +11,15 @@ export default function useSignUp({
   username,
   firstName,
   lastName,
+  onSuccess,
+  onError,
 }: {
   formsAppId: number
   username: string
   firstName?: string
   lastName?: string
+  onSuccess?: () => void
+  onError?: () => void
 }) {
   const usernameValidation = React.useMemo(() => {
     // regex source: https://www.w3resource.com/javascript/form/email-validation.php#:~:text=To%20get%20a%20valid%20email,%5D%2B)*%24%2F.
@@ -74,6 +78,7 @@ export default function useSignUp({
         isSigningUp: false,
         signUpComplete: true,
       }))
+      onSuccess?.()
     } catch (error) {
       Sentry.captureException(error)
       setSignUpState((currentState) => ({
@@ -81,8 +86,17 @@ export default function useSignUp({
         isSigningUp: false,
         signUpError: error as Error,
       }))
+      onError?.()
     }
-  }, [firstName, formsAppId, lastName, username, usernameValidation.isInvalid])
+  }, [
+    firstName,
+    formsAppId,
+    lastName,
+    onError,
+    onSuccess,
+    username,
+    usernameValidation.isInvalid,
+  ])
 
   return {
     signUpWithUserDetails,
