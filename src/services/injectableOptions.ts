@@ -1,5 +1,5 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { formElementsService, typeCastService } from '@oneblink/sdk-core'
+import { submissionService, typeCastService } from '@oneblink/sdk-core'
 import { localisationService } from '@oneblink/apps'
 import { v4 as uuidv4 } from 'uuid'
 import { MiscTypes } from '@oneblink/types'
@@ -8,9 +8,9 @@ import { TaskContext } from '../hooks/useTaskContext'
 type Option = Pick<FormTypes.ChoiceElementOption, 'value' | 'label'>
 
 function processInjectableDynamicOption({
-  option,
-  submission,
-  formElements,
+  option: resource,
+  submission: rootSubmission,
+  formElements: rootFormElements,
   ...params
 }: {
   option: Option
@@ -18,109 +18,62 @@ function processInjectableDynamicOption({
   formElements: FormTypes.FormElement[]
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
-}): Map<string, string> {
-  const newOptions: Map<string, string> = new Map()
-
-  // Replace root level form element values
-  const replaceableParams: Parameters<
-    typeof localisationService.replaceInjectablesWithElementValues
-  >[1] = {
-    ...params,
-    submission,
-    formElements,
-    task: params.taskContext.task,
-    taskGroup: params.taskContext.taskGroup,
-    taskGroupInstance: params.taskContext.taskGroupInstance,
-    excludeNestedElements: true,
-  }
-  const {
-    text: label,
-    hadAllInjectablesReplaced: hadAllInjectablesReplacedInLabel,
-  } = localisationService.replaceInjectablesWithElementValues(
-    option.label,
-    replaceableParams,
-  )
-  if (!hadAllInjectablesReplacedInLabel) {
-    return newOptions
-  }
-
-  const {
-    text: value,
-    hadAllInjectablesReplaced: hadAllInjectablesReplacedInValue,
-  } = localisationService.replaceInjectablesWithElementValues(
-    option.value,
-    replaceableParams,
-  )
-  if (!hadAllInjectablesReplacedInValue) {
-    return newOptions
-  }
-
-  // Find nested form elements
-  const matches: Map<string, boolean> = new Map()
-  formElementsService.matchElementsTagRegex(
-    {
-      text: label + ' ' + value,
-      excludeNestedElements: false,
-    },
-    ({ elementName }) => {
-      const [repeatableSetElementName, ...elementNames] = elementName.split('|')
-      matches.set(repeatableSetElementName, !!elementNames.length)
-    },
-  )
-
-  if (matches.size) {
-    matches.forEach((hasNestedFormElements, repeatableSetElementName) => {
-      if (hasNestedFormElements) {
-        // Attempt to create a new option for each entry in the repeatable set.
-        const entries = submission?.[repeatableSetElementName]
-        if (Array.isArray(entries)) {
-          const repeatableSetElement = formElementsService.findFormElement(
-            formElements,
-            (formElement) => {
-              return (
-                'name' in formElement &&
-                formElement.name === repeatableSetElementName
-              )
-            },
-          )
-          if (
-            repeatableSetElement &&
-            'elements' in repeatableSetElement &&
-            Array.isArray(repeatableSetElement.elements)
-          ) {
-            for (const entry of entries) {
-              const nestedOptions = processInjectableDynamicOption({
-                ...params,
-                option: {
-                  label: label.replaceAll(
-                    `{ELEMENT:${repeatableSetElementName}|`,
-                    '{ELEMENT:',
-                  ),
-                  value: value.replaceAll(
-                    `{ELEMENT:${repeatableSetElementName}|`,
-                    '{ELEMENT:',
-                  ),
-                },
-                submission: entry,
-                formElements: repeatableSetElement.elements,
-              })
-              if (nestedOptions.size) {
-                nestedOptions.forEach((nestedLabel, nestedValue) => {
-                  if (!newOptions.has(nestedValue)) {
-                    newOptions.set(nestedValue, nestedLabel)
-                  }
-                })
-              }
-            }
-          }
-        }
+}): Map<string, Option> {
+  return submissionService.processInjectablesInCustomResource<Option>({
+    resource,
+    submission: rootSubmission,
+    formElements: rootFormElements,
+    replaceRootInjectables(option, submission, formElements) {
+      // Replace root level form element values
+      const replaceableParams: Parameters<
+        typeof localisationService.replaceInjectablesWithElementValues
+      >[1] = {
+        ...params,
+        submission,
+        formElements,
+        task: params.taskContext.task,
+        taskGroup: params.taskContext.taskGroup,
+        taskGroupInstance: params.taskContext.taskGroupInstance,
+        excludeNestedElements: true,
       }
-    })
-  } else {
-    newOptions.set(value, label)
-  }
+      const {
+        text: label,
+        hadAllInjectablesReplaced: hadAllInjectablesReplacedInLabel,
+      } = localisationService.replaceInjectablesWithElementValues(
+        option.label,
+        replaceableParams,
+      )
+      if (!hadAllInjectablesReplacedInLabel) {
+        return
+      }
 
-  return newOptions
+      const {
+        text: value,
+        hadAllInjectablesReplaced: hadAllInjectablesReplacedInValue,
+      } = localisationService.replaceInjectablesWithElementValues(
+        option.value,
+        replaceableParams,
+      )
+      if (!hadAllInjectablesReplacedInValue) {
+        return
+      }
+
+      return [
+        label + ' ' + value,
+        value,
+        {
+          value,
+          label,
+        },
+      ]
+    },
+    prepareNestedInjectables(option, prepare) {
+      return {
+        value: prepare(option.value),
+        label: prepare(option.label),
+      }
+    },
+  })
 }
 
 export default function processInjectableOption({
@@ -146,7 +99,7 @@ export default function processInjectableOption({
 
   const generatedOptions: FormTypes.ChoiceElementOption[] = []
 
-  options.forEach((label, value) => {
+  options.forEach(({ label, value }) => {
     generatedOptions.push({
       ...option,
       id: options.size === 1 ? option.id : uuidv4(),
