@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- dropdown styling to wrap text instead of being horizontally scrollable
+
 ## [6.5.0] - 2024-09-03
 
 ### Added
