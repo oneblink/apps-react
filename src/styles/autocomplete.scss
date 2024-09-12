@@ -9,6 +9,8 @@
     overflow-y: auto;
 
     a.dropdown-item {
+      text-wrap: wrap;
+      padding-right: 16px;
       transition:
         background-color 0.25s,
         color 0.25s;
