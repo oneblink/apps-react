@@ -130,6 +130,7 @@ function PageFormElements({
           className={clsx('ob-page step-content is-active cypress-page', {
             'is-invisible': !isActive,
           })}
+          aria-labelledby={`steps-navigation-step-label-${pageElement.id}`}
         >
           <OneBlinkFormElements
             formId={formId}

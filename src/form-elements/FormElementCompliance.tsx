@@ -183,7 +183,11 @@ function FormElementCompliance({
   })
 
   return (
-    <div className="cypress-compliance-element">
+    <div
+      className="cypress-compliance-element"
+      aria-labelledby={`${id}-label`}
+      aria-describedby={ariaDescribedby}
+    >
       <FormElementLabelContainer
         className={`ob-compliance ${!isEven ? 'even' : 'odd'}`}
         id={id}

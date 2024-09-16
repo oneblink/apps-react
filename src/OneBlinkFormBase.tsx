@@ -956,7 +956,10 @@ function OneBlinkFormBase({
                                     )}
                                   </div>
                                   <div className="step-details ob-step-details">
-                                    <p className="step-title ob-step-title cypress-desktop-step-title">
+                                    <p
+                                      className="step-title ob-step-title cypress-desktop-step-title"
+                                      id={`steps-navigation-step-label-${page.id}`}
+                                    >
                                       {page.label}
                                     </p>
                                   </div>

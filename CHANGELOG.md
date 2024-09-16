@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- support for WCAG 1.3.1 - Info and Relationships
+
 ### Changed
 
 - dropdown styling to wrap text instead of being horizontally scrollable
