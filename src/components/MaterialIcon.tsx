@@ -6,5 +6,12 @@ export default function MaterialIcon({
   className,
   ...props
 }: React.ComponentProps<typeof Icon>) {
-  return <Icon className={clsx('ob-icon', className)} aria-hidden {...props} />
+  return (
+    <Icon
+      role="img"
+      className={clsx('ob-icon', className)}
+      aria-hidden
+      {...props}
+    />
+  )
 }

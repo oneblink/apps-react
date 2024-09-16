@@ -1,10 +1,10 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
 import generateDefaultData from '../services/generate-default-data'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import Modal from '../components/renderer/Modal'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import {
@@ -19,6 +19,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
 
 type Props = {
@@ -199,9 +200,13 @@ function FormElementRepeatableSet({
     invalidClassName: 'ob-repeatable-set-element__invalid',
   })
 
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
+
   return (
     <div
       className={clsx('cypress-repeatable-set-element', validationClassName)}
+      aria-labelledby={`${id}-label`}
+      aria-describedby={ariaDescribedby}
     >
       <FormElementLabelContainer
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}

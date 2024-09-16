@@ -18,6 +18,7 @@ import {
 } from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import MaterialIcon from '../components/MaterialIcon'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
@@ -118,6 +119,14 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
       inline: 'nearest',
     })
   }, [toggle])
+
+  const sectionHeaderId = React.useMemo(
+    () => `ob-section-header-${element.id}`,
+    [element.id],
+  )
+
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
+
   return (
     <div className={clsx('ob-section', validationClassName)}>
       <div
@@ -133,7 +142,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         }}
         ref={headerRef}
       >
-        <h3 className="ob-section__header-text title is-3">
+        <h3 className="ob-section__header-text title is-3" id={sectionHeaderId}>
           {element.label}
           {element.hint &&
             (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
@@ -174,6 +183,8 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         <SectionElementsWrapper
           element={element}
           onCollapse={handleClickBottomCollapseButton}
+          ariaLabelledBy={sectionHeaderId}
+          ariaDescribedBy={ariaDescribedby}
         >
           <OneBlinkFormElements
             {...props}
@@ -194,13 +205,21 @@ const SectionElementsWrapper = ({
   children,
   element,
   onCollapse,
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: {
   children: React.ReactNode
   element: FormTypes.SectionElement
   onCollapse: () => void
+  ariaLabelledBy: string
+  ariaDescribedBy: string | undefined
 }) => {
   return element.canCollapseFromBottom ? (
-    <div className="ob-section__collapsible-content-container">
+    <div
+      className="ob-section__collapsible-content-container"
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
+    >
       {children}
 
       <button
