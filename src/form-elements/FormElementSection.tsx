@@ -219,6 +219,7 @@ const SectionElementsWrapper = ({
       className="ob-section__collapsible-content-container"
       aria-labelledby={ariaLabelledBy}
       aria-describedby={ariaDescribedBy}
+      role="region"
     >
       {children}
 

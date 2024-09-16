@@ -131,6 +131,7 @@ function PageFormElements({
             'is-invisible': !isActive,
           })}
           aria-labelledby={`steps-navigation-step-label-${pageElement.id}`}
+          role="region"
         >
           <OneBlinkFormElements
             formId={formId}

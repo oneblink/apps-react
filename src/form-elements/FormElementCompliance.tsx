@@ -187,6 +187,7 @@ function FormElementCompliance({
       className="cypress-compliance-element"
       aria-labelledby={`${id}-label`}
       aria-describedby={ariaDescribedby}
+      role="region"
     >
       <FormElementLabelContainer
         className={`ob-compliance ${!isEven ? 'even' : 'odd'}`}
