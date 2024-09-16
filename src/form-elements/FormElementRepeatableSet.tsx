@@ -207,6 +207,7 @@ function FormElementRepeatableSet({
       className={clsx('cypress-repeatable-set-element', validationClassName)}
       aria-labelledby={`${id}-label`}
       aria-describedby={ariaDescribedby}
+      role="region"
     >
       <FormElementLabelContainer
         className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
