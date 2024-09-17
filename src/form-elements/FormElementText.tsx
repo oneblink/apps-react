@@ -15,6 +15,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementText({
@@ -26,6 +27,7 @@ function FormElementText({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const text = typeof value === 'string' ? value : ''
@@ -60,6 +62,7 @@ function FormElementText({
               disabled={element.readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
+              autoComplete={autocompleteAttributes}
             />
           </div>
           {!!element.readOnly && !!value && (

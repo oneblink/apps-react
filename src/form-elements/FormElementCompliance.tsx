@@ -71,8 +71,14 @@ function FormElementCompliance({
       label: 'Notes',
       name: `${element.name}_notes`,
       type: 'textarea',
+      autocompleteAttributes: element.autocompleteAttributes,
     }),
-    [element.id, element.name, element.readOnly],
+    [
+      element.autocompleteAttributes,
+      element.id,
+      element.name,
+      element.readOnly,
+    ],
   )
   const filesElement = React.useMemo<FormTypes.FilesElement>(
     () => ({
@@ -270,6 +276,9 @@ function FormElementCompliance({
                 element={notesElement}
                 isDirty={isDirty}
                 setIsDirty={setIsDirty}
+                autocompleteAttributes={notesElement.autocompleteAttributes?.join(
+                  ' ',
+                )}
               />
             </div>
           )}

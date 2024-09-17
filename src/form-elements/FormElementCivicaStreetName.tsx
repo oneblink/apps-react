@@ -15,6 +15,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<CivicaTypes.CivicaStreetName>
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementCivicaStreetName({
@@ -27,6 +28,7 @@ function FormElementCivicaStreetName({
   onChange,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
@@ -100,6 +102,7 @@ function FormElementCivicaStreetName({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
 

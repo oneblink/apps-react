@@ -268,6 +268,10 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     typeof formElementValidation === 'string'
       ? formElementValidation
       : undefined
+  const autocompleteAttributes =
+    'autocompleteAttributes' in element
+      ? element.autocompleteAttributes?.join(' ')
+      : undefined
   switch (element.type) {
     case 'heading': {
       return <FormElementHeading element={element} />
@@ -289,6 +293,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -308,6 +313,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -327,6 +333,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -346,6 +353,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -366,6 +374,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -385,6 +394,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -404,6 +414,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -423,6 +434,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -442,6 +454,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -467,6 +480,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
             onUpdateFormElements={onUpdateFormElements}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -492,6 +506,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             displayValidationMessage={displayValidationMessage}
             conditionallyShownOptionsElement={conditionallyShownOptionsElement}
             onUpdateFormElements={onUpdateFormElements}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -595,6 +610,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -614,6 +630,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -793,6 +810,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -868,6 +886,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -893,6 +912,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -941,6 +961,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>
@@ -988,6 +1009,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             }
             validationMessage={validationMessage}
             displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
             {...dirtyProps}
           />
         </LookupNotification>

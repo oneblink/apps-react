@@ -17,6 +17,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<GoogleTypes.GoogleMapsAddress>
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementGoogleAddress({
@@ -28,6 +29,7 @@ function FormElementGoogleAddress({
   onChange,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
@@ -246,6 +248,7 @@ function FormElementGoogleAddress({
               <img src="https://developers.google.com/static/maps/documentation/images/google_on_white.png" />
             </a>
           }
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
 

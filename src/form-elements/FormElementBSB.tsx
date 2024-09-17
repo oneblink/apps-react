@@ -20,6 +20,7 @@ type Props = {
   >
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementBSB({
@@ -32,6 +33,7 @@ function FormElementBSB({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
@@ -166,6 +168,7 @@ function FormElementBSB({
                 setIsDirty()
               }}
               aria-describedby={ariaDescribedby}
+              autoComplete={autocompleteAttributes}
             />
           </div>
           {bsbRecord && (

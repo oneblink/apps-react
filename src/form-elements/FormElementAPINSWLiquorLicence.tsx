@@ -16,6 +16,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<APINSWTypes.LiquorLicenceDetails>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 const liquorLicenceClassPrefix = 'ob-api-nsw-liquor-licence__'
@@ -29,6 +30,7 @@ function FormElementAPINSWLiquorLicence({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
@@ -140,6 +142,7 @@ function FormElementAPINSWLiquorLicence({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
 

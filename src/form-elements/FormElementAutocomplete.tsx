@@ -22,6 +22,7 @@ type _BaseProps = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onUpdateFormElements: UpdateFormElementsHandler
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 type _AutocompleteChangeHandlerProps = _BaseProps & {
@@ -58,6 +59,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: AutocompleteFilterProps) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
@@ -137,6 +139,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             isDirty={isDirty}
             setIsDirty={setIsDirty}
             aria-describedby={ariaDescribedby}
+            autoComplete={autocompleteAttributes}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -155,6 +158,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   searchQuerystringParameter,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: AutocompleteFetchProps) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [label, setLabel] = React.useState('')
@@ -213,6 +217,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
     </div>

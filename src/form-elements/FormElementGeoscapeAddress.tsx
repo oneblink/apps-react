@@ -16,6 +16,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<GeoscapeTypes.GeoscapeAddress>
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementGeoscapeAddress({
@@ -28,6 +29,7 @@ function FormElementGeoscapeAddress({
   onChange,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
@@ -133,6 +135,7 @@ function FormElementGeoscapeAddress({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
 

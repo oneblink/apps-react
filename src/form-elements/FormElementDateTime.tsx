@@ -20,6 +20,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementDateTime({
@@ -31,6 +32,7 @@ function FormElementDateTime({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
@@ -112,6 +114,7 @@ function FormElementDateTime({
               disabled={element.readOnly}
               className="input ob-input"
               aria-describedby={ariaDescribedby}
+              autoComplete={autocompleteAttributes}
             />
             <span className="ob-input-icon icon is-small is-right">
               <MaterialIcon className="is-size-5">date_range</MaterialIcon>

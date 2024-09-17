@@ -17,6 +17,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<number>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementNumber({
@@ -28,6 +29,7 @@ function FormElementNumber({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isPageVisible = useIsPageVisible()
@@ -87,6 +89,7 @@ function FormElementNumber({
                 ref={htmlInputElementRef}
                 onWheel={handleWheel}
                 aria-describedby={ariaDescribedby}
+                autoComplete={autocompleteAttributes}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <MaterialIcon className="is-size-5">tag</MaterialIcon>

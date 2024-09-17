@@ -16,6 +16,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementTelephone({
@@ -27,6 +28,7 @@ function FormElementTelephone({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const text = typeof value === 'string' ? value : ''
@@ -61,6 +63,7 @@ function FormElementTelephone({
               disabled={element.readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
+              autoComplete={autocompleteAttributes}
             />
             <span className="ob-input-icon icon is-small is-right">
               <MaterialIcon className="is-size-5">phone</MaterialIcon>
