@@ -129,6 +129,13 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             return null
           }
 
+          const ariaDescribedBy =
+            element.hintPosition === 'BELOW_LABEL' && !!element.hint
+              ? `${idPrefix}${element.id}-hint`
+              : undefined
+
+          const sectionHeaderId = `ob-section-header-${element.id}`
+
           return (
             <div
               key={element.id}
@@ -139,6 +146,9 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                   'is-hidden': element.isHidden,
                 },
               )}
+              aria-labelledby={sectionHeaderId}
+              aria-describedby={ariaDescribedBy}
+              role="region"
             >
               <FormElementSection
                 formId={formId}
@@ -152,6 +162,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 onUpdateFormElements={onUpdateFormElements}
                 model={model}
                 parentElement={parentElement}
+                sectionHeaderId={sectionHeaderId}
               />
             </div>
           )

@@ -18,16 +18,17 @@ import {
 } from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import MaterialIcon from '../components/MaterialIcon'
-import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   onLookup,
   displayValidationMessages,
   onUpdateFormElements,
+  sectionHeaderId,
   ...props
 }: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
+  sectionHeaderId: string
 }) {
   const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
@@ -120,13 +121,6 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     })
   }, [toggle])
 
-  const sectionHeaderId = React.useMemo(
-    () => `ob-section-header-${element.id}`,
-    [element.id],
-  )
-
-  const ariaDescribedby = useElementAriaDescribedby(id, element)
-
   return (
     <div className={clsx('ob-section', validationClassName)}>
       <div
@@ -183,8 +177,6 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         <SectionElementsWrapper
           element={element}
           onCollapse={handleClickBottomCollapseButton}
-          ariaLabelledBy={sectionHeaderId}
-          ariaDescribedBy={ariaDescribedby}
         >
           <OneBlinkFormElements
             {...props}
@@ -205,22 +197,13 @@ const SectionElementsWrapper = ({
   children,
   element,
   onCollapse,
-  ariaLabelledBy,
-  ariaDescribedBy,
 }: {
   children: React.ReactNode
   element: FormTypes.SectionElement
   onCollapse: () => void
-  ariaLabelledBy: string
-  ariaDescribedBy: string | undefined
 }) => {
   return element.canCollapseFromBottom ? (
-    <div
-      className="ob-section__collapsible-content-container"
-      aria-labelledby={ariaLabelledBy}
-      aria-describedby={ariaDescribedBy}
-      role="region"
-    >
+    <div className="ob-section__collapsible-content-container">
       {children}
 
       <button
