@@ -276,6 +276,9 @@ function FormElementCompliance({
                 element={notesElement}
                 isDirty={isDirty}
                 setIsDirty={setIsDirty}
+                autocompleteAttributes={notesElement.autocompleteAttributes?.join(
+                  ' ',
+                )}
               />
             </div>
           )}

@@ -20,6 +20,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementDate({
@@ -31,6 +32,7 @@ function FormElementDate({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
@@ -114,7 +116,7 @@ function FormElementDate({
               disabled={element.readOnly}
               className="input ob-input cypress-date-control"
               onBlur={onBlur}
-              autoComplete={element.autocompleteAttributes?.join(' ')}
+              autoComplete={autocompleteAttributes}
               aria-describedby={ariaDescribedby}
             />
 

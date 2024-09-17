@@ -16,6 +16,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementEmail({
@@ -27,6 +28,7 @@ function FormElementEmail({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const { isLookingUp } = React.useContext(LookupNotificationContext)
@@ -60,7 +62,7 @@ function FormElementEmail({
               disabled={element.readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
-              autoComplete={element.autocompleteAttributes?.join(' ')}
+              autoComplete={autocompleteAttributes}
             />
             <span className="ob-input-icon icon is-small is-right">
               <MaterialIcon className="is-size-5">email</MaterialIcon>

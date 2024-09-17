@@ -16,6 +16,7 @@ type Props = {
   displayValidationMessage: boolean
   validationMessage: string | undefined
   onChange: FormElementValueChangeHandler<PointTypes.PointAddress>
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 type AddressType = 'all' | 'physical' | 'mailing'
@@ -30,6 +31,7 @@ function FormElementPointAddress({
   onChange,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isMounted = useIsMounted()
@@ -139,7 +141,7 @@ function FormElementPointAddress({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
-          autoComplete={element.autocompleteAttributes?.join(' ')}
+          autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
 

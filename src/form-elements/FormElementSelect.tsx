@@ -26,6 +26,7 @@ type Props = {
     | FormElementConditionallyShownElement
     | undefined
   onUpdateFormElements: UpdateFormElementsHandler
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementSelect({
@@ -39,6 +40,7 @@ function FormElementSelect({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const filteredOptions = useFormElementOptions({
@@ -99,7 +101,7 @@ function FormElementSelect({
                     disabled={element.readOnly}
                     onBlur={setIsDirty}
                     aria-describedby={ariaDescribedby}
-                    autoComplete={element.autocompleteAttributes?.join(' ')}
+                    autoComplete={autocompleteAttributes}
                   >
                     <option value="">Please choose</option>
                     {filteredOptions.map(({ label, value }) => (

@@ -20,6 +20,7 @@ type Props = {
   onChange: FormElementValueChangeHandler<MiscTypes.ABNRecord>
   displayValidationMessage: boolean
   validationMessage: string | undefined
+  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementABN({
@@ -31,6 +32,7 @@ function FormElementABN({
   displayValidationMessage,
   isDirty,
   setIsDirty,
+  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
@@ -246,7 +248,7 @@ function FormElementABN({
               }}
               onFocus={setIsFocused}
               aria-describedby={ariaDescribedby}
-              autoComplete={element.autocompleteAttributes?.join(' ')}
+              autoComplete={autocompleteAttributes}
             />
           </div>
           {value && (
