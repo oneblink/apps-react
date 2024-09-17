@@ -99,6 +99,7 @@ function FormElementSelect({
                     disabled={element.readOnly}
                     onBlur={setIsDirty}
                     aria-describedby={ariaDescribedby}
+                    autoComplete={element.autocompleteAttributes?.join(' ')}
                   >
                     <option value="">Please choose</option>
                     {filteredOptions.map(({ label, value }) => (

@@ -137,6 +137,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             isDirty={isDirty}
             setIsDirty={setIsDirty}
             aria-describedby={ariaDescribedby}
+            autoComplete={element.autocompleteAttributes?.join(' ')}
           />
         </FormElementOptions>
       </FormElementLabelContainer>

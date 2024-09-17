@@ -114,7 +114,7 @@ function FormElementDate({
               disabled={element.readOnly}
               className="input ob-input cypress-date-control"
               onBlur={onBlur}
-              autoComplete="off"
+              autoComplete={element.autocompleteAttributes?.join(' ')}
               aria-describedby={ariaDescribedby}
             />
 

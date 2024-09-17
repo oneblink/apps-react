@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - support for WCAG 1.3.1 - Info and Relationships
+- `autocompleteAttributes` to input, options and date based elements
 
 ### Changed
 

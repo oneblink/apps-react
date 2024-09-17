@@ -60,6 +60,7 @@ function FormElementText({
               disabled={element.readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
+              autoComplete={element.autocompleteAttributes?.join(' ')}
             />
           </div>
           {!!element.readOnly && !!value && (

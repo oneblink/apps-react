@@ -99,6 +99,7 @@ function FormElementTime({
               disabled={element.readOnly}
               className="input ob-input"
               aria-describedby={ariaDescribedby}
+              autoComplete={element.autocompleteAttributes?.join(' ')}
             />
             <span className="ob-input-icon icon is-small is-right">
               <MaterialIcon className="is-size-5">schedule</MaterialIcon>

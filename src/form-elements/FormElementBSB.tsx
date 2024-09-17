@@ -166,6 +166,7 @@ function FormElementBSB({
                 setIsDirty()
               }}
               aria-describedby={ariaDescribedby}
+              autoComplete={element.autocompleteAttributes?.join(' ')}
             />
           </div>
           {bsbRecord && (

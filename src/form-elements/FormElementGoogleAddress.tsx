@@ -246,6 +246,7 @@ function FormElementGoogleAddress({
               <img src="https://developers.google.com/static/maps/documentation/images/google_on_white.png" />
             </a>
           }
+          autoComplete={element.autocompleteAttributes?.join(' ')}
         />
       </FormElementLabelContainer>
 

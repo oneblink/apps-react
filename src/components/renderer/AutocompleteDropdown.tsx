@@ -37,6 +37,7 @@ type Props<T> = {
   ) => Promise<AutocompleteOption<T>[]>
   'aria-describedby'?: string
   branding?: React.ReactNode
+  autoComplete?: string
 } & IsDirtyProps
 
 function AutocompleteDropdown<T>({
@@ -58,6 +59,7 @@ function AutocompleteDropdown<T>({
   isDirty,
   setIsDirty,
   branding,
+  autoComplete,
   ...props
 }: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
@@ -280,7 +282,7 @@ function AutocompleteDropdown<T>({
               type="text"
               placeholder={placeholder}
               id={id}
-              autoComplete="off"
+              autoComplete={autoComplete ?? 'off'}
               className="cypress-autocomplete-control input ob-input"
               required={required}
               value={label}

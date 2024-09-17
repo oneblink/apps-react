@@ -133,6 +133,7 @@ function FormElementGeoscapeAddress({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          autoComplete={element.autocompleteAttributes?.join(' ')}
         />
       </FormElementLabelContainer>
 
