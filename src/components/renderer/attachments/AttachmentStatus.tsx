@@ -53,15 +53,12 @@ const AttachmentStatus = ({
     }
     if (isOffline) {
       return (
-        <Tooltip title="Upload will start when you connect to the internet">
+        <Tooltip
+          title="Upload will start when you connect to the internet"
+          role="alert"
+        >
           <div className="cypress-attachment-uploading">
-            <MaterialIcon
-              className="has-text-warning"
-              role="alert"
-              aria-label="offline"
-            >
-              wifi_off
-            </MaterialIcon>
+            <MaterialIcon className="has-text-warning">wifi_off</MaterialIcon>
           </div>
         </Tooltip>
       )
