@@ -139,24 +139,23 @@ export default function usePages({
   )
 
   React.useEffect(() => {
-    console.log('currentPageId has changed', currentPageId)
-    // if (isStepsHeaderActive) {
-    //   scrollingService.disableScrolling()
+    if (isStepsHeaderActive) {
+      scrollingService.disableScrolling()
 
-    const activeStepElement = document.getElementById(
-      `steps-navigation-step-${currentPageId}`,
-    )
+      const activeStepElement = document.getElementById(
+        `steps-navigation-step-${currentPageId}`,
+      )
 
-    if (activeStepElement) {
-      activeStepElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
+      if (activeStepElement) {
+        activeStepElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+      }
+    } else {
+      // Re-enable scroll on body when inactive
+      scrollingService.enableScrolling()
     }
-    // } else {
-    //   // Re-enable scroll on body when inactive
-    //   scrollingService.enableScrolling()
-    // }
   }, [currentPageId, isStepsHeaderActive])
 
   const firstVisiblePage = visiblePages[0]
