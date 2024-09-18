@@ -97,7 +97,10 @@ function PaymentForm({
     }
     case 'ERROR': {
       return (
-        <section className="cypress-payment-form-loading-error-message">
+        <section
+          className="cypress-payment-form-loading-error-message"
+          role="alert"
+        >
           <div className="ob-payment-form__error-icon-container has-text-centered has-margin-bottom-8">
             <MaterialIcon className="ob-payment-form__error-icon has-text-danger icon-x-large">
               error

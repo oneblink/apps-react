@@ -273,7 +273,9 @@ function LocationIsOfflineFigureContent({
   return (
     <figure className="ob-figure">
       <div className="figure-content has-text-centered">
-        <h4 className="title is-4">You are currently offline</h4>
+        <h4 className="title is-4" role="alert">
+          You are currently offline
+        </h4>
         {children}
       </div>
     </figure>
