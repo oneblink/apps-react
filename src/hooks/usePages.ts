@@ -76,7 +76,7 @@ export default function usePages({
         if (scrollToTopOfPageHTMLElement) {
           window.requestAnimationFrame(() => {
             scrollToTopOfPageHTMLElement.scrollIntoView({
-              block: 'start',
+              block: 'end',
               behavior: 'smooth',
             })
           })
@@ -139,23 +139,24 @@ export default function usePages({
   )
 
   React.useEffect(() => {
-    if (isStepsHeaderActive) {
-      scrollingService.disableScrolling()
+    console.log('currentPageId has changed', currentPageId)
+    // if (isStepsHeaderActive) {
+    //   scrollingService.disableScrolling()
 
-      const activeStepElement = document.getElementById(
-        `steps-navigation-step-${currentPageId}`,
-      )
+    const activeStepElement = document.getElementById(
+      `steps-navigation-step-${currentPageId}`,
+    )
 
-      if (activeStepElement) {
-        activeStepElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        })
-      }
-    } else {
-      // Re-enable scroll on body when inactive
-      scrollingService.enableScrolling()
+    if (activeStepElement) {
+      activeStepElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
     }
+    // } else {
+    //   // Re-enable scroll on body when inactive
+    //   scrollingService.enableScrolling()
+    // }
   }, [currentPageId, isStepsHeaderActive])
 
   const firstVisiblePage = visiblePages[0]
