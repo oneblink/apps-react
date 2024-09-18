@@ -10,7 +10,7 @@ type Props = {
 
 function OnLoading({ className, small, large, tiny }: Props) {
   return (
-    <on-loading className={className}>
+    <on-loading className={className} role="progressbar">
       <div
         className={clsx('ob-loading on-loading', {
           small: small,

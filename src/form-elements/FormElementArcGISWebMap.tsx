@@ -33,7 +33,7 @@ function FormElementArcGISWebMap({ id, element }: Props) {
         {isOffline ? (
           <figure className="ob-figure">
             <div className="figure-content has-text-centered">
-              <h4 className="title is-4">
+              <h4 className="title is-4" role="alert">
                 This Web Map is not available as you are currently offline
               </h4>
             </div>

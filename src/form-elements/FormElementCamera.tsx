@@ -438,7 +438,7 @@ const DisplayImage = React.memo(function DisplayImage({
 }) {
   if (uploadErrorMessage) {
     return (
-      <div className="figure-content">
+      <div className="figure-content" role="alert">
         <h3 className="title is-3">Upload Failed</h3>
         <p>
           Your photo failed to upload, please use the <b>Retry</b> or{' '}
@@ -450,7 +450,7 @@ const DisplayImage = React.memo(function DisplayImage({
 
   if (loadImageUrlError) {
     return (
-      <div className="figure-content">
+      <div className="figure-content" role="alert">
         <h3 className="title is-3">Preview Failed</h3>
         <p>{loadImageUrlError.message}</p>
       </div>
@@ -498,7 +498,7 @@ const DisplayImage = React.memo(function DisplayImage({
   }
 
   return (
-    <div className="figure-content">
+    <div className="figure-content" role="alert">
       <ImagePreviewUnavailable />
     </div>
   )

@@ -224,9 +224,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
   return (
     <>
       <figure className="ob-figure">
-        <div className="figure-content">
-          <DisplayImage {...result} alt={`${element.label}: Signature`} />
-        </div>
+        <DisplayImage {...result} alt={`${element.label}: Signature`} />
       </figure>
 
       <div className="buttons ob-buttons">
@@ -269,32 +267,36 @@ const DisplayImage = React.memo(function DisplayImage({
 }) {
   if (uploadErrorMessage) {
     return (
-      <>
+      <div className="figure-content" role="alert">
         <h3 className="title is-3">Upload Failed</h3>
         <p>
           Your signature failed to upload, please use the <b>Retry</b> or{' '}
           <b>Clear</b> buttons below.
         </p>
-      </>
+      </div>
     )
   }
 
   if (loadImageUrlError) {
     return (
-      <>
+      <div className="figure-content" role="alert">
         <h3 className="title is-3">Preview Failed</h3>
         <p>{loadImageUrlError.message}</p>
-      </>
+      </div>
     )
   }
 
   if (isLoadingImageUrl) {
-    return <OnLoading small className="cypress-signature-loading-image" />
+    return (
+      <div className="figure-content">
+        <OnLoading small className="cypress-signature-loading-image" />
+      </div>
+    )
   }
 
   if (imageUrl) {
     return (
-      <>
+      <div className="figure-content">
         <span className="ob-figure__status">
           <AttachmentStatus
             isLoadingImageUrl={isLoadingImageUrl}
@@ -310,9 +312,13 @@ const DisplayImage = React.memo(function DisplayImage({
           alt={alt}
         />
         <ProgressBar progress={progress} isShowing={isUploading} />
-      </>
+      </div>
     )
   }
 
-  return <ImagePreviewUnavailable />
+  return (
+    <div className="figure-content" role="alert">
+      <ImagePreviewUnavailable />
+    </div>
+  )
 })

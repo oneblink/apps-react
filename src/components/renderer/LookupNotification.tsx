@@ -368,7 +368,10 @@ function LookupNotificationComponent({
           title="Error Loading Configuration"
           onTryAgain={onTryAgain}
         >
-          <span className="cypress-lookup-notification-loading-error">
+          <span
+            className="cypress-lookup-notification-loading-error"
+            role="alert"
+          >
             {loadError.message}
           </span>
         </ErrorMessage>
@@ -401,7 +404,7 @@ function LookupNotificationComponent({
                     <MaterialIcon className="fade-in has-text-warning">
                       wifi_off
                     </MaterialIcon>
-                    <p className="fade-in">
+                    <p className="fade-in" role="alert">
                       It looks like you&apos;re offline. Please try again when
                       connectivity is restored.
                     </p>
@@ -412,6 +415,7 @@ function LookupNotificationComponent({
                       error_outline
                     </MaterialIcon>
                     <p
+                      role="alert"
                       className="fade-in"
                       // eslint-disable-next-line react/no-danger
                       dangerouslySetInnerHTML={{
@@ -445,15 +449,21 @@ function LookupNotificationComponent({
           )}
 
           {hasLookupSucceeded && (
-            <MaterialIcon className="has-text-success fade-in">
-              check_circle_outline
-            </MaterialIcon>
+            <>
+              <MaterialIcon
+                className="has-text-success fade-in"
+                role="status"
+                aria-label="lookup successful"
+              >
+                check_circle_outline
+              </MaterialIcon>
+            </>
           )}
 
           {!hasLookupSucceeded && !hasLookupFailed && <OnLoading small />}
 
           {isCancellable && !hasLookupSucceeded && !hasLookupFailed && (
-            <div className="has-margin-top-5 fade-in">
+            <div className="has-margin-top-5 fade-in" role="alert">
               <p>Taking longer than expected?</p>
               <button
                 type="button"

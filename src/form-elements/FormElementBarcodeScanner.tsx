@@ -364,7 +364,7 @@ function BarcodeScannerError({
   message: string
 }) {
   return (
-    <div className="figure-content has-text-centered">
+    <div className="figure-content has-text-centered" role="alert">
       <div>
         <h4 className="title is-4">{title}</h4>
         <p className="has-margin-bottom-6">{message}</p>

@@ -35,7 +35,7 @@ const AttachmentStatus = ({
 
   if (uploadError) {
     return (
-      <Tooltip title={uploadError.message}>
+      <Tooltip title={uploadError.message} role="alert">
         <span className="attachment__status-wrapper">
           <MaterialIcon className="has-text-danger">error</MaterialIcon>
         </span>
@@ -55,14 +55,20 @@ const AttachmentStatus = ({
       return (
         <Tooltip title="Upload will start when you connect to the internet">
           <div className="cypress-attachment-uploading">
-            <MaterialIcon className="has-text-warning">wifi_off</MaterialIcon>
+            <MaterialIcon
+              className="has-text-warning"
+              role="alert"
+              aria-label="offline"
+            >
+              wifi_off
+            </MaterialIcon>
           </div>
         </Tooltip>
       )
     }
     return (
       <Tooltip title="Uploading">
-        <div className="cypress-attachment-uploading">
+        <div className="cypress-attachment-uploading" role="progressbar">
           {Math.round(progress || 0)}%
         </div>
       </Tooltip>
@@ -72,7 +78,13 @@ const AttachmentStatus = ({
   return (
     <Tooltip title={tooltip}>
       <span className="attachment__status-wrapper">
-        <MaterialIcon className="has-text-success">check_circle</MaterialIcon>
+        <MaterialIcon
+          className="has-text-success"
+          role="status"
+          aria-label="upload successful"
+        >
+          check_circle
+        </MaterialIcon>
       </span>
     </Tooltip>
   )
