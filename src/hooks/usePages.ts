@@ -76,7 +76,7 @@ export default function usePages({
         if (scrollToTopOfPageHTMLElement) {
           window.requestAnimationFrame(() => {
             scrollToTopOfPageHTMLElement.scrollIntoView({
-              block: 'end',
+              block: 'start',
               behavior: 'smooth',
             })
           })
