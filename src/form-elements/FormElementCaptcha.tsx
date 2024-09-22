@@ -1,8 +1,9 @@
 import * as React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
-
-import useCaptchaSiteKey from '../hooks/useCaptchaSiteKey'
 import { FormTypes } from '@oneblink/types'
+
+import useCaptcha from '../hooks/useCaptcha'
+import useReCAPTCHAProps from '../hooks/useReCAPTCHAProps'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
@@ -15,37 +16,43 @@ type Props = {
 
 function FormElementCaptcha({
   element,
-  onChange,
+  onChange: onCaptchChange,
   validationMessage,
   displayValidationMessage,
-  value,
 }: Props) {
-  const captchaSiteKey = useCaptchaSiteKey()
-  const ref = React.useRef<ReCAPTCHA | null>(null)
+  const { captchaSiteKey, captchaType, addCaptchaRef } = useCaptcha()
+
+  const captchaRef = React.useRef<ReCAPTCHA>(null)
 
   React.useEffect(() => {
-    if (ref.current) {
-      const refValue = ref.current.getValue()
-      if (refValue && !value) {
-        ref.current.reset()
-      }
+    if (captchaRef) {
+      addCaptchaRef(captchaRef)
     }
-  }, [value])
+  }, [captchaRef, addCaptchaRef])
+
+  const handleChange = React.useCallback(
+    (val: string | null) => {
+      onCaptchChange(element, {
+        value: val || undefined,
+      })
+    },
+    [element, onCaptchChange],
+  )
+
+  const recaptchaProps = useReCAPTCHAProps({
+    captchaSiteKey,
+    captchaRef,
+    captchaType,
+    onCaptchaChange: handleChange,
+  })
 
   return (
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
         <ReCAPTCHA
-          sitekey={captchaSiteKey || ''}
-          onChange={(val) => {
-            onChange(element, {
-              value: val || undefined,
-            })
-          }}
+          {...recaptchaProps}
           className="ob-input cypress-captcha-control"
-          ref={ref}
         />
-
         {displayValidationMessage && !!validationMessage && (
           <div role="alert" className="has-margin-top-8">
             <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">

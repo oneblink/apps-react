@@ -88,3 +88,7 @@ export type IsDirtyProps = {
   isDirty: boolean
   setIsDirty: () => void
 }
+
+//TODO get from types
+// export type captchaType = IntegrationTypes.IntegrationRecaptcha['configuration']['domains'][number]['type']
+export type CaptchaType = 'INVISIBLE' | 'CHECKBOXES'

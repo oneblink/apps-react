@@ -30,12 +30,13 @@ import { FormElementOptionsContextProvider } from './hooks/useDynamicOptionsLoad
 import { FormElementLookupsContextProvider } from './hooks/useFormElementLookups'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenticationGuid'
-import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
+import { CaptchaContext } from './hooks/useCaptcha'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
 import {
+  CaptchaType,
   ExecutedLookups,
   FormElementsValidation,
   NestedFormElementValueChangeHandler,
@@ -50,6 +51,7 @@ import { TaskContext } from './hooks/useTaskContext'
 import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -139,6 +141,11 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * for the structure of the argument and a sample function to be used.
    */
   onUploadAttachment?: typeof attachmentsService.uploadAttachment
+  /**
+   * Determines whether to use checkboxes or invisible recaptcha v2 for captcha
+   * elements
+   */
+  captchaType?: CaptchaType
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -186,9 +193,13 @@ function OneBlinkFormBase({
   taskGroup,
   taskGroupInstance,
   onUploadAttachment,
+  captchaType,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey, userProfile } = useAuth()
+  const [captchaRefs, setCaptchaRefs] = React.useState<
+    Array<React.RefObject<ReCAPTCHA>>
+  >([])
 
   const theme = React.useMemo(
     () =>
@@ -371,6 +382,11 @@ function OneBlinkFormBase({
 
   const { validate } = useFormValidation(pages)
 
+  const recaptchaType = React.useMemo(
+    () => captchaType ?? 'CHECKBOXES',
+    [captchaType],
+  )
+
   const formElementsValidation = React.useMemo<
     FormElementsValidation | undefined
   >(
@@ -380,6 +396,7 @@ function OneBlinkFormBase({
             submission,
             formElementsConditionallyShown,
             executedLookups ?? {},
+            recaptchaType,
           )
         : undefined,
     [
@@ -388,6 +405,7 @@ function OneBlinkFormBase({
       submission,
       validate,
       executedLookups,
+      recaptchaType,
     ],
   )
 
@@ -532,21 +550,33 @@ function OneBlinkFormBase({
     [definition],
   )
 
+  const addCaptchaRef = React.useCallback(
+    (recaptchaRef: React.RefObject<ReCAPTCHA>) => {
+      setCaptchaRefs((current) => [...current, recaptchaRef])
+    },
+    [],
+  )
+
   const resetRecaptchas = React.useCallback(() => {
+    // unset the submission model value for each captcha element
     const updatedModel = { ...submission }
     formElementsService.forEachFormElement(definition.elements, (element) => {
       if (element.type === 'captcha') {
         updatedModel[element.name] = undefined
       }
     })
+    // reset each captcha
+    captchaRefs.forEach((ref) => {
+      ref.current?.reset()
+    })
     setHasAttemptedSubmit(false)
     setFormSubmission((current) => {
       return { ...current, submission: updatedModel }
     })
-  }, [definition.elements, setFormSubmission, submission])
+  }, [definition.elements, setFormSubmission, submission, captchaRefs])
 
   const handleSubmit = React.useCallback(
-    (
+    async (
       event:
         | React.FormEvent<HTMLFormElement>
         | React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -581,6 +611,35 @@ function OneBlinkFormBase({
       ) {
         return
       }
+
+      if (captchaType === 'INVISIBLE') {
+        if (captchaRefs.length) {
+          const tokenResults = await Promise.allSettled(
+            captchaRefs.map((ref) => ref.current?.executeAsync()),
+          )
+
+          const captchaTokens: string[] = []
+
+          for (const result of tokenResults) {
+            if (result.status === 'rejected' || !result.value) {
+              console.log('Captcha token failure')
+              bulmaToast.toast({
+                message: 'Failed to get a captcha token',
+                type: 'is-danger',
+                extraClasses: 'ob-toast cypress-failed-captcha-token-creation',
+                duration: 4000,
+                pauseOnHover: true,
+                closeOnClick: true,
+              })
+              return
+            }
+            captchaTokens.push(result.value)
+          }
+
+          submissionData.captchaTokens = captchaTokens
+        }
+      }
+
       // check if attachments exist
       const newSubmission = checkIfAttachmentsExist(
         definition,
@@ -638,6 +697,7 @@ function OneBlinkFormBase({
       formElementsValidation,
       checkBsbsCanBeSubmitted,
       checkAttachmentsCanBeSubmitted,
+      captchaType,
       definition,
       attachmentRetentionInDays,
       isOffline,
@@ -647,6 +707,7 @@ function OneBlinkFormBase({
       userProfile,
       onSubmit,
       resetRecaptchas,
+      captchaRefs,
       setFormSubmission,
     ],
   )
@@ -994,8 +1055,13 @@ function OneBlinkFormBase({
                           <AbnLookupAuthenticationGuidContext.Provider
                             value={abnLookupAuthenticationGuid}
                           >
-                            <CaptchaSiteKeyContext.Provider
-                              value={captchaSiteKey}
+                            <CaptchaContext.Provider
+                              value={{
+                                captchaSiteKey,
+                                captchaType: recaptchaType,
+                                captchaRefs,
+                                addCaptchaRef,
+                              }}
                             >
                               <AttachmentBlobsProvider>
                                 <FormIsReadOnlyContext.Provider
@@ -1040,7 +1106,7 @@ function OneBlinkFormBase({
                                   </TaskContext.Provider>
                                 </FormIsReadOnlyContext.Provider>
                               </AttachmentBlobsProvider>
-                            </CaptchaSiteKeyContext.Provider>
+                            </CaptchaContext.Provider>
                           </AbnLookupAuthenticationGuidContext.Provider>
                         </GoogleMapsApiKeyContext.Provider>
                       </InjectPagesContext.Provider>

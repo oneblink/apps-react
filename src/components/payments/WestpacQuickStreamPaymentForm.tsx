@@ -8,10 +8,13 @@ import { SubmissionTypes, SubmissionEventTypes } from '@oneblink/types'
 import clsx from 'clsx'
 import React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
+import * as bulmaToast from 'bulma-toast'
 import OnLoading from '../renderer/OnLoading'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import Modal from '../renderer/Modal'
 import MaterialIcon from '../MaterialIcon'
+import useReCAPTCHAProps from '../../hooks/useReCAPTCHAProps'
+import { CaptchaType } from '../../typedoc'
 
 interface TrustedFrame {
   submitForm(
@@ -62,6 +65,7 @@ function WestpacQuickStreamPaymentForm({
   publishableApiKey,
   isTestMode,
   captchaSiteKey,
+  captchaType,
   onCompleted,
   onCancelled,
   appImageUrl,
@@ -74,6 +78,7 @@ function WestpacQuickStreamPaymentForm({
   publishableApiKey: string
   isTestMode: boolean
   captchaSiteKey: string
+  captchaType?: CaptchaType
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
     paymentReceiptUrl: string
@@ -101,6 +106,8 @@ function WestpacQuickStreamPaymentForm({
     captchaToken: null,
     displayCaptchaRequired: false,
   })
+
+  const captchaRef = React.useRef<ReCAPTCHA>(null)
 
   const clearCompleteTransactionError = React.useCallback(() => {
     setCompleteTransactionState((currentState) => ({
@@ -217,15 +224,63 @@ function WestpacQuickStreamPaymentForm({
     }
   }, [isTestMode, publishableApiKey, supplierBusinessCode])
 
+  const recaptchaType = React.useMemo(
+    () => captchaType ?? 'CHECKBOXES',
+    [captchaType],
+  )
+
+  const hanedleCaptchaChange = React.useCallback((newValue: string | null) => {
+    setCompleteTransactionState((currentState) => ({
+      ...currentState,
+      captchaToken: newValue,
+      displayCaptchaRequired: newValue === null,
+    }))
+  }, [])
+
+  const recaptchaProps = useReCAPTCHAProps({
+    captchaSiteKey,
+    captchaRef,
+    onCaptchaChange: hanedleCaptchaChange,
+    captchaType: recaptchaType,
+  })
+
+  const getRecaptchaToken = React.useCallback(async () => {
+    switch (captchaType) {
+      case 'INVISIBLE': {
+        const token = await captchaRef.current?.executeAsync()
+        if (!token) {
+          console.log('Captcha token failure')
+          bulmaToast.toast({
+            message: 'Failed to get a captcha token',
+            type: 'is-danger',
+            extraClasses: 'ob-toast cypress-failed-captcha-token-creation',
+            duration: 4000,
+            pauseOnHover: true,
+            closeOnClick: true,
+          })
+        }
+        return {
+          recaptchaToken: token ?? null,
+          displayCaptchaRequired: false,
+        }
+      }
+      case 'CHECKBOXES':
+      default:
+        return { recaptchaToken: captchaToken, displayCaptchaRequired: true }
+    }
+  }, [captchaToken, captchaType])
+
   const handleSubmit = React.useCallback(async () => {
     if (!trustedFrame) {
       return
     }
 
-    if (!captchaToken) {
+    const { recaptchaToken, displayCaptchaRequired } = await getRecaptchaToken()
+
+    if (!recaptchaToken) {
       setCompleteTransactionState({
         captchaToken: null,
-        displayCaptchaRequired: true,
+        displayCaptchaRequired,
         isCompletingTransaction: false,
         completeTransactionError: null,
       })
@@ -255,7 +310,7 @@ function WestpacQuickStreamPaymentForm({
           formSubmissionResult,
           formSubmissionPaymentId,
           paymentSubmissionEvent,
-          captchaToken,
+          captchaToken: recaptchaToken,
         })
         .then(onCompleted)
         .catch((error) => {
@@ -267,12 +322,12 @@ function WestpacQuickStreamPaymentForm({
         })
     })
   }, [
-    captchaToken,
     formSubmissionPaymentId,
     formSubmissionResult,
     onCompleted,
     paymentSubmissionEvent,
     trustedFrame,
+    getRecaptchaToken,
   ])
 
   const [{ isCancellingTransaction, cancelError }, setCancelState] =
@@ -376,14 +431,7 @@ function WestpacQuickStreamPaymentForm({
             {!isLoading && !loadError && (
               <>
                 <ReCAPTCHA
-                  sitekey={captchaSiteKey}
-                  onChange={(newValue) => {
-                    setCompleteTransactionState((currentState) => ({
-                      ...currentState,
-                      captchaToken: newValue,
-                      displayCaptchaRequired: newValue === null,
-                    }))
-                  }}
+                  {...recaptchaProps}
                   className="ob-input cypress-captcha-control ob-payment-form__westpac-quickstream-captcha"
                 />
                 {displayCaptchaRequired && (
