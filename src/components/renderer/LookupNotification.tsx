@@ -368,10 +368,7 @@ function LookupNotificationComponent({
           title="Error Loading Configuration"
           onTryAgain={onTryAgain}
         >
-          <span
-            className="cypress-lookup-notification-loading-error"
-            role="alert"
-          >
+          <span className="cypress-lookup-notification-loading-error">
             {loadError.message}
           </span>
         </ErrorMessage>

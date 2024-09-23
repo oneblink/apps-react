@@ -28,6 +28,7 @@ function ErrorMessage({
   return (
     <>
       <LargeIconMessage
+        role="alert"
         IconComponent={IconComponent || ErrorIcon}
         title={title}
         variant="error"
