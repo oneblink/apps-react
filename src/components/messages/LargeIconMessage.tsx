@@ -24,6 +24,7 @@ export type Props = {
   children?: React.ReactNode
   action?: React.ReactNode
   className?: CommonProps['className']
+  role?: string
 }
 
 function LargeIconMessage({
@@ -35,13 +36,18 @@ function LargeIconMessage({
   children,
   action,
   className,
+  role,
 }: Props) {
   const theme = useTheme()
 
   const fontSize = React.useMemo(() => theme.spacing(16), [theme])
 
   return (
-    <Container maxWidth="sm" className={className || 'ob-large-icon-message'}>
+    <Container
+      maxWidth="sm"
+      className={className || 'ob-large-icon-message'}
+      role={role}
+    >
       <StyledIconContainer gutterTop={gutterTop}>
         <IconComponent color={variant} style={{ fontSize }} />
       </StyledIconContainer>
