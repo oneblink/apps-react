@@ -143,7 +143,7 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   onUploadAttachment?: typeof attachmentsService.uploadAttachment
   /**
    * Determines whether to use checkboxes or invisible recaptcha v2 for captcha
-   * elements
+   * elements. Defaults to "CHECKBOX"
    */
   captchaType?: CaptchaType
 }
@@ -197,9 +197,7 @@ function OneBlinkFormBase({
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey, userProfile } = useAuth()
-  const [captchaRefs, setCaptchaRefs] = React.useState<
-    Array<React.RefObject<ReCAPTCHA>>
-  >([])
+  const captchasRef = React.useRef<Array<ReCAPTCHA>>([])
 
   const theme = React.useMemo(
     () =>
@@ -383,7 +381,7 @@ function OneBlinkFormBase({
   const { validate } = useFormValidation(pages)
 
   const recaptchaType = React.useMemo(
-    () => captchaType ?? 'CHECKBOXES',
+    () => captchaType ?? 'CHECKBOX',
     [captchaType],
   )
 
@@ -550,11 +548,23 @@ function OneBlinkFormBase({
     [definition],
   )
 
-  const addCaptchaRef = React.useCallback(
-    (recaptchaRef: React.RefObject<ReCAPTCHA>) => {
-      setCaptchaRefs((current) => [...current, recaptchaRef])
-    },
-    [],
+  const addCaptchaRef = React.useCallback((recaptcha: ReCAPTCHA) => {
+    captchasRef.current.push(recaptcha)
+    // this allows the FormElementCaptcha element to unregister any captchas
+    return () => {
+      captchasRef.current = captchasRef.current.filter(
+        (recaptchaInstance) => recaptchaInstance === recaptcha,
+      )
+    }
+  }, [])
+
+  const captchaContextValue = React.useMemo(
+    () => ({
+      captchaSiteKey,
+      captchaType: recaptchaType,
+      addCaptchaRef,
+    }),
+    [addCaptchaRef, captchaSiteKey, recaptchaType],
   )
 
   const resetRecaptchas = React.useCallback(() => {
@@ -566,14 +576,14 @@ function OneBlinkFormBase({
       }
     })
     // reset each captcha
-    captchaRefs.forEach((ref) => {
-      ref.current?.reset()
+    captchasRef.current.forEach((captcha) => {
+      captcha.reset()
     })
     setHasAttemptedSubmit(false)
     setFormSubmission((current) => {
       return { ...current, submission: updatedModel }
     })
-  }, [definition.elements, setFormSubmission, submission, captchaRefs])
+  }, [definition.elements, setFormSubmission, submission])
 
   const handleSubmit = React.useCallback(
     async (
@@ -613,9 +623,9 @@ function OneBlinkFormBase({
       }
 
       if (captchaType === 'INVISIBLE') {
-        if (captchaRefs.length) {
+        if (captchasRef.current.length) {
           const tokenResults = await Promise.allSettled(
-            captchaRefs.map((ref) => ref.current?.executeAsync()),
+            captchasRef.current.map((captcha) => captcha.executeAsync()),
           )
 
           const captchaTokens: string[] = []
@@ -707,7 +717,6 @@ function OneBlinkFormBase({
       userProfile,
       onSubmit,
       resetRecaptchas,
-      captchaRefs,
       setFormSubmission,
     ],
   )
@@ -1056,12 +1065,7 @@ function OneBlinkFormBase({
                             value={abnLookupAuthenticationGuid}
                           >
                             <CaptchaContext.Provider
-                              value={{
-                                captchaSiteKey,
-                                captchaType: recaptchaType,
-                                captchaRefs,
-                                addCaptchaRef,
-                              }}
+                              value={captchaContextValue}
                             >
                               <AttachmentBlobsProvider>
                                 <FormIsReadOnlyContext.Provider

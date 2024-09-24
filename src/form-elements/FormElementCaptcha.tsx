@@ -25,8 +25,9 @@ function FormElementCaptcha({
   const captchaRef = React.useRef<ReCAPTCHA>(null)
 
   React.useEffect(() => {
-    if (captchaRef) {
-      addCaptchaRef(captchaRef)
+    if (captchaRef.current) {
+      // addCaptchaRef returns a function to remove the captcha which will fire when the component unmounts
+      return addCaptchaRef(captchaRef.current)
     }
   }, [captchaRef, addCaptchaRef])
 

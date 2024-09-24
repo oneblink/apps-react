@@ -225,7 +225,7 @@ function WestpacQuickStreamPaymentForm({
   }, [isTestMode, publishableApiKey, supplierBusinessCode])
 
   const recaptchaType = React.useMemo(
-    () => captchaType ?? 'CHECKBOXES',
+    () => captchaType ?? 'CHECKBOX',
     [captchaType],
   )
 
@@ -264,7 +264,7 @@ function WestpacQuickStreamPaymentForm({
           displayCaptchaRequired: false,
         }
       }
-      case 'CHECKBOXES':
+      case 'CHECKBOX':
       default:
         return { recaptchaToken: captchaToken, displayCaptchaRequired: true }
     }

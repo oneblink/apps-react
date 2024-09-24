@@ -91,4 +91,4 @@ export type IsDirtyProps = {
 
 //TODO get from types
 // export type captchaType = IntegrationTypes.IntegrationRecaptcha['configuration']['domains'][number]['type']
-export type CaptchaType = 'INVISIBLE' | 'CHECKBOXES'
+export type CaptchaType = 'INVISIBLE' | 'CHECKBOX'

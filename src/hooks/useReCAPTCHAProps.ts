@@ -26,7 +26,7 @@ export default function useReCAPTCHAProps({
           size: 'invisible',
           badge: 'inline',
         }
-      case 'CHECKBOXES':
+      case 'CHECKBOX':
       default: {
         return {
           ...baseProps,

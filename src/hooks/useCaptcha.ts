@@ -1,17 +1,15 @@
-import { useContext, createContext, RefObject } from 'react'
+import { useContext, createContext } from 'react'
 import { ReCAPTCHA } from 'react-google-recaptcha'
 import { CaptchaType } from '../types/form'
 
 export const CaptchaContext = createContext<{
   captchaSiteKey: string | undefined
   captchaType: CaptchaType
-  captchaRefs: Array<RefObject<ReCAPTCHA>>
-  addCaptchaRef: (ref: RefObject<ReCAPTCHA>) => void
+  addCaptchaRef: (captcha: ReCAPTCHA) => () => void
 }>({
   captchaSiteKey: undefined,
-  captchaType: 'CHECKBOXES',
-  captchaRefs: [],
-  addCaptchaRef: () => {},
+  captchaType: 'CHECKBOX',
+  addCaptchaRef: () => () => {},
 })
 
 export default function useCaptcha() {

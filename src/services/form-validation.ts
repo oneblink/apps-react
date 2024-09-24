@@ -336,7 +336,7 @@ export function generateValidationSchema(
           switch (captchaType) {
             case 'INVISIBLE':
               return
-            case 'CHECKBOXES':
+            case 'CHECKBOX':
             default:
               return {
                 presence: presence(
