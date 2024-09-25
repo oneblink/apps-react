@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Prohibited user input directly through text field on the Date element
+
 ### Added
 
 - support for invisible ReCAPTCHA

@@ -43,7 +43,7 @@ function FormElementDate({
   const flatpickrOptions = React.useMemo(() => {
     const opts: FlatpickrOptions = {
       dateFormat: localisationService.getFlatpickrFormats().shortDate,
-      allowInput: true,
+      allowInput: false,
       minDate: parseDateValue({
         dateOnly: false,
         daysOffset: fromDaysOffset,
