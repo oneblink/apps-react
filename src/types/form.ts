@@ -1,4 +1,4 @@
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes, IntegrationTypes } from '@oneblink/types'
 
 export {
   FormElementConditionallyShownElement,
@@ -88,3 +88,7 @@ export type IsDirtyProps = {
   isDirty: boolean
   setIsDirty: () => void
 }
+
+export type CaptchaType = NonNullable<
+  IntegrationTypes.IntegrationRecaptcha['configuration']['domains'][number]['type']
+>
