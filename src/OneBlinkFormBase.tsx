@@ -276,6 +276,8 @@ function OneBlinkFormBase({
 
   const history = useHistory()
 
+  const [isPreparingToSubmit, setIsPreparingToSubmit] =
+    React.useState<boolean>(false)
   const [
     { isDirty, isNavigationAllowed, hasConfirmedNavigation, goToLocation },
     setUnsavedChangesState,
@@ -553,7 +555,7 @@ function OneBlinkFormBase({
     // this allows the FormElementCaptcha element to unregister any captchas
     return () => {
       captchasRef.current = captchasRef.current.filter(
-        (recaptchaInstance) => recaptchaInstance === recaptcha,
+        (recaptchaInstance) => recaptchaInstance !== recaptcha,
       )
     }
   }, [])
@@ -585,17 +587,10 @@ function OneBlinkFormBase({
     })
   }, [definition.elements, setFormSubmission, submission])
 
-  const handleSubmit = React.useCallback(
+  const prepareSubmission = React.useCallback(
     async (
-      event:
-        | React.FormEvent<HTMLFormElement>
-        | React.MouseEvent<HTMLButtonElement, MouseEvent>,
       continueWhilstAttachmentsAreUploading: boolean,
-    ) => {
-      event.preventDefault()
-      if (disabled || isReadOnly) return
-      setHasAttemptedSubmit(true)
-
+    ): Promise<ReturnType<typeof getCurrentSubmissionData> | undefined> => {
       const submissionData = getCurrentSubmissionData(false)
       if (!checkBsbAreValidating(submissionData.submission)) {
         return
@@ -678,6 +673,44 @@ function OneBlinkFormBase({
         setPromptOfflineSubmissionAttempt(true)
         return
       }
+      return submissionData
+    },
+    [
+      attachmentRetentionInDays,
+      captchaType,
+      checkAttachmentsCanBeSubmitted,
+      checkBsbAreValidating,
+      checkBsbsCanBeSubmitted,
+      definition,
+      formElementsValidation,
+      getCurrentSubmissionData,
+      isOffline,
+      isPendingQueueEnabled,
+      setFormSubmission,
+    ],
+  )
+
+  const handleSubmit = React.useCallback(
+    async (
+      event:
+        | React.FormEvent<HTMLFormElement>
+        | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      continueWhilstAttachmentsAreUploading: boolean,
+    ) => {
+      event.preventDefault()
+      if (disabled || isReadOnly) return
+      setHasAttemptedSubmit(true)
+
+      setIsPreparingToSubmit(true)
+
+      const submissionData = await prepareSubmission(
+        continueWhilstAttachmentsAreUploading,
+      )
+
+      if (!submissionData) {
+        setIsPreparingToSubmit(false)
+        return
+      }
 
       allowNavigation()
 
@@ -689,6 +722,7 @@ function OneBlinkFormBase({
         taskContext: taskContextValue,
         userProfile: userProfile ?? undefined,
       })
+      setIsPreparingToSubmit(false)
       onSubmit({
         definition: {
           ...definition,
@@ -702,22 +736,13 @@ function OneBlinkFormBase({
     [
       disabled,
       isReadOnly,
-      getCurrentSubmissionData,
-      checkBsbAreValidating,
-      formElementsValidation,
-      checkBsbsCanBeSubmitted,
-      checkAttachmentsCanBeSubmitted,
-      captchaType,
-      definition,
-      attachmentRetentionInDays,
-      isOffline,
-      isPendingQueueEnabled,
+      prepareSubmission,
       allowNavigation,
+      definition,
       taskContextValue,
       userProfile,
       onSubmit,
       resetRecaptchas,
-      setFormSubmission,
     ],
   )
 
@@ -1195,8 +1220,13 @@ function OneBlinkFormBase({
                       {isLastVisiblePage && (
                         <button
                           type="submit"
-                          className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
-                          disabled={isPreview || disabled}
+                          className={clsx(
+                            'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
+                            { 'is-loading': isPreparingToSubmit },
+                          )}
+                          disabled={
+                            isPreview || disabled || isPreparingToSubmit
+                          }
                         >
                           <CustomisableButtonInner
                             label={
