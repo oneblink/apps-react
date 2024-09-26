@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Tooltip `a` tags to be white in colour, and slightly grey when already visited
 - Prohibited user input directly through text field on the Date element
 
 ## [6.6.0] - 2024-09-25
