@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Tooltip `a` tags to be white in colour, and slightly grey when already visited
 - Evaluate predicates and disable form submission based on `enableSubmission` form property
 
 ## [6.7.0] - 2024-09-30

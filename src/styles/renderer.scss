@@ -24,6 +24,14 @@
 .ob-label__hint {
   margin-left: $size-8;
 }
+.ob-hint-tooltip {
+  a {
+    color: rgba(255, 255, 255, 1);
+  }
+  a:visited {
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
 
 .ob-form-container {
   position: relative;
