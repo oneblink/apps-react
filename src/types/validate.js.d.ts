@@ -1,5 +1,5 @@
 import 'validate.js'
-import { ExecutedLookups } from './form'
+import { CaptchaType, ExecutedLookups } from './form'
 
 declare module 'validate.js' {
   export interface ValidateOption {
@@ -7,6 +7,7 @@ declare module 'validate.js' {
       | import('@oneblink/sdk-core').conditionalLogicService.FormElementsConditionallyShown
       | undefined
     executedLookups: boolean | ExecutedLookups | ExecutedLookups[] | undefined
+    captchaType: CaptchaType
   }
 
   export interface ValidatorConstraintFn<

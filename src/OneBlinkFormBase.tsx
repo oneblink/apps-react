@@ -30,12 +30,13 @@ import { FormElementOptionsContextProvider } from './hooks/useDynamicOptionsLoad
 import { FormElementLookupsContextProvider } from './hooks/useFormElementLookups'
 import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenticationGuid'
-import { CaptchaSiteKeyContext } from './hooks/useCaptchaSiteKey'
+import { CaptchaContext } from './hooks/useCaptcha'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
 import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
 import {
+  CaptchaType,
   ExecutedLookups,
   FormElementsValidation,
   NestedFormElementValueChangeHandler,
@@ -50,6 +51,7 @@ import { TaskContext } from './hooks/useTaskContext'
 import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -139,6 +141,11 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * for the structure of the argument and a sample function to be used.
    */
   onUploadAttachment?: typeof attachmentsService.uploadAttachment
+  /**
+   * Determines whether to use checkboxes or invisible recaptcha v2 for captcha
+   * elements. Defaults to "CHECKBOX"
+   */
+  captchaType?: CaptchaType
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -186,9 +193,11 @@ function OneBlinkFormBase({
   taskGroup,
   taskGroupInstance,
   onUploadAttachment,
+  captchaType,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey, userProfile } = useAuth()
+  const captchasRef = React.useRef<Array<ReCAPTCHA>>([])
 
   const theme = React.useMemo(
     () =>
@@ -267,6 +276,8 @@ function OneBlinkFormBase({
 
   const history = useHistory()
 
+  const [isPreparingToSubmit, setIsPreparingToSubmit] =
+    React.useState<boolean>(false)
   const [
     { isDirty, isNavigationAllowed, hasConfirmedNavigation, goToLocation },
     setUnsavedChangesState,
@@ -358,8 +369,11 @@ function OneBlinkFormBase({
   //
   // #region Conditional Logic
 
-  const { formElementsConditionallyShown, conditionalLogicError } =
-    useConditionalLogic(definition, submission)
+  const {
+    formElementsConditionallyShown,
+    conditionalLogicError,
+    submissionConditionallyEnabled,
+  } = useConditionalLogic(definition, submission)
 
   // #endregion
   //
@@ -371,6 +385,11 @@ function OneBlinkFormBase({
 
   const { validate } = useFormValidation(pages)
 
+  const recaptchaType = React.useMemo(
+    () => captchaType ?? 'CHECKBOX',
+    [captchaType],
+  )
+
   const formElementsValidation = React.useMemo<
     FormElementsValidation | undefined
   >(
@@ -380,6 +399,7 @@ function OneBlinkFormBase({
             submission,
             formElementsConditionallyShown,
             executedLookups ?? {},
+            recaptchaType,
           )
         : undefined,
     [
@@ -388,6 +408,7 @@ function OneBlinkFormBase({
       submission,
       validate,
       executedLookups,
+      recaptchaType,
     ],
   )
 
@@ -532,30 +553,50 @@ function OneBlinkFormBase({
     [definition],
   )
 
+  const addCaptchaRef = React.useCallback((recaptcha: ReCAPTCHA) => {
+    captchasRef.current.push(recaptcha)
+    // this allows the FormElementCaptcha element to unregister any captchas
+    return () => {
+      captchasRef.current = captchasRef.current.filter(
+        (recaptchaInstance) => recaptchaInstance !== recaptcha,
+      )
+    }
+  }, [])
+
+  const captchaContextValue = React.useMemo(
+    () => ({
+      captchaSiteKey,
+      captchaType: recaptchaType,
+      addCaptchaRef,
+    }),
+    [addCaptchaRef, captchaSiteKey, recaptchaType],
+  )
+
   const resetRecaptchas = React.useCallback(() => {
+    // unset the submission model value for each captcha element
     const updatedModel = { ...submission }
     formElementsService.forEachFormElement(definition.elements, (element) => {
       if (element.type === 'captcha') {
         updatedModel[element.name] = undefined
       }
     })
+    // reset each captcha
+    if (captchaType === 'CHECKBOX') {
+      captchasRef.current.forEach((captcha) => {
+        captcha.reset()
+      })
+    }
+
     setHasAttemptedSubmit(false)
     setFormSubmission((current) => {
       return { ...current, submission: updatedModel }
     })
-  }, [definition.elements, setFormSubmission, submission])
+  }, [definition.elements, setFormSubmission, submission, captchaType])
 
-  const handleSubmit = React.useCallback(
-    (
-      event:
-        | React.FormEvent<HTMLFormElement>
-        | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  const prepareSubmission = React.useCallback(
+    async (
       continueWhilstAttachmentsAreUploading: boolean,
-    ) => {
-      event.preventDefault()
-      if (disabled || isReadOnly) return
-      setHasAttemptedSubmit(true)
-
+    ): Promise<ReturnType<typeof getCurrentSubmissionData> | undefined> => {
       const submissionData = getCurrentSubmissionData(false)
       if (!checkBsbAreValidating(submissionData.submission)) {
         return
@@ -581,6 +622,35 @@ function OneBlinkFormBase({
       ) {
         return
       }
+
+      if (captchaType === 'INVISIBLE') {
+        if (captchasRef.current.length) {
+          const tokenResults = await Promise.allSettled(
+            captchasRef.current.map((captcha) => captcha.executeAsync()),
+          )
+
+          const captchaTokens: string[] = []
+
+          for (const result of tokenResults) {
+            if (result.status === 'rejected' || !result.value) {
+              console.log('Captcha token failure')
+              bulmaToast.toast({
+                message: 'Failed to get a captcha token',
+                type: 'is-danger',
+                extraClasses: 'ob-toast cypress-failed-captcha-token-creation',
+                duration: 4000,
+                pauseOnHover: true,
+                closeOnClick: true,
+              })
+              return
+            }
+            captchaTokens.push(result.value)
+          }
+
+          submissionData.captchaTokens = captchaTokens
+        }
+      }
+
       // check if attachments exist
       const newSubmission = checkIfAttachmentsExist(
         definition,
@@ -609,6 +679,44 @@ function OneBlinkFormBase({
         setPromptOfflineSubmissionAttempt(true)
         return
       }
+      return submissionData
+    },
+    [
+      attachmentRetentionInDays,
+      captchaType,
+      checkAttachmentsCanBeSubmitted,
+      checkBsbAreValidating,
+      checkBsbsCanBeSubmitted,
+      definition,
+      formElementsValidation,
+      getCurrentSubmissionData,
+      isOffline,
+      isPendingQueueEnabled,
+      setFormSubmission,
+    ],
+  )
+
+  const handleSubmit = React.useCallback(
+    async (
+      event:
+        | React.FormEvent<HTMLFormElement>
+        | React.MouseEvent<HTMLButtonElement, MouseEvent>,
+      continueWhilstAttachmentsAreUploading: boolean,
+    ) => {
+      event.preventDefault()
+      if (disabled || isReadOnly) return
+      setHasAttemptedSubmit(true)
+
+      setIsPreparingToSubmit(true)
+
+      const submissionData = await prepareSubmission(
+        continueWhilstAttachmentsAreUploading,
+      )
+
+      if (!submissionData) {
+        setIsPreparingToSubmit(false)
+        return
+      }
 
       allowNavigation()
 
@@ -620,6 +728,7 @@ function OneBlinkFormBase({
         taskContext: taskContextValue,
         userProfile: userProfile ?? undefined,
       })
+      setIsPreparingToSubmit(false)
       onSubmit({
         definition: {
           ...definition,
@@ -633,21 +742,13 @@ function OneBlinkFormBase({
     [
       disabled,
       isReadOnly,
-      getCurrentSubmissionData,
-      checkBsbAreValidating,
-      formElementsValidation,
-      checkBsbsCanBeSubmitted,
-      checkAttachmentsCanBeSubmitted,
-      definition,
-      attachmentRetentionInDays,
-      isOffline,
-      isPendingQueueEnabled,
+      prepareSubmission,
       allowNavigation,
+      definition,
       taskContextValue,
       userProfile,
       onSubmit,
       resetRecaptchas,
-      setFormSubmission,
     ],
   )
 
@@ -994,8 +1095,8 @@ function OneBlinkFormBase({
                           <AbnLookupAuthenticationGuidContext.Provider
                             value={abnLookupAuthenticationGuid}
                           >
-                            <CaptchaSiteKeyContext.Provider
-                              value={captchaSiteKey}
+                            <CaptchaContext.Provider
+                              value={captchaContextValue}
                             >
                               <AttachmentBlobsProvider>
                                 <FormIsReadOnlyContext.Provider
@@ -1040,7 +1141,7 @@ function OneBlinkFormBase({
                                   </TaskContext.Provider>
                                 </FormIsReadOnlyContext.Provider>
                               </AttachmentBlobsProvider>
-                            </CaptchaSiteKeyContext.Provider>
+                            </CaptchaContext.Provider>
                           </AbnLookupAuthenticationGuidContext.Provider>
                         </GoogleMapsApiKeyContext.Provider>
                       </InjectPagesContext.Provider>
@@ -1125,8 +1226,16 @@ function OneBlinkFormBase({
                       {isLastVisiblePage && (
                         <button
                           type="submit"
-                          className="button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form"
-                          disabled={isPreview || disabled}
+                          className={clsx(
+                            'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
+                            { 'is-loading': isPreparingToSubmit },
+                          )}
+                          disabled={
+                            isPreview ||
+                            disabled ||
+                            isPreparingToSubmit ||
+                            !submissionConditionallyEnabled
+                          }
                         >
                           <CustomisableButtonInner
                             label={

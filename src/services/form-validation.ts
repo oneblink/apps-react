@@ -6,6 +6,7 @@ import { Value as FormElementComplianceValue } from '../form-elements/FormElemen
 import { parseDateValue } from './generate-default-data'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 import {
+  CaptchaType,
   ExecutedLookups,
   ExecutedLookupValue,
   FormElementConditionallyShown,
@@ -23,6 +24,7 @@ type NestedValidateJSSchema = {
   schema: ValidateJSSchema
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   executedLookups: ExecutedLookupValue
+  captchaType: CaptchaType
 }
 
 export const generateLookupValidationMessage = (
@@ -60,6 +62,7 @@ validate.validators.entries = function (
       schema: entrySchema,
       formElementConditionallyShown,
       executedLookups,
+      captchaType,
     },
   }: {
     setSchema: ValidateJSSchema
@@ -76,6 +79,7 @@ validate.validators.entries = function (
         ? formElementConditionallyShown.entries[index.toString()]
         : undefined,
       Array.isArray(executedLookups) ? executedLookups[index] : {},
+      captchaType,
     )
     if (entryValidation) {
       errorsByIndex[index] = entryValidation
@@ -102,6 +106,7 @@ validate.validators.nestedElements = function (
     schema,
     formElementConditionallyShown,
     executedLookups,
+    captchaType,
   }: NestedValidateJSSchema,
 ) {
   const errors = validateSubmission(
@@ -111,6 +116,7 @@ validate.validators.nestedElements = function (
       ? formElementConditionallyShown.formElements
       : undefined,
     typeof executedLookups !== 'boolean' ? executedLookups : {},
+    captchaType,
   )
   if (!errors) {
     return
@@ -304,7 +310,7 @@ export function generateValidationSchema(
       value,
       submission,
       propertyName,
-      { formElementsConditionallyShown, executedLookups },
+      { formElementsConditionallyShown, executedLookups, captchaType },
     ) => {
       // If the element is current hidden, we do not need to apply validation
       const formElementConditionallyShown =
@@ -327,11 +333,17 @@ export function generateValidationSchema(
           }
         }
         case 'captcha': {
-          return {
-            presence: presence(
-              { ...formElement, required: true },
-              'Please complete the CAPTCHA successfully',
-            ),
+          switch (captchaType) {
+            case 'INVISIBLE':
+              return
+            case 'CHECKBOX':
+            default:
+              return {
+                presence: presence(
+                  { ...formElement, required: true },
+                  'Please complete the CAPTCHA successfully',
+                ),
+              }
           }
         }
         case 'location': {
@@ -769,12 +781,14 @@ export function validateSubmission(
   submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
   executedLookups: ExecutedLookupValue,
+  captchaType: CaptchaType,
 ): FormElementsValidation | undefined {
   const errorsAsArray = validate(submission, schema, {
     format: 'grouped',
     fullMessages: false,
     formElementsConditionallyShown,
     executedLookups,
+    captchaType,
   })
   if (!errorsAsArray || validate.isEmpty(errorsAsArray)) {
     return

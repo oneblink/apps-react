@@ -5,7 +5,11 @@ import {
   validateSubmission,
   generateValidationSchema,
 } from '../services/form-validation'
-import { ExecutedLookups, FormElementsConditionallyShown } from '../types/form'
+import {
+  CaptchaType,
+  ExecutedLookups,
+  FormElementsConditionallyShown,
+} from '../types/form'
 
 function stripFormElementsWithoutName(
   formElements: FormTypes.FormElement[],
@@ -56,12 +60,14 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
       submission: SubmissionTypes.S3SubmissionData['submission'],
       formElementsConditionallyShown: FormElementsConditionallyShown,
       executedLookups: ExecutedLookups,
+      captchaType: CaptchaType,
     ) => {
       return validateSubmission(
         validationSchema,
         submission,
         formElementsConditionallyShown,
         executedLookups,
+        captchaType,
       )
     },
     [validationSchema],

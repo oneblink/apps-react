@@ -6,15 +6,18 @@ import useQuery from '../../hooks/useQuery'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
 import MaterialIcon from '../MaterialIcon'
+import { CaptchaType } from '../../types/form'
 
 function PaymentForm({
   captchaSiteKey,
+  captchaType,
   onCompleted,
   onCancelled,
   appImageUrl,
   title,
 }: {
   captchaSiteKey: string
+  captchaType?: CaptchaType
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
     paymentReceiptUrl: string
@@ -57,6 +60,7 @@ function PaymentForm({
                 publishableApiKey={publishableApiKey}
                 isTestMode={isTestMode}
                 captchaSiteKey={captchaSiteKey}
+                captchaType={captchaType}
                 onCompleted={onCompleted}
                 onCancelled={onCancelled}
                 appImageUrl={appImageUrl}
@@ -75,6 +79,7 @@ function PaymentForm({
     [
       appImageUrl,
       captchaSiteKey,
+      captchaType,
       onCancelled,
       onCompleted,
       query.formSubmissionPaymentId,
