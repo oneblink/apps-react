@@ -28,8 +28,24 @@ export default function useConditionalLogic(
       })
     }, [definition.elements, submission, errorCallback])
 
+  const submissionConditionallyEnabled = React.useMemo(() => {
+    if (!definition.enableSubmission) {
+      return true
+    }
+    const { requiresAllConditionalPredicates, conditionalPredicates } =
+      definition.enableSubmission
+    return conditionalLogicService.evaluateConditionalPredicates({
+      isConditional: true,
+      requiresAllConditionalPredicates,
+      conditionalPredicates,
+      formElements: definition.elements,
+      submission,
+    })
+  }, [definition.elements, definition.enableSubmission, submission])
+
   return {
     conditionalLogicError,
     formElementsConditionallyShown,
+    submissionConditionallyEnabled,
   }
 }

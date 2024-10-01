@@ -369,8 +369,11 @@ function OneBlinkFormBase({
   //
   // #region Conditional Logic
 
-  const { formElementsConditionallyShown, conditionalLogicError } =
-    useConditionalLogic(definition, submission)
+  const {
+    formElementsConditionallyShown,
+    conditionalLogicError,
+    submissionConditionallyEnabled,
+  } = useConditionalLogic(definition, submission)
 
   // #endregion
   //
@@ -1228,7 +1231,10 @@ function OneBlinkFormBase({
                             { 'is-loading': isPreparingToSubmit },
                           )}
                           disabled={
-                            isPreview || disabled || isPreparingToSubmit
+                            isPreview ||
+                            disabled ||
+                            isPreparingToSubmit ||
+                            !submissionConditionallyEnabled
                           }
                         >
                           <CustomisableButtonInner
