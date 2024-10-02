@@ -26,10 +26,21 @@
 }
 .ob-hint-tooltip {
   a {
-    color: rgba(255, 255, 255, 1);
+    color: #5496f3;
+  }
+  a:hover {
+    text-decoration: underline;
   }
   a:visited {
-    color: rgba(255, 255, 255, 0.6);
+    color: #b76bf5;
+  }
+}
+.MuiTooltip-popper {
+  .MuiTooltip-tooltip {
+    background-color: rgba(26, 26, 26, 0.92);
+  }
+  .MuiTooltip-arrow {
+    color: rgba(26, 26, 26, 0.92);
   }
 }
 
