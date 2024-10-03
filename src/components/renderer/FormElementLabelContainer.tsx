@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Tooltip } from '@mui/material'
+import Tooltip from './Tooltip'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
 import useReplaceableText from '../../hooks/useReplaceableText'

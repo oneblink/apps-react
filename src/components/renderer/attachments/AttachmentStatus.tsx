@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Tooltip } from '@mui/material'
+import Tooltip from '../Tooltip'
 import useIsOffline from '../../../hooks/useIsOffline'
 import MaterialIcon from '../../MaterialIcon'
 

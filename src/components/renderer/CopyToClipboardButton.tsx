@@ -1,4 +1,4 @@
-import { Tooltip } from '@mui/material'
+import Tooltip from './Tooltip'
 import * as React from 'react'
 
 import utilsService from '../../services/utils-service'
