@@ -1224,28 +1224,36 @@ function OneBlinkFormBase({
                         </button>
                       )}
                       {isLastVisiblePage && (
-                        <button
-                          type="submit"
-                          className={clsx(
-                            'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
-                            { 'is-loading': isPreparingToSubmit },
-                          )}
-                          disabled={
-                            isPreview ||
-                            disabled ||
-                            isPreparingToSubmit ||
-                            !submissionConditionallyEnabled
+                        <Tooltip
+                          title={
+                            submissionConditionallyEnabled
+                              ? ''
+                              : 'Submission disabled: Your inputs have not met the criteria for submission'
                           }
                         >
-                          <CustomisableButtonInner
-                            label={
-                              isInfoPage
-                                ? 'Done'
-                                : buttons?.submit?.label || 'Submit'
+                          <button
+                            type="submit"
+                            className={clsx(
+                              `button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form${submissionConditionallyEnabled ? '' : ' ob-button-submit-is-disabled'}`,
+                              { 'is-loading': isPreparingToSubmit },
+                            )}
+                            disabled={
+                              isPreview ||
+                              disabled ||
+                              isPreparingToSubmit ||
+                              !submissionConditionallyEnabled
                             }
-                            icon={buttons?.submit?.icon}
-                          />
-                        </button>
+                          >
+                            <CustomisableButtonInner
+                              label={
+                                isInfoPage
+                                  ? 'Done'
+                                  : buttons?.submit?.label || 'Submit'
+                              }
+                              icon={buttons?.submit?.icon}
+                            />
+                          </button>
+                        </Tooltip>
                       )}
                     </div>
                   )}
