@@ -5,7 +5,7 @@ import useOneBlinkFormContainer from '../../hooks/useOneBlinkFormContainer'
 function Tooltip({
   children,
   ...props
-}: React.PropsWithChildren<React.ComponentProps<typeof MuiTooltip>>) {
+}: React.ComponentProps<typeof MuiTooltip>) {
   const container = useOneBlinkFormContainer()
 
   return (
