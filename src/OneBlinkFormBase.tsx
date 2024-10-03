@@ -1238,7 +1238,7 @@ function OneBlinkFormBase({
                               { 'is-loading': isPreparingToSubmit },
                               {
                                 'ob-button-submit-is-disabled':
-                                  submissionConditionallyEnabled,
+                                  !submissionConditionallyEnabled,
                               },
                             )}
                             disabled={
