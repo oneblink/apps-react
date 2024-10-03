@@ -1234,8 +1234,12 @@ function OneBlinkFormBase({
                           <button
                             type="submit"
                             className={clsx(
-                              `button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form${submissionConditionallyEnabled ? '' : ' ob-button-submit-is-disabled'}`,
+                              'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
                               { 'is-loading': isPreparingToSubmit },
+                              {
+                                'ob-button-submit-is-disabled':
+                                  submissionConditionallyEnabled,
+                              },
                             )}
                             disabled={
                               isPreview ||
