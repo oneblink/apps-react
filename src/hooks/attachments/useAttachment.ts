@@ -31,9 +31,10 @@ export default function useAttachment(
 
   const isAuthenticated = isLoggedIn || isUsingFormsKey
 
-  const [imageUrlState, setImageUrlState] = React.useState<{
-    imageUrl?: string | null
-    loadImageUrlError?: Error
+  const [attachmentUrlState, setAttachmentUrlState] = React.useState<{
+    attachmentUrl?: string | null
+    loadAttachmentUrlError?: Error
+    isContentTypeImage?: boolean
   }>({})
   const [progressState, setProgressState] = React.useState<number | undefined>()
 
@@ -134,8 +135,8 @@ export default function useAttachment(
 
     // If the value is string we will assume a base64 data uri
     if (typeof value === 'string') {
-      setImageUrlState({
-        imageUrl: value,
+      setAttachmentUrlState({
+        attachmentUrl: value,
       })
       return
     }
@@ -145,83 +146,65 @@ export default function useAttachment(
         return
       }
 
-      if (!checkIfContentTypeIsImage(value.data.type)) {
-        // Not an image which we will represent as null
-        setImageUrlState({
-          imageUrl: null,
-        })
-        return
-      }
-
-      const imageUrl = URL.createObjectURL(value.data)
-      console.log('Created object url from blob for image', imageUrl)
-      setImageUrlState({
-        imageUrl,
+      const attachmentUrl = URL.createObjectURL(value.data)
+      setAttachmentUrlState({
+        attachmentUrl,
+        isContentTypeImage: checkIfContentTypeIsImage(value.data.type),
       })
       return
     }
 
-    if (!checkIfContentTypeIsImage(value.contentType)) {
-      // Not an image which we will represent as null
-      setImageUrlState({
-        imageUrl: null,
-      })
-      return
-    }
-
-    // Check for locally stored Blob. Blob should be stored locally for private uploaded images only
+    // Check for locally stored Blob
     const locallyStoredAttachment = getAttachmentBlobLocally(value.id)
     if (locallyStoredAttachment) {
-      const imageUrl = URL.createObjectURL(locallyStoredAttachment.blob)
-      console.log(
-        'Created object url from locally stored Blob for private image attachment',
-        imageUrl,
-      )
-      setImageUrlState({
-        imageUrl,
+      const attachmentUrl = URL.createObjectURL(locallyStoredAttachment.blob)
+      console.log('Created object url from locally stored Blob', attachmentUrl)
+      setAttachmentUrlState({
+        attachmentUrl,
+        isContentTypeImage: checkIfContentTypeIsImage(value.contentType),
       })
       return
     }
 
-    // If user is not logged in or is offline, we can't download private images.
+    // If user is not logged in or is offline, we can't download private attachments.
     // If the blob was not stored locally (above) for some reason, the user is SOL
     if (!isAuthenticated || isOffline) {
-      setImageUrlState({
-        imageUrl: null,
+      setAttachmentUrlState({
+        attachmentUrl: null,
       })
       return
     }
 
     let ignore = false
     const abortController = new AbortController()
-    const privateImageUrl = value.url
+    const privateAttachmentUrl = value.url
 
     const effect = async () => {
       try {
         const blob = await urlToBlobAsync(
-          privateImageUrl,
+          privateAttachmentUrl,
           abortController.signal,
         )
         if (ignore) {
           return
         }
-        // Store private image attachment in Context
+        // Store private attachment in Context
         storeAttachmentBlobLocally({ attachmentId: value.id, blob })
-        const imageUrl = URL.createObjectURL(blob)
+        const attachmentUrl = URL.createObjectURL(blob)
         console.log(
           'Created object url from private attachment for image',
-          imageUrl,
+          attachmentUrl,
         )
-        setImageUrlState({
-          imageUrl,
+        setAttachmentUrlState({
+          attachmentUrl: attachmentUrl,
         })
       } catch (error) {
         if (ignore) {
           return
         }
         console.warn('Error loading file:', error)
-        setImageUrlState({
-          loadImageUrlError: error as Error,
+        setAttachmentUrlState({
+          loadAttachmentUrlError: error as Error,
         })
       }
     }
@@ -241,13 +224,13 @@ export default function useAttachment(
 
   React.useEffect(() => {
     return () => {
-      const imageUrl = imageUrlState.imageUrl
-      if (imageUrl && imageUrl.startsWith('blob:')) {
-        console.log('revoking image url:', imageUrl)
-        URL.revokeObjectURL(imageUrl)
+      const attachmentUrl = attachmentUrlState.attachmentUrl
+      if (attachmentUrl && attachmentUrl.startsWith('blob:')) {
+        console.log('revoking attachment url:', attachmentUrl)
+        URL.revokeObjectURL(attachmentUrl)
       }
     }
-  }, [imageUrlState.imageUrl])
+  }, [attachmentUrlState.attachmentUrl])
 
   const isUploading = React.useMemo(() => {
     return !!(
@@ -296,8 +279,8 @@ export default function useAttachment(
   return {
     isUploading,
     uploadErrorMessage,
-    isLoadingImageUrl: imageUrlState.imageUrl === undefined,
-    ...imageUrlState,
+    isLoadingAttachmentUrl: attachmentUrlState.attachmentUrl === undefined,
+    ...attachmentUrlState,
     canDownload,
     progress: progressState,
   }

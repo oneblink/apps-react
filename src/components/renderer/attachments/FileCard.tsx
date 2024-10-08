@@ -14,10 +14,11 @@ type Props = {
   isUploading?: boolean
   isUploadPaused?: boolean
   uploadErrorMessage?: string
-  loadImageUrlError?: Error
-  isLoadingImageUrl?: boolean
+  loadAttachmentUrlError?: Error
+  isLoadingAttachmentUrl?: boolean
+  isContentTypeImage?: boolean
   fileName: string
-  imageUrl: string | undefined | null
+  attachmentUrl: string | undefined | null
   onRemove: () => void
   onDownload?: () => void
   onRetry?: () => void
@@ -30,9 +31,10 @@ function FileCard({
   isUploading,
   isUploadPaused,
   uploadErrorMessage,
-  loadImageUrlError,
-  isLoadingImageUrl,
-  imageUrl,
+  loadAttachmentUrlError,
+  isLoadingAttachmentUrl,
+  isContentTypeImage,
+  attachmentUrl,
   fileName,
   onDownload,
   onRemove,
@@ -56,16 +58,25 @@ function FileCard({
     <div className="column is-one-quarter-ob">
       <div className="ob-files__box">
         <div className="ob-files__content">
-          <FileCardContent
-            imageUrl={imageUrl}
-            alt={`${element.label}: Attachment ${index + 1}`}
-          />
+          <a
+            href={attachmentUrl || ''}
+            target="_blank"
+            rel="noreferrer"
+            className="dropdown-item cypress-file-download-button"
+          >
+            <FileCardContent
+              attachmentUrl={attachmentUrl}
+              alt={`${element.label}: Attachment ${index + 1}`}
+              isContentTypeImage={isContentTypeImage}
+            />
+          </a>
         </div>
         <DropdownMenu
           element={element}
           onDownload={onDownload}
           onRetry={onRetry}
           onRemove={onRemove}
+          attachmentUrl={attachmentUrl || ''}
         />
 
         <div className="ob-files__file-name is-size-6">
@@ -74,9 +85,9 @@ function FileCard({
             isUploading={isUploading}
             isUploadPaused={isUploadPaused}
             uploadError={uploadError}
-            loadImageUrlError={loadImageUrlError}
-            isLoadingImageUrl={isLoadingImageUrl}
-            imageUrl={imageUrl}
+            loadAttachmentUrlError={loadAttachmentUrlError}
+            isLoadingAttachmentUrl={isLoadingAttachmentUrl}
+            attachmentUrl={attachmentUrl}
             progress={progress}
           />
           <ProgressBar progress={progress} isShowing={!!isUploading} />

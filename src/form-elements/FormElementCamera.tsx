@@ -171,9 +171,9 @@ function FormElementCamera({
   const {
     isUploading,
     uploadErrorMessage,
-    isLoadingImageUrl,
-    imageUrl,
-    loadImageUrlError,
+    isLoadingAttachmentUrl,
+    attachmentUrl,
+    loadAttachmentUrlError,
     canDownload,
     progress,
   } = useAttachment(
@@ -219,7 +219,7 @@ function FormElementCamera({
     (annotationDataUri: string) => {
       clearIsAnnotating()
 
-      if (typeof imageUrl !== 'string') {
+      if (typeof attachmentUrl !== 'string') {
         return
       }
 
@@ -275,9 +275,9 @@ function FormElementCamera({
         annotationImage.src = annotationDataUri
       }
       image.setAttribute('crossorigin', 'anonymous')
-      image.src = imageUrl
+      image.src = attachmentUrl
     },
-    [clearIsAnnotating, element, imageUrl, onChange],
+    [attachmentUrl, clearIsAnnotating, element, onChange],
   )
 
   const progressTooltipRef = React.useRef<HTMLDivElement>(null)
@@ -296,9 +296,9 @@ function FormElementCamera({
                 <DisplayImage
                   isUploading={isUploading}
                   uploadErrorMessage={uploadErrorMessage}
-                  isLoadingImageUrl={isLoadingImageUrl}
-                  imageUrl={imageUrl}
-                  loadImageUrlError={loadImageUrlError}
+                  isLoadingAttachmentUrl={isLoadingAttachmentUrl}
+                  attachmentUrl={attachmentUrl}
+                  loadAttachmentUrlError={loadAttachmentUrlError}
                   isLoading={isLoading}
                   element={element}
                   onAnnotate={setIsAnnotating}
@@ -378,9 +378,9 @@ function FormElementCamera({
         )}
       </FormElementLabelContainer>
 
-      {isAnnotating && imageUrl && (
+      {isAnnotating && attachmentUrl && (
         <AnnotationModal
-          imageSrc={imageUrl}
+          imageSrc={attachmentUrl}
           onClose={clearIsAnnotating}
           onSave={handleSaveAnnotation}
         />
@@ -423,9 +423,9 @@ export default React.memo(FormElementCamera)
 const DisplayImage = React.memo(function DisplayImage({
   uploadErrorMessage,
   isUploading,
-  isLoadingImageUrl,
-  imageUrl,
-  loadImageUrlError,
+  isLoadingAttachmentUrl,
+  attachmentUrl,
+  loadAttachmentUrlError,
   isLoading,
   element,
   onAnnotate,
@@ -448,16 +448,16 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (loadImageUrlError) {
+  if (loadAttachmentUrlError) {
     return (
       <div className="figure-content" role="alert">
         <h3 className="title is-3">Preview Failed</h3>
-        <p>{loadImageUrlError.message}</p>
+        <p>{loadAttachmentUrlError.message}</p>
       </div>
     )
   }
 
-  if (isLoadingImageUrl || isLoading) {
+  if (isLoadingAttachmentUrl || isLoading) {
     return (
       <div className="figure-content has-text-centered cypress-camera-loading-image">
         <OnLoading small />
@@ -465,20 +465,20 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (imageUrl) {
+  if (attachmentUrl) {
     return (
       <>
         <span className="ob-figure__status">
           <AttachmentStatus
-            isLoadingImageUrl={isLoadingImageUrl}
-            loadImageUrlError={loadImageUrlError}
+            isLoadingAttachmentUrl={isLoadingAttachmentUrl}
+            loadAttachmentUrlError={loadAttachmentUrlError}
             isUploading={isUploading}
-            imageUrl={imageUrl}
+            attachmentUrl={attachmentUrl}
             progress={progress}
           />
         </span>
         <img
-          src={imageUrl}
+          src={attachmentUrl}
           className="cypress-camera-image ob-camera__img"
           crossOrigin="anonymous"
           alt={`${element.label}: Attachment`}

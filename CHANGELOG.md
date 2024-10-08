@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `FormElementFile` open files in a new tab
+
 ### Changed
 
 - Tooltip `a` tags to be white in colour, and slightly grey when already visited
