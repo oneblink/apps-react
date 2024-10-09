@@ -1405,7 +1405,6 @@ function OneBlinkFormBase({
               {!!formElementsValidation && hasAttemptedSubmit && (
                 <ValidationErrorsCard
                   formElementsValidation={formElementsValidation}
-                  display={!!formElementsValidation}
                   setPageId={setPageId}
                   currentPage={currentPage}
                 />
