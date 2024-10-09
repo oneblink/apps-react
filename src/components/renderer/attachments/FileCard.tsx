@@ -63,6 +63,7 @@ function FileCard({
             target="_blank"
             rel="noreferrer"
             className="dropdown-item cypress-file-download-button"
+            style={{ pointerEvents: attachmentUrl ? 'auto' : 'none' }}
           >
             <FileCardContent
               attachmentUrl={attachmentUrl}

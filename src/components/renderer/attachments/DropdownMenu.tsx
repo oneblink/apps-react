@@ -76,18 +76,21 @@ const DropdownMenu = ({
               Download
             </a>
           )}
-          <a
-            href={attachmentUrl || ''}
-            target="_blank"
-            rel="noreferrer"
-            className="dropdown-item cypress-file-open-button"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            Open <MaterialIcon>open_in_new</MaterialIcon>
-          </a>
+          {attachmentUrl && (
+            <a
+              href={attachmentUrl || ''}
+              target="_blank"
+              rel="noreferrer"
+              className="dropdown-item cypress-file-open-button"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
+            >
+              Open <MaterialIcon fontSize="small">open_in_new</MaterialIcon>
+            </a>
+          )}
           <a
             className={clsx('dropdown-item cypress-file-remove-button', {
               'ob-files__menu-remove-hidden': element.readOnly,
