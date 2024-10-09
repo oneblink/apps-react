@@ -258,9 +258,9 @@ const DisplayImage = React.memo(function DisplayImage({
   alt,
   uploadErrorMessage,
   isUploading,
-  isLoadingImageUrl,
-  imageUrl,
-  loadImageUrlError,
+  isLoadingAttachmentUrl,
+  attachmentUrl,
+  loadAttachmentUrlError,
   progress,
 }: ReturnType<typeof useAttachment> & {
   alt: string
@@ -277,16 +277,16 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (loadImageUrlError) {
+  if (loadAttachmentUrlError) {
     return (
       <div className="figure-content" role="alert">
         <h3 className="title is-3">Preview Failed</h3>
-        <p>{loadImageUrlError.message}</p>
+        <p>{loadAttachmentUrlError.message}</p>
       </div>
     )
   }
 
-  if (isLoadingImageUrl) {
+  if (isLoadingAttachmentUrl) {
     return (
       <div className="figure-content">
         <OnLoading small className="cypress-signature-loading-image" />
@@ -294,20 +294,20 @@ const DisplayImage = React.memo(function DisplayImage({
     )
   }
 
-  if (imageUrl) {
+  if (attachmentUrl) {
     return (
       <div className="figure-content">
         <span className="ob-figure__status">
           <AttachmentStatus
-            isLoadingImageUrl={isLoadingImageUrl}
-            loadImageUrlError={loadImageUrlError}
+            isLoadingAttachmentUrl={isLoadingAttachmentUrl}
+            loadAttachmentUrlError={loadAttachmentUrlError}
             isUploading={isUploading}
-            imageUrl={imageUrl}
+            attachmentUrl={attachmentUrl}
             progress={progress}
           />
         </span>
         <img
-          src={imageUrl}
+          src={attachmentUrl}
           className="cypress-signature-image ob-signature__img"
           alt={alt}
         />

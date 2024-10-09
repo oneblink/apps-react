@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `FormElementFile` open files in a new tab
+
 ## [6.8.0] - 2024-10-08
 
 ### Changed
