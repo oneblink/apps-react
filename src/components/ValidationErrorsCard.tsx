@@ -60,7 +60,6 @@ const getValidationErrors = ({
           validationData.type === 'repeatableSet'
         ) {
           if (validationData.set) {
-            console.log(`${idPrefix}${el.name}`)
             memo.push({
               id: `${idPrefix}${el.name}-label`,
               errorMessage: validationData.set,
@@ -90,8 +89,6 @@ const getValidationErrors = ({
           typeof validationData !== 'string' &&
           validationData.type === 'formElements'
         ) {
-          validationData.formElements
-
           if (validationData.formElements && el.elements) {
             memo.push(
               ...getValidationErrors({
