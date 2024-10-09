@@ -2,16 +2,18 @@ import * as React from 'react'
 import MaterialIcon from '../../MaterialIcon'
 
 const FileCardContent = ({
-  imageUrl,
+  attachmentUrl,
   alt,
+  isContentTypeImage,
 }: {
-  imageUrl: string | undefined | null
+  attachmentUrl: string | undefined | null
   alt: string
+  isContentTypeImage?: boolean
 }) => {
-  if (imageUrl) {
+  if (isContentTypeImage && attachmentUrl) {
     return (
       <div className="ob-files__content-image">
-        <img className="ob-files__image" src={imageUrl} alt={alt} />
+        <img className="ob-files__image" src={attachmentUrl} alt={alt} />
       </div>
     )
   }

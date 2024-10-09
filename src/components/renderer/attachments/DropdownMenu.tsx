@@ -10,9 +10,16 @@ interface Props {
   onRemove: () => void
   onDownload?: () => void
   onRetry?: () => void
+  attachmentUrl: string | null | undefined
 }
 
-const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
+const DropdownMenu = ({
+  element,
+  onRemove,
+  onDownload,
+  onRetry,
+  attachmentUrl,
+}: Props) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
 
@@ -69,6 +76,18 @@ const DropdownMenu = ({ element, onRemove, onDownload, onRetry }: Props) => {
               Download
             </a>
           )}
+          <a
+            href={attachmentUrl || ''}
+            target="_blank"
+            rel="noreferrer"
+            className="dropdown-item cypress-file-open-button"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            Open <MaterialIcon>open_in_new</MaterialIcon>
+          </a>
           <a
             className={clsx('dropdown-item cypress-file-remove-button', {
               'ob-files__menu-remove-hidden': element.readOnly,

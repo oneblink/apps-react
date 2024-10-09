@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Tooltip } from '@mui/material'
+import Tooltip from '../Tooltip'
 import useIsOffline from '../../../hooks/useIsOffline'
 import MaterialIcon from '../../MaterialIcon'
 
@@ -7,31 +7,31 @@ const AttachmentStatus = ({
   isUploading,
   isUploadPaused,
   uploadError,
-  loadImageUrlError,
-  isLoadingImageUrl,
-  imageUrl,
+  loadAttachmentUrlError,
+  isLoadingAttachmentUrl,
+  attachmentUrl,
   progress,
 }: {
   isUploading?: boolean
   isUploadPaused?: boolean
   uploadError?: Error
-  loadImageUrlError?: Error
-  isLoadingImageUrl?: boolean
-  imageUrl: string | null | undefined
+  loadAttachmentUrlError?: Error
+  isLoadingAttachmentUrl?: boolean
+  attachmentUrl: string | null | undefined
   progress: number | undefined
 }) => {
   const isOffline = useIsOffline()
 
   const tooltip = React.useMemo(() => {
-    if (isLoadingImageUrl && !imageUrl) {
+    if (isLoadingAttachmentUrl && !attachmentUrl) {
       return 'Attempting to load file preview. File is synced with submission.'
     }
-    if (loadImageUrlError && !imageUrl) {
+    if (loadAttachmentUrlError && !attachmentUrl) {
       return 'File preview not available, however file is synced with submission.'
     }
 
     return 'Synced with submission.'
-  }, [imageUrl, isLoadingImageUrl, loadImageUrlError])
+  }, [attachmentUrl, isLoadingAttachmentUrl, loadAttachmentUrlError])
 
   if (uploadError) {
     return (

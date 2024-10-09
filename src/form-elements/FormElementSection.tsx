@@ -1,6 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Collapse, Tooltip } from '@mui/material'
+import { Collapse } from '@mui/material'
+import Tooltip from '../components/renderer/Tooltip'
 import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
 import OneBlinkFormElements, {
