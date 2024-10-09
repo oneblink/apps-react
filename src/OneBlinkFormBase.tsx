@@ -52,6 +52,7 @@ import { OnUploadAttachmentContext } from './hooks/useOnUploadAttachment'
 import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
 import ReCAPTCHA from 'react-google-recaptcha'
+import ValidationErrorsCard from './components/ValidationErrorsCard'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -603,14 +604,6 @@ function OneBlinkFormBase({
       }
       if (formElementsValidation) {
         console.log('Validation errors', formElementsValidation)
-        bulmaToast.toast({
-          message: 'Please fix validation errors',
-          type: 'is-danger',
-          extraClasses: 'ob-toast cypress-invalid-submit-attempt',
-          duration: 4000,
-          pauseOnHover: true,
-          closeOnClick: true,
-        })
         return
       }
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
@@ -961,7 +954,9 @@ function OneBlinkFormBase({
         <FormElementOptionsContextProvider>
           <FormElementLookupsContextProvider>
             <div
-              className="ob-form-container"
+              className={clsx('ob-form-container', {
+                'is-showing-pages': isShowingMultiplePages,
+              })}
               ref={obFormContainerHTMLElementRef}
             >
               <form
@@ -1406,6 +1401,14 @@ function OneBlinkFormBase({
                     </MaterialIcon>
                   </Modal>
                 </React.Fragment>
+              )}
+              {!!formElementsValidation && hasAttemptedSubmit && (
+                <ValidationErrorsCard
+                  formElementsValidation={formElementsValidation}
+                  display={!!formElementsValidation}
+                  setPageId={setPageId}
+                  currentPage={currentPage}
+                />
               )}
             </div>
           </FormElementLookupsContextProvider>
