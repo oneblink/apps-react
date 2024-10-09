@@ -80,7 +80,7 @@ const DropdownMenu = ({
             href={attachmentUrl || ''}
             target="_blank"
             rel="noreferrer"
-            className="dropdown-item cypress-file-download-button"
+            className="dropdown-item cypress-file-open-button"
             style={{
               display: 'flex',
               alignItems: 'center',
