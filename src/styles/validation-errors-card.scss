@@ -1,0 +1,186 @@
+$validation-errors-border-radius: 8px;
+
+.ob-validation-notification-wrapper {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 31;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.ob-validation-color-transition {
+  transition-property: color;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+}
+
+.ob-validation-notification-card {
+  transition-property: transform, background-color;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+  border-radius: $validation-errors-border-radius;
+  max-height: 350px;
+  overflow-y: auto;
+  border-color: $danger;
+  border-width: 2px;
+  border-style: solid;
+  animation: pulse-animation 1.5s infinite;
+  @keyframes pulse-animation {
+    0% {
+      box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 0 16px rgba(255, 0, 0, 0);
+    }
+  }
+}
+
+// Card
+.ob-validation-notification-card.is-expanded {
+  background-color: $white;
+  color: $black;
+}
+
+.ob-validation-notification-card.is-contracted {
+  background-color: $danger;
+  color: $white;
+}
+
+// Card Content
+.ob-validation-notification-card-content {
+  transition-property: padding;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
+}
+.is-contracted .ob-validation-notification-card-content {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+// Card Content Header
+.ob-validation-notification-card-header-wrapper {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ob-validation-notification-card-header-title-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.ob-validation-notification-card-header-title-text {
+  font-weight: $weight-semibold;
+}
+
+.ob-validation-notification-card-header-title-icon {
+  margin-right: 0.5rem;
+  font-size: 22px;
+}
+
+// Card collapse
+.ob-validation-notification-card-collapse-wrapper {
+  transition-property: width, opacity;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+.ob-validation-notification-wrapper .MuiCollapse-root {
+  transition-property: height;
+  transition-duration: inherit;
+  transition-timing-function: inherit;
+}
+
+.is-contracted .ob-validation-notification-card-collapse-wrapper {
+  // Allows for a perfectly smooth transition when the text size is unaltered by the browser.
+  width: 196px;
+  opacity: 0;
+}
+.is-expanded .ob-validation-notification-card-collapse-wrapper {
+  width: 300px;
+  opacity: 1;
+}
+
+// List
+.ob-validation-notification-card-page-label {
+  font-weight: $weight-semibold;
+  font-size: 0.875rem;
+}
+.ob-validation-notification-card-page-label.is-not-first {
+  margin-top: 0.5rem;
+}
+.ob-validation-notification-card-list {
+  margin-top: 0.5rem;
+  border-radius: $validation-errors-border-radius;
+}
+
+// Items
+.ob-validation-notification-card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+}
+.ob-validation-notification-card-item.is-first {
+  border-top-left-radius: $validation-errors-border-radius;
+  border-top-right-radius: $validation-errors-border-radius;
+}
+.ob-validation-notification-card-item.is-last {
+  border-bottom-left-radius: $validation-errors-border-radius;
+  border-bottom-right-radius: $validation-errors-border-radius;
+}
+
+.ob-validation-notification-card-item-text {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.ob-validation-notification-card-item-text-error-message {
+  text-overflow: ellipsis;
+}
+
+.ob-validation-notification-card-item-icon {
+  margin-left: 0.5rem;
+}
+
+// Below desktop
+@media only screen and (max-width: $desktop) {
+  .ob-bottom-navigation__content {
+    .ob-validation-notification-wrapper {
+      margin-bottom: 4rem;
+    }
+  }
+}
+
+// Mobile size
+@media only screen and (max-width: $tablet) {
+  .ob-bottom-navigation__content {
+    .is-showing-pages {
+      .ob-validation-notification-wrapper {
+        margin-bottom: 7.5rem;
+      }
+    }
+  }
+
+  .ob-validation-notification-wrapper {
+    left: 1rem;
+  }
+
+  .is-contracted .ob-validation-notification-card-collapse-wrapper {
+    width: 100%;
+  }
+  .is-expanded .ob-validation-notification-card-collapse-wrapper {
+    width: 100%;
+  }
+  .section .ob-list.ob-validation-notification-card-list {
+    margin-right: unset;
+    margin-left: unset;
+    width: unset;
+  }
+}
