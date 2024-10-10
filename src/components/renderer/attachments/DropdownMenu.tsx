@@ -78,7 +78,7 @@ const DropdownMenu = ({
           )}
           {attachmentUrl && (
             <a
-              href={attachmentUrl || ''}
+              href={attachmentUrl}
               target="_blank"
               rel="noreferrer"
               className="dropdown-item cypress-file-open-button"
@@ -88,7 +88,8 @@ const DropdownMenu = ({
                 gap: 2,
               }}
             >
-              Open <MaterialIcon fontSize="small">open_in_new</MaterialIcon>
+              <span>Open</span>
+              <MaterialIcon className="icon-small">open_in_new</MaterialIcon>
             </a>
           )}
           <a
