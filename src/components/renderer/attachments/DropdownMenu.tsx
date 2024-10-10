@@ -87,6 +87,9 @@ const DropdownMenu = ({
                 alignItems: 'center',
                 gap: 2,
               }}
+              onClick={() => {
+                hideMore()
+              }}
             >
               <span>Open</span>
               <MaterialIcon className="icon-small">open_in_new</MaterialIcon>
