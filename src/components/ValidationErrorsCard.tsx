@@ -61,7 +61,7 @@ const getValidationErrors = ({
         ) {
           if (validationData.set) {
             memo.push({
-              id: `element-container__${idPrefix}${el.name}-label`,
+              id: `element-container__${idPrefix}${el.name}`,
               errorMessage: validationData.set,
               label: el.label,
               page,
