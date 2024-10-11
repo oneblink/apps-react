@@ -160,22 +160,6 @@ $validation-errors-border-radius: 8px;
 
 // Mobile size
 @media only screen and (max-width: $tablet) {
-  .ob-bottom-navigation__content {
-    .is-showing-pages {
-      .ob-validation-notification-wrapper {
-        margin-bottom: 7.5rem;
-      }
-    }
-  }
-
-  .ob-header-navigation__content {
-    .is-showing-pages {
-      .ob-validation-notification-wrapper {
-        margin-bottom: 3.5rem;
-      }
-    }
-  }
-
   .ob-validation-notification-wrapper {
     left: $size-6;
   }

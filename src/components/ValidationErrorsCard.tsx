@@ -122,10 +122,12 @@ const ValidationErrorsCard = ({
   formElementsValidation,
   currentPage,
   setPageId,
+  navigationTopOffset,
 }: {
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: (pageId: string) => void
+  navigationTopOffset: number
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 
@@ -265,8 +267,14 @@ const ValidationErrorsCard = ({
                                 }
                                 const element = document.getElementById(id)
                                 if (element) {
+                                  console.log(element.getBoundingClientRect())
                                   window.requestAnimationFrame(() => {
-                                    element.scrollIntoView({
+                                    window.scrollTo({
+                                      top:
+                                        element.getBoundingClientRect().top +
+                                        window.scrollY +
+                                        // We allow an offset to cater for any headers
+                                        navigationTopOffset,
                                       behavior: 'smooth',
                                     })
                                   })
