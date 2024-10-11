@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- bold text in info elements not readable in tool tips
+
 ### Added
 
 - Comprehensive validation errors toast
