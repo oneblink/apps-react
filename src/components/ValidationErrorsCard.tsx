@@ -138,7 +138,6 @@ const ValidationErrorsCard = ({
       elements: form.elements,
       idPrefix: '',
     })
-    console.log({ flatErrors })
 
     // Organise into pages
     const pages = new Map<
