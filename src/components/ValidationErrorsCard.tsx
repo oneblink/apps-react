@@ -267,7 +267,6 @@ const ValidationErrorsCard = ({
                                 }
                                 const element = document.getElementById(id)
                                 if (element) {
-                                  console.log(element.getBoundingClientRect())
                                   window.requestAnimationFrame(() => {
                                     window.scrollTo({
                                       top:
