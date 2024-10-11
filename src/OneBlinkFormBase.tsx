@@ -145,6 +145,12 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * elements. Defaults to "CHECKBOX"
    */
   captchaType?: CaptchaType
+
+  /**
+   * A pixel offset for validation error navigation markers. Use this to account
+   * for any headers your page might have.
+   */
+  validationErrorsNavigationTopOffset?: number
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -193,6 +199,7 @@ function OneBlinkFormBase({
   taskGroupInstance,
   onUploadAttachment,
   captchaType,
+  validationErrorsNavigationTopOffset,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey, userProfile } = useAuth()
@@ -1430,6 +1437,9 @@ function OneBlinkFormBase({
                     formElementsValidation={formElementsValidation}
                     setPageId={setPageId}
                     currentPage={currentPage}
+                    navigationTopOffset={
+                      validationErrorsNavigationTopOffset ?? 0
+                    }
                   />
                 )}
               </div>

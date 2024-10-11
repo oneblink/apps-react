@@ -224,7 +224,7 @@ function FormElementSwitchContainer(
 
   return (
     <div
-      id={element.id}
+      id={`element-container__${props.id}`}
       className={clsx(
         'ob-element cypress-element-container',
         element.customCssClasses,

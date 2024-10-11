@@ -2,9 +2,9 @@ $validation-errors-border-radius: 8px;
 
 .ob-validation-notification-wrapper {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 31;
+  bottom: $size-6;
+  right: $size-6;
+  z-index: 30;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
@@ -31,7 +31,7 @@ $validation-errors-border-radius: 8px;
       box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.4);
     }
     100% {
-      box-shadow: 0 0 0 16px rgba(255, 0, 0, 0);
+      box-shadow: 0 0 0 $size-6 rgba(255, 0, 0, 0);
     }
   }
 }
@@ -52,12 +52,12 @@ $validation-errors-border-radius: 8px;
   transition-property: padding;
   transition-duration: inherit;
   transition-timing-function: inherit;
-  padding: 1rem;
-  padding-bottom: 1.5rem;
+  padding: $size-6;
+  padding-bottom: $size-4;
 }
 .is-contracted .ob-validation-notification-card-content {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: $size-8;
+  padding-bottom: $size-8;
 }
 
 // Card Content Header
@@ -78,7 +78,7 @@ $validation-errors-border-radius: 8px;
 }
 
 .ob-validation-notification-card-header-title-icon {
-  margin-right: 0.5rem;
+  margin-right: $size-8;
   font-size: 22px;
 }
 
@@ -113,10 +113,10 @@ $validation-errors-border-radius: 8px;
   font-size: 0.875rem;
 }
 .ob-validation-notification-card-page-label.is-not-first {
-  margin-top: 0.5rem;
+  margin-top: $size-8;
 }
 .ob-validation-notification-card-list {
-  margin-top: 0.5rem;
+  margin-top: $size-8;
   border-radius: $validation-errors-border-radius;
 }
 
@@ -125,7 +125,7 @@ $validation-errors-border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
+  padding: $size-8;
 }
 .ob-validation-notification-card-item.is-first {
   border-top-left-radius: $validation-errors-border-radius;
@@ -146,7 +146,7 @@ $validation-errors-border-radius: 8px;
 }
 
 .ob-validation-notification-card-item-icon {
-  margin-left: 0.5rem;
+  margin-left: $size-8;
 }
 
 // Below desktop
@@ -160,16 +160,8 @@ $validation-errors-border-radius: 8px;
 
 // Mobile size
 @media only screen and (max-width: $tablet) {
-  .ob-bottom-navigation__content {
-    .is-showing-pages {
-      .ob-validation-notification-wrapper {
-        margin-bottom: 7.5rem;
-      }
-    }
-  }
-
   .ob-validation-notification-wrapper {
-    left: 1rem;
+    left: $size-6;
   }
 
   .is-contracted .ob-validation-notification-card-collapse-wrapper {

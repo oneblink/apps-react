@@ -61,7 +61,7 @@ const getValidationErrors = ({
         ) {
           if (validationData.set) {
             memo.push({
-              id: `${idPrefix}${el.name}-label`,
+              id: `element-container__${idPrefix}${el.name}`,
               errorMessage: validationData.set,
               label: el.label,
               page,
@@ -106,7 +106,7 @@ const getValidationErrors = ({
         const validationMessage = formElementsValidation[el.name]
         if (typeof validationMessage === 'string') {
           memo.push({
-            id: `${idPrefix}${el.name}`,
+            id: `element-container__${idPrefix}${el.name}`,
             label: el.label,
             page,
             errorMessage: validationMessage,
@@ -122,10 +122,12 @@ const ValidationErrorsCard = ({
   formElementsValidation,
   currentPage,
   setPageId,
+  navigationTopOffset,
 }: {
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: (pageId: string) => void
+  navigationTopOffset: number
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 
@@ -231,7 +233,7 @@ const ValidationErrorsCard = ({
               {pagesWithValidationErrors.map(({ page, errors }, pageIndex) => {
                 const isNotFirstPage = pageIndex > 0
                 return (
-                  <>
+                  <React.Fragment key={pageIndex}>
                     {page && (
                       <p
                         className={clsx(
@@ -266,7 +268,12 @@ const ValidationErrorsCard = ({
                                 const element = document.getElementById(id)
                                 if (element) {
                                   window.requestAnimationFrame(() => {
-                                    element.scrollIntoView({
+                                    window.scrollTo({
+                                      top:
+                                        element.getBoundingClientRect().top +
+                                        window.scrollY +
+                                        // We allow an offset to cater for any headers
+                                        navigationTopOffset,
                                       behavior: 'smooth',
                                     })
                                   })
@@ -293,7 +300,7 @@ const ValidationErrorsCard = ({
                         },
                       )}
                     </div>
-                  </>
+                  </React.Fragment>
                 )
               })}
             </Collapse>
