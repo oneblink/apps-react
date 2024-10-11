@@ -61,7 +61,7 @@ const getValidationErrors = ({
         ) {
           if (validationData.set) {
             memo.push({
-              id: `${idPrefix}${el.name}-label`,
+              id: `element-container__${idPrefix}${el.name}-label`,
               errorMessage: validationData.set,
               label: el.label,
               page,
@@ -106,7 +106,7 @@ const getValidationErrors = ({
         const validationMessage = formElementsValidation[el.name]
         if (typeof validationMessage === 'string') {
           memo.push({
-            id: `${idPrefix}${el.name}`,
+            id: `element-container__${idPrefix}${el.name}`,
             label: el.label,
             page,
             errorMessage: validationMessage,
@@ -138,6 +138,7 @@ const ValidationErrorsCard = ({
       elements: form.elements,
       idPrefix: '',
     })
+    console.log({ flatErrors })
 
     // Organise into pages
     const pages = new Map<
@@ -231,7 +232,7 @@ const ValidationErrorsCard = ({
               {pagesWithValidationErrors.map(({ page, errors }, pageIndex) => {
                 const isNotFirstPage = pageIndex > 0
                 return (
-                  <>
+                  <React.Fragment key={pageIndex}>
                     {page && (
                       <p
                         className={clsx(
@@ -293,7 +294,7 @@ const ValidationErrorsCard = ({
                         },
                       )}
                     </div>
-                  </>
+                  </React.Fragment>
                 )
               })}
             </Collapse>
