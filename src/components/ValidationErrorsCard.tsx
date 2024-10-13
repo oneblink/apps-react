@@ -271,7 +271,7 @@ const ValidationErrorsCard = ({
                                     window.scrollTo({
                                       top:
                                         element.getBoundingClientRect().top +
-                                        window.scrollY +
+                                        window.scrollY -
                                         // We allow an offset to cater for any headers
                                         navigationTopOffset,
                                       behavior: 'smooth',
