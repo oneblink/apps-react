@@ -273,7 +273,7 @@ const ValidationErrorsCard = ({
                                         element.getBoundingClientRect().top +
                                         window.scrollY +
                                         // We allow an offset to cater for any headers
-                                        navigationTopOffset,
+                                        -navigationTopOffset,
                                       behavior: 'smooth',
                                     })
                                   })
