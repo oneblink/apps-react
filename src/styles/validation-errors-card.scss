@@ -138,10 +138,12 @@ $validation-errors-border-radius: 8px;
 
 .ob-validation-notification-card-item-text {
   white-space: nowrap;
+  overflow: hidden;
   font-size: 0.875rem;
 }
 
 .ob-validation-notification-card-item-text-error-message {
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
