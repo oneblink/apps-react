@@ -917,7 +917,9 @@ function OneBlinkFormBase({
         if (lastElementUpdatedPage) {
           setPageId(lastElementUpdatedPage.id)
         }
-        const element = document.getElementById(lastElementUpdated.id)
+        const element = document.querySelector(
+          `[data-element-id="${lastElementUpdated.id}"]`,
+        )
         if (element) {
           window.requestAnimationFrame(() => {
             element.scrollIntoView({ behavior: 'smooth' })

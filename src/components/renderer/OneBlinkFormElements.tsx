@@ -229,6 +229,7 @@ function FormElementSwitchContainer(
   return (
     <div
       id={elementDOMId.elementContainerDOMId}
+      data-element-id={element.id}
       className={clsx(
         'ob-element cypress-element-container',
         element.customCssClasses,
