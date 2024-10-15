@@ -31,7 +31,6 @@ function recursivelySetReadOnly(
         element.type !== 'heading' &&
         element.type !== 'page' &&
         element.type !== 'html' &&
-        element.type !== 'captcha' &&
         element.type !== 'image' &&
         element.type !== 'calculation' &&
         element.type !== 'summary' &&
