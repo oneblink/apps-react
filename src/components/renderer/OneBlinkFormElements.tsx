@@ -72,6 +72,7 @@ import {
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
 import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
+import ElementDOMId from '../../utils/elementDOMIds'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -205,7 +206,10 @@ function FormElementSwitchContainer(
 ) {
   const { element, formElementValidation, displayValidationMessage } = props
   const [isDirty, setIsDirty] = useBooleanState(false)
-
+  const elementDOMId = React.useMemo(
+    () => new ElementDOMId(props.id),
+    [props.id],
+  )
   const getValidationClass = () => {
     if (!('elements' in element)) {
       if (!formElementValidation) {
@@ -224,7 +228,7 @@ function FormElementSwitchContainer(
 
   return (
     <div
-      id={`element-container__${props.id}`}
+      id={elementDOMId.elementContainerDOMId}
       className={clsx(
         'ob-element cypress-element-container',
         element.customCssClasses,

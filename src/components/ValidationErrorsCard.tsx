@@ -6,6 +6,9 @@ import useBooleanState from '../hooks/useBooleanState'
 import clsx from 'clsx'
 import useFormDefinition from '../hooks/useFormDefinition'
 import { FormTypes } from '@oneblink/types'
+import usePages from '../hooks/usePages'
+import ElementDOMId from '../utils/elementDOMIds'
+import scrollToElement from '../utils/scrollToElement'
 
 const NO_PAGE_KEY = 'NO_PAGE'
 type ValidationErrorMetaData = {
@@ -59,9 +62,13 @@ const getValidationErrors = ({
           typeof validationData !== 'string' &&
           validationData.type === 'repeatableSet'
         ) {
+          const elementDOMId = new ElementDOMId({
+            element: el,
+            idPrefix,
+          })
           if (validationData.set) {
             memo.push({
-              id: `element-container__${idPrefix}${el.name}`,
+              id: elementDOMId.elementContainerDOMId,
               errorMessage: validationData.set,
               label: el.label,
               page,
@@ -74,7 +81,7 @@ const getValidationErrors = ({
                 formElementsValidation: entry,
                 elements: el.elements,
                 page,
-                idPrefix: `${idPrefix}${el.name}_entry-${key}_`,
+                idPrefix: elementDOMId.repeatableSetEntryDOMIdPrefix(key),
               }),
             )
           }
@@ -90,12 +97,16 @@ const getValidationErrors = ({
           validationData.type === 'formElements'
         ) {
           if (validationData.formElements && el.elements) {
+            const elementDOMId = new ElementDOMId({
+              element: el,
+              idPrefix,
+            })
             memo.push(
               ...getValidationErrors({
                 formElementsValidation: validationData.formElements,
                 elements: el.elements,
                 page,
-                idPrefix: `${idPrefix}${el.name}_`,
+                idPrefix: elementDOMId.subFormDOMIdPrefix,
               }),
             )
           }
@@ -105,8 +116,12 @@ const getValidationErrors = ({
       default: {
         const validationMessage = formElementsValidation[el.name]
         if (typeof validationMessage === 'string') {
+          const elementDOMId = new ElementDOMId({
+            element: el,
+            idPrefix,
+          })
           memo.push({
-            id: `element-container__${idPrefix}${el.name}`,
+            id: elementDOMId.elementContainerDOMId,
             label: el.label,
             page,
             errorMessage: validationMessage,
@@ -126,7 +141,7 @@ const ValidationErrorsCard = ({
 }: {
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
-  setPageId: (pageId: string) => void
+  setPageId: ReturnType<typeof usePages>['setPageId']
   navigationTopOffset: number
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
@@ -265,19 +280,8 @@ const ValidationErrorsCard = ({
                                 if (page && page.id !== currentPage.id) {
                                   setPageId(page.id)
                                 }
-                                const element = document.getElementById(id)
-                                if (element) {
-                                  window.requestAnimationFrame(() => {
-                                    window.scrollTo({
-                                      top:
-                                        element.getBoundingClientRect().top +
-                                        window.scrollY -
-                                        // We allow an offset to cater for any headers
-                                        navigationTopOffset,
-                                      behavior: 'smooth',
-                                    })
-                                  })
-                                }
+
+                                scrollToElement({ id, navigationTopOffset })
                               }}
                             >
                               <div className="ob-validation-notification-card-item-text">

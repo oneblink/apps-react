@@ -9,6 +9,7 @@ import {
   NestedFormElementValueChangeHandler,
   UpdateFormElementsHandler,
 } from '../types/form'
+import ElementDOMId from '../utils/elementDOMIds'
 
 export type Props = {
   formId: number
@@ -175,6 +176,8 @@ function FormElementForm({
       [element.id, onUpdateFormElements],
     )
 
+  const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
+
   return (
     <OneBlinkFormElements
       formId={formId}
@@ -186,7 +189,7 @@ function FormElementForm({
       formElementsConditionallyShown={formElementsConditionallyShown}
       model={value || {}}
       parentElement={parentElement}
-      idPrefix={`${id}_`}
+      idPrefix={elementDOMId.subFormDOMIdPrefix}
       onUpdateFormElements={handleUpdateNestedFormElements}
     />
   )

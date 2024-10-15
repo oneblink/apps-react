@@ -21,6 +21,7 @@ import {
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
+import ElementDOMId from '../utils/elementDOMIds'
 
 type Props = {
   formId: number
@@ -426,6 +427,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
         [element.id, onUpdateFormElements],
       )
 
+    const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
     return (
       <RepeatableSetIndexContext.Provider value={index}>
         <Modal
@@ -485,7 +487,9 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
           <OneBlinkFormElements
             formId={formId}
-            idPrefix={`${id}_entry-${index}_`}
+            idPrefix={elementDOMId.repeatableSetEntryDOMIdPrefix(
+              index.toString(),
+            )}
             isEven={isEven}
             formElementsValidation={formElementsValidation}
             displayValidationMessages={displayValidationMessages}
