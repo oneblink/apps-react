@@ -5,13 +5,7 @@ import clsx from 'clsx'
 export default React.forwardRef<
   HTMLSpanElement,
   React.ComponentProps<typeof Icon>
->(function MaterialIcon(
-  // We declare the prop types again here because it
-  // changes the way the type dec file is generated,
-  // mitigating a type check error in the forms-cdn repo.
-  { className, ...props }: React.ComponentProps<typeof Icon>,
-  ref,
-) {
+>(function MaterialIcon({ className, ...props }, ref) {
   return (
     <Icon
       ref={ref}
