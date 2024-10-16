@@ -147,10 +147,20 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   captchaType?: CaptchaType
 
   /**
-   * A pixel offset for validation error navigation markers. Use this to account
-   * for any headers your page might have.
+   * Whether the form should use a navigable validation errors notification, or
+   * a simple validation errors notification
+   *
+   * @default true
    */
-  validationErrorsNavigationTopOffset?: number
+  shouldUseNavigableValidationErrorsNotification?: boolean
+  /** Various settings for the navigable validation errors notification */
+  navigableValidationErrorsNotificationSettings?: {
+    /**
+     * A pixel offset for validation error navigation markers. Use this to
+     * account for any headers your page might have.
+     */
+    navigationTopOffset?: number
+  }
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -199,7 +209,8 @@ function OneBlinkFormBase({
   taskGroupInstance,
   onUploadAttachment,
   captchaType,
-  validationErrorsNavigationTopOffset,
+  shouldUseNavigableValidationErrorsNotification = true,
+  navigableValidationErrorsNotificationSettings,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey, userProfile } = useAuth()
@@ -609,6 +620,16 @@ function OneBlinkFormBase({
       }
       if (formElementsValidation) {
         console.log('Validation errors', formElementsValidation)
+        if (!shouldUseNavigableValidationErrorsNotification) {
+          bulmaToast.toast({
+            message: 'Please fix validation errors',
+            type: 'is-danger',
+            extraClasses: 'ob-toast cypress-invalid-submit-attempt',
+            duration: 4000,
+            pauseOnHover: true,
+            closeOnClick: true,
+          })
+        }
         return
       }
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
@@ -691,6 +712,7 @@ function OneBlinkFormBase({
       isOffline,
       isPendingQueueEnabled,
       setFormSubmission,
+      shouldUseNavigableValidationErrorsNotification,
     ],
   )
 
@@ -1434,16 +1456,19 @@ function OneBlinkFormBase({
                     </Modal>
                   </React.Fragment>
                 )}
-                {!!formElementsValidation && hasAttemptedSubmit && (
-                  <ValidationErrorsCard
-                    formElementsValidation={formElementsValidation}
-                    setPageId={setPageId}
-                    currentPage={currentPage}
-                    navigationTopOffset={
-                      validationErrorsNavigationTopOffset ?? 0
-                    }
-                  />
-                )}
+                {shouldUseNavigableValidationErrorsNotification &&
+                  !!formElementsValidation &&
+                  hasAttemptedSubmit && (
+                    <ValidationErrorsCard
+                      formElementsValidation={formElementsValidation}
+                      setPageId={setPageId}
+                      currentPage={currentPage}
+                      navigationTopOffset={
+                        navigableValidationErrorsNotificationSettings?.navigationTopOffset ??
+                        0
+                      }
+                    />
+                  )}
               </div>
             </OneBlinkFormContainerContext.Provider>
           </FormElementLookupsContextProvider>
