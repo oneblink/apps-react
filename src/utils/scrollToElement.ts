@@ -9,26 +9,50 @@
  *   ancestor element, or undefined if none is found.
  */
 const findScrollPointOfVisibleAncestorElement = (
-  element: Element,
-): (() => number) | undefined => {
+  element: HTMLElement,
+): ((scrollableContainerId?: string) => number) | undefined => {
   const isVisible = element.checkVisibility()
   if (!isVisible) {
     const OBHiddenElement = element.closest('.is-hidden')
-
-    if (OBHiddenElement) {
+    if (OBHiddenElement && OBHiddenElement instanceof HTMLElement) {
+      const parentOfHiddenElement = OBHiddenElement.parentElement
+      if (
+        !parentOfHiddenElement ||
+        !(parentOfHiddenElement instanceof HTMLElement)
+      ) {
+        return
+      }
       // In the case of a hidden ancestor element we will navigate to the bottom of the previous visible sibling.
-      const parentIsVisible = OBHiddenElement.parentElement?.checkVisibility()
+      const parentIsVisible = parentOfHiddenElement.checkVisibility()
       if (!parentIsVisible) {
+        if (OBHiddenElement.id === element.id) {
+          // If the hidden element was not an ancestor, but instead the current element,
+          // we need to go recursive with the parent instead of the same element
+          return findScrollPointOfVisibleAncestorElement(
+            OBHiddenElement.parentElement,
+          )
+        }
         return findScrollPointOfVisibleAncestorElement(OBHiddenElement)
       }
       let previousSibling = OBHiddenElement.previousElementSibling
-      while (previousSibling) {
+      while (previousSibling && previousSibling instanceof HTMLElement) {
         if (previousSibling.checkVisibility()) {
           // Have to reasign for TS, because it does not recognise the typeguard in the `while` inside the callback function
           const sib = previousSibling
-          return () => sib.getBoundingClientRect().bottom
+          return (scrollableContainerId?: string) => {
+            if (scrollableContainerId) {
+              return sib.offsetTop + sib.clientHeight
+            }
+            return sib.getBoundingClientRect().bottom
+          }
         }
         previousSibling = previousSibling.previousElementSibling
+      }
+      // Revert to parent if no sibling is visible
+      if (OBHiddenElement.parentElement instanceof HTMLElement) {
+        return findScrollPointOfVisibleAncestorElement(
+          OBHiddenElement.parentElement,
+        )
       }
     }
 
@@ -37,7 +61,7 @@ const findScrollPointOfVisibleAncestorElement = (
     if (ancestorCollapsedSection) {
       const ancestorSectionRoot =
         ancestorCollapsedSection.closest('.ob-section')
-      return ancestorSectionRoot
+      return ancestorSectionRoot && ancestorSectionRoot instanceof HTMLElement
         ? findScrollPointOfVisibleAncestorElement(ancestorSectionRoot)
         : undefined
     }
@@ -45,32 +69,76 @@ const findScrollPointOfVisibleAncestorElement = (
     // Not visible for some other reason
     return
   } else {
-    return () => element.getBoundingClientRect().top
+    return (scrollableContainerId?: string) => {
+      if (scrollableContainerId) {
+        let top = 0
+        let el: HTMLElement | null = element
+        while (el) {
+          const offsetParent: Element | null = el.offsetParent
+          if (offsetParent instanceof HTMLElement) {
+            const offsetParentIsInsideScrollableContainer =
+              offsetParent.closest(`#${scrollableContainerId}`)
+
+            // Only process the offset of the current element if the offset parent
+            // (offsetTop is derived from distance between element and top of `offsetParent)
+            // is inside the scrollable container (or is the scrollable container).
+            if (offsetParentIsInsideScrollableContainer) {
+              top += el.offsetTop
+              el = offsetParent
+              continue
+            }
+          }
+          el = null
+        }
+        return top
+      }
+      return element.getBoundingClientRect().top
+    }
   }
 }
 
 const scrollToElement = ({
   id,
   navigationTopOffset,
+  scrollableContainerId,
 }: {
   id: string
   /** We allow an offset to cater for any headers */
   navigationTopOffset: number
+  scrollableContainerId?: string
 }) => {
   const element = document.getElementById(id)
-
   if (element) {
     const getScrollPoint = findScrollPointOfVisibleAncestorElement(element)
     if (getScrollPoint) {
       window.requestAnimationFrame(() => {
-        window.scrollTo({
-          top:
-            getScrollPoint() +
-            window.scrollY -
-            // We allow an offset to cater for any headers
-            navigationTopOffset,
-          behavior: 'smooth',
-        })
+        if (scrollableContainerId) {
+          const scrollContainer = document.getElementById(scrollableContainerId)
+          // Account for any top padding on the scrollable container
+          const topPadding = parseFloat(
+            scrollContainer
+              ?.computedStyleMap()
+              .get('padding-top')
+              ?.toString() ?? '',
+          )
+          scrollContainer?.scrollTo({
+            top:
+              getScrollPoint(scrollableContainerId) +
+              topPadding -
+              // We allow an offset to cater for any headers
+              navigationTopOffset,
+            behavior: 'smooth',
+          })
+        } else {
+          window.scrollTo({
+            top:
+              getScrollPoint() +
+              window.scrollY -
+              // We allow an offset to cater for any headers
+              navigationTopOffset,
+            behavior: 'smooth',
+          })
+        }
       })
     }
   }
