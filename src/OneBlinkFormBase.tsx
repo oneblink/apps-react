@@ -161,8 +161,8 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
      */
     navigationTopOffset?: number
     /**
-     * The ID of the scrollable container your form resides in. If not set, will
-     * scroll on the window.
+     * The HTML Element ID of the scrollable container your form resides in. If
+     * not set, will scroll on the window.
      */
     scrollableContainerId?: string
   }
