@@ -160,6 +160,11 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
      * account for any headers your page might have.
      */
     navigationTopOffset?: number
+    /**
+     * The HTML Element ID of the scrollable container your form resides in. If
+     * not set, will scroll on the window.
+     */
+    scrollableContainerId?: string
   }
 }
 
@@ -1466,6 +1471,9 @@ function OneBlinkFormBase({
                       navigationTopOffset={
                         navigableValidationErrorsNotificationSettings?.navigationTopOffset ??
                         0
+                      }
+                      scrollableContainerId={
+                        navigableValidationErrorsNotificationSettings?.scrollableContainerId
                       }
                     />
                   )}

@@ -138,11 +138,13 @@ const ValidationErrorsCard = ({
   currentPage,
   setPageId,
   navigationTopOffset,
+  scrollableContainerId,
 }: {
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: ReturnType<typeof usePages>['setPageId']
   navigationTopOffset: number
+  scrollableContainerId?: string
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 
@@ -281,7 +283,11 @@ const ValidationErrorsCard = ({
                                   setPageId(page.id)
                                 }
 
-                                scrollToElement({ id, navigationTopOffset })
+                                scrollToElement({
+                                  id,
+                                  navigationTopOffset,
+                                  scrollableContainerId,
+                                })
                               }}
                             >
                               <div className="ob-validation-notification-card-item-text">
