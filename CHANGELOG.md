@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.9.0] - 2024-10-20
+
 ### Fixed
 
 - bold text in info elements not readable in tool tips
