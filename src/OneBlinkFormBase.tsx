@@ -754,6 +754,7 @@ function OneBlinkFormBase({
         userProfile: userProfile ?? undefined,
       })
       setIsPreparingToSubmit(false)
+      resetRecaptchas()
       onSubmit({
         definition: {
           ...definition,
@@ -762,7 +763,6 @@ function OneBlinkFormBase({
         submission: submissionData.submission,
         captchaTokens: submissionData.captchaTokens,
       })
-      resetRecaptchas()
     },
     [
       disabled,
