@@ -1,8 +1,10 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { FormTypes } from '@oneblink/types'
+import { TextareaAutosize } from '@mui/material'
+
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
-import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
@@ -48,7 +50,7 @@ function FormElementTextarea({
         required={element.required}
       >
         <div className="control">
-          <textarea
+          <TextareaAutosize
             placeholder={element.placeholderValue}
             id={id}
             name={element.name}
