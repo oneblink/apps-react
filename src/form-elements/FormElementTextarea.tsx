@@ -39,6 +39,20 @@ function FormElementTextarea({
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
+  const textAreaRef = React.useRef<HTMLTextAreaElement>(null)
+
+  const setTextAreaHeight = React.useCallback(() => {
+    if (!textAreaRef.current) {
+      return
+    }
+    textAreaRef.current.style.height = '1px'
+    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px'
+  }, [])
+
+  React.useEffect(() => {
+    setTextAreaHeight()
+  }, [setTextAreaHeight])
+
   return (
     <div className="cypress-textarea-element">
       <FormElementLabelContainer
@@ -51,6 +65,7 @@ function FormElementTextarea({
           <textarea
             placeholder={element.placeholderValue}
             id={id}
+            ref={textAreaRef}
             name={element.name}
             className="textarea input ob-input cypress-textarea-control"
             value={text}
@@ -59,6 +74,7 @@ function FormElementTextarea({
                 value: e.target.value || undefined,
               })
             }
+            onKeyUp={setTextAreaHeight}
             required={element.required}
             disabled={element.readOnly}
             onBlur={setIsDirty}
