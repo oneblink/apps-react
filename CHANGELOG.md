@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- height of `textarea` elements to change dynamically with content
+
 ## [6.9.2] - 2024-11-13
 
 ### Dependencies

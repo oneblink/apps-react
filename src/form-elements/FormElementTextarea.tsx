@@ -1,8 +1,10 @@
 import * as React from 'react'
 import clsx from 'clsx'
+import { FormTypes } from '@oneblink/types'
+import { TextareaAutosize } from '@mui/material'
+
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
-import { FormTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
@@ -39,20 +41,6 @@ function FormElementTextarea({
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
-  const textAreaRef = React.useRef<HTMLTextAreaElement>(null)
-
-  const setTextAreaHeight = React.useCallback(() => {
-    if (!textAreaRef.current) {
-      return
-    }
-    textAreaRef.current.style.height = '1px'
-    textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px'
-  }, [])
-
-  React.useEffect(() => {
-    setTextAreaHeight()
-  }, [setTextAreaHeight])
-
   return (
     <div className="cypress-textarea-element">
       <FormElementLabelContainer
@@ -62,10 +50,9 @@ function FormElementTextarea({
         required={element.required}
       >
         <div className="control">
-          <textarea
+          <TextareaAutosize
             placeholder={element.placeholderValue}
             id={id}
-            ref={textAreaRef}
             name={element.name}
             className="textarea input ob-input cypress-textarea-control"
             value={text}
@@ -74,7 +61,6 @@ function FormElementTextarea({
                 value: e.target.value || undefined,
               })
             }
-            onKeyUp={setTextAreaHeight}
             required={element.required}
             disabled={element.readOnly}
             onBlur={setIsDirty}
