@@ -1,7 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import { FormTypes } from '@oneblink/types'
-import { TextareaAutosize } from '@mui/material'
+import { TextareaAutosize, styled } from '@mui/material'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
@@ -9,6 +9,11 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+
+const StyledTextareaAutosize = styled(TextareaAutosize)(() => ({
+  maxHeight: '40em',
+  minHeight: '8em',
+}))
 
 type Props = {
   id: string
@@ -50,7 +55,7 @@ function FormElementTextarea({
         required={element.required}
       >
         <div className="control">
-          <TextareaAutosize
+          <StyledTextareaAutosize
             placeholder={element.placeholderValue}
             id={id}
             name={element.name}
