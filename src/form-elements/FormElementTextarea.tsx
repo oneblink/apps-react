@@ -11,8 +11,9 @@ import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 const StyledTextareaAutosize = styled(TextareaAutosize)(() => ({
-  maxHeight: '40em',
-  minHeight: '8em',
+  // maxHeight: '40em',
+  // minHeight: '8em',
+  resize: 'vertical',
 }))
 
 type Props = {
@@ -59,7 +60,7 @@ function FormElementTextarea({
             placeholder={element.placeholderValue}
             id={id}
             name={element.name}
-            className="textarea input ob-input cypress-textarea-control"
+            className="input ob-input cypress-textarea-control"
             value={text}
             onChange={(e) =>
               onChange(element, {
@@ -71,8 +72,7 @@ function FormElementTextarea({
             onBlur={setIsDirty}
             aria-describedby={ariaDescribedby}
             autoComplete={autocompleteAttributes}
-            minRows={1}
-            maxRows={5}
+            minRows={4}
           />
         </div>
 
