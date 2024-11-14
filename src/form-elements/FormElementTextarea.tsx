@@ -66,6 +66,8 @@ function FormElementTextarea({
             onBlur={setIsDirty}
             aria-describedby={ariaDescribedby}
             autoComplete={autocompleteAttributes}
+            minRows={1}
+            maxRows={5}
           />
         </div>
 
