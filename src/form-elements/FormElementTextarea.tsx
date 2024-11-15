@@ -11,8 +11,6 @@ import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 const StyledTextareaAutosize = styled(TextareaAutosize)(() => ({
-  // maxHeight: '40em',
-  // minHeight: '8em',
   resize: 'vertical',
 }))
 
