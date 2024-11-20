@@ -415,7 +415,9 @@ export function generateValidationSchema(
         }
         case 'boolean': {
           return {
-            isTrue: formElement.required && 'Required',
+            isTrue:
+              formElement.required &&
+              (formElement.requiredMessage || 'Required'),
             lookups: {
               formElement,
               executedLookups,

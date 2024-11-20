@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Switch element not displaying custom validation message
+
 ### Changed
 
 - height of `textarea` elements to change dynamically with content
