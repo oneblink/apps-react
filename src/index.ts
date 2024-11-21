@@ -55,6 +55,7 @@ export { default as PaymentForm } from './components/payments/PaymentForm'
 export { default as MultiFactorAuthentication } from './components/mfa/MultiFactorAuthentication'
 
 export {
+  default as useAppUserMfa,
   AppUserMfaProvider,
   useUserMeetsMfaRequirement,
 } from './hooks/useAppUserMfa'
