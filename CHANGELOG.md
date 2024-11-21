@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- submit button conditional logic not taking into account conditional elements
 - Switch element not displaying custom validation message
 
 ### Changed

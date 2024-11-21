@@ -4,6 +4,7 @@ import * as React from 'react'
 import { conditionalLogicService } from '@oneblink/sdk-core'
 
 import { FormElementsConditionallyShown } from '../types/form'
+import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
 
 export default function useConditionalLogic(
   definition: FormTypes.Form,
@@ -34,14 +35,25 @@ export default function useConditionalLogic(
     }
     const { requiresAllConditionalPredicates, conditionalPredicates } =
       definition.enableSubmission
+    const { model } = cleanFormSubmissionModel(
+      submission,
+      definition.elements,
+      formElementsConditionallyShown,
+      true,
+    )
     return conditionalLogicService.evaluateConditionalPredicates({
       isConditional: true,
       requiresAllConditionalPredicates,
       conditionalPredicates,
       formElements: definition.elements,
-      submission,
+      submission: model,
     })
-  }, [definition.elements, definition.enableSubmission, submission])
+  }, [
+    definition.elements,
+    definition.enableSubmission,
+    formElementsConditionallyShown,
+    submission,
+  ])
 
   return {
     conditionalLogicError,
