@@ -29,6 +29,179 @@ type Props = {
   isExternalIdentityProviderUser?: boolean
 }
 
+type MfaStatusProps = {
+  isExternalIdentityProviderUser: boolean
+  isLoading: boolean
+  isMfaEnabled: boolean
+  loadAppUserMfa: () => void
+  loadingError?: Error
+}
+
+function MfaStatus({
+  isExternalIdentityProviderUser,
+  isLoading,
+  loadingError,
+  loadAppUserMfa,
+  isMfaEnabled,
+}: MfaStatusProps) {
+  if (isExternalIdentityProviderUser) return null
+
+  if (isLoading) {
+    return (
+      <Box padding={3}>
+        <Grid container justifyContent="center">
+          <CircularProgress />
+        </Grid>
+      </Box>
+    )
+  }
+
+  if (loadingError) {
+    return (
+      <div>
+        <ErrorMessage
+          title="Error Loading Multi Factor Authentication Configuration"
+          onTryAgain={loadAppUserMfa}
+        >
+          {loadingError.message}
+        </ErrorMessage>
+      </div>
+    )
+  }
+
+  if (isMfaEnabled) {
+    return (
+      <Chip
+        label="Enabled"
+        icon={<MaterialIcon color="success">verified_user</MaterialIcon>}
+      />
+    )
+  }
+
+  return (
+    <Chip
+      label="Disabled"
+      icon={<MaterialIcon color="warning">remove_moderator</MaterialIcon>}
+    />
+  )
+}
+
+function MfaSetup({
+  ssoSetupUrl,
+  isExternalIdentityProviderUser,
+}: {
+  ssoSetupUrl: string
+  isExternalIdentityProviderUser: boolean
+}) {
+  const {
+    setupError,
+    isMfaEnabled,
+    isDisablingMfa,
+    isSettingUpMfa,
+    mfaSetup,
+    beginMfaSetup,
+    cancelMfaSetup,
+    completeMfaSetup,
+    clearMfaSetupError,
+    beginDisablingMfa,
+    completeDisablingMfa,
+    cancelDisablingMfa,
+  } = useAppUserMfa()
+
+  if (ssoSetupUrl) {
+    return (
+      <Grid item>
+        <Button
+          variant="outlined"
+          size="small"
+          component="a"
+          href={ssoSetupUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cypress="configure-mfa-button"
+        >
+          Configure MFA
+        </Button>
+      </Grid>
+    )
+  }
+
+  if (isExternalIdentityProviderUser) {
+    return (
+      <Grid item>
+        <Tooltip title="MFA must be configured in your login provider.">
+          <span>
+            <Button
+              variant="outlined"
+              size="small"
+              disabled={isExternalIdentityProviderUser}
+              data-cypress="configure-mfa-button"
+            >
+              Configure MFA
+            </Button>
+          </span>
+        </Tooltip>
+      </Grid>
+    )
+  }
+
+  return (
+    <>
+      <Grid item>
+        <Button
+          variant="outlined"
+          size="small"
+          disabled={!isMfaEnabled}
+          data-cypress="disable-mfa-button"
+          onClick={beginDisablingMfa}
+        >
+          Disable MFA
+        </Button>
+        <ConfirmDialog
+          isOpen={isDisablingMfa}
+          onClose={cancelDisablingMfa}
+          onConfirm={completeDisablingMfa}
+          title="Please Confirm"
+          confirmButtonText="Disable MFA"
+          confirmButtonIcon={<MaterialIcon>remove_moderator</MaterialIcon>}
+          cypress={{
+            dialog: 'disable-mfa-dialog',
+            confirmButton: 'disable-mfa-dialog-confirm-button',
+            cancelButton: 'disable-mfa-dialog-cancel-button',
+            error: 'disable-mfa-dialog-error-message',
+          }}
+        >
+          <Typography variant="body2">
+            Are you sure want to disable multi factor authentication (MFA)?
+          </Typography>
+        </ConfirmDialog>
+      </Grid>
+
+      <Grid item>
+        <LoadingButton
+          variant="contained"
+          size="small"
+          loading={isSettingUpMfa}
+          disabled={isMfaEnabled}
+          onClick={beginMfaSetup}
+          data-cypress="setup-mfa-button"
+        >
+          Setup MFA
+        </LoadingButton>
+        <MfaDialog
+          mfaSetup={mfaSetup}
+          onClose={cancelMfaSetup}
+          onCompleted={completeMfaSetup}
+        />
+      </Grid>
+      <ErrorSnackbar open={!!setupError} onClose={clearMfaSetupError}>
+        <span data-cypress="mfa-setup-error-message">
+          {setupError?.message}
+        </span>
+      </ErrorSnackbar>
+    </>
+  )
+}
 /**
  * React Component that provides a mechanism for app users to configure Multi
  * Factor Authentication. `<AppUserMfaProvider />` must be provided above this
@@ -69,23 +242,8 @@ export default function MultiFactorAuthentication({
   ssoSetupUrl,
   isExternalIdentityProviderUser,
 }: Props) {
-  const {
-    loadingError,
-    setupError,
-    isLoading,
-    isMfaEnabled,
-    isDisablingMfa,
-    isSettingUpMfa,
-    mfaSetup,
-    loadAppUserMfa,
-    beginMfaSetup,
-    cancelMfaSetup,
-    completeMfaSetup,
-    clearMfaSetupError,
-    beginDisablingMfa,
-    completeDisablingMfa,
-    cancelDisablingMfa,
-  } = useAppUserMfa()
+  const { loadingError, isLoading, isMfaEnabled, loadAppUserMfa } =
+    useAppUserMfa()
 
   return (
     <Grid item xs={true} lg={8}>
@@ -96,40 +254,15 @@ export default function MultiFactorAuthentication({
               <Grid item xs>
                 <Typography variant="h4" fontWeight="light">
                   Multi Factor Authentication{' '}
-                  {isExternalIdentityProviderUser ? undefined : isLoading ? (
-                    <Box padding={3}>
-                      <Grid container justifyContent="center">
-                        <CircularProgress />
-                      </Grid>
-                    </Box>
-                  ) : loadingError ? (
-                    <div>
-                      <ErrorMessage
-                        title="Error Loading Multi Factor Authentication Configuration"
-                        onTryAgain={loadAppUserMfa}
-                      >
-                        {loadingError.message}
-                      </ErrorMessage>
-                    </div>
-                  ) : isMfaEnabled ? (
-                    <Chip
-                      label="Enabled"
-                      icon={
-                        <MaterialIcon color="success">
-                          verified_user
-                        </MaterialIcon>
-                      }
-                    />
-                  ) : (
-                    <Chip
-                      label="Disabled"
-                      icon={
-                        <MaterialIcon color="warning">
-                          remove_moderator
-                        </MaterialIcon>
-                      }
-                    />
-                  )}
+                  <MfaStatus
+                    loadAppUserMfa={loadAppUserMfa}
+                    isLoading={isLoading}
+                    loadingError={loadingError}
+                    isMfaEnabled={isMfaEnabled}
+                    isExternalIdentityProviderUser={
+                      !!isExternalIdentityProviderUser
+                    }
+                  />
                 </Typography>
                 <Box marginY={1}>
                   <Divider />
@@ -142,97 +275,12 @@ export default function MultiFactorAuthentication({
                   MFA to enhance your account security.
                 </Typography>
                 <Grid container justifyContent="flex-end" spacing={1}>
-                  {ssoSetupUrl ? (
-                    <Grid item>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        component="a"
-                        href={ssoSetupUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        data-cypress="configure-mfa-button"
-                      >
-                        Configure MFA
-                      </Button>
-                    </Grid>
-                  ) : isExternalIdentityProviderUser ? (
-                    <Grid item>
-                      <Tooltip title="MFA must be configured in your login provider.">
-                        <span>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            disabled={isExternalIdentityProviderUser}
-                            data-cypress="configure-mfa-button"
-                          >
-                            Configure MFA
-                          </Button>
-                        </span>
-                      </Tooltip>
-                    </Grid>
-                  ) : (
-                    <>
-                      <Grid item>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          disabled={!isMfaEnabled}
-                          data-cypress="disable-mfa-button"
-                          onClick={beginDisablingMfa}
-                        >
-                          Disable MFA
-                        </Button>
-                        <ConfirmDialog
-                          isOpen={isDisablingMfa}
-                          onClose={cancelDisablingMfa}
-                          onConfirm={completeDisablingMfa}
-                          title="Please Confirm"
-                          confirmButtonText="Disable MFA"
-                          confirmButtonIcon={
-                            <MaterialIcon>remove_moderator</MaterialIcon>
-                          }
-                          cypress={{
-                            dialog: 'disable-mfa-dialog',
-                            confirmButton: 'disable-mfa-dialog-confirm-button',
-                            cancelButton: 'disable-mfa-dialog-cancel-button',
-                            error: 'disable-mfa-dialog-error-message',
-                          }}
-                        >
-                          <Typography variant="body2">
-                            Are you sure want to disable multi factor
-                            authentication (MFA)?
-                          </Typography>
-                        </ConfirmDialog>
-                      </Grid>
-
-                      <Grid item>
-                        <LoadingButton
-                          variant="contained"
-                          size="small"
-                          loading={isSettingUpMfa}
-                          disabled={isMfaEnabled}
-                          onClick={beginMfaSetup}
-                          data-cypress="setup-mfa-button"
-                        >
-                          Setup MFA
-                        </LoadingButton>
-                        <MfaDialog
-                          mfaSetup={mfaSetup}
-                          onClose={cancelMfaSetup}
-                          onCompleted={completeMfaSetup}
-                        />
-                      </Grid>
-                      <ErrorSnackbar
-                        open={!!setupError}
-                        onClose={clearMfaSetupError}
-                      >
-                        <span data-cypress="mfa-setup-error-message">
-                          {setupError?.message}
-                        </span>
-                      </ErrorSnackbar>
-                    </>
-                  )}
+                  <MfaSetup
+                    isExternalIdentityProviderUser={
+                      !!isExternalIdentityProviderUser
+                    }
+                    ssoSetupUrl={ssoSetupUrl || ''}
+                  />
                 </Grid>
               </Grid>
             </Grid>

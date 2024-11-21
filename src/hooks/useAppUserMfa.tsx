@@ -61,7 +61,7 @@ export const AppUserMfaContext = React.createContext<
  *
  * function App() {
  *   return (
- *     <AppUserMfaProvider>
+ *     <AppUserMfaProvider isExternalIdentityProviderUser={false}>
  *       <Component />
  *     </AppUserMfaProvider>
  *   )
@@ -79,11 +79,11 @@ export const AppUserMfaContext = React.createContext<
  */
 export function AppUserMfaProvider({
   children,
+  isExternalIdentityProviderUser,
 }: {
   children: React.ReactNode
+  isExternalIdentityProviderUser: boolean
 }) {
-  const userProfile = authService.getUserProfile()
-  const isExternalIdentityProviderUser = userProfile?.providerType !== 'Cognito'
   const [state, setState] = React.useState<AppUserMfaState>({
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
