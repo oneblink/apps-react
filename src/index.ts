@@ -52,4 +52,11 @@ export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as PaymentReceipt } from './PaymentReceipt'
 export { default as PaymentForm } from './components/payments/PaymentForm'
 
+export { default as MultiFactorAuthentication } from './components/mfa/MultiFactorAuthentication'
+
+export {
+  AppUserMfaProvider,
+  useUserMeetsMfaRequirement,
+} from './hooks/useAppUserMfa'
+
 export * from './types/form'
