@@ -27,7 +27,6 @@ function MfaDialog({
   onCompleted: () => void
   mfaSetup: Awaited<ReturnType<typeof authService.setupMfa>> | undefined
 }) {
-  const userProfile = authService.getUserProfile()
   const [code, setState] = React.useState('')
   const [hasSuccessfullySaved, showSuccessfullySaved, hideSuccessfullySaved] =
     useBooleanState(false)
@@ -38,7 +37,7 @@ function MfaDialog({
     if (mfaSetup) {
       return authService.generateMfaQrCodeUrl(mfaSetup)
     }
-  }, [mfaSetup?.secretCode, userProfile?.email])
+  }, [mfaSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
   const handleSave = React.useCallback(async () => {
