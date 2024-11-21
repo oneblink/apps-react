@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Grid, Icon, Snackbar } from '@mui/material'
+import { Grid, Icon, Snackbar, SnackbarContent } from '@mui/material'
 
 function SuccessSnackbar({
   open,
@@ -21,20 +21,24 @@ function SuccessSnackbar({
         if (reason === 'clickaway') {
           return
         }
+
         onClose(false)
       }}
       autoHideDuration={3000}
     >
-      <Alert severity="success">
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs="auto">
-            <Icon>check_circle</Icon>
+      <SnackbarContent
+        sx={{ bgcolor: 'success.main' }}
+        message={
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs="auto">
+              <Icon>check_circle</Icon>
+            </Grid>
+            <Grid item xs>
+              {children}
+            </Grid>
           </Grid>
-          <Grid item xs>
-            {children}
-          </Grid>
-        </Grid>
-      </Alert>
+        }
+      />
     </Snackbar>
   )
 }
