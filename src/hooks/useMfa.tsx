@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { authService } from '@oneblink/apps'
 
-type AppUserMfaState = {
+type MfaState = {
   isLoading: boolean
   isMfaEnabled: boolean
   loadingError?: Error
@@ -11,8 +11,8 @@ type AppUserMfaState = {
   mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
 }
 
-export const AppUserMfaContext = React.createContext<
-  AppUserMfaState & {
+export const MfaContext = React.createContext<
+  MfaState & {
     beginMfaSetup: () => void
     cancelMfaSetup: () => void
     completeMfaSetup: () => void
@@ -20,7 +20,7 @@ export const AppUserMfaContext = React.createContext<
     cancelDisablingMfa: () => void
     completeDisablingMfa: () => void
     clearMfaSetupError: () => void
-    loadAppUserMfa: () => void
+    loadMfa: () => void
   }
 >({
   isLoading: true,
@@ -34,7 +34,7 @@ export const AppUserMfaContext = React.createContext<
   cancelDisablingMfa: () => {},
   completeDisablingMfa: () => {},
   clearMfaSetupError: () => {},
-  loadAppUserMfa: () => {},
+  loadMfa: () => {},
 })
 
 /**
@@ -49,21 +49,21 @@ export const AppUserMfaContext = React.createContext<
  * ```js
  * import * as React from 'react'
  * import {
- *   AppUserMfaProvider,
+ *   MfaProvider,
  *   useUserMeetsMfaRequirement,
  * } from '@oneblink/apps-react'
  *
  * function Component() {
  *   const { isLoading, userMeetsMfaRequirement } =
  *     useUserMeetsMfaRequirement(true)
- *   // use App User MFA Requirement details here
+ *   // use MFA Requirement details here
  * }
  *
  * function App() {
  *   return (
- *     <AppUserMfaProvider isExternalIdentityProviderUser={false}>
+ *     <MfaProvider isExternalIdentityProviderUser={false}>
  *       <Component />
- *     </AppUserMfaProvider>
+ *     </MfaProvider>
  *   )
  * }
  *
@@ -77,21 +77,21 @@ export const AppUserMfaContext = React.createContext<
  * @returns
  * @group Components
  */
-export function AppUserMfaProvider({
+export function MfaProvider({
   children,
   isExternalIdentityProviderUser,
 }: {
   children: React.ReactNode
   isExternalIdentityProviderUser: boolean
 }) {
-  const [state, setState] = React.useState<AppUserMfaState>({
+  const [state, setState] = React.useState<MfaState>({
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
     isSettingUpMfa: false,
     isDisablingMfa: false,
   })
 
-  const loadAppUserMfa = React.useCallback(
+  const loadMfa = React.useCallback(
     async (abortSignal?: AbortSignal) => {
       setState((currentState) => ({
         ...currentState,
@@ -192,16 +192,16 @@ export function AppUserMfaProvider({
       return
     }
 
-    loadAppUserMfa()
+    loadMfa()
 
     return () => {}
-  }, [isExternalIdentityProviderUser, loadAppUserMfa])
+  }, [isExternalIdentityProviderUser, loadMfa])
 
   const value = React.useMemo(() => {
     return {
       ...state,
       clearMfaSetupError,
-      loadAppUserMfa,
+      loadMfa,
       beginMfaSetup,
       cancelMfaSetup,
       completeMfaSetup,
@@ -212,7 +212,7 @@ export function AppUserMfaProvider({
   }, [
     state,
     clearMfaSetupError,
-    loadAppUserMfa,
+    loadMfa,
     beginMfaSetup,
     cancelMfaSetup,
     completeMfaSetup,
@@ -222,19 +222,19 @@ export function AppUserMfaProvider({
   ])
 
   return (
-    <AppUserMfaContext.Provider value={value}>
+    <MfaContext.Provider value={value}>
       {children}
-    </AppUserMfaContext.Provider>
+    </MfaContext.Provider>
   )
 }
 
-export default function useAppUserMfa() {
-  return React.useContext(AppUserMfaContext)
+export default function useMfa() {
+  return React.useContext(MfaContext)
 }
 
 /**
  * React hook to get the state associated to the logged in user's MFA status.
- * Will throw an Error if used outside of the `<AppUserMfaProvider />`
+ * Will throw an Error if used outside of the `<MfaProvider />`
  * component.
  *
  * Example
@@ -242,41 +242,41 @@ export default function useAppUserMfa() {
  * ```js
  * import { useUserMeetsMfaRequirement } from '@oneblink/apps-react'
  *
- * const isAppUserMfaRequired = true
+ * const isMfaRequired = true
  *
  * function Component() {
  *   const { isLoading, userMeetsMfaRequirement } =
- *     useUserMeetsMfaRequirement(isAppUserMfaRequired)
+ *     useUserMeetsMfaRequirement(isMfaRequired)
  * }
  * ```
  *
  * @returns
  * @group Hooks
  */
-export function useUserMeetsMfaRequirement(isAppUserMfaRequired: boolean) {
-  const context = React.useContext(AppUserMfaContext)
+export function useUserMeetsMfaRequirement(isMfaRequired: boolean) {
+  const context = React.useContext(MfaContext)
 
   if (!context) {
     throw new Error(
-      `"useUserMeetsMfaRequirement" hook was used outside of the "<AppUserMfaProvider />" component's children.`,
+      `"useUserMeetsMfaRequirement" hook was used outside of the "<MfaProvider />" component's children.`,
     )
   }
 
-  const { isLoading, loadingError, loadAppUserMfa, isMfaEnabled } = context
+  const { isLoading, loadingError, loadMfa, isMfaEnabled } = context
 
-  if (!isAppUserMfaRequired) {
+  if (!isMfaRequired) {
     return {
       isLoading: false,
       loadingError: undefined,
       userMeetsMfaRequirement: true,
-      loadAppUserMfa,
+      loadMfa,
     }
   }
 
   return {
     isLoading,
     loadingError,
-    loadAppUserMfa,
+    loadMfa,
     userMeetsMfaRequirement: isMfaEnabled,
   }
 }

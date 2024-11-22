@@ -17,7 +17,7 @@ import ConfirmDialog from '../ConfirmDialog'
 import MfaDialog from './MfaDialog'
 import ErrorSnackbar from '../ErrorSnackbar'
 import MaterialIcon from '../MaterialIcon'
-import useAppUserMfa from '../../hooks/useAppUserMfa'
+import useMfa from '../../hooks/useMfa'
 import ErrorMessage from '../messages/ErrorMessage'
 
 export const LargeIcon = styled(Icon)(({ theme }) => ({
@@ -33,7 +33,7 @@ type MfaStatusProps = {
   isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
-  loadAppUserMfa: () => void
+  loadMfa: () => void
   loadingError?: Error
 }
 
@@ -41,7 +41,7 @@ function MfaStatus({
   isExternalIdentityProviderUser,
   isLoading,
   loadingError,
-  loadAppUserMfa,
+  loadMfa,
   isMfaEnabled,
 }: MfaStatusProps) {
   if (isExternalIdentityProviderUser) return null
@@ -61,7 +61,7 @@ function MfaStatus({
       <div>
         <ErrorMessage
           title="Error Loading Multi Factor Authentication Configuration"
-          onTryAgain={loadAppUserMfa}
+          onTryAgain={loadMfa}
         >
           {loadingError.message}
         </ErrorMessage>
@@ -106,7 +106,7 @@ function MfaSetup({
     beginDisablingMfa,
     completeDisablingMfa,
     cancelDisablingMfa,
-  } = useAppUserMfa()
+  } = useMfa()
 
   if (ssoSetupUrl) {
     return (
@@ -204,7 +204,7 @@ function MfaSetup({
 }
 /**
  * React Component that provides a mechanism for app users to configure Multi
- * Factor Authentication. `<AppUserMfaProvider />` must be provided above this
+ * Factor Authentication. `<MfaProvider />` must be provided above this
  * component in the component tree.
  *
  * #### Example
@@ -212,7 +212,7 @@ function MfaSetup({
  * ```js
  * import * as React from 'react'
  * import {
- *   AppUserMfaProvider,
+ *   MfaProvider,
  *   MultiFactorAuthentication,
  * } from '@oneblink/apps-react'
  *
@@ -222,9 +222,9 @@ function MfaSetup({
  *
  * function App() {
  *   return (
- *     <AppUserMfaProvider>
+ *     <MfaProvider>
  *       <Component />
- *     </AppUserMfaProvider>
+ *     </MfaProvider>
  *   )
  * }
  *
@@ -242,8 +242,8 @@ export default function MultiFactorAuthentication({
   ssoSetupUrl,
   isExternalIdentityProviderUser,
 }: Props) {
-  const { loadingError, isLoading, isMfaEnabled, loadAppUserMfa } =
-    useAppUserMfa()
+  const { loadingError, isLoading, isMfaEnabled, loadMfa } =
+    useMfa()
 
   return (
     <Grid item xs={true} lg={8}>
@@ -255,7 +255,7 @@ export default function MultiFactorAuthentication({
                 <Typography variant="h4" fontWeight="light">
                   Multi Factor Authentication{' '}
                   <MfaStatus
-                    loadAppUserMfa={loadAppUserMfa}
+                    loadMfa={loadMfa}
                     isLoading={isLoading}
                     loadingError={loadingError}
                     isMfaEnabled={isMfaEnabled}
