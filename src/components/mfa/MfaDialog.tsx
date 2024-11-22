@@ -16,7 +16,7 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import SuccessSnackbar from '../SuccessSnackbar'
 import InputField from '../InputField'
-import LoadingButton from '../LoadingButton'
+import { LoadingButton } from '@mui/lab'
 
 function MfaDialog({
   onClose,
