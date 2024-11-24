@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `<MultiFactorAuthentication>` & `<AppUserMfaProvider>` components
 - `useUserMeetsMfaRequirement` hook
+- `<CalendarBookingsForm /> & <CalendarBookingsRescheduleForm /> & `<CalendarBookingsCancelForm />`
 
 ## [6.9.2] - 2024-11-13
 

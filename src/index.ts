@@ -52,6 +52,10 @@ export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as PaymentReceipt } from './PaymentReceipt'
 export { default as PaymentForm } from './components/payments/PaymentForm'
 
+export { default as CalendarBookingsForm } from './components/calendar-bookings/CalendarBookingsForm'
+export { default as CalendarBookingsRescheduleForm } from './components/calendar-bookings/CalendarBookingsReschedulingForm'
+export { default as CalendarBookingsCancelForm } from './components/calendar-bookings/CalendarBookingsCancelForm'
+
 export { default as MultiFactorAuthentication } from './components/mfa/MultiFactorAuthentication'
 
 export {
