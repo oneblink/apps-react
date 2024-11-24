@@ -189,7 +189,9 @@ function NylasBookingForm({
                   { 'is-loading': isRunningPostSubmissionAction },
                 )}
                 disabled={isRunningPostSubmissionAction}
-                onClick={() => onDone(formSubmissionResult)}
+                onClick={() =>
+                  executePostSubmissionAction(formSubmissionResult)
+                }
               >
                 Done
               </button>
