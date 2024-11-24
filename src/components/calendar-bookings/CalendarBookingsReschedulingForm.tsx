@@ -2,7 +2,7 @@ import React from 'react'
 import { NylasScheduling } from '@nylas/react'
 import { schedulingService } from '@oneblink/apps'
 import ErrorMessage from '../messages/ErrorMessage'
-import CalendarBookingsPage from './CalendarBookingsContainer'
+import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'
 
 function NylasReschedulingForm({
@@ -37,7 +37,6 @@ function NylasReschedulingForm({
           timeslotConfirmed: onTimeSlotConfirmed,
           bookedEventInfo: async (event) => {
             event.preventDefault()
-            console.log(event)
             if (event.detail.error) {
               setBookingError(
                 event.detail.error.message ?? 'Calendar Booking Error',
@@ -65,11 +64,11 @@ function NylasReschedulingForm({
 
 function ReschedulingForm() {
   return (
-    <CalendarBookingsPage
+    <CalendarBookingsContainer
       fetchConfiguration={schedulingService.createNylasExistingBookingSession}
     >
       {(props) => <NylasReschedulingForm {...props} />}
-    </CalendarBookingsPage>
+    </CalendarBookingsContainer>
   )
 }
 

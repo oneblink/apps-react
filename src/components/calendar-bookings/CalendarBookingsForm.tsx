@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import { Receipt } from '../receipts'
 import ErrorModal from './ErrorModal'
 import OnLoading from '../renderer/OnLoading'
-import CalendarBookingsPage from './CalendarBookingsContainer'
+import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'
 
 function NylasBookingForm({
@@ -20,14 +20,14 @@ function NylasBookingForm({
   configurationId,
   sessionId,
   onBookingConfirmed,
-  postSubmissionAction,
+  onDone,
 }: Awaited<
   ReturnType<typeof schedulingService.createNylasNewBookingSession>
 > & {
   submissionId: string
-  postSubmissionAction: (
+  onDone: (
     formSubmissionResult: submissionService.FormSubmissionResult,
-  ) => void
+  ) => Promise<void>
 }) {
   const { setBookingError, onTimeSlotConfirmed } = useCalendarBookings()
 
@@ -66,6 +66,33 @@ function NylasBookingForm({
     }))
   }, [])
 
+  const executePostSubmissionAction = React.useCallback(
+    async (formSubmissionResult: submissionService.FormSubmissionResult) => {
+      setPostSubmissionState((currentState) => ({
+        ...currentState,
+        formSubmissionResult,
+        isRunningPostSubmissionAction: true,
+        postSubmissionError: null,
+      }))
+
+      try {
+        await onDone({
+          ...formSubmissionResult,
+          scheduling: null,
+        })
+      } catch (error) {
+        console.warn('Error while running post submission action', error)
+        setPostSubmissionState((currentState) => ({
+          ...currentState,
+          formSubmissionResult,
+          isRunningPostSubmissionAction: false,
+          postSubmissionError: error as OneBlinkAppsError,
+        }))
+      }
+    },
+    [onDone],
+  )
+
   const handleConfirmedBooking = React.useCallback(async () => {
     setPostSubmissionState((currentState) => ({
       ...currentState,
@@ -80,8 +107,8 @@ function NylasBookingForm({
         formSubmissionResult,
       }))
       if (formSubmissionResult.payment) {
-        setTimeout(() => {
-          postSubmissionAction(formSubmissionResult)
+        setTimeout(async () => {
+          executePostSubmissionAction(formSubmissionResult)
         }, 2000)
       } else {
         setPostSubmissionState((currentState) => ({
@@ -98,7 +125,7 @@ function NylasBookingForm({
         confirmingBookingError: error as OneBlinkAppsError,
       }))
     }
-  }, [postSubmissionAction, onBookingConfirmed])
+  }, [onBookingConfirmed, executePostSubmissionAction])
 
   return (
     <>
@@ -126,7 +153,6 @@ function NylasBookingForm({
                     event.detail.error.message ?? 'Calendar Booking Error',
                   )
                 } else {
-                  event.detail
                   await handleConfirmedBooking()
                 }
               },
@@ -163,7 +189,7 @@ function NylasBookingForm({
                   { 'is-loading': isRunningPostSubmissionAction },
                 )}
                 disabled={isRunningPostSubmissionAction}
-                onClick={() => postSubmissionAction(formSubmissionResult)}
+                onClick={() => onDone(formSubmissionResult)}
               >
                 Done
               </button>
@@ -186,23 +212,18 @@ function NylasBookingForm({
 }
 
 function CalendarBookingsForm({
-  postSubmissionAction,
+  onDone,
 }: {
-  postSubmissionAction: (
+  onDone: (
     formSubmissionResult: submissionService.FormSubmissionResult,
-  ) => void
+  ) => Promise<void>
 }) {
   return (
-    <CalendarBookingsPage
+    <CalendarBookingsContainer
       fetchConfiguration={schedulingService.createNylasNewBookingSession}
     >
-      {(props) => (
-        <NylasBookingForm
-          {...props}
-          postSubmissionAction={postSubmissionAction}
-        />
-      )}
-    </CalendarBookingsPage>
+      {(props) => <NylasBookingForm {...props} onDone={onDone} />}
+    </CalendarBookingsContainer>
   )
 }
 

@@ -58,7 +58,7 @@ function CalendarBookingLoader<T>({
   )
 }
 
-export default function CalendarBookingsPage<T>({
+export default function CalendarBookingsContainer<T>({
   fetchConfiguration,
   children,
 }: {

@@ -2,7 +2,7 @@ import React from 'react'
 import { NylasScheduling } from '@nylas/react'
 import { schedulingService } from '@oneblink/apps'
 import ErrorMessage from '../messages/ErrorMessage'
-import CalendarBookingsPage from './CalendarBookingsContainer'
+import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'
 
 function NylasCancelForm({
@@ -50,11 +50,11 @@ function NylasCancelForm({
 
 function CalendarBookingsCancelForm() {
   return (
-    <CalendarBookingsPage
+    <CalendarBookingsContainer
       fetchConfiguration={schedulingService.createNylasExistingBookingSession}
     >
       {(props) => <NylasCancelForm {...props} />}
-    </CalendarBookingsPage>
+    </CalendarBookingsContainer>
   )
 }
 
