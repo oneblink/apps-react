@@ -26,7 +26,6 @@ export const LargeIcon = styled(Icon)(({ theme }) => ({
 
 type Props = {
   ssoSetupUrl?: string
-  isExternalIdentityProviderUser?: boolean
 }
 
 type MfaStatusProps = {
@@ -86,13 +85,7 @@ function MfaStatus({
   )
 }
 
-function MfaSetup({
-  ssoSetupUrl,
-  isExternalIdentityProviderUser,
-}: {
-  ssoSetupUrl: string
-  isExternalIdentityProviderUser: boolean
-}) {
+function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
   const {
     setupError,
     isMfaEnabled,
@@ -106,6 +99,7 @@ function MfaSetup({
     beginDisablingMfa,
     completeDisablingMfa,
     cancelDisablingMfa,
+    isExternalIdentityProviderUser,
   } = useMfa()
 
   if (ssoSetupUrl) {
@@ -238,12 +232,14 @@ function MfaSetup({
  * @returns
  * @group Components
  */
-export default function MultiFactorAuthentication({
-  ssoSetupUrl,
-  isExternalIdentityProviderUser,
-}: Props) {
-  const { loadingError, isLoading, isMfaEnabled, loadMfa } =
-    useMfa()
+export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
+  const {
+    loadingError,
+    isLoading,
+    isMfaEnabled,
+    loadMfa,
+    isExternalIdentityProviderUser,
+  } = useMfa()
 
   return (
     <Grid item xs={true} lg={8}>
@@ -275,12 +271,7 @@ export default function MultiFactorAuthentication({
                   MFA to enhance your account security.
                 </Typography>
                 <Grid container justifyContent="flex-end" spacing={1}>
-                  <MfaSetup
-                    isExternalIdentityProviderUser={
-                      !!isExternalIdentityProviderUser
-                    }
-                    ssoSetupUrl={ssoSetupUrl || ''}
-                  />
+                  <MfaSetup ssoSetupUrl={ssoSetupUrl || ''} />
                 </Grid>
               </Grid>
             </Grid>
