@@ -2,6 +2,7 @@ import * as React from 'react'
 import { authService } from '@oneblink/apps'
 
 type MfaState = {
+  isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
   loadingError?: Error
@@ -23,6 +24,7 @@ export const MfaContext = React.createContext<
     loadMfa: () => void
   }
 >({
+  isExternalIdentityProviderUser: false,
   isLoading: true,
   isMfaEnabled: false,
   isSettingUpMfa: false,
@@ -85,39 +87,37 @@ export function MfaProvider({
   isExternalIdentityProviderUser: boolean
 }) {
   const [state, setState] = React.useState<MfaState>({
+    isExternalIdentityProviderUser,
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
     isSettingUpMfa: false,
     isDisablingMfa: false,
   })
 
-  const loadMfa = React.useCallback(
-    async (abortSignal?: AbortSignal) => {
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: true,
-        isMfaEnabled: false,
-        loadingError: undefined,
-      }))
-      try {
-        const newIsMfaEnabled = await authService.checkIsMfaEnabled()
-        if (!abortSignal?.aborted) {
-          setState((currentState) => ({
-            ...currentState,
-            isLoading: false,
-            isMfaEnabled: newIsMfaEnabled,
-          }))
-        }
-      } catch (error) {
+  const loadMfa = React.useCallback(async (abortSignal?: AbortSignal) => {
+    setState((currentState) => ({
+      ...currentState,
+      isLoading: true,
+      isMfaEnabled: false,
+      loadingError: undefined,
+    }))
+    try {
+      const newIsMfaEnabled = await authService.checkIsMfaEnabled()
+      if (!abortSignal?.aborted) {
         setState((currentState) => ({
           ...currentState,
           isLoading: false,
-          loadingError: error as Error,
+          isMfaEnabled: newIsMfaEnabled,
         }))
       }
-    },
-    [],
-  )
+    } catch (error) {
+      setState((currentState) => ({
+        ...currentState,
+        isLoading: false,
+        loadingError: error as Error,
+      }))
+    }
+  }, [])
 
   const clearMfaSetupError = React.useCallback(() => {
     setState((currentState) => ({
@@ -221,11 +221,7 @@ export function MfaProvider({
     completeDisablingMfa,
   ])
 
-  return (
-    <MfaContext.Provider value={value}>
-      {children}
-    </MfaContext.Provider>
-  )
+  return <MfaContext.Provider value={value}>{children}</MfaContext.Provider>
 }
 
 export default function useMfa() {
@@ -233,8 +229,8 @@ export default function useMfa() {
 }
 
 /**
- * React hook to get the state associated to the logged in user's MFA status.
- * Will throw an Error if used outside of the `<MfaProvider />`
+ * React hook to check if the logged in user meets the MFA requirement of your
+ * application. Will throw an Error if used outside of the `<MfaProvider />`
  * component.
  *
  * Example
@@ -245,7 +241,7 @@ export default function useMfa() {
  * const isMfaRequired = true
  *
  * function Component() {
- *   const { isLoading, userMeetsMfaRequirement } =
+ *   const userMeetsMfaRequirement =
  *     useUserMeetsMfaRequirement(isMfaRequired)
  * }
  * ```
@@ -262,21 +258,9 @@ export function useUserMeetsMfaRequirement(isMfaRequired: boolean) {
     )
   }
 
-  const { isLoading, loadingError, loadMfa, isMfaEnabled } = context
-
-  if (!isMfaRequired) {
-    return {
-      isLoading: false,
-      loadingError: undefined,
-      userMeetsMfaRequirement: true,
-      loadMfa,
-    }
+  const { isMfaEnabled, isExternalIdentityProviderUser } = context
+  if (!isMfaRequired || isExternalIdentityProviderUser) {
+    return true
   }
-
-  return {
-    isLoading,
-    loadingError,
-    loadMfa,
-    userMeetsMfaRequirement: isMfaEnabled,
-  }
+  return isMfaEnabled
 }
