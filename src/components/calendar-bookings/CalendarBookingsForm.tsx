@@ -12,6 +12,7 @@ import ErrorModal from './ErrorModal'
 import OnLoading from '../renderer/OnLoading'
 import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'
+import { useHistory } from 'react-router-dom'
 
 function NylasBookingForm({
   submissionId,
@@ -30,6 +31,7 @@ function NylasBookingForm({
   ) => Promise<void>
 }) {
   const { setBookingError, onTimeSlotConfirmed } = useCalendarBookings()
+  const history = useHistory()
 
   const [
     {
@@ -76,10 +78,18 @@ function NylasBookingForm({
       }))
 
       try {
-        await onDone({
+        const updatedFormSubmissionResult = {
           ...formSubmissionResult,
           scheduling: null,
-        })
+        }
+        if (formSubmissionResult.payment) {
+          await submissionService.executePostSubmissionAction(
+            updatedFormSubmissionResult,
+            history.replace,
+          )
+        } else {
+          await onDone(updatedFormSubmissionResult)
+        }
       } catch (error) {
         console.warn('Error while running post submission action', error)
         setPostSubmissionState((currentState) => ({
@@ -90,7 +100,7 @@ function NylasBookingForm({
         }))
       }
     },
-    [onDone],
+    [history.replace, onDone],
   )
 
   const handleConfirmedBooking = React.useCallback(async () => {
