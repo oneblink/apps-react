@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.10.0] - 2024-11-27
+
 ### Fixed
 
 - submit button conditional logic not taking into account conditional elements
@@ -21,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `<MultiFactorAuthentication>` & `<AppUserMfaProvider>` components
 - `useUserMeetsMfaRequirement` hook
 - `<CalendarBookingsForm /> & <CalendarBookingsRescheduleForm /> & `<CalendarBookingsCancelForm />`
+
+### Dependencies
+
+- depend upon [@nylas/react](https://www.npmjs.com/package/@nylas/react) 1.3.1
+
+- depend upon [qrcode.react](https://www.npmjs.com/package/qrcode.react) [4.1.0](https://github.com/zpao/qrcode.react/releases/tag/v4.1.0)
 
 ## [6.9.2] - 2024-11-13
 
