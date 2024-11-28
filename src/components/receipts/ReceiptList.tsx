@@ -23,25 +23,28 @@ function ReceiptList({
         <div className="ob-list__content-wrapper">
           <div className="ob-list__content">
             {!warningMessage ? (
-              <MaterialIcon
-                className={clsx(
-                  'has-text-centered has-text-success icon-x-large',
-                  successIconClassName,
-                )}
-              >
-                check_circle_outline
-              </MaterialIcon>
-            ) : (
-              <>
+              <p className="has-text-centered">
                 <MaterialIcon
                   className={clsx(
-                    'has-text-centered has-text-danger icon-x-large',
-                    warningIconClassName,
+                    'has-text-success icon-x-large',
+                    successIconClassName,
                   )}
                 >
-                  warning
+                  check_circle_outline
                 </MaterialIcon>
-
+              </p>
+            ) : (
+              <>
+                <p className="has-text-centered">
+                  <MaterialIcon
+                    className={clsx(
+                      'has-text-danger icon-x-large',
+                      warningIconClassName,
+                    )}
+                  >
+                    warning
+                  </MaterialIcon>
+                </p>
                 <p
                   className={clsx('has-text-centered', warningMessageClassName)}
                 >

@@ -4,6 +4,8 @@ import {
   paymentService,
   submissionService,
   OneBlinkAppsError,
+  schedulingService,
+  localisationService,
 } from '@oneblink/apps'
 import useIsMounted from './hooks/useIsMounted'
 
@@ -47,7 +49,14 @@ function PaymentReceipt({
   const history = useHistory()
 
   const [
-    { isLoading, loadError, transaction, submissionResult, receiptItems },
+    {
+      isLoading,
+      loadError,
+      transaction,
+      submissionResult,
+      receiptItems,
+      schedulingBooking,
+    },
     setLoadState,
   ] = React.useState<{
     isLoading: boolean
@@ -55,12 +64,14 @@ function PaymentReceipt({
     transaction: paymentService.HandlePaymentResult['transaction'] | null
     submissionResult: submissionService.FormSubmissionResult | null
     receiptItems: paymentService.PaymentReceiptItem[] | null
+    schedulingBooking: schedulingService.SchedulingBooking | null
   }>({
     isLoading: true,
     loadError: null,
     transaction: null,
     submissionResult: null,
     receiptItems: null,
+    schedulingBooking: null,
   })
   const [
     { isRunningPostSubmissionAction, postSubmissionError },
@@ -100,11 +111,13 @@ function PaymentReceipt({
       let newTransaction = null
       let newSubmissionResult = null
       let newReceiptItems = null
+      let newSchedulingBooking = null
       try {
         const result = await handlePaymentQuerystring(query)
         newTransaction = result.transaction
         newSubmissionResult = result.submissionResult
         newReceiptItems = result.receiptItems
+        newSchedulingBooking = result.schedulingBooking
       } catch (error) {
         console.warn('Error while attempting to load transaction', error)
         newError = error as Error
@@ -117,6 +130,7 @@ function PaymentReceipt({
           transaction: newTransaction,
           submissionResult: newSubmissionResult,
           receiptItems: newReceiptItems,
+          schedulingBooking: newSchedulingBooking,
         })
       }
     }
@@ -248,6 +262,39 @@ function PaymentReceipt({
                   />
                 )
               })}
+            {schedulingBooking && transaction.isSuccess && (
+              <>
+                {schedulingBooking.location && (
+                  <ReceiptListItem
+                    className="ob-scheduling-receipt__location"
+                    valueClassName="cypress-scheduling-receipt-location"
+                    icon="location_on"
+                    label="Location"
+                    value={schedulingBooking.location}
+                  />
+                )}
+
+                <ReceiptListItem
+                  className="ob-scheduling-receipt__start-time"
+                  valueClassName="cypress-scheduling-receipt-start-time"
+                  icon="schedule"
+                  label="Start Time"
+                  value={localisationService.formatDatetimeLong(
+                    schedulingBooking.startTime,
+                  )}
+                />
+
+                <ReceiptListItem
+                  className="ob-scheduling-receipt__end-time"
+                  valueClassName="cypress-scheduling-receipt-end-time"
+                  icon="schedule"
+                  label="End Time"
+                  value={localisationService.formatDatetimeLong(
+                    schedulingBooking.endTime,
+                  )}
+                />
+              </>
+            )}
             <ReceiptListItem
               className="ob-payment-receipt__warning"
               valueClassName="cypress-payment-receipt-warning"
