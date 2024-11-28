@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { NylasScheduling } from '@nylas/react'
+import { NylasSchedulerResponse, NylasEvent } from '@nylas/web-elements'
 import { Collapse, Fade } from '@mui/material'
 import {
   schedulingService,
@@ -93,39 +94,42 @@ function NylasBookingForm({
     [onDone],
   )
 
-  const handleConfirmedBooking = React.useCallback(async () => {
-    setPostSubmissionState((currentState) => ({
-      ...currentState,
-      isConfirmingBooking: true,
-      confirmingBookingError: null,
-    }))
-
-    try {
-      const formSubmissionResult = await onBookingConfirmed()
+  const handleConfirmedBooking = React.useCallback(
+    async (schedulingBooking: schedulingService.SchedulingBooking) => {
       setPostSubmissionState((currentState) => ({
         ...currentState,
-        formSubmissionResult,
+        isConfirmingBooking: true,
+        confirmingBookingError: null,
       }))
-      if (formSubmissionResult.payment) {
-        setTimeout(async () => {
-          executePostSubmissionAction(formSubmissionResult)
-        }, 2000)
-      } else {
+
+      try {
+        const formSubmissionResult = await onBookingConfirmed(schedulingBooking)
+        setPostSubmissionState((currentState) => ({
+          ...currentState,
+          formSubmissionResult,
+        }))
+        if (formSubmissionResult.payment) {
+          setTimeout(async () => {
+            executePostSubmissionAction(formSubmissionResult)
+          }, 2000)
+        } else {
+          setPostSubmissionState((currentState) => ({
+            ...currentState,
+            isConfirmingBooking: false,
+            formSubmissionResult,
+          }))
+        }
+      } catch (error) {
+        console.warn('Error while handling confirmed booking', error)
         setPostSubmissionState((currentState) => ({
           ...currentState,
           isConfirmingBooking: false,
-          formSubmissionResult,
+          confirmingBookingError: error as OneBlinkAppsError,
         }))
       }
-    } catch (error) {
-      console.warn('Error while handling confirmed booking', error)
-      setPostSubmissionState((currentState) => ({
-        ...currentState,
-        isConfirmingBooking: false,
-        confirmingBookingError: error as OneBlinkAppsError,
-      }))
-    }
-  }, [onBookingConfirmed, executePostSubmissionAction])
+    },
+    [onBookingConfirmed, executePostSubmissionAction],
+  )
 
   return (
     <>
@@ -145,15 +149,45 @@ function NylasBookingForm({
           <NylasScheduling
             eventOverrides={{
               timeslotConfirmed: onTimeSlotConfirmed,
-              bookedEventInfo: async (event) => {
+              async bookedEventInfo(
+                event: CustomEvent<
+                  NylasSchedulerResponse<
+                    NylasEvent & {
+                      event_id: string
+                      additional_guests: Array<{
+                        name: string
+                        email: string
+                      }>
+                      guest: {
+                        name: string
+                        email: string
+                      }
+                      additional_fields: Record<string, unknown>
+                      start_time: number
+                      end_time: number
+                      email_language: string
+                      timezone: string
+                      location?: string
+                    }
+                  >
+                >,
+              ) {
+                console.log('bookedEventInfo event', event)
+
                 event.preventDefault()
 
-                if (event.detail.error) {
+                if ('error' in event.detail) {
                   setBookingError(
-                    event.detail.error.message ?? 'Calendar Booking Error',
+                    event.detail.error?.message ?? 'Calendar Booking Error',
                   )
-                } else {
-                  await handleConfirmedBooking()
+                } else if ('data' in event.detail) {
+                  await handleConfirmedBooking({
+                    submissionId,
+                    startTime: new Date(event.detail.data.start_time * 1000),
+                    endTime: new Date(event.detail.data.end_time * 1000),
+                    location: event.detail.data.location,
+                    isReschedule: false,
+                  })
                 }
               },
             }}
