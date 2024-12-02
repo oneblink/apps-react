@@ -6,7 +6,7 @@ import useAttachments from '../hooks/attachments/useAttachments'
 import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
-} from '../services/form-validation'
+} from '../services/form-validation/validators'
 import { attachmentsService } from '@oneblink/apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'

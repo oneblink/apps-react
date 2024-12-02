@@ -1,10 +1,7 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 
-import {
-  validateSubmission,
-  generateValidationSchema,
-} from '../services/form-validation'
+import validateSubmission from '../services/form-validation/validateSubmission'
 import {
   CaptchaType,
   ExecutedLookups,
@@ -51,10 +48,6 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
     return stripFormElementsWithoutName(pages)
   }, [pages])
 
-  const validationSchema = React.useMemo(() => {
-    return generateValidationSchema(formElementsWithoutName)
-  }, [formElementsWithoutName])
-
   const handleValidate = React.useCallback(
     (
       submission: SubmissionTypes.S3SubmissionData['submission'],
@@ -62,15 +55,15 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
       executedLookups: ExecutedLookups,
       captchaType: CaptchaType,
     ) => {
-      return validateSubmission(
-        validationSchema,
+      return validateSubmission({
+        elements: formElementsWithoutName,
         submission,
         formElementsConditionallyShown,
         executedLookups,
         captchaType,
-      )
+      })
     },
-    [validationSchema],
+    [formElementsWithoutName],
   )
 
   return {
