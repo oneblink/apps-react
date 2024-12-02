@@ -12,7 +12,7 @@ const EMAIL_REGEXP =
  * @param value
  * @returns
  */
-export function isNumber(value: unknown): value is number {
+function isNumber(value: unknown): value is number {
   return typeof value === 'number' && !isNaN(value)
 }
 
@@ -22,7 +22,7 @@ export function isNumber(value: unknown): value is number {
  * @param value
  * @returns
  */
-export function isFunction(value: unknown) {
+function isFunction(value: unknown) {
   return typeof value === 'function'
 }
 
@@ -33,18 +33,8 @@ export function isFunction(value: unknown) {
  * @param value
  * @returns
  */
-export function isInteger(value: unknown): value is number {
+function isInteger(value: unknown): value is number {
   return isNumber(value) && value % 1 === 0
-}
-
-/**
- * Checks if the value is a boolean
- *
- * @param value
- * @returns
- */
-export function isBoolean(value: unknown) {
-  return typeof value === 'boolean'
 }
 
 /**
@@ -53,7 +43,7 @@ export function isBoolean(value: unknown) {
  * @param obj
  * @returns
  */
-export function isObject(obj: unknown): obj is object {
+function isObject(obj: unknown): obj is object {
   return obj === Object(obj)
 }
 
@@ -63,7 +53,7 @@ export function isObject(obj: unknown): obj is object {
  * @param obj
  * @returns
  */
-export function isDate(obj: unknown): obj is Date {
+function isDate(obj: unknown): obj is Date {
   return obj instanceof Date
 }
 
@@ -73,13 +63,11 @@ export function isDate(obj: unknown): obj is Date {
  * @param obj
  * @returns
  */
-export function isDefined(obj: unknown) {
+function isDefined(obj: unknown) {
   return obj !== null && obj !== undefined
 }
 
 export function isEmpty(value: unknown) {
-  let attr
-
   // Null and undefined are empty
   if (!isDefined(value)) {
     return true
@@ -107,7 +95,7 @@ export function isEmpty(value: unknown) {
 
   // If we find at least one property we consider it non empty
   if (isObject(value)) {
-    for (attr in value) {
+    for (const _attr in value) {
       return false
     }
     return true
@@ -128,7 +116,7 @@ export function isEmpty(value: unknown) {
  * @param vals
  * @returns
  */
-export function formatValidationMessage(
+function formatValidationMessage(
   str: string,
   vals: Record<string, unknown>,
 ): string {
@@ -144,11 +132,11 @@ export function formatValidationMessage(
   })
 }
 
-export function isString(value: unknown) {
+function isString(value: unknown) {
   return typeof value === 'string'
 }
 
-export function isArray(value: unknown) {
+function isArray(value: unknown) {
   return Array.isArray(value)
 }
 

@@ -194,11 +194,8 @@ export default function validateSubmission({
         }
         case 'boolean': {
           const errorMessages = []
-          if (
-            formElement.required &&
-            (formElement.requiredMessage || 'Required')
-          ) {
-            errorMessages.push('Required')
+          if (value !== true && formElement.required) {
+            errorMessages.push(formElement.requiredMessage || 'Required')
           }
           errorMessages.push(
             ...validationExtensions.lookups({
