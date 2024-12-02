@@ -1,10 +1,8 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 
-import {
-  validateSubmission,
-  generateValidationSchema,
-} from '../services/form-validation'
+import validateSubmission from '../services/form-validation'
+import generateValidationSchema from '../services/form-validation/schema'
 import {
   CaptchaType,
   ExecutedLookups,

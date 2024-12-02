@@ -7,7 +7,7 @@ import useBooleanState from '../hooks/useBooleanState'
 import OneBlinkFormElements, {
   Props,
 } from '../components/renderer/OneBlinkFormElements'
-import { checkSectionValidity } from '../services/form-validation'
+import { checkSectionValidity } from '../services/form-validation/validators'
 import {
   FormElementLookupHandler,
   UpdateFormElementsHandler,

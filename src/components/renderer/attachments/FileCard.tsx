@@ -5,7 +5,7 @@ import AttachmentStatus from './AttachmentStatus'
 import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
-} from '../../../services/form-validation'
+} from '../../../services/form-validation/validators'
 import ProgressBar from './ProgressBar'
 import DropdownMenu from './DropdownMenu'
 

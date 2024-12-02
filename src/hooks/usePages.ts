@@ -2,7 +2,7 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import useBooleanState from '../hooks/useBooleanState'
-import { checkSectionValidity } from '../services/form-validation'
+import { checkSectionValidity } from '../services/form-validation/validators'
 import scrollingService from '../services/scrolling-service'
 import {
   FormElementsConditionallyShown,

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import useLookupNotification from '../../hooks/useLookupNotification'
-import { generateLookupValidationMessage } from '../../services/form-validation'
+import { generateLookupValidationMessage } from '../../services/form-validation/extensions'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormsAppsTypes } from '@oneblink/types'
 import MaterialIcon from '../MaterialIcon'
