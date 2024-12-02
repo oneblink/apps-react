@@ -55,9 +55,9 @@ function generateCivicaNameRecordAddressElements(
 export default function generateCivicaNameRecordElements(
   element: FormTypes.CivicaNameRecordElement,
   titleCodeOptions?: FormTypes.ChoiceElementOption[],
-): FormTypes.FormElement[] {
+): FormTypes.FormElementWithName[] {
   const elementsWithHidden: Array<
-    FormTypes.FormElement & { civicaIsHidden?: boolean }
+    FormTypes.FormElementWithName & { civicaIsHidden?: boolean }
   > = [
     {
       ...createFormElement(),

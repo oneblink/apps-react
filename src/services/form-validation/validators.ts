@@ -1,4 +1,4 @@
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormsAppsTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
 import getDateRangeConfiguration, {
   DateRangeConfigurationOptions,
 } from '../getDateRangeConfiguration'
@@ -8,28 +8,8 @@ import {
 } from '../../types/form'
 import cleanFormSubmissionModel from '../cleanFormSubmissionModel'
 import getRepeatableSetEntriesConfiguration from '../getRepeatableSetEntriesConfiguration'
-
-export const presence = (
-  { required, requiredMessage }: FormTypes.FormElementRequired,
-  message: string,
-) => (required ? { message: requiredMessage || message } : false)
-
-export const escapeElementName = (elementName: string) => {
-  const escapedName = elementName.replace(/\./g, '\\.')
-  return escapedName
-}
-
-export function getCustomRegexFormatConfig<DefaultValue>(
-  formElement: FormTypes.FormElementWithInput<DefaultValue>,
-) {
-  return formElement.regexPattern
-    ? {
-        pattern: formElement.regexPattern,
-        flags: formElement.regexFlags,
-        message: formElement.regexMessage,
-      }
-    : undefined
-}
+import { attachmentsService } from '@oneblink/apps'
+import { FormElementBinaryStorageValue } from '../../types/attachments'
 
 export function getCleanDateRangeConfiguration(
   options: DateRangeConfigurationOptions,
@@ -109,4 +89,44 @@ export function checkSectionValidity(
       }
     }
   })
+}
+
+export function getInvalidAttachment(
+  value: unknown,
+): attachmentsService.AttachmentError | undefined {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'type' in value &&
+    value.type === 'ERROR'
+  ) {
+    return value as attachmentsService.AttachmentError
+  }
+}
+
+export function validateAttachments(
+  value: FormElementBinaryStorageValue[] | undefined,
+): string[] {
+  const invalidAttachmentNames = value?.reduce(
+    (invalidAttachmentNames: string[], att) => {
+      const attachmentName = getInvalidAttachment(att)?.fileName
+      if (attachmentName) {
+        invalidAttachmentNames.push(attachmentName)
+      }
+      return invalidAttachmentNames
+    },
+    [],
+  )
+  if (invalidAttachmentNames?.length) {
+    return [`${invalidAttachmentNames.join(', ')} could not be uploaded.`]
+  }
+  return []
+}
+
+export const generateLookupValidationMessage = (
+  lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration,
+) => {
+  return lookupButtonConfig && lookupButtonConfig.label
+    ? `${lookupButtonConfig.label} is required`
+    : 'Lookup is required'
 }
