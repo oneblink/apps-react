@@ -1,8 +1,7 @@
 import * as EmailValidator from 'email-validator'
 
 const EMPTY_STRING_REGEXP = /^\s*$/
-// eslint-disable-next-line no-useless-escape
-const FORMAT_REGEXP = /(%?)%\{([^\}]+)\}/g
+const FORMAT_REGEXP = /(%?)%\{([^}]+)\}/g
 
 /**
  * Checks if the value is a number. This function does not consider NaN a number
