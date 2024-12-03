@@ -5,6 +5,7 @@ import { FormTypes } from '@oneblink/types'
 import useCaptcha from '../hooks/useCaptcha'
 import useIsOffline from '../hooks/useIsOffline'
 import useReCAPTCHAProps from '../hooks/useReCAPTCHAProps'
+import { RECAPTCHA_OFFLINE_MESSAGE } from '../services/form-validation/validateSubmission'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
@@ -54,9 +55,7 @@ function FormElementCaptcha({
       <div className="ob-form__element ob-captcha">
         {isOffline ? (
           <div role="alert" className="has-margin-top-8">
-            <span className="has-text-danger">
-              Could not show CAPTHCA. You must be online to submit this form
-            </span>
+            <span className="has-text-danger">{RECAPTCHA_OFFLINE_MESSAGE}</span>
           </div>
         ) : (
           <>
