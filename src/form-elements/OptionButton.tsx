@@ -1,6 +1,8 @@
 import * as React from 'react'
 import useContrastColor from '../hooks/useContrastColor'
 import { FormTypes } from '@oneblink/types'
+import { Box } from '@mui/material'
+
 type Props = {
   element:
     | FormTypes.RadioButtonElement
@@ -23,21 +25,39 @@ const OptionButton = ({
   ...props
 }: Props) => {
   const buttonContrastColor = useContrastColor(option.colour)
+  const isUsingOptionImages = element.options?.find(
+    (option) => !!option.imageUrl,
+  )
+
   return (
     <button
       type="button"
       className={className}
       style={
         option.colour && isSelected
-          ? { backgroundColor: option.colour, color: buttonContrastColor }
-          : undefined
+          ? {
+              backgroundColor: option.colour,
+              color: buttonContrastColor,
+              height: 'auto',
+            }
+          : { height: 'auto' }
       }
       disabled={element.readOnly}
       onClick={onClick}
       aria-describedby={props['aria-describedby']}
       onBlur={onBlur}
     >
-      {option.label}
+      <Box display="flex" flexDirection="column" className="ob-options__box">
+        {isUsingOptionImages && (
+          <img
+            className="ob-options__image"
+            src={option.imageUrl}
+            alt={option.label}
+            onClick={onClick}
+          />
+        )}
+        {option.label}
+      </Box>
     </button>
   )
 }
