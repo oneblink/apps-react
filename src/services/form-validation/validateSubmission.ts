@@ -561,8 +561,12 @@ export default function validateSubmission({
             submission,
             formElementsConditionallyShown,
           )
-
-          const setErrorMessages = []
+          const setErrorMessages = validators.length(value, {
+            minimum: minSetEntries,
+            maximum: maxSetEntries,
+            tooLong: 'Cannot have more than %{count} entry/entries',
+            tooShort: 'Must have at least %{count} entry/entries',
+          })
           if (minSetEntries) {
             setErrorMessages.push(
               ...validators.presence(value, {
@@ -572,14 +576,6 @@ export default function validateSubmission({
               }),
             )
           }
-          setErrorMessages.push(
-            ...validators.length(value, {
-              minimum: minSetEntries,
-              maximum: maxSetEntries,
-              tooLong: 'Cannot have more than %{count} entry/entries',
-              tooShort: 'Must have at least %{count} entry/entries',
-            }),
-          )
 
           const entries = Array.isArray(value) ? value : []
 

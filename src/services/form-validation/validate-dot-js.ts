@@ -186,7 +186,9 @@ export const validators = {
     // Is checks
     if (isNumber(is) && length !== is) {
       const err =
-        wrongLength || 'is the wrong length (should be %{count} characters)'
+        message ||
+        wrongLength ||
+        'is the wrong length (should be %{count} characters)'
       return [formatValidationMessage(err, { count: is })]
     }
 
