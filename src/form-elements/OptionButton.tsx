@@ -25,9 +25,6 @@ const OptionButton = ({
   ...props
 }: Props) => {
   const buttonContrastColor = useContrastColor(option.colour)
-  const isUsingOptionImages = element.options?.find(
-    (option) => !!option.imageUrl,
-  )
 
   return (
     <button
@@ -48,7 +45,7 @@ const OptionButton = ({
       onBlur={onBlur}
     >
       <Box display="flex" flexDirection="column" className="ob-options__box">
-        {isUsingOptionImages && (
+        {option.imageUrl && (
           <img
             className="ob-options__image"
             src={option.imageUrl}
