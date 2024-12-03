@@ -580,12 +580,20 @@ export default function validateSubmission({
 
           const entries = Array.isArray(value) ? value : []
 
+          const repeatableSetExecutedLookups =
+            executedLookups !== undefined &&
+            typeof executedLookups !== 'boolean' &&
+            !Array.isArray(executedLookups) &&
+            Array.isArray(executedLookups[formElement.name])
+              ? executedLookups[formElement.name]
+              : []
+
           const entryErrors = entries.reduce((errorsByIndex, entry, index) => {
             const entryValidation = validateSubmission({
               submission: entry,
               elements: formElement.elements as FormTypes.FormElementWithName[],
-              executedLookups: Array.isArray(executedLookups)
-                ? executedLookups[index]
+              executedLookups: Array.isArray(repeatableSetExecutedLookups)
+                ? repeatableSetExecutedLookups[index]
                 : {},
               formElementsConditionallyShown:
                 formElementConditionallyShown?.type === 'repeatableSet'
