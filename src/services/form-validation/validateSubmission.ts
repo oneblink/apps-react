@@ -509,9 +509,9 @@ export default function validateSubmission({
           )
 
           if (
-            !Array.isArray(value) ||
-            value.every((file) => {
-              return checkFileNameIsValid(formElement, file.fileName)
+            Array.isArray(value) &&
+            value.some((file) => {
+              return !checkFileNameIsValid(formElement, file.fileName)
             })
           ) {
             errorMessages.push(
@@ -593,7 +593,7 @@ export default function validateSubmission({
           }, {})
 
           if (setErrorMessages.length || !isEmpty(entryErrors)) {
-            partialFormElementsValidation = {
+            partialFormElementsValidation[formElement.name] = {
               type: 'repeatableSet',
               set: setErrorMessages[0],
               entries: entryErrors,
