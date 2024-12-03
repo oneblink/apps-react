@@ -107,12 +107,14 @@ const validationExtensions = {
       formElementsConditionallyShown,
       executedLookups,
       captchaType,
+      isOffline,
     }: {
       formElement: FormTypes.FormElementWithName
       formElements: FormTypes.FormElementWithName[] | undefined
       formElementsConditionallyShown: FormElementsConditionallyShown | undefined
       executedLookups: ExecutedLookups
       captchaType: CaptchaType
+      isOffline: boolean
     },
   ) {
     if (formElements) {
@@ -143,6 +145,7 @@ const validationExtensions = {
             ? nestedExecutedLookups
             : {},
         captchaType,
+        isOffline,
       })
       if (errors) {
         return {
@@ -151,6 +154,10 @@ const validationExtensions = {
         }
       }
     }
+  },
+
+  offline(isOffline: boolean, message: string) {
+    return isOffline ? [message] : []
   },
 }
 

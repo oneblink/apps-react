@@ -422,15 +422,17 @@ function OneBlinkFormBase({
             formElementsConditionallyShown,
             executedLookups ?? {},
             recaptchaType,
+            isOffline,
           )
         : undefined,
     [
-      formElementsConditionallyShown,
       isReadOnly,
-      submission,
       validate,
+      submission,
+      formElementsConditionallyShown,
       executedLookups,
       recaptchaType,
+      isOffline,
     ],
   )
 
