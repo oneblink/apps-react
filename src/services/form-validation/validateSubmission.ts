@@ -25,12 +25,14 @@ export default function validateSubmission({
   formElementsConditionallyShown,
   executedLookups,
   captchaType,
+  isOffline,
 }: {
   elements: FormTypes.FormElementWithName[]
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   executedLookups: ExecutedLookups
   captchaType: CaptchaType
+  isOffline: boolean
 }): FormElementsValidation | undefined {
   const formElementsValidation = elements.reduce<FormElementsValidation>(
     (partialFormElementsValidation, formElement) => {
@@ -90,11 +92,17 @@ export default function validateSubmission({
               break
             case 'CHECKBOX':
             default: {
-              const errorMessages = validationExtensions.presence(
-                value,
-                { ...formElement, required: true },
-                'Please complete the CAPTCHA successfully',
-              )
+              const errorMessages = [
+                ...validationExtensions.offline(
+                  isOffline,
+                  'Cannot use CAPTCHA while offline. Please try again when connectivity is restored.',
+                ),
+                ...validationExtensions.presence(
+                  value,
+                  { ...formElement, required: true },
+                  'Please complete the CAPTCHA successfully',
+                ),
+              ]
               if (errorMessages.length) {
                 partialFormElementsValidation[formElement.name] =
                   errorMessages[0]
@@ -584,6 +592,7 @@ export default function validateSubmission({
                   ? formElementConditionallyShown.entries[index.toString()]
                   : undefined,
               captchaType,
+              isOffline,
             })
 
             if (entryValidation) {
@@ -614,6 +623,7 @@ export default function validateSubmission({
               formElementsConditionallyShown,
               executedLookups,
               captchaType,
+              isOffline,
             },
           )
           if (nestedFormValidation) {
@@ -633,6 +643,7 @@ export default function validateSubmission({
               formElementsConditionallyShown,
               executedLookups,
               captchaType,
+              isOffline,
             },
           )
           if (nestedFormValidation) {
@@ -652,6 +663,7 @@ export default function validateSubmission({
               formElementsConditionallyShown,
               executedLookups,
               captchaType,
+              isOffline,
             },
           )
           if (nestedFormValidation) {

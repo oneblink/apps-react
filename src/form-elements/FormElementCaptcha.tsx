@@ -16,7 +16,7 @@ type Props = {
 
 function FormElementCaptcha({
   element,
-  onChange: onCaptchChange,
+  onChange: onCaptchaChange,
   validationMessage,
   displayValidationMessage,
 }: Props) {
@@ -33,11 +33,11 @@ function FormElementCaptcha({
 
   const handleChange = React.useCallback(
     (val: string | null) => {
-      onCaptchChange(element, {
+      onCaptchaChange(element, {
         value: val || undefined,
       })
     },
-    [element, onCaptchChange],
+    [element, onCaptchaChange],
   )
 
   const recaptchaProps = useReCAPTCHAProps({
