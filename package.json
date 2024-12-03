@@ -22,6 +22,7 @@
     "color": "^4.2.3",
     "copy-to-clipboard": "^3.3.3",
     "date-fns": "^2.30.0",
+    "email-validator": "^2.0.4",
     "escape-string-regexp": "^5.0.0",
     "file-saver": "^2.0.5",
     "flatpickr": "^4.6.13",
