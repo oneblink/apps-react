@@ -150,7 +150,7 @@ export const validators = {
     value: unknown,
     options?: { allowEmpty?: boolean; message?: string },
   ): string[] {
-    if (options?.allowEmpty !== false ? !isDefined(value) : isEmpty(value)) {
+    if (options?.allowEmpty ? !isDefined(value) : isEmpty(value)) {
       return [options?.message || "can't be blank"]
     }
 
@@ -183,14 +183,14 @@ export const validators = {
       return [message || 'has an incorrect length']
     }
 
-    const errors: string[] = []
     // Is checks
     if (isNumber(is) && length !== is) {
       const err =
         wrongLength || 'is the wrong length (should be %{count} characters)'
-      errors.push(formatValidationMessage(err, { count: is }))
+      return [formatValidationMessage(err, { count: is })]
     }
 
+    const errors: string[] = []
     if (isNumber(minimum) && length < minimum) {
       const err = tooShort || 'is too short (minimum is %{count} characters)'
       errors.push(formatValidationMessage(err, { count: minimum }))
