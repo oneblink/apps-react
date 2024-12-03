@@ -19,6 +19,9 @@ import generateFreshdeskDependentFieldElements from '../generateFreshdeskDepende
 import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
 
+export const RECAPTCHA_OFFLINE_MESSAGE =
+  'We could not verify you are human while you are offline.'
+
 export default function validateSubmission({
   elements,
   submission,
@@ -95,7 +98,7 @@ export default function validateSubmission({
               const errorMessages = [
                 ...validationExtensions.offline(
                   isOffline,
-                  'Cannot use CAPTCHA while offline. Please try again when connectivity is restored.',
+                  RECAPTCHA_OFFLINE_MESSAGE,
                 ),
                 ...validationExtensions.presence(
                   value,

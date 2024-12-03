@@ -3,7 +3,9 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import { FormTypes } from '@oneblink/types'
 
 import useCaptcha from '../hooks/useCaptcha'
+import useIsOffline from '../hooks/useIsOffline'
 import useReCAPTCHAProps from '../hooks/useReCAPTCHAProps'
+import { RECAPTCHA_OFFLINE_MESSAGE } from '../services/form-validation/validateSubmission'
 import { FormElementValueChangeHandler } from '../types/form'
 
 type Props = {
@@ -21,6 +23,7 @@ function FormElementCaptcha({
   displayValidationMessage,
 }: Props) {
   const { captchaSiteKey, captchaType, addCaptchaRef } = useCaptcha()
+  const isOffline = useIsOffline()
 
   const captchaRef = React.useRef<ReCAPTCHA>(null)
 
@@ -50,16 +53,24 @@ function FormElementCaptcha({
   return (
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
-        <ReCAPTCHA
-          {...recaptchaProps}
-          className="ob-input cypress-captcha-control"
-        />
-        {displayValidationMessage && !!validationMessage && (
+        {isOffline ? (
           <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
-              {validationMessage}
-            </div>
+            <span className="has-text-danger">{RECAPTCHA_OFFLINE_MESSAGE}</span>
           </div>
+        ) : (
+          <>
+            <ReCAPTCHA
+              {...recaptchaProps}
+              className="ob-input cypress-captcha-control"
+            />
+            {displayValidationMessage && !!validationMessage && (
+              <div role="alert" className="has-margin-top-8">
+                <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
+                  {validationMessage}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
