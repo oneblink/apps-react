@@ -50,7 +50,6 @@ const OptionButton = ({
             className="ob-options__image"
             src={option.imageUrl}
             alt={option.label}
-            onClick={onClick}
           />
         )}
         {option.label}
