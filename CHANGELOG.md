@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.11.0] - 2024-12-09
+
 ### Added
 
 - calendar booking details to payment receipt
@@ -16,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `FormElementCheckBoxes` div order
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [7.3.2-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [7.3.1-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- no longer depend upon [validate.js](https://www.npmjs.com/package/validate.js)
+
+- depend upon [email-validator](https://www.npmjs.com/package/email-validator) [2.0.4](https://github.com/manishsaraan/email-validator/blob/master/CHANGELOG.md)
 
 ## [6.10.0] - 2024-11-27
 
