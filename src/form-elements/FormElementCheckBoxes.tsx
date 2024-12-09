@@ -130,18 +130,17 @@ function FormElementCheckboxes({
             />
           )}
           {element.buttons ? (
-            <div className="ob-button-radio-container">
-              <div
-                className="buttons ob-buttons ob-buttons-radio"
-                role="group"
-                aria-labelledby={`${id}-label`}
-                aria-describedby={ariaDescribedby}
-              >
-                {filteredOptions.map((option, index) => {
-                  const isSelected = selectedValues.includes(option.value)
-                  return (
+            <div
+              className="buttons ob-buttons ob-buttons-radio"
+              role="group"
+              aria-labelledby={`${id}-label`}
+              aria-describedby={ariaDescribedby}
+            >
+              {filteredOptions.map((option, index) => {
+                const isSelected = selectedValues.includes(option.value)
+                return (
+                  <div className="ob-button-radio-container" key={option.value}>
                     <OptionButton
-                      key={index}
                       element={element}
                       option={option}
                       isSelected={isSelected}
@@ -160,9 +159,9 @@ function FormElementCheckboxes({
                         }
                       }}
                     />
-                  )
-                })}
-              </div>
+                  </div>
+                )
+              })}
             </div>
           ) : (
             <div

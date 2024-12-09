@@ -44,7 +44,12 @@ const OptionButton = ({
       aria-describedby={props['aria-describedby']}
       onBlur={onBlur}
     >
-      <Box display="flex" flexDirection="column" className="ob-options__box">
+      <Box
+        display="flex"
+        flexDirection="column"
+        className="ob-options__box"
+        maxWidth={256}
+      >
         {option.imageUrl && (
           <img
             className="ob-options__image"
