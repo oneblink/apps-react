@@ -117,7 +117,7 @@ function PaymentReceipt({
         newTransaction = result.transaction
         newSubmissionResult = result.submissionResult
         newReceiptItems = result.receiptItems
-        newSchedulingBooking = result.schedulingBooking
+        newSchedulingBooking = result.schedulingBooking ?? null
       } catch (error) {
         console.warn('Error while attempting to load transaction', error)
         newError = error as Error
@@ -204,10 +204,10 @@ function PaymentReceipt({
         paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
         paymentFormUrl: submissionResult.payment.paymentFormUrl,
       })
-      await submissionService.executePostSubmissionAction(
-        submissionResult,
-        history.push,
-      )
+      await submissionService.executePostSubmissionAction(submissionResult, {
+        onRedirectToRelativeUrl: (url) => history.push(url),
+        onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
+      })
     } catch (error) {
       console.warn('Error while attempting to retry transaction', error)
       newError = error as OneBlinkAppsError
@@ -219,7 +219,7 @@ function PaymentReceipt({
         retryError: newError,
       })
     }
-  }, [history.push, isMounted, submissionResult])
+  }, [history, isMounted, submissionResult])
 
   return (
     <div>
