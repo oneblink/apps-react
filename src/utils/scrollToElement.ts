@@ -1,7 +1,7 @@
 /**
  * Recursively traverses ancestors to find the first visible ancestor element
  * and allow getting its scroll point. It handles the case of ancestor elements
- * being hidden by `ob-hidden` or an ancestor section being collapsed.
+ * being hidden by `is-hidden` or an ancestor section being collapsed.
  *
  * @param element - The element for which to find its first visible ancestor or
  *   ancestor sibling.
@@ -104,7 +104,7 @@ const scrollToElement = ({
 }: {
   id: string
   /** We allow an offset to cater for any headers */
-  navigationTopOffset: number
+  navigationTopOffset: number | 'CALCULATE'
   scrollableContainerId?: string
 }) => {
   const element = document.getElementById(id)
@@ -121,23 +121,39 @@ const scrollToElement = ({
               .get('padding-top')
               ?.toString() ?? '',
           )
+          const scrollTo =
+            getScrollPoint(scrollableContainerId) +
+            topPadding -
+            // We allow an offset to cater for any headers
+            (typeof navigationTopOffset === 'number' ? navigationTopOffset : 0)
           scrollContainer?.scrollTo({
-            top:
-              getScrollPoint(scrollableContainerId) +
-              topPadding -
-              // We allow an offset to cater for any headers
-              navigationTopOffset,
+            top: scrollTo,
             behavior: 'smooth',
           })
+          // We do not currently attempt to `CALCULATE` the top scroll offset for form containers,
+          // as we have no guarantee that the container element is currently in the viewport, so this is more complicated.
         } else {
+          const scrollTo =
+            getScrollPoint() +
+            window.scrollY -
+            // We allow an offset to cater for any headers
+            (typeof navigationTopOffset === 'number' ? navigationTopOffset : 0)
           window.scrollTo({
-            top:
-              getScrollPoint() +
-              window.scrollY -
-              // We allow an offset to cater for any headers
-              navigationTopOffset,
+            top: scrollTo,
             behavior: 'smooth',
           })
+
+          // Calculate Offset
+          if (navigationTopOffset === 'CALCULATE') {
+            const calculatedNavigationTopOffset =
+              calculateDesiredOffsetAfterInitialScroll(element)
+            if (calculatedNavigationTopOffset) {
+              window.scrollTo({
+                top: scrollTo - calculatedNavigationTopOffset,
+                behavior: 'smooth',
+              })
+            }
+          }
         }
       })
     }
@@ -145,3 +161,42 @@ const scrollToElement = ({
 }
 
 export default scrollToElement
+
+/**
+ * Attempts to calculate the top scroll offset necessary to see the desired
+ * element if it is being covered by any fixed, sticky or absolute elements,
+ * after initial scroll.
+ *
+ * @param element - The element which we want to make visible. NOTE: This
+ *   element should already be scrolled to the 0 `Y` co-ordinate of the viewport
+ *   when calling this function for best results with sticky and absolute
+ *   elements.
+ * @returns A number that can be subtracted from the scroll point that would
+ *   otherwise show the desired element at the 0 `Y` co-ordinate of the
+ *   viewport.
+ */
+const calculateDesiredOffsetAfterInitialScroll = (element: HTMLElement) => {
+  const elementLeft = element.getBoundingClientRect().left
+  let offset = 0
+  // Get element in the front-most position, right at the top of the page (where our element should be located currently)
+  let elementFromPoint = document.elementFromPoint(elementLeft, offset)
+  if (!elementFromPoint) {
+    return offset
+  }
+  let position = window.getComputedStyle(elementFromPoint).position
+
+  while (
+    position === 'fixed' ||
+    position === 'absolute' ||
+    position === 'sticky'
+  ) {
+    // Get next elementFromPoint
+    offset = elementFromPoint.getBoundingClientRect().bottom + 1
+    elementFromPoint = document.elementFromPoint(elementLeft, offset)
+    if (!elementFromPoint) {
+      return offset
+    }
+    position = window.getComputedStyle(elementFromPoint).position
+  }
+  return offset
+}

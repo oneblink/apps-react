@@ -157,7 +157,9 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   navigableValidationErrorsNotificationSettings?: {
     /**
      * A pixel offset for validation error navigation markers. Use this to
-     * account for any headers your page might have.
+     * account for any headers your page might have. If not set, we will attempt
+     * to calculate the offset for you. Please note: Calculating this value is
+     * not supported when passing in a `scrollableContainerId`.
      */
     navigationTopOffset?: number
     /**
@@ -1472,7 +1474,7 @@ function OneBlinkFormBase({
                       currentPage={currentPage}
                       navigationTopOffset={
                         navigableValidationErrorsNotificationSettings?.navigationTopOffset ??
-                        0
+                        'CALCULATE'
                       }
                       scrollableContainerId={
                         navigableValidationErrorsNotificationSettings?.scrollableContainerId

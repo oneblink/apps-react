@@ -143,7 +143,7 @@ const ValidationErrorsCard = ({
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: ReturnType<typeof usePages>['setPageId']
-  navigationTopOffset: number
+  navigationTopOffset: number | 'CALCULATE'
   scrollableContainerId?: string
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
