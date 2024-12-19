@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import useLookupNotification from '../../hooks/useLookupNotification'
 import { generateLookupValidationMessage } from '../../services/form-validation/validators'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
-import { FormsAppsTypes } from '@oneblink/types'
+import { EnvironmentTypes } from '@oneblink/types'
 import MaterialIcon from '../MaterialIcon'
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
   validationMessage: string | undefined
   hasMarginTop?: boolean
   isInputButton?: boolean
-  lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration
+  lookupButtonConfig?: EnvironmentTypes.ButtonConfiguration
 }
 
 function LookupButton({

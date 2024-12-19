@@ -1,4 +1,4 @@
-import { FormsAppsTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
+import { EnvironmentTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
 import getDateRangeConfiguration, {
   DateRangeConfigurationOptions,
 } from '../getDateRangeConfiguration'
@@ -124,7 +124,7 @@ export function validateAttachments(
 }
 
 export const generateLookupValidationMessage = (
-  lookupButtonConfig?: FormsAppsTypes.ButtonConfiguration,
+  lookupButtonConfig?: EnvironmentTypes.ButtonConfiguration,
 ) => {
   return lookupButtonConfig && lookupButtonConfig.label
     ? `${lookupButtonConfig.label} is required`
