@@ -765,7 +765,10 @@ function OneBlinkFormBase({
           elements: elementsWithInjectedOptions,
         },
         submission: submissionData.submission,
-        captchaTokens: submissionData.captchaTokens,
+        recaptchas: submissionData.captchaTokens.map((token) => ({
+          token,
+          siteKey: captchaSiteKey as string,
+        })),
       })
     },
     [
@@ -776,8 +779,9 @@ function OneBlinkFormBase({
       definition,
       taskContextValue,
       userProfile,
-      onSubmit,
       resetRecaptchas,
+      onSubmit,
+      captchaSiteKey,
     ],
   )
 
