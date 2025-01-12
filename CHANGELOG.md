@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.0.0] - 2025-01-12
+
 ### Changed
 
 - **[BREAKING]** supported version of `@oneblink/apps` to `^19.0.0`. The `captchaTokens` property on the options parameter for the `onSubmit` prop passed to `<OneBlinkForm />`, `<OneBlinkFormControlled />` and `<OneBlinkAutoSaveForm />` has been replaced with a property called `recaptchas`.
