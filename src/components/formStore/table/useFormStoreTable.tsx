@@ -212,6 +212,176 @@ export default function useFormStoreTable({
             </>
           ),
         },
+        {
+          id: 'TASK_GROUP',
+          headerText: 'Task Group',
+          sorting: {
+            property: 'taskGroup.name',
+            direction: parameters.sorting?.find(
+              ({ property }) => property === 'taskGroup.name',
+            )?.direction,
+          },
+          filter: {
+            type: 'TEXT',
+            value: parameters.filters?.taskGroup?.name as
+              | { $regex: string }
+              | undefined,
+            onChange: (newValue) => {
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    taskGroup: newValue
+                      ? {
+                          name: newValue,
+                        }
+                      : undefined,
+                  },
+                }),
+                true,
+              )
+            },
+          },
+          Cell: ({
+            row: { original: formStoreRecord },
+          }: CellProps<FormStoreRecord>) => (
+            <>
+              {formStoreRecord.taskGroup?.name}
+              {formStoreRecord.taskGroup?.name && (
+                <TableCellCopyButton text={formStoreRecord.taskGroup?.name} />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'TASK_GROUP_INSTANCE',
+          headerText: 'Task Group Instance',
+          sorting: {
+            property: 'taskGroupInstance.label',
+            direction: parameters.sorting?.find(
+              ({ property }) => property === 'taskGroupInstance.label',
+            )?.direction,
+          },
+          filter: {
+            type: 'TEXT',
+            value: parameters.filters?.taskGroupInstance?.label as
+              | { $regex: string }
+              | undefined,
+            onChange: (newValue) => {
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    taskGroupInstance: newValue
+                      ? {
+                          label: newValue,
+                        }
+                      : undefined,
+                  },
+                }),
+                true,
+              )
+            },
+          },
+          Cell: ({
+            row: { original: formStoreRecord },
+          }: CellProps<FormStoreRecord>) => (
+            <>
+              {formStoreRecord.taskGroupInstance?.label}
+              {formStoreRecord.taskGroupInstance?.label && (
+                <TableCellCopyButton
+                  text={formStoreRecord.taskGroupInstance?.label}
+                />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'TASK',
+          headerText: 'Task',
+          sorting: {
+            property: 'task.name',
+            direction: parameters.sorting?.find(
+              ({ property }) => property === 'task.name',
+            )?.direction,
+          },
+          filter: {
+            type: 'TEXT',
+            value: parameters.filters?.task?.name as
+              | { $regex: string }
+              | undefined,
+            onChange: (newValue) => {
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    task: newValue
+                      ? {
+                          name: newValue,
+                        }
+                      : undefined,
+                  },
+                }),
+                true,
+              )
+            },
+          },
+          Cell: ({
+            row: { original: formStoreRecord },
+          }: CellProps<FormStoreRecord>) => (
+            <>
+              {formStoreRecord.task?.name}
+              {formStoreRecord.task?.name && (
+                <TableCellCopyButton text={formStoreRecord.task?.name} />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'TASK_ACTION',
+          headerText: 'Task Action',
+          sorting: {
+            property: 'taskAction.label',
+            direction: parameters.sorting?.find(
+              ({ property }) => property === 'taskAction.label',
+            )?.direction,
+          },
+          filter: {
+            type: 'TEXT',
+            value: parameters.filters?.taskAction?.label as
+              | { $regex: string }
+              | undefined,
+            onChange: (newValue) => {
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    taskAction: newValue
+                      ? {
+                          label: newValue,
+                        }
+                      : undefined,
+                  },
+                }),
+                true,
+              )
+            },
+          },
+          Cell: ({
+            row: { original: formStoreRecord },
+          }: CellProps<FormStoreRecord>) => (
+            <>
+              {formStoreRecord.taskAction?.label}
+              {formStoreRecord.taskAction?.label && (
+                <TableCellCopyButton text={formStoreRecord.taskAction?.label} />
+              )}
+            </>
+          ),
+        },
       ],
     })
   }, [
@@ -239,7 +409,16 @@ export default function useFormStoreTable({
       autoResetResize: false,
       initialState: initialState
         ? initialState
-        : { hiddenColumns: ['SUBMISSION_ID', 'EXTERNAL_ID'] },
+        : {
+            hiddenColumns: [
+              'SUBMISSION_ID',
+              'EXTERNAL_ID',
+              'TASK',
+              'TASK_ACTION',
+              'TASK_GROUP',
+              'TASK_GROUP_INSTANCE',
+            ],
+          },
     },
     useFlexLayout,
     useResizeColumns,
