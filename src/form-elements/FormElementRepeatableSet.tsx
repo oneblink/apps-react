@@ -69,32 +69,36 @@ function FormElementRepeatableSet({
     [value],
   )
 
-  const handleAddEntry = React.useCallback(() => {
-    onChange(element, {
-      value: (existingEntries) => {
-        const newEntries = [...(existingEntries || [])]
-        const entry = generateDefaultData(element.elements, {})
-        newEntries.push(entry)
-        return newEntries
-      },
-      executedLookups: (existingExecutedLookups) => {
-        if (
-          existingExecutedLookups !== undefined &&
-          !Array.isArray(existingExecutedLookups)
-        ) {
-          return []
-        }
+  const handleAddEntry = React.useCallback(
+    (index: number | undefined) => {
+      onChange(element, {
+        value: (existingEntries) => {
+          const newEntries = [...(existingEntries || [])]
+          const entry = generateDefaultData(element.elements, {})
 
-        const newExistingExecutedLookups = [
-          ...((existingExecutedLookups as ExecutedLookups[]) ??
-            Array.from(Array(entries.length))),
-        ]
-        newExistingExecutedLookups.push({})
-        return newExistingExecutedLookups
-      },
-    })
-    setIsDirty()
-  }, [element, onChange, setIsDirty, entries])
+          newEntries.splice((index === undefined ? -1 : index) + 1, 0, entry)
+          return newEntries
+        },
+        executedLookups: (existingExecutedLookups) => {
+          if (
+            existingExecutedLookups !== undefined &&
+            !Array.isArray(existingExecutedLookups)
+          ) {
+            return []
+          }
+
+          const newExistingExecutedLookups = [
+            ...((existingExecutedLookups as ExecutedLookups[]) ??
+              Array.from(Array(entries.length))),
+          ]
+          newExistingExecutedLookups.push({})
+          return newExistingExecutedLookups
+        },
+      })
+      setIsDirty()
+    },
+    [element, onChange, setIsDirty, entries],
+  )
 
   const handleRemoveEntry = React.useCallback(
     (index: number) => {
@@ -203,6 +207,11 @@ function FormElementRepeatableSet({
 
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
+  const showAddButton = React.useMemo(
+    () => !maxSetEntries || entries.length < maxSetEntries,
+    [maxSetEntries, entries.length],
+  )
+
   return (
     <div
       className={clsx('cypress-repeatable-set-element', validationClassName)}
@@ -216,6 +225,12 @@ function FormElementRepeatableSet({
         id={id}
         required={!!minSetEntries && minSetEntries > 0}
       >
+        {element.layout === 'MULTIPLE_ADD_BUTTONS' && showAddButton && (
+          <AddButton
+            onAdd={() => handleAddEntry(undefined)}
+            element={element}
+          />
+        )}
         {entries.map((entry, index) => {
           return (
             <RepeatableSetEntry
@@ -226,8 +241,12 @@ function FormElementRepeatableSet({
               isEven={isEven}
               entry={entry}
               element={element}
+              showAddButton={
+                element.layout === 'MULTIPLE_ADD_BUTTONS' && showAddButton
+              }
               onChange={handleNestedChange}
               onLookup={onLookup}
+              onAdd={handleAddEntry}
               onRemove={handleRemoveEntry}
               formElementsConditionallyShown={
                 repeatableSetEntriesConditionallyShown[index.toString()]
@@ -241,22 +260,14 @@ function FormElementRepeatableSet({
             />
           )
         })}
-        {(!maxSetEntries || entries.length < maxSetEntries) && (
-          <button
-            type="button"
-            className="button ob-button ob-button__add is-primary cypress-add-repeatable-set"
-            onClick={handleAddEntry}
-            disabled={element.readOnly}
-            aria-label={element.addSetEntryLabel ? undefined : 'Add Entry'}
-          >
-            <span className="icon">
-              <MaterialIcon>add</MaterialIcon>
-            </span>
-            {!!element.addSetEntryLabel && (
-              <span>{element.addSetEntryLabel}</span>
-            )}
-          </button>
-        )}
+        {(!element.layout || element.layout === 'SINGLE_ADD_BUTTON') &&
+          showAddButton && (
+            <AddButton
+              onAdd={() => handleAddEntry(undefined)}
+              element={element}
+              isPrimary
+            />
+          )}
         {(isDirty || displayValidationMessage) &&
           !!repeatableSetValidation &&
           !!repeatableSetValidation.set && (
@@ -283,6 +294,7 @@ type RepeatableSetEntryProps = {
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
+  showAddButton: boolean
   onChange: (
     index: number,
     formElement: FormTypes.FormElement,
@@ -292,6 +304,7 @@ type RepeatableSetEntryProps = {
     }: Parameters<NestedFormElementValueChangeHandler>[1],
   ) => void
   onLookup: FormElementLookupHandler
+  onAdd: (index: number) => unknown
   onRemove: (index: number) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
 }
@@ -309,8 +322,10 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     formElementsValidation,
     onChange,
     onLookup,
+    onAdd,
     onRemove,
     onUpdateFormElements,
+    showAddButton,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
@@ -428,6 +443,9 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
       )
 
     const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
+
+    console.log(JSON.stringify(element, null, 2))
+
     return (
       <RepeatableSetIndexContext.Provider value={index}>
         <Modal
@@ -468,22 +486,13 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             validationClassName,
           )}
         >
-          <button
-            type="button"
-            className="button ob-button ob-button_remove is-light cypress-remove-repeatable-set-entry"
-            onClick={confirmRemove}
-            disabled={element.readOnly}
-            aria-label={
-              element.removeSetEntryLabel ? undefined : 'Remove Entry'
-            }
-          >
-            <span className="icon">
-              <MaterialIcon>delete_outline</MaterialIcon>
-            </span>
-            {!!element.removeSetEntryLabel && (
-              <span>{element.removeSetEntryLabel}</span>
-            )}
-          </button>
+          {(!element.layout || element.layout === 'SINGLE_ADD_BUTTON') && (
+            <RemoveButton
+              onConfirmRemove={confirmRemove}
+              element={element}
+              classes={['is-pulled-right']}
+            />
+          )}
 
           <OneBlinkFormElements
             formId={formId}
@@ -501,8 +510,74 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             formElementsConditionallyShown={formElementsConditionallyShown}
             onUpdateFormElements={handleUpdateNestedFormElements}
           />
+          {element.layout === 'MULTIPLE_ADD_BUTTONS' && (
+            <div className="is-flex">
+              <RemoveButton onConfirmRemove={confirmRemove} element={element} />
+            </div>
+          )}
         </div>
+        {showAddButton && (
+          <AddButton onAdd={() => onAdd(index)} element={element} />
+        )}
       </RepeatableSetIndexContext.Provider>
     )
   },
 )
+
+function AddButton({
+  onAdd,
+  element,
+  isPrimary,
+}: {
+  onAdd: () => void
+  element: FormTypes.RepeatableSetElement
+  isPrimary?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'button ob-button ob-button__add cypress-add-repeatable-set',
+        isPrimary ? 'is-primary' : '',
+      )}
+      onClick={onAdd}
+      disabled={element.readOnly}
+      aria-label={element.addSetEntryLabel ? undefined : 'Add Entry'}
+    >
+      <span className="icon">
+        <MaterialIcon>add</MaterialIcon>
+      </span>
+      {!!element.addSetEntryLabel && <span>{element.addSetEntryLabel}</span>}
+    </button>
+  )
+}
+
+function RemoveButton({
+  onConfirmRemove,
+  element,
+  classes,
+}: {
+  onConfirmRemove: () => void
+  element: FormTypes.RepeatableSetElement
+  classes?: string[]
+}) {
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'button ob-button_remove is-light cypress-remove-repeatable-set-entry',
+        ...(classes ?? []),
+      )}
+      onClick={onConfirmRemove}
+      disabled={element.readOnly}
+      aria-label={element.removeSetEntryLabel ? undefined : 'Remove Entry'}
+    >
+      <span className="icon">
+        <MaterialIcon>delete_outline</MaterialIcon>
+      </span>
+      {!!element.removeSetEntryLabel && (
+        <span>{element.removeSetEntryLabel}</span>
+      )}
+    </button>
+  )
+}
