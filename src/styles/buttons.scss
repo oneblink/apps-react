@@ -10,3 +10,7 @@
   outline-offset: $size-9;
   outline: $input-focus-border-color auto 3px;
 }
+
+.ob-button {
+  min-width: 140px;
+}
