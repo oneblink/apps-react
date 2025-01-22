@@ -444,8 +444,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
     const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
 
-    console.log(JSON.stringify(element, null, 2))
-
     return (
       <RepeatableSetIndexContext.Provider value={index}>
         <Modal
