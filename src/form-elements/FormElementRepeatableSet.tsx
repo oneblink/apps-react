@@ -212,6 +212,16 @@ function FormElementRepeatableSet({
     [maxSetEntries, entries.length],
   )
 
+  const repeatableSetContainerClass = React.useMemo(() => {
+    const prefix = 'ob-repeatable-set-container-layout__'
+    switch (element.layout) {
+      case 'MULTIPLE_ADD_BUTTONS':
+        return prefix + 'multiple-add-buttons'
+      default:
+        return 'single-add-button'
+    }
+  }, [element.layout])
+
   return (
     <div
       className={clsx('cypress-repeatable-set-element', validationClassName)}
@@ -219,8 +229,13 @@ function FormElementRepeatableSet({
       aria-describedby={ariaDescribedby}
       role="region"
     >
+      {/*  */}
       <FormElementLabelContainer
-        className={`ob-repeatable-set ${isEven ? 'even' : 'odd'}`}
+        className={clsx(
+          'ob-repeatable-set',
+          isEven ? 'even' : 'odd',
+          repeatableSetContainerClass,
+        )}
         element={element}
         id={id}
         required={!!minSetEntries && minSetEntries > 0}
@@ -229,6 +244,7 @@ function FormElementRepeatableSet({
           <AddButton
             onAdd={() => handleAddEntry(undefined)}
             element={element}
+            classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
           />
         )}
         {entries.map((entry, index) => {
@@ -265,7 +281,7 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(undefined)}
               element={element}
-              isPrimary
+              classes={['is-primary']}
             />
           )}
         {(isDirty || displayValidationMessage) &&
@@ -515,7 +531,11 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           )}
         </div>
         {showAddButton && (
-          <AddButton onAdd={() => onAdd(index)} element={element} />
+          <AddButton
+            onAdd={() => onAdd(index)}
+            element={element}
+            classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
+          />
         )}
       </RepeatableSetIndexContext.Provider>
     )
@@ -525,18 +545,19 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 function AddButton({
   onAdd,
   element,
-  isPrimary,
+  classes,
 }: {
   onAdd: () => void
   element: FormTypes.RepeatableSetElement
   isPrimary?: boolean
+  classes: string[]
 }) {
   return (
     <button
       type="button"
       className={clsx(
         'button ob-button ob-button__add cypress-add-repeatable-set',
-        isPrimary ? 'is-primary' : '',
+        classes,
       )}
       onClick={onAdd}
       disabled={element.readOnly}
