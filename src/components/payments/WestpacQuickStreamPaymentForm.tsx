@@ -310,6 +310,7 @@ function WestpacQuickStreamPaymentForm({
           formSubmissionResult,
           formSubmissionPaymentId,
           paymentSubmissionEvent,
+          captchaSiteKey,
           captchaToken: recaptchaToken,
         })
         .then(onCompleted)
@@ -322,12 +323,13 @@ function WestpacQuickStreamPaymentForm({
         })
     })
   }, [
-    formSubmissionPaymentId,
-    formSubmissionResult,
-    onCompleted,
-    paymentSubmissionEvent,
     trustedFrame,
     getRecaptchaToken,
+    formSubmissionResult,
+    formSubmissionPaymentId,
+    paymentSubmissionEvent,
+    captchaSiteKey,
+    onCompleted,
   ])
 
   const [{ isCancellingTransaction, cancelError }, setCancelState] =
