@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - task columns to data manager
+- support for repeatable set layouts
 
 ## [7.0.0] - 2025-01-12
 

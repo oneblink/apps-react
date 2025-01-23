@@ -25,6 +25,14 @@
     margin-bottom: 0;
     min-width: 0;
   }
+  > .ob-button-repeatable-set-layout__multiple-add-buttons {
+    margin-bottom: $size-5;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
   &.odd > .ob-repeatable-set__container {
     background-color: $white;
   }
