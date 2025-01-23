@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `.ob-button` css
+- passing `captchaSiteKey` alongside token
 
 ## [7.1.0] - 2025-01-22
 
