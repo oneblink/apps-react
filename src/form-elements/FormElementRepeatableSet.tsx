@@ -70,13 +70,13 @@ function FormElementRepeatableSet({
   )
 
   const handleAddEntry = React.useCallback(
-    (index: number | undefined) => {
+    (index: number) => {
       onChange(element, {
         value: (existingEntries) => {
           const newEntries = [...(existingEntries || [])]
           const entry = generateDefaultData(element.elements, {})
 
-          newEntries.splice((index === undefined ? -1 : index) + 1, 0, entry)
+          newEntries.splice(index, 0, entry)
           return newEntries
         },
         executedLookups: (existingExecutedLookups) => {
@@ -242,7 +242,7 @@ function FormElementRepeatableSet({
       >
         {element.layout === 'MULTIPLE_ADD_BUTTONS' && showAddButton && (
           <AddButton
-            onAdd={() => handleAddEntry(undefined)}
+            onAdd={() => handleAddEntry(0)}
             element={element}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
           />
@@ -279,7 +279,7 @@ function FormElementRepeatableSet({
         {(!element.layout || element.layout === 'SINGLE_ADD_BUTTON') &&
           showAddButton && (
             <AddButton
-              onAdd={() => handleAddEntry(undefined)}
+              onAdd={() => handleAddEntry(entries.length)}
               element={element}
               classes={['is-primary']}
             />
@@ -532,7 +532,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
         </div>
         {showAddButton && (
           <AddButton
-            onAdd={() => onAdd(index)}
+            onAdd={() => onAdd(index + 1)}
             element={element}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
           />
