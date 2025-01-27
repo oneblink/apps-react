@@ -244,7 +244,10 @@ function FormElementRepeatableSet({
           <AddButton
             onAdd={() => handleAddEntry(0)}
             element={element}
-            classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
+            classes={[
+              'ob-button-repeatable-set-layout__multiple-add-buttons',
+              'is-primary',
+            ]}
           />
         )}
         {entries.map((entry, index) => {
