@@ -4,38 +4,62 @@
     padding: $size-5;
     padding-top: $size-7;
     margin-bottom: $size-5;
-    > .ob-button_remove {
-      margin-bottom: $size-8;
-      border: $grey solid 1px;
-      background: $white;
-
-      @media only screen and (min-width: $desktop) {
-        float: right;
-        margin-bottom: 0;
-        min-width: 0;
-        margin-left: $size-7;
-      }
-    }
 
     .ob-element:nth-child(2) {
       margin-top: $size-6;
     }
   }
-  > .ob-button__add {
+
+  .ob-button__add {
     margin-bottom: 0;
     min-width: 0;
   }
-  > .ob-button-repeatable-set-layout__multiple-add-buttons {
-    margin-bottom: $size-5;
 
-    &:last-child {
-      margin-bottom: 0;
+  .ob-button_remove {
+    min-width: 0;
+    border: $grey solid 1px;
+    background: $white;
+
+    &.ob-repeatable-set__button-remove-top {
+      margin-bottom: $size-8;
+
+      @media only screen and (min-width: $desktop) {
+        float: right;
+        margin-bottom: 0;
+        margin-left: $size-7;
+      }
     }
   }
 
+  > .ob-repeatable-set__collapsible
+    > .ob-repeatable-set__collapsible-wrapper
+    > .ob-repeatable-set__collapsible-wrapper-inner
+    > .ob-button-repeatable-set-layout__multiple-add-buttons,
+  > .ob-button-repeatable-set-layout__multiple-add-buttons {
+    margin-bottom: $size-5;
+  }
+
+  > .ob-repeatable-set__collapsible:last-child
+    > .ob-repeatable-set__collapsible-wrapper
+    > .ob-repeatable-set__collapsible-wrapper-inner
+    > .ob-button-repeatable-set-layout__multiple-add-buttons {
+    margin-bottom: 0;
+  }
+
+  &.odd
+    > .ob-repeatable-set__collapsible
+    > .ob-repeatable-set__collapsible-wrapper
+    > .ob-repeatable-set__collapsible-wrapper-inner
+    > .ob-repeatable-set__container,
   &.odd > .ob-repeatable-set__container {
     background-color: $white;
   }
+
+  &.even
+    > .ob-repeatable-set__collapsible
+    > .ob-repeatable-set__collapsible-wrapper
+    > .ob-repeatable-set__collapsible-wrapper-inner
+    > .ob-repeatable-set__container,
   &.even > .ob-repeatable-set__container {
     background-color: $white-bis;
   }
