@@ -1,5 +1,9 @@
-import { APINSWTypes, FormTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import generateDefaultData from '../../src/services/generate-default-data'
+
+jest.mock('uuid', () => ({
+  v4: () => 'my-uuid',
+}))
 
 describe('generateDefaultData()', () => {
   test('it should remove data from elements that do not allow defaults or pre-fill', () => {
@@ -81,6 +85,7 @@ describe('generateDefaultData()', () => {
     )
 
     expect(result).toEqual({
+      $__id: 'my-uuid',
       heading: undefined,
       html: undefined,
       image: undefined,
@@ -110,6 +115,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         text: undefined,
       })
     })
@@ -126,6 +132,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         text: 'defaultValue',
       })
     })
@@ -144,6 +151,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         text: undefined,
       })
     })
@@ -162,6 +170,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         text: 'text',
       })
     })
@@ -186,6 +195,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         bsb: undefined,
       })
     })
@@ -202,6 +212,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         bsb: '123-321',
       })
     })
@@ -220,6 +231,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         bsb: undefined,
       })
     })
@@ -238,6 +250,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         bsb: '123-321',
       })
     })
@@ -262,6 +275,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         textarea: undefined,
       })
     })
@@ -278,6 +292,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         textarea: 'defaultValue',
       })
     })
@@ -296,6 +311,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         textarea: 'text',
       })
     })
@@ -323,6 +339,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         number: undefined,
       })
     })
@@ -339,6 +356,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         number: 123,
       })
     })
@@ -357,6 +375,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         number: 321,
       })
     })
@@ -382,6 +401,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         email: undefined,
       })
     })
@@ -398,6 +418,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         email: 'default@example.com',
       })
     })
@@ -416,6 +437,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         email: 'email@example.com',
       })
     })
@@ -441,6 +463,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         telephone: undefined,
       })
     })
@@ -457,6 +480,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         telephone: 'defaultValue',
       })
     })
@@ -475,6 +499,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         telephone: '123',
       })
     })
@@ -501,6 +526,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         barcodeScanner: undefined,
       })
     })
@@ -517,6 +543,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         barcodeScanner: 'defaultValue',
       })
     })
@@ -535,6 +562,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         barcodeScanner: '123',
       })
     })
@@ -561,6 +589,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         boolean: false,
       })
     })
@@ -571,6 +600,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         boolean: false,
       })
     })
@@ -581,6 +611,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         boolean: true,
       })
     })
@@ -589,6 +620,7 @@ describe('generateDefaultData()', () => {
       const result = generateDefaultData([element], {})
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         boolean: false,
       })
     })
@@ -599,6 +631,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         boolean: true,
       })
     })
@@ -639,6 +672,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         radio: undefined,
       })
     })
@@ -655,6 +689,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         radio: 'option-1',
       })
     })
@@ -673,6 +708,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         radio: 'option-2',
       })
     })
@@ -713,6 +749,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         checkboxes: undefined,
       })
     })
@@ -729,6 +766,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         checkboxes: ['option-1'],
       })
     })
@@ -747,6 +785,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         checkboxes: ['option-2'],
       })
     })
@@ -793,6 +832,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         select: undefined,
         multi: undefined,
       })
@@ -814,6 +854,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         select: 'option-1',
         multi: ['option-1'],
       })
@@ -838,6 +879,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         select: 'option-2',
         multi: ['option-2'],
       })
@@ -878,6 +920,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         autocomplete: undefined,
       })
     })
@@ -894,6 +937,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         autocomplete: 'option-1',
       })
     })
@@ -912,6 +956,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         autocomplete: 'option-2',
       })
     })
@@ -952,6 +997,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         compliance: undefined,
       })
     })
@@ -968,6 +1014,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         compliance: { value: 'option-1' },
       })
     })
@@ -1004,6 +1051,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         compliance,
       })
     })
@@ -1052,6 +1100,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         files: undefined,
       })
     })
@@ -1082,6 +1131,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         files,
       })
     })
@@ -1114,6 +1164,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         files,
       })
     })
@@ -1156,6 +1207,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         camera: undefined,
       })
     })
@@ -1178,7 +1230,6 @@ describe('generateDefaultData()', () => {
         [
           {
             ...element,
-            // @ts-expect-error our types only account for a string
             defaultValue: camera,
           },
         ],
@@ -1186,6 +1237,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         camera,
       })
     })
@@ -1206,6 +1258,7 @@ describe('generateDefaultData()', () => {
 
       const result = generateDefaultData(
         [
+          // @ts-expect-error intentionally using incorrect type
           {
             ...element,
             defaultValue: 'invalid',
@@ -1217,6 +1270,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         camera,
       })
     })
@@ -1254,6 +1308,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         draw: undefined,
       })
     })
@@ -1276,7 +1331,6 @@ describe('generateDefaultData()', () => {
         [
           {
             ...element,
-            // @ts-expect-error our types only account for a string
             defaultValue: draw,
           },
         ],
@@ -1284,6 +1338,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         draw,
       })
     })
@@ -1304,6 +1359,7 @@ describe('generateDefaultData()', () => {
 
       const result = generateDefaultData(
         [
+          // @ts-expect-error intentionally using incorrect type
           {
             ...element,
             defaultValue: 'invalid',
@@ -1315,6 +1371,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         draw,
       })
     })
@@ -1352,6 +1409,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         date: undefined,
       })
     })
@@ -1368,6 +1426,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         date: '2020-01-01',
       })
     })
@@ -1386,6 +1445,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         date: '2020-02-02',
       })
     })
@@ -1402,6 +1462,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         date: '2020-01-01',
       })
     })
@@ -1412,6 +1473,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         date: '2020-01-01',
       })
     })
@@ -1437,6 +1499,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         datetime: undefined,
       })
     })
@@ -1453,6 +1516,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         datetime: '2020-01-01T12:00:00.000Z',
       })
     })
@@ -1471,6 +1535,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         datetime: '2020-02-02T12:00:00.000Z',
       })
     })
@@ -1487,6 +1552,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         datetime: '2020-01-01T00:00:00.000Z',
       })
     })
@@ -1497,6 +1563,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         datetime: '2020-01-01T00:00:00.000Z',
       })
     })
@@ -1522,6 +1589,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         time: undefined,
       })
     })
@@ -1538,6 +1606,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         time: '2020-01-01T12:00:00.000Z',
       })
     })
@@ -1556,6 +1625,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         time: '2020-02-02T12:00:00.000Z',
       })
     })
@@ -1581,6 +1651,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         location: undefined,
       })
     })
@@ -1592,6 +1663,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         location: undefined,
       })
     })
@@ -1603,6 +1675,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         location: undefined,
       })
     })
@@ -1623,6 +1696,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         location: {
           longitude: 1,
           latitude: 1,
@@ -1653,6 +1727,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         location: {
           longitude: 2,
           latitude: 2,
@@ -1693,6 +1768,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         form: undefined,
       })
     })
@@ -1701,7 +1777,9 @@ describe('generateDefaultData()', () => {
       const result = generateDefaultData([element], {})
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         form: {
+          $__id: 'my-uuid',
           text: 'default text',
         },
       })
@@ -1715,6 +1793,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         form: {
           text: 'pre-fill',
         },
@@ -1727,6 +1806,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         form: {
           text: undefined,
         },
@@ -1767,6 +1847,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         repeatableSet: undefined,
       })
     })
@@ -1775,8 +1856,10 @@ describe('generateDefaultData()', () => {
       const result = generateDefaultData([element], {})
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         repeatableSet: [
           {
+            $__id: 'my-uuid',
             text: 'default text',
           },
         ],
@@ -1796,6 +1879,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         repeatableSet: [
           {
             text: 'pre-fill',
@@ -1813,6 +1897,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         repeatableSet: [
           {
             text: undefined,
@@ -1845,6 +1930,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         geoscapeAddress: undefined,
       })
     })
@@ -1866,6 +1952,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         geoscapeAddress: {
           addressId: 'id',
           addressRecordType: 'Primary',
@@ -1886,6 +1973,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         geoscapeAddress: {
           addressId: 'id',
           addressRecordType: 'Primary',
@@ -1916,6 +2004,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         pointAddress: undefined,
       })
     })
@@ -1935,6 +2024,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         pointAddress: {
           addressId: 'id',
           addressRecordType: 'Primary',
@@ -1951,6 +2041,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         pointAddress: {
           addressId: 'id',
           addressRecordType: 'Primary',
@@ -1995,6 +2086,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaStreetName: undefined,
       })
     })
@@ -2011,6 +2103,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaStreetName,
       })
     })
@@ -2021,6 +2114,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaStreetName,
       })
     })
@@ -2052,6 +2146,7 @@ describe('generateDefaultData()', () => {
     }
 
     const civicaNameRecord = {
+      $__id: 'my-uuid',
       title: 'MR',
       givenName1: 'John',
       familyName: 'Smith',
@@ -2079,6 +2174,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaNameRecord: undefined,
       })
     })
@@ -2093,6 +2189,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaNameRecord: undefined,
       })
     })
@@ -2106,6 +2203,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaNameRecord: undefined,
       })
     })
@@ -2122,6 +2220,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaNameRecord,
       })
     })
@@ -2143,6 +2242,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         civicaNameRecord,
       })
     })
@@ -2168,6 +2268,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         apiNSWLiquorLicence: undefined,
       })
     })
@@ -2188,6 +2289,7 @@ describe('generateDefaultData()', () => {
       )
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         apiNSWLiquorLicence: {
           licenceDetail: {
             licenceNumber: '123abc',
@@ -2206,6 +2308,7 @@ describe('generateDefaultData()', () => {
       })
 
       expect(result).toEqual({
+        $__id: 'my-uuid',
         apiNSWLiquorLicence: {
           licenceDetail: {
             licenceNumber: 'abc123',

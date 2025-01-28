@@ -1,8 +1,11 @@
+import { v4 as uuidv4 } from 'uuid'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { attachmentsService, localisationService } from '@oneblink/apps'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
+
+export const ENTRY_ID_PROPERTY_NAME = '$__id'
 
 function parseAttachment(
   value: unknown,
@@ -513,7 +516,12 @@ export default function generateDefaultData(
 
       return m
     },
-    Object.assign({}, preFillData),
+    Object.assign(
+      {
+        [ENTRY_ID_PROPERTY_NAME]: uuidv4(),
+      },
+      preFillData,
+    ),
   )
 }
 
