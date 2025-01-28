@@ -504,6 +504,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
               onConfirmRemove={confirmRemove}
               element={element}
               classes={['is-pulled-right']}
+              index={index}
             />
           )}
 
@@ -525,7 +526,11 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           />
           {element.layout === 'MULTIPLE_ADD_BUTTONS' && (
             <div className="is-flex">
-              <RemoveButton onConfirmRemove={confirmRemove} element={element} />
+              <RemoveButton
+                onConfirmRemove={confirmRemove}
+                element={element}
+                index={index}
+              />
             </div>
           )}
         </div>
@@ -574,10 +579,12 @@ function RemoveButton({
   onConfirmRemove,
   element,
   classes,
+  index,
 }: {
   onConfirmRemove: () => void
   element: FormTypes.RepeatableSetElement
   classes?: string[]
+  index: number
 }) {
   return (
     <button
@@ -588,7 +595,7 @@ function RemoveButton({
       )}
       onClick={onConfirmRemove}
       disabled={element.readOnly}
-      aria-label={element.removeSetEntryLabel ? undefined : 'Remove Entry'}
+      aria-label={`${element.removeSetEntryLabel ?? 'Remove Entry'} ${index + 1}`}
     >
       <span className="icon">
         <MaterialIcon>delete_outline</MaterialIcon>
