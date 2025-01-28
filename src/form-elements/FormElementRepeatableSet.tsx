@@ -281,7 +281,6 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(entries.length)}
               element={element}
-              classes={['is-primary']}
             />
           )}
         {(isDirty || displayValidationMessage) &&
@@ -550,13 +549,13 @@ function AddButton({
   onAdd: () => void
   element: FormTypes.RepeatableSetElement
   isPrimary?: boolean
-  classes: string[]
+  classes?: string[]
 }) {
   return (
     <button
       type="button"
       className={clsx(
-        'button ob-button ob-button__add cypress-add-repeatable-set',
+        'button ob-button ob-button__add cypress-add-repeatable-set is-primary',
         classes,
       )}
       onClick={onAdd}
