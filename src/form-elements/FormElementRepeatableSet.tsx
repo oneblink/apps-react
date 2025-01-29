@@ -4,6 +4,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useBooleanState from '../hooks/useBooleanState'
 import generateDefaultData, {
   ENTRY_ID_PROPERTY_NAME,
+  generateNewRepeatableSetEntry,
 } from '../services/generate-default-data'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
 import Modal from '../components/renderer/Modal'
@@ -128,7 +129,10 @@ function FormElementRepeatableSet({
       onChange(element, {
         value: (existingEntries) => {
           const newEntries = [...(existingEntries || [])]
-          const entry = generateDefaultData(element.elements, {})
+          const entry = generateDefaultData(
+            element.elements,
+            generateNewRepeatableSetEntry(),
+          )
 
           newEntries.splice(index, 0, entry)
           return newEntries

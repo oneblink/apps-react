@@ -6,6 +6,9 @@ import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
 export const ENTRY_ID_PROPERTY_NAME = '$__id'
+export const generateNewRepeatableSetEntry = () => ({
+  [ENTRY_ID_PROPERTY_NAME]: uuidv4(),
+})
 
 function parseAttachment(
   value: unknown,
@@ -337,7 +340,15 @@ function parsePreFillData(
     case 'repeatableSet': {
       if (Array.isArray(element.elements) && Array.isArray(value)) {
         return value.reduce((entries, v) => {
-          const entry = parseFormSubmissionModel(element.elements, v)
+          const entry = parseFormSubmissionModel(
+            element.elements,
+            v
+              ? {
+                  ...v,
+                  ...generateNewRepeatableSetEntry(),
+                }
+              : undefined,
+          )
           if (entry) {
             entries.push(entry)
           }
@@ -452,7 +463,10 @@ export default function generateDefaultData(
             // add min number of entries by default
             const entries = []
             for (let index = 0; index < minSetEntries; index++) {
-              const entry = generateDefaultData(el.elements, {})
+              const entry = generateDefaultData(
+                el.elements,
+                generateNewRepeatableSetEntry(),
+              )
               entries.push(entry)
             }
             m[el.name] = entries
@@ -516,12 +530,7 @@ export default function generateDefaultData(
 
       return m
     },
-    Object.assign(
-      {
-        [ENTRY_ID_PROPERTY_NAME]: uuidv4(),
-      },
-      preFillData,
-    ),
+    Object.assign({}, preFillData),
   )
 }
 
