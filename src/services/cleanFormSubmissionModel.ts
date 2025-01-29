@@ -6,6 +6,7 @@ import {
 } from '@oneblink/types'
 import { Value as ComplianceValue } from '../form-elements/FormElementCompliance'
 import { FormElementsConditionallyShown } from '../types/form'
+import { ENTRY_ID_PROPERTY_NAME } from './generate-default-data'
 
 function cleanElementValue(
   submission: SubmissionTypes.S3SubmissionData['submission'],
@@ -135,47 +136,51 @@ function cleanElementValue(
             break
           }
 
+          // prevent empty objects being submitted
+          let isEmpty = true
           for (const key in civicaNameRecord) {
             if (
-              civicaNameRecord[key as keyof CivicaTypes.CivicaNameRecord] ===
+              civicaNameRecord[key as keyof CivicaTypes.CivicaNameRecord] !==
               undefined
             ) {
-              continue
-            }
-
-            if (
-              !element.useGeoscapeAddressing ||
-              !Array.isArray(civicaNameRecord.streetAddress)
-            ) {
-              model[element.name] = civicaNameRecord
+              isEmpty = false
               break
             }
+          }
+          if (isEmpty) {
+            break
+          }
 
-            const streetAddresses = civicaNameRecord.streetAddress.map(
-              (streetAddress) => {
-                if (typeof streetAddress.address1 === 'object') {
-                  const geoscapeAddress = streetAddress.address1 as
-                    | GeoscapeTypes.GeoscapeAddress
-                    | undefined
-                  return {
-                    address1: [
-                      geoscapeAddress?.addressDetails?.streetNumber1,
-                      geoscapeAddress?.addressDetails?.streetName,
-                      geoscapeAddress?.addressDetails?.streetType,
-                    ]
-                      .filter((str) => !!str)
-                      .join(' '),
-                    address2: geoscapeAddress?.addressDetails?.localityName,
-                    postcode: geoscapeAddress?.addressDetails?.postcode,
-                  }
+          const streetAddresses = civicaNameRecord.streetAddress?.map(
+            (streetAddress) => {
+              if (
+                element.useGeoscapeAddressing &&
+                typeof streetAddress.address1 === 'object'
+              ) {
+                const geoscapeAddress = streetAddress.address1 as
+                  | GeoscapeTypes.GeoscapeAddress
+                  | undefined
+                return {
+                  address1: [
+                    geoscapeAddress?.addressDetails?.streetNumber1,
+                    geoscapeAddress?.addressDetails?.streetName,
+                    geoscapeAddress?.addressDetails?.streetType,
+                  ]
+                    .filter((str) => !!str)
+                    .join(' '),
+                  address2: geoscapeAddress?.addressDetails?.localityName,
+                  postcode: geoscapeAddress?.addressDetails?.postcode,
                 }
-                return streetAddress
-              },
-            )
-            model[element.name] = {
-              ...civicaNameRecord,
-              streetAddress: streetAddresses,
-            }
+              }
+              return {
+                ...streetAddress,
+                [ENTRY_ID_PROPERTY_NAME]: undefined,
+              }
+            },
+          )
+          model[element.name] = {
+            ...civicaNameRecord,
+            streetAddress: streetAddresses,
           }
           break
         }
