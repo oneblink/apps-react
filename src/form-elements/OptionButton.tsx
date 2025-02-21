@@ -54,7 +54,7 @@ const OptionButton = ({
           <img
             className="ob-options__image"
             src={option.imageUrl}
-            alt={option.label}
+            aria-hidden="true"
           />
         )}
         {option.label}
