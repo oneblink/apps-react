@@ -63,7 +63,7 @@ export const FiltersDateTimePicker = (props: DateTimePickersProps) => {
   )
 }
 
-const useCommonPickerProps = <T,>({
+export const useCommonPickerProps = <T,>({
   renderHelperText,
   value,
   maxDate,

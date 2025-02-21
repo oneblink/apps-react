@@ -1,0 +1,100 @@
+import * as React from 'react'
+import { TextField, TextFieldProps, styled } from '@mui/material'
+import { PickersActionBarAction } from '@mui/x-date-pickers'
+import clsx from 'clsx'
+import MaterialIcon from '../../components/MaterialIcon'
+
+const StyledTextField = styled(TextField)(() => ({
+  '& .MuiOutlinedInput-root': {
+    fontFamily: 'inherit',
+    '& fieldset': {
+      borderColor: '#dbdbdb',
+    },
+    '&:hover fieldset': {
+      borderColor: '#b5b5b5',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#485fc7',
+      borderWidth: '1px',
+    },
+  },
+}))
+
+export default function useFormPickerProps({
+  id,
+  value,
+  maxDate,
+  minDate,
+  icon,
+  ariaDescribedby,
+  autocompleteAttributes,
+  placeholder,
+}: {
+  id: string
+  value: string | undefined
+  maxDate: string | undefined
+  minDate: string | undefined
+  icon: 'event' | 'date_range' | 'schedule'
+  ariaDescribedby: string | undefined
+  autocompleteAttributes: string | undefined
+  placeholder: string | undefined
+}) {
+  const valueMemo = React.useMemo(() => {
+    return value ? new Date(value) : null
+  }, [value])
+
+  const maxDateMemo = React.useMemo(
+    () => (maxDate ? new Date(maxDate) : null),
+    [maxDate],
+  )
+  const minDateMemo = React.useMemo(
+    () => (minDate ? new Date(minDate) : null),
+    [minDate],
+  )
+
+  //must be a fuction
+  const openPickerIcon = React.useCallback(
+    () => <MaterialIcon className="is-size-5">{icon}</MaterialIcon>,
+    [icon],
+  )
+
+  return {
+    slots: {
+      textField: (params: React.PropsWithChildren<TextFieldProps>) => (
+        <StyledTextField
+          {...params}
+          id={id}
+          variant="outlined"
+          margin="dense"
+          size="small"
+          label={undefined}
+          placeholder={placeholder}
+          autoComplete={autocompleteAttributes}
+          aria-describedby="once once"
+          inputProps={{
+            ...params.inputProps,
+            className: clsx(params.inputProps?.className, 'input ob-input'),
+            ariaDescribedby: ariaDescribedby,
+          }}
+          fullWidth
+          //we have our own error and helper text state
+          error={undefined}
+        />
+      ),
+      openPickerIcon,
+    },
+    slotProps: {
+      actionBar: {
+        actions: [
+          'clear',
+          'today',
+          'cancel',
+          'accept',
+        ] as PickersActionBarAction[],
+      },
+    },
+    maxDate: maxDateMemo,
+    minDate: minDateMemo,
+    value: valueMemo,
+  }
+}

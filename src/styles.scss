@@ -118,7 +118,6 @@ $section-padding-mobile: $section-padding-mobile-y $section-padding-mobile-x;
 @import './styles/ob-image.scss';
 @import './styles/ob-files.scss';
 @import './styles/number.scss';
-@import './styles/date.scss';
 @import './styles/autocomplete.scss';
 @import './styles/lookup.scss';
 @import './styles/steps.scss';
@@ -147,4 +146,3 @@ $section-padding-mobile: $section-padding-mobile-y $section-padding-mobile-x;
 //
 // Third Party
 //
-@import 'flatpickr/dist/flatpickr';
