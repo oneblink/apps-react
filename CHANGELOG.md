@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - allow screen readers to ignore optionSet images
 
+### Removed
+
+- **[BREAKING]** flatpickr and replaced with @mui/x-date-pickers
+
 ## [7.2.0] - 2025-01-29
 
 ### Added
