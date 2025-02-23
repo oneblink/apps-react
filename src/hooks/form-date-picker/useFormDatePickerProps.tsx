@@ -20,7 +20,7 @@ const StyledTextField = styled(TextField)(() => ({
   },
 }))
 
-export default function useFormPickerProps({
+export default function useFormDatePickerProps({
   id,
   value,
   maxDate,

@@ -12,7 +12,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import useFormPickerProps from '../hooks/form-date-picker/useFormPickerProps'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
 
 const shortDateTimeFormat =
   localisationService.getDateFnsFormats().shortDateTime
@@ -53,7 +53,7 @@ function FormElementDateTime({
     [element, onChange, setIsDirty],
   )
 
-  const commonProps = useFormPickerProps({
+  const commonProps = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
     maxDate: parseDateValue({

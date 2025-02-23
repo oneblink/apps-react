@@ -10,7 +10,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import useFormPickerProps from '../hooks/form-date-picker/useFormPickerProps'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
 
 type Props = {
   id: string
@@ -47,7 +47,7 @@ function FormElementTime({
     [element, onChange, setIsDirty],
   )
 
-  const commonProps = useFormPickerProps({
+  const commonProps = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
     maxDate: undefined,
