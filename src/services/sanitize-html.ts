@@ -21,11 +21,4 @@ const sanitizeHtmlStandard = (html: string) => {
   })
 }
 
-export const sanitizeCustomCSS = (customCss: string) => {
-  return sanitizeHtml(customCss, {
-    allowedTags: [],
-    allowedAttributes: {},
-  })
-}
-
 export default sanitizeHtmlStandard
