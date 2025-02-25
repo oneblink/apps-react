@@ -1,17 +1,21 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
+import { DatePicker } from '@mui/x-date-pickers'
+import { format } from 'date-fns'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
-import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import LookupButton from '../components/renderer/LookupButton'
-import { FormTypes } from '@oneblink/types'
+
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import MaterialIcon from '../components/MaterialIcon'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
+
+const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 
 type Props = {
   id: string
@@ -35,51 +39,39 @@ function FormElementDate({
   autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
-  const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
 
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
     useFormElementDateFromTo(element)
 
-  const flatpickrOptions = React.useMemo(() => {
-    const opts: FlatpickrOptions = {
-      dateFormat: localisationService.getFlatpickrFormats().shortDate,
-      allowInput: false,
-      minDate: parseDateValue({
-        dateOnly: false,
-        daysOffset: fromDaysOffset,
-        value: fromDate,
-      }),
-      maxDate: parseDateValue({
-        dateOnly: false,
-        daysOffset: toDaysOffset,
-        value: toDate,
-      }),
-      defaultDate: undefined,
-      allowInvalidPreload: true,
-      onClose: setIsDirty,
-    }
-
-    return opts
-  }, [fromDate, fromDaysOffset, setIsDirty, toDate, toDaysOffset])
-
   const handleChange = React.useCallback(
-    (newValue: string | undefined) =>
+    (newValue: string | undefined) => {
       onChange(element, {
-        value: newValue,
-      }),
-    [element, onChange],
+        value: newValue ? format(new Date(newValue), 'yyyy-MM-dd') : undefined,
+      })
+      setIsDirty()
+    },
+
+    [element, onChange, setIsDirty],
   )
 
-  const { onBlur } = useFlatpickr(
-    {
-      id,
-      value,
-      onChange: handleChange,
+  const commonProps = useFormDatePickerProps({
+    id,
+    value: typeof value === 'string' ? value : undefined,
+    maxDate: parseDateValue({
       dateOnly: true,
-    },
-    flatpickrOptions,
-    htmlDivElementRef,
-  )
+      daysOffset: toDaysOffset,
+      value: toDate,
+    }),
+    minDate: parseDateValue({
+      dateOnly: true,
+      daysOffset: fromDaysOffset,
+      value: fromDate,
+    }),
+    icon: 'event',
+    ariaDescribedby,
+    autocompleteAttributes,
+    placeholder: element.placeholderValue,
+  })
 
   const text = React.useMemo(() => {
     if (typeof value === 'string') {
@@ -100,7 +92,7 @@ function FormElementDate({
     (displayValidationMessage || isDirty) && !!validationMessage && !isLookingUp
 
   return (
-    <div className="cypress-date-element" ref={htmlDivElementRef}>
+    <div className="cypress-date-element">
       <FormElementLabelContainer
         className="ob-date"
         id={id}
@@ -109,20 +101,15 @@ function FormElementDate({
       >
         <div className="field has-addons">
           <div className="control is-expanded has-icons-right">
-            <input
-              id={id}
-              name={element.name}
-              placeholder={element.placeholderValue}
+            <DatePicker
+              label={element.label}
+              format={shortDateFormat}
+              {...commonProps}
+              onAccept={(newDate) => {
+                handleChange(newDate?.toISOString())
+              }}
               disabled={element.readOnly}
-              className="input ob-input cypress-date-control"
-              onBlur={onBlur}
-              autoComplete={autocompleteAttributes}
-              aria-describedby={ariaDescribedby}
             />
-
-            <span className="ob-input-icon icon is-small is-right">
-              <MaterialIcon className="is-size-5">event</MaterialIcon>
-            </span>
           </div>
           {!!element.readOnly && !!text && (
             <div className="control">

@@ -12,7 +12,6 @@ import {
   UpdateFormElementsHandler,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
-import { FlatpickrGuidProvider } from '../../hooks/useFlatpickrGuid'
 
 export type Props = {
   formId: number
@@ -123,7 +122,7 @@ function PageFormElements({
 
   return (
     <IsPageVisibleProvider isPageVisible={isActive}>
-      <FlatpickrGuidProvider>
+      <div>
         <div
           id={pageElement.id}
           key={pageElement.id}
@@ -147,7 +146,7 @@ function PageFormElements({
             idPrefix=""
           />
         </div>
-      </FlatpickrGuidProvider>
+      </div>
     </IsPageVisibleProvider>
   )
 }

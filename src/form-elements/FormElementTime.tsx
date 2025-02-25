@@ -1,15 +1,16 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
+import { TimePicker } from '@mui/x-date-pickers'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
-import useFlatpickr, { FlatpickrOptions } from '../hooks/useFlatpickr'
 import LookupButton from '../components/renderer/LookupButton'
-import { FormTypes } from '@oneblink/types'
+
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import MaterialIcon from '../components/MaterialIcon'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
 
 type Props = {
   id: string
@@ -20,6 +21,8 @@ type Props = {
   validationMessage: string | undefined
   autocompleteAttributes?: string
 } & IsDirtyProps
+
+const timeFormat = localisationService.getDateFnsFormats().time
 
 function FormElementTime({
   id,
@@ -33,45 +36,34 @@ function FormElementTime({
   autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
-  const htmlDivElementRef = React.useRef<HTMLDivElement>(null)
-
-  const flatpickrOptions = React.useMemo(() => {
-    const opts: FlatpickrOptions = {
-      altInput: true,
-      dateFormat: 'H:i',
-      altFormat: localisationService.getFlatpickrFormats().time,
-      allowInput: false,
-      altInputClass: 'input ob-input cypress-time-control',
-      minDate: undefined,
-      maxDate: undefined,
-      defaultDate: undefined,
-      enableTime: true,
-      noCalendar: true,
-      time_24hr: false,
-      onClose: setIsDirty,
-    }
-
-    return opts
-  }, [setIsDirty])
 
   const handleChange = React.useCallback(
-    (newValue: string | undefined) =>
+    (newValue: string | undefined) => {
       onChange(element, {
         value: newValue,
-      }),
-    [element, onChange],
+      })
+      setIsDirty()
+    },
+    [element, onChange, setIsDirty],
   )
 
-  useFlatpickr(
-    {
-      id,
-      value,
-      onChange: handleChange,
-      label: element.label,
-    },
-    flatpickrOptions,
-    htmlDivElementRef,
-  )
+  const commonProps = useFormDatePickerProps({
+    id,
+    value: typeof value === 'string' ? value : undefined,
+    maxDate: undefined,
+    minDate: undefined,
+    icon: 'schedule',
+    ariaDescribedby,
+    autocompleteAttributes,
+    placeholder: element.placeholderValue,
+  })
+
+  const timeProps = React.useMemo(() => {
+    // maxDate and minDate not applicable to a timepicker
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { maxDate, minDate, ...rest } = commonProps
+    return rest
+  }, [commonProps])
 
   const text = React.useMemo(() => {
     if (typeof value !== 'string') {
@@ -84,7 +76,7 @@ function FormElementTime({
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
   return (
-    <div className="cypress-time-element" ref={htmlDivElementRef}>
+    <div className="cypress-time-element">
       <FormElementLabelContainer
         className="ob-time"
         id={id}
@@ -93,19 +85,16 @@ function FormElementTime({
       >
         <div className="field has-addons">
           <div className="control is-expanded has-icons-right">
-            <input
-              type="time"
-              id={id}
-              name={element.name}
-              placeholder={element.placeholderValue}
+            <TimePicker
+              label={element.label}
+              format={timeFormat}
+              {...timeProps}
+              onAccept={(newDate) => {
+                handleChange(newDate?.toISOString())
+              }}
               disabled={element.readOnly}
-              className="input ob-input"
-              aria-describedby={ariaDescribedby}
-              autoComplete={autocompleteAttributes}
+              timeSteps={{ minutes: 1 }}
             />
-            <span className="ob-input-icon icon is-small is-right">
-              <MaterialIcon className="is-size-5">schedule</MaterialIcon>
-            </span>
           </div>
           {!!element.readOnly && !!text && (
             <div className="control">
