@@ -70,6 +70,7 @@ function FormElementDateTime({
     ariaDescribedby,
     autocompleteAttributes,
     placeholder: element.placeholderValue,
+    className: 'cypress-date-time-control',
   })
 
   const text = React.useMemo(() => {
@@ -102,6 +103,7 @@ function FormElementDateTime({
               }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
+              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (
