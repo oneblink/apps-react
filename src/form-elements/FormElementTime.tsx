@@ -77,7 +77,6 @@ function FormElementTime({
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
-  console.log(timeFormat)
   return (
     <div className="cypress-time-element">
       <FormElementLabelContainer

@@ -92,8 +92,6 @@ function FormElementDate({
   const isDisplayingValidationMessage =
     (displayValidationMessage || isDirty) && !!validationMessage && !isLookingUp
 
-  console.log({ name: element.name, ...commonProps })
-
   return (
     <div className="cypress-date-element">
       <FormElementLabelContainer
