@@ -391,11 +391,27 @@ export default function useFormStoreTable({
     submissionIdValidationMessage,
   ])
 
+  const defaultHiddenColumns = [
+    'SUBMISSION_ID',
+    'EXTERNAL_ID',
+    'TASK',
+    'TASK_ACTION',
+    'TASK_GROUP',
+    'TASK_GROUP_INSTANCE',
+  ]
+
   const [initialState] = React.useState<Partial<TableState<FormStoreRecord>>>(
     () => {
       const text = localStorage.getItem(localStorageKey(form.id))
       if (text) {
-        return JSON.parse(text)
+        const intialState = JSON.parse(text)
+
+        if (intialState && !intialState.defaultHiddenColumnsUpToDate) {
+          intialState.hiddenColumns = defaultHiddenColumns
+          intialState.defaultHiddenColumnsUpToDate = true
+        }
+
+        return intialState
       }
     },
   )
@@ -410,14 +426,7 @@ export default function useFormStoreTable({
       initialState: initialState
         ? initialState
         : {
-            hiddenColumns: [
-              'SUBMISSION_ID',
-              'EXTERNAL_ID',
-              'TASK',
-              'TASK_ACTION',
-              'TASK_GROUP',
-              'TASK_GROUP_INSTANCE',
-            ],
+            hiddenColumns: defaultHiddenColumns,
           },
     },
     useFlexLayout,
