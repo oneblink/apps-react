@@ -18,6 +18,7 @@ import generateCivicaNameRecordElements from '../generateCivicaNameRecordElement
 import generateFreshdeskDependentFieldElements from '../generateFreshdeskDependentFieldElements'
 import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
+import { DATE_ELEMENT_SUBMISSION_MODEL_FORMAT } from '../../form-elements/FormElementDate'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -373,12 +374,12 @@ export default function validateSubmission({
               dateOnly: true,
               format: (date: Date) => localisationService.formatDate(date),
               earliest: parseDateValue({
-                dateOnly: true,
+                dateFormat: DATE_ELEMENT_SUBMISSION_MODEL_FORMAT,
                 daysOffset: fromDateDaysOffset,
                 value: fromDate,
               }),
               latest: parseDateValue({
-                dateOnly: true,
+                dateFormat: DATE_ELEMENT_SUBMISSION_MODEL_FORMAT,
                 daysOffset: toDateDaysOffset,
                 value: toDate,
               }),
@@ -427,12 +428,12 @@ export default function validateSubmission({
             ...validators.datetime(value, {
               format: (v: Date) => localisationService.formatDatetime(v),
               earliest: parseDateValue({
-                dateOnly: false,
+                dateFormat: undefined,
                 daysOffset: fromDateDaysOffset,
                 value: fromDate,
               }),
               latest: parseDateValue({
-                dateOnly: false,
+                dateFormat: undefined,
                 daysOffset: toDateDaysOffset,
                 value: toDate,
               }),
