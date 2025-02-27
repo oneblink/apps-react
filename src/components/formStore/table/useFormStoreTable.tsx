@@ -406,9 +406,9 @@ export default function useFormStoreTable({
       if (text) {
         const intialState = JSON.parse(text)
 
-        if (intialState && !intialState.defaultHiddenColumnsUpToDate) {
+        if (intialState && intialState.defaultHiddenColumnsVersion !== 'V1') {
           intialState.hiddenColumns = defaultHiddenColumns
-          intialState.defaultHiddenColumnsUpToDate = true
+          intialState.defaultHiddenColumnsVersion = 'V1'
         }
 
         return intialState
