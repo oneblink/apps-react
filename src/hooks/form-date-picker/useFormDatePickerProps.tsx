@@ -29,6 +29,7 @@ export default function useFormDatePickerProps({
   ariaDescribedby,
   autocompleteAttributes,
   placeholder,
+  className,
 }: {
   id: string
   value: string | undefined
@@ -38,6 +39,7 @@ export default function useFormDatePickerProps({
   ariaDescribedby: string | undefined
   autocompleteAttributes: string | undefined
   placeholder: string | undefined
+  className: string
 }) {
   const valueMemo = React.useMemo(() => {
     return value ? new Date(value) : null
@@ -70,11 +72,14 @@ export default function useFormDatePickerProps({
           label={undefined}
           placeholder={placeholder}
           autoComplete={autocompleteAttributes}
-          aria-describedby="once once"
+          aria-describedby={ariaDescribedby}
           inputProps={{
             ...params.inputProps,
-            className: clsx(params.inputProps?.className, 'input ob-input'),
-            ariaDescribedby: ariaDescribedby,
+            className: clsx(
+              params.inputProps?.className,
+              'input ob-input',
+              className,
+            ),
           }}
           fullWidth
           //we have our own error and helper text state

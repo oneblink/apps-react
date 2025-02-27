@@ -71,6 +71,7 @@ function FormElementDate({
     ariaDescribedby,
     autocompleteAttributes,
     placeholder: element.placeholderValue,
+    className: 'cypress-date-control',
   })
 
   const text = React.useMemo(() => {
@@ -109,6 +110,7 @@ function FormElementDate({
                 handleChange(newDate?.toISOString())
               }}
               disabled={element.readOnly}
+              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (

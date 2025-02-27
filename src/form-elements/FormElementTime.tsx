@@ -56,6 +56,7 @@ function FormElementTime({
     ariaDescribedby,
     autocompleteAttributes,
     placeholder: element.placeholderValue,
+    className: 'cypress-time-control',
   })
 
   const timeProps = React.useMemo(() => {
@@ -75,6 +76,7 @@ function FormElementTime({
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
+
   return (
     <div className="cypress-time-element">
       <FormElementLabelContainer
@@ -94,6 +96,7 @@ function FormElementTime({
               }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
+              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (
