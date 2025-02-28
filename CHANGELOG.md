@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- **[BREAKING]** flatpickr and replaced with @mui/x-date-pickers
+- **[BREAKING]** flatpickr and replaced with native date, datetime and time pickers
 
 ## [7.2.0] - 2025-01-29
 

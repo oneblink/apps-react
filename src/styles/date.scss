@@ -1,0 +1,8 @@
+.ob-input[type='date']::-webkit-calendar-picker-indicator,
+.ob-input[type='time']::-webkit-calendar-picker-indicator,
+.ob-input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  right: 0;
+  position: absolute;
+  padding: 11px;
+  opacity: 0;
+}

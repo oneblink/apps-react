@@ -112,7 +112,6 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       const date = localisationService.generateDate({
         daysOffset: undefined,
         value: unknown,
-        dateOnly: true,
       })
       if (!date) {
         break
