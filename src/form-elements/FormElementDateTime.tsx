@@ -47,7 +47,6 @@ function FormElementDateTime({
       if (newValue) {
         try {
           const datetimeValue = parse(newValue, datetimeFormat, new Date())
-          console.log(datetimeValue.toISOString())
           onChange(element, { value: datetimeValue.toISOString() })
           return
         } catch {
@@ -97,8 +96,6 @@ function FormElementDateTime({
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
-
-  console.log(JSON.stringify({ minDatetime, maxDatetime }))
 
   return (
     <div className="cypress-datetime-element">
