@@ -5,8 +5,8 @@ import { format } from 'date-fns'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
-import { DATE_ELEMENT_SUBMISSION_MODEL_FORMAT } from '../form-elements/FormElementDate'
 
+export const DATE_ELEMENT_SUBMISSION_MODEL_FORMAT = 'yyyy-MM-dd'
 export const ENTRY_ID_PROPERTY_NAME = '$__id'
 export const generateNewRepeatableSetEntry = () => ({
   [ENTRY_ID_PROPERTY_NAME]: uuidv4(),

@@ -8,13 +8,14 @@ import LookupButton from '../components/renderer/LookupButton'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import MaterialIcon from '../components/MaterialIcon'
 
-import { parseDateValue } from '../services/generate-default-data'
+import {
+  parseDateValue,
+  DATE_ELEMENT_SUBMISSION_MODEL_FORMAT,
+} from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-
-export const DATE_ELEMENT_SUBMISSION_MODEL_FORMAT = 'yyyy-MM-dd'
 
 type Props = {
   id: string

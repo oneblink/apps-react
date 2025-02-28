@@ -16,9 +16,11 @@ import {
 } from './validators'
 import generateCivicaNameRecordElements from '../generateCivicaNameRecordElements'
 import generateFreshdeskDependentFieldElements from '../generateFreshdeskDependentFieldElements'
-import { parseDateValue } from '../generate-default-data'
+import {
+  parseDateValue,
+  DATE_ELEMENT_SUBMISSION_MODEL_FORMAT,
+} from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
-import { DATE_ELEMENT_SUBMISSION_MODEL_FORMAT } from '../../form-elements/FormElementDate'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
