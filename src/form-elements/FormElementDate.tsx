@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
-import { format } from 'date-fns'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
@@ -46,9 +45,7 @@ function FormElementDate({
   const handleChange = React.useCallback(
     (newValue: string | undefined) => {
       onChange(element, {
-        value: newValue
-          ? format(new Date(newValue), DATE_ELEMENT_SUBMISSION_MODEL_FORMAT)
-          : undefined,
+        value: newValue,
       })
       setIsDirty()
     },
