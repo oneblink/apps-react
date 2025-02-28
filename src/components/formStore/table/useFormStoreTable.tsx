@@ -5,7 +5,6 @@ import {
   useFlexLayout,
   useResizeColumns,
   useTable,
-  TableState,
 } from 'react-table'
 import { format } from 'date-fns'
 import generateColumns from './generateColumns'
@@ -15,6 +14,10 @@ import { FormTypes } from '@oneblink/types'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 import { formStoreService, localisationService } from '@oneblink/apps'
 import { FormStoreElementsContext } from '../OneBlinkFormStoreProvider'
+import getVersionedFormTableState, {
+  defaultHiddenColumns,
+  FormTableState,
+} from './getVersionedState'
 
 const defaultColumn = {
   minWidth: 150,
@@ -391,30 +394,12 @@ export default function useFormStoreTable({
     submissionIdValidationMessage,
   ])
 
-  const defaultHiddenColumns = [
-    'SUBMISSION_ID',
-    'EXTERNAL_ID',
-    'TASK',
-    'TASK_ACTION',
-    'TASK_GROUP',
-    'TASK_GROUP_INSTANCE',
-  ]
-
-  const [initialState] = React.useState<Partial<TableState<FormStoreRecord>>>(
-    () => {
-      const text = localStorage.getItem(localStorageKey(form.id))
-      if (text) {
-        const intialState = JSON.parse(text)
-
-        if (intialState && intialState.defaultHiddenColumnsVersion !== 'V1') {
-          intialState.hiddenColumns = defaultHiddenColumns
-          intialState.defaultHiddenColumnsVersion = 'V1'
-        }
-
-        return intialState
-      }
-    },
-  )
+  const [initialState] = React.useState<FormTableState | undefined>(() => {
+    const text = localStorage.getItem(localStorageKey(form.id))
+    if (text) {
+      return getVersionedFormTableState(JSON.parse(text))
+    }
+  })
 
   const table = useTable(
     {
