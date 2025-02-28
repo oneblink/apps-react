@@ -76,7 +76,6 @@ function FormElementDate({
       const date = localisationService.generateDate({
         daysOffset: undefined,
         value,
-        dateOnly: true,
       })
       if (date) {
         return localisationService.formatDate(date)
