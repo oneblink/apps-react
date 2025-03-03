@@ -1,20 +1,21 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
-import { parse, format } from 'date-fns'
+import { DateTimePicker } from '@mui/x-date-pickers'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
-import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import MaterialIcon from '../components/MaterialIcon'
 
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { parseDateValue } from '../services/generate-default-data'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
 
-const datetimeFormat = "yyyy-MM-dd'T'HH:mm"
+const shortDateTimeFormat =
+  localisationService.getDateFnsFormats().shortDateTime
 
 type Props = {
   id: string
@@ -44,47 +45,33 @@ function FormElementDateTime({
 
   const handleChange = React.useCallback(
     (newValue: string | undefined) => {
-      if (newValue) {
-        try {
-          const datetimeValue = parse(newValue, datetimeFormat, new Date())
-          onChange(element, { value: datetimeValue.toISOString() })
-          return
-        } catch {
-          console.warn(`Error parsing time for element: ${element.id}`)
-        }
-      }
-
       onChange(element, {
-        value: undefined,
+        value: newValue,
       })
       setIsDirty()
     },
     [element, onChange, setIsDirty],
   )
 
-  const maxDatetime = React.useMemo(() => {
-    return parseDateValue({
-      dateFormat: datetimeFormat,
+  const commonProps = useFormDatePickerProps({
+    id,
+    value: typeof value === 'string' ? value : undefined,
+    maxDate: parseDateValue({
+      dateOnly: false,
       daysOffset: toDaysOffset,
       value: toDate,
-    })
-  }, [toDate, toDaysOffset])
-
-  const minDatetime = React.useMemo(() => {
-    return parseDateValue({
-      dateFormat: datetimeFormat,
+    }),
+    minDate: parseDateValue({
+      dateOnly: false,
       daysOffset: fromDaysOffset,
       value: fromDate,
-    })
-  }, [fromDate, fromDaysOffset])
-
-  const datetimeValue = React.useMemo(() => {
-    if (typeof value !== 'string') {
-      return ''
-    }
-    const date = new Date(value)
-    return format(date, "yyyy-MM-dd'T'HH:mm")
-  }, [value])
+    }),
+    icon: 'date_range',
+    ariaDescribedby,
+    autocompleteAttributes,
+    placeholder: element.placeholderValue,
+    className: 'cypress-date-time-control',
+  })
 
   const text = React.useMemo(() => {
     if (typeof value !== 'string') {
@@ -107,26 +94,17 @@ function FormElementDateTime({
       >
         <div className="field has-addons">
           <div className="control is-expanded has-icons-right">
-            <input
-              id={id}
-              type="datetime-local"
-              name={element.name}
-              value={datetimeValue}
-              placeholder={element.placeholderValue}
-              disabled={element.readOnly}
-              className="input ob-input cypress-date-time-control"
-              onBlur={setIsDirty}
-              autoComplete={autocompleteAttributes}
-              aria-describedby={ariaDescribedby}
-              min={minDatetime}
-              max={maxDatetime}
-              onChange={(e) => {
-                handleChange(e.target.value)
+            <DateTimePicker
+              label={element.label}
+              format={shortDateTimeFormat}
+              {...commonProps}
+              onAccept={(newDate) => {
+                handleChange(newDate?.toISOString())
               }}
+              disabled={element.readOnly}
+              timeSteps={{ minutes: 1 }}
+              onClose={setIsDirty}
             />
-            <span className="ob-input-icon icon is-small is-right">
-              <MaterialIcon className="is-size-5">date_range</MaterialIcon>
-            </span>
           </div>
           {!!element.readOnly && !!text && (
             <div className="control">

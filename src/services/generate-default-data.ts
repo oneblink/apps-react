@@ -1,12 +1,10 @@
 import { v4 as uuidv4 } from 'uuid'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { attachmentsService, localisationService } from '@oneblink/apps'
-import { format } from 'date-fns'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'
 
-export const DATE_ELEMENT_SUBMISSION_MODEL_FORMAT = 'yyyy-MM-dd'
 export const ENTRY_ID_PROPERTY_NAME = '$__id'
 export const generateNewRepeatableSetEntry = () => ({
   [ENTRY_ID_PROPERTY_NAME]: uuidv4(),
@@ -87,25 +85,47 @@ function parseFiles(
 }
 
 export function parseDateValue({
+  dateOnly,
   daysOffset,
   value,
-  dateFormat,
 }: {
+  dateOnly: boolean
   daysOffset: number | undefined
   value: unknown
-  dateFormat: string | undefined
 }): string | undefined {
   if (typeof value !== 'string') {
     return
   }
 
-  const date = localisationService.generateDate({ daysOffset, value })
+  const date = localisationService.generateDate({ daysOffset, value, dateOnly })
   if (!date) {
     return
   }
 
-  if (dateFormat) {
-    return format(date, dateFormat)
+  if (dateOnly) {
+    const { year, month, day } = new Intl.DateTimeFormat(
+      localisationService.getLocale(),
+      {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      },
+    )
+      .formatToParts(date)
+      .reduce(
+        (memo, { type, value }) => ({
+          ...memo,
+          [type]: value,
+        }),
+        {
+          year: '',
+          month: '',
+          day: '',
+        },
+      )
+    // This is a workaround for an iOS 15 bug where the year was being returned as 2 digits: https://bugs.webkit.org/show_bug.cgi?id=230827
+    const fixedYear = year.length === 2 ? date.getFullYear() : year
+    return `${fixedYear}-${month}-${day}`
   } else {
     return date.toISOString()
   }
@@ -213,7 +233,7 @@ function parsePreFillData(
     case 'datetime':
     case 'date': {
       return parseDateValue({
-        dateFormat: element.type === 'date' ? 'yyyy-MM-dd' : undefined,
+        dateOnly: element.type === 'date',
         daysOffset: undefined,
         value,
       })
@@ -458,10 +478,7 @@ export default function generateDefaultData(
         case 'time': {
           if (el.defaultValue) {
             m[el.name] = parseDateValue({
-              dateFormat:
-                el.type === 'date'
-                  ? DATE_ELEMENT_SUBMISSION_MODEL_FORMAT
-                  : undefined,
+              dateOnly: el.type === 'date',
               daysOffset: el.defaultValueDaysOffset,
               value: el.defaultValue,
             })

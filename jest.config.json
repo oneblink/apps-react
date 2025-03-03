@@ -4,13 +4,15 @@
   "moduleDirectories": ["src", "node_modules"],
   "roots": [".", "src"],
   "transform": {
-    "^.+\\.tsx?$": ["ts-jest", { "isolatedModules": true }],
     "^.+\\.jsx?$": "babel-jest"
   },
-  "transformIgnorePatterns": [
-    "/node_modules/(?!(@oneblink/apps|query-string))"
-  ],
+  "transformIgnorePatterns": ["/node_modules/(?!@oneblink/apps)"],
   "moduleNameMapper": {
     "^.*nanoid/non-secure.*$": "<rootDir>/tests/fixtures/nanoid/non-secure.js"
+  },
+  "globals": {
+    "ts-jest": {
+      "isolatedModules": true
+    }
   }
 }
