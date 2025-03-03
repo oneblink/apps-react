@@ -1,16 +1,16 @@
 import * as React from 'react'
 import { localisationService } from '@oneblink/apps'
 import { FormTypes } from '@oneblink/types'
+import { TimePicker } from '@mui/x-date-pickers'
 
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
-import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import MaterialIcon from '../components/MaterialIcon'
 
+import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import { format, parse } from 'date-fns'
+import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
 
 type Props = {
   id: string
@@ -21,6 +21,8 @@ type Props = {
   validationMessage: string | undefined
   autocompleteAttributes?: string
 } & IsDirtyProps
+
+const timeFormat = localisationService.getDateFnsFormats().time
 
 function FormElementTime({
   id,
@@ -37,31 +39,32 @@ function FormElementTime({
 
   const handleChange = React.useCallback(
     (newValue: string | undefined) => {
-      if (newValue) {
-        try {
-          const timeValue = parse(newValue, 'HH:mm', new Date())
-          onChange(element, { value: timeValue.toISOString() })
-          return
-        } catch {
-          console.warn(`Error parsing time for element: ${element.id}`)
-        }
-      }
-
       onChange(element, {
-        value: undefined,
+        value: newValue,
       })
       setIsDirty()
     },
     [element, onChange, setIsDirty],
   )
 
-  const timeValue = React.useMemo(() => {
-    if (typeof value !== 'string') {
-      return ''
-    }
-    const date = new Date(value)
-    return format(date, 'HH:mm')
-  }, [value])
+  const commonProps = useFormDatePickerProps({
+    id,
+    value: typeof value === 'string' ? value : undefined,
+    maxDate: undefined,
+    minDate: undefined,
+    icon: 'schedule',
+    ariaDescribedby,
+    autocompleteAttributes,
+    placeholder: element.placeholderValue,
+    className: 'cypress-time-control',
+  })
+
+  const timeProps = React.useMemo(() => {
+    // maxDate and minDate not applicable to a timepicker
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { maxDate, minDate, ...rest } = commonProps
+    return rest
+  }, [commonProps])
 
   const text = React.useMemo(() => {
     if (typeof value !== 'string') {
@@ -84,24 +87,17 @@ function FormElementTime({
       >
         <div className="field has-addons">
           <div className="control is-expanded has-icons-right">
-            <input
-              id={id}
-              type="time"
-              name={element.name}
-              value={timeValue}
-              placeholder={element.placeholderValue}
-              disabled={element.readOnly}
-              className="input ob-input cypress-time-control"
-              onBlur={setIsDirty}
-              autoComplete={autocompleteAttributes}
-              aria-describedby={ariaDescribedby}
-              onChange={(e) => {
-                handleChange(e.target.value)
+            <TimePicker
+              label={element.label}
+              format={timeFormat}
+              {...timeProps}
+              onAccept={(newDate) => {
+                handleChange(newDate?.toISOString())
               }}
+              disabled={element.readOnly}
+              timeSteps={{ minutes: 1 }}
+              onClose={setIsDirty}
             />
-            <span className="ob-input-icon icon is-small is-right">
-              <MaterialIcon className="is-size-5">schedule</MaterialIcon>
-            </span>
           </div>
           {!!element.readOnly && !!text && (
             <div className="control">

@@ -94,6 +94,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 const parsedIsoDate = localisationService.generateDate({
                   value: elementValue,
                   daysOffset: undefined,
+                  dateOnly: false,
                 })
                 if (parsedIsoDate) {
                   return parsedIsoDate.getTime()
@@ -101,6 +102,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                 const parsedDate = localisationService.generateDate({
                   value: elementValue,
                   daysOffset: undefined,
+                  dateOnly: true,
                 })
                 if (parsedDate) {
                   return parsedDate.getTime()
