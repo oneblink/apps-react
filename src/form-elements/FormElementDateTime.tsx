@@ -43,29 +43,27 @@ function FormElementDateTime({
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
     useFormElementDateFromTo(element)
 
-  const handleChange = React.useCallback(
-    (newValue: string | undefined) => {
-      onChange(element, {
-        value: newValue,
-      })
-      setIsDirty()
-    },
-    [element, onChange, setIsDirty],
-  )
+  const maxDate = React.useMemo(() => {
+    return parseDateValue({
+      dateOnly: true,
+      daysOffset: toDaysOffset,
+      value: toDate,
+    })
+  }, [toDate, toDaysOffset])
+
+  const minDate = React.useMemo(() => {
+    return parseDateValue({
+      dateOnly: true,
+      daysOffset: fromDaysOffset,
+      value: fromDate,
+    })
+  }, [fromDate, fromDaysOffset])
 
   const commonProps = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
-    maxDate: parseDateValue({
-      dateOnly: false,
-      daysOffset: toDaysOffset,
-      value: toDate,
-    }),
-    minDate: parseDateValue({
-      dateOnly: false,
-      daysOffset: fromDaysOffset,
-      value: fromDate,
-    }),
+    maxDate,
+    minDate,
     icon: 'date_range',
     ariaDescribedby,
     autocompleteAttributes,
@@ -99,7 +97,10 @@ function FormElementDateTime({
               format={shortDateTimeFormat}
               {...commonProps}
               onAccept={(newDate) => {
-                handleChange(newDate?.toISOString())
+                onChange(element, {
+                  value: newDate?.toISOString(),
+                })
+                setIsDirty()
               }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}

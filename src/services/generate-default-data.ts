@@ -97,7 +97,7 @@ export function parseDateValue({
     return
   }
 
-  const date = localisationService.generateDate({ daysOffset, value, dateOnly })
+  const date = localisationService.generateDate({ daysOffset, value })
   if (!date) {
     return
   }

@@ -43,30 +43,27 @@ function FormElementDate({
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
     useFormElementDateFromTo(element)
 
-  const handleChange = React.useCallback(
-    (newValue: string | undefined) => {
-      onChange(element, {
-        value: newValue ? format(new Date(newValue), 'yyyy-MM-dd') : undefined,
-      })
-      setIsDirty()
-    },
+  const maxDate = React.useMemo(() => {
+    return parseDateValue({
+      dateOnly: true,
+      daysOffset: toDaysOffset,
+      value: toDate,
+    })
+  }, [toDate, toDaysOffset])
 
-    [element, onChange, setIsDirty],
-  )
+  const minDate = React.useMemo(() => {
+    return parseDateValue({
+      dateOnly: true,
+      daysOffset: fromDaysOffset,
+      value: fromDate,
+    })
+  }, [fromDate, fromDaysOffset])
 
   const commonProps = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
-    maxDate: parseDateValue({
-      dateOnly: true,
-      daysOffset: toDaysOffset,
-      value: toDate,
-    }),
-    minDate: parseDateValue({
-      dateOnly: true,
-      daysOffset: fromDaysOffset,
-      value: fromDate,
-    }),
+    maxDate,
+    minDate,
     icon: 'event',
     ariaDescribedby,
     autocompleteAttributes,
@@ -79,7 +76,6 @@ function FormElementDate({
       const date = localisationService.generateDate({
         daysOffset: undefined,
         value,
-        dateOnly: true,
       })
       if (date) {
         return localisationService.formatDate(date)
@@ -107,7 +103,10 @@ function FormElementDate({
               format={shortDateFormat}
               {...commonProps}
               onAccept={(newDate) => {
-                handleChange(newDate?.toISOString())
+                onChange(element, {
+                  value: newDate ? format(newDate, 'yyyy-MM-dd') : undefined,
+                })
+                setIsDirty()
               }}
               disabled={element.readOnly}
               onClose={setIsDirty}

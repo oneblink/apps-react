@@ -128,7 +128,6 @@ function FormElementSummary({ element, onChange, value }: Props) {
           const date = localisationService.generateDate({
             daysOffset: undefined,
             value: formElementValue as string,
-            dateOnly: true,
           })
           if (date) {
             partialSummary.push(localisationService.formatDate(date))
