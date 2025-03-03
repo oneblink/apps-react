@@ -304,6 +304,16 @@ function PaymentReceipt({
           </ReceiptList>
 
           <div className="buttons">
+            {submissionResult && submissionResult.downloadSubmissionPdfUrl && (
+              <a
+                className="button ob-button ob-payment-receipt__button ob-button__download-pdf ob-payment-receipt__pdf-button is-light cypress-receipt-download-pdf-button"
+                href={submissionResult.downloadSubmissionPdfUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Download PDF
+              </a>
+            )}
             {transaction.isSuccess ? (
               <ReceiptButton
                 className="is-primary ob-payment-receipt__button ob-payment-receipt__okay-button cypress-payment-receipt-okay-button"

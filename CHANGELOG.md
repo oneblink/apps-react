@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add download PDF button to payment receipt
+
 ### Changed
 
 - allow screen readers to ignore optionSet images
