@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add download PDF button to payment receipt
 
+### Fixed
+
+- Issue in `useFormStoreTable` where outdated local storage values caused columns hidden by default to be displayed
+
 ### Changed
 
 - allow screen readers to ignore optionSet images
