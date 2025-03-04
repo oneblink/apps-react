@@ -306,7 +306,7 @@ function PaymentReceipt({
           <div className="buttons">
             {submissionResult && submissionResult.downloadSubmissionPdfUrl && (
               <a
-                className="button ob-button ob-payment-receipt__button ob-button__download-pdf ob-payment-receipt__pdf-button is-light cypress-receipt-download-pdf-button"
+                className="button ob-button ob-receipt__button ob-payment-receipt__button ob-button__download-pdf ob-payment-receipt__pdf-button cypress-receipt-download-pdf-button"
                 href={submissionResult.downloadSubmissionPdfUrl}
                 target="_blank"
                 rel="noreferrer"
