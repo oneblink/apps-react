@@ -96,10 +96,16 @@ function FormElementDateTime({
               label={element.label}
               format={shortDateTimeFormat}
               {...commonProps}
-              onAccept={(newDate) => {
-                onChange(element, {
-                  value: newDate?.toISOString(),
-                })
+              onChange={(newDate) => {
+                if (newDate && !!Date.parse(newDate.toString())) {
+                  onChange(element, {
+                    value: newDate.toISOString(),
+                  })
+                } else {
+                  onChange(element, {
+                    value: undefined,
+                  })
+                }
                 setIsDirty()
               }}
               disabled={element.readOnly}

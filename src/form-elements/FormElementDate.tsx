@@ -102,10 +102,16 @@ function FormElementDate({
               label={element.label}
               format={shortDateFormat}
               {...commonProps}
-              onAccept={(newDate) => {
-                onChange(element, {
-                  value: newDate ? format(newDate, 'yyyy-MM-dd') : undefined,
-                })
+              onChange={(newDate) => {
+                if (newDate && !!Date.parse(newDate.toString())) {
+                  onChange(element, {
+                    value: format(newDate, 'yyyy-MM-dd'),
+                  })
+                } else {
+                  onChange(element, {
+                    value: undefined,
+                  })
+                }
                 setIsDirty()
               }}
               disabled={element.readOnly}

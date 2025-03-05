@@ -91,8 +91,13 @@ function FormElementTime({
               label={element.label}
               format={timeFormat}
               {...timeProps}
-              onAccept={(newDate) => {
-                handleChange(newDate?.toISOString())
+              onChange={(newDate) => {
+                if (newDate && Date.parse(newDate.toString())) {
+                  handleChange(newDate.toISOString())
+                } else {
+                  handleChange(undefined)
+                }
+                setIsDirty()
               }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
