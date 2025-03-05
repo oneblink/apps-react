@@ -30,6 +30,8 @@ export default function useFormDatePickerProps({
   autocompleteAttributes,
   placeholder,
   className,
+  onBlur,
+  onChange,
 }: {
   id: string
   value: string | undefined
@@ -40,17 +42,19 @@ export default function useFormDatePickerProps({
   autocompleteAttributes: string | undefined
   placeholder: string | undefined
   className: string
+  onBlur: () => void
+  onChange: (newDate: Date | undefined) => void
 }) {
   const valueMemo = React.useMemo(() => {
     return value ? new Date(value) : null
   }, [value])
 
   const maxDateMemo = React.useMemo(
-    () => (maxDate ? new Date(maxDate) : null),
+    () => (maxDate ? new Date(maxDate) : undefined),
     [maxDate],
   )
   const minDateMemo = React.useMemo(
-    () => (minDate ? new Date(minDate) : null),
+    () => (minDate ? new Date(minDate) : undefined),
     [minDate],
   )
 
@@ -81,11 +85,19 @@ export default function useFormDatePickerProps({
           ),
         }}
         fullWidth
+        onBlur={onBlur}
         //we have our own error and helper text state
         error={undefined}
       />
     ),
-    [ariaDescribedby, autocompleteAttributes, className, id, placeholder],
+    [
+      ariaDescribedby,
+      autocompleteAttributes,
+      className,
+      id,
+      onBlur,
+      placeholder,
+    ],
   )
 
   return {
@@ -103,6 +115,14 @@ export default function useFormDatePickerProps({
         ] as PickersActionBarAction[],
       },
       popper: { disablePortal: true },
+    },
+    onClose: onBlur,
+    onChange: (newDate: Date | null) => {
+      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
+        onChange(undefined)
+      } else {
+        onChange(newDate)
+      }
     },
     maxDate: maxDateMemo,
     minDate: minDateMemo,

@@ -69,6 +69,12 @@ function FormElementDateTime({
     autocompleteAttributes,
     placeholder: element.placeholderValue,
     className: 'cypress-date-time-control',
+    onBlur: setIsDirty,
+    onChange: (newDate) => {
+      onChange(element, {
+        value: newDate?.toISOString(),
+      })
+    },
   })
 
   const text = React.useMemo(() => {
@@ -96,15 +102,8 @@ function FormElementDateTime({
               label={element.label}
               format={shortDateTimeFormat}
               {...commonProps}
-              onAccept={(newDate) => {
-                onChange(element, {
-                  value: newDate?.toISOString(),
-                })
-                setIsDirty()
-              }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
-              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (
