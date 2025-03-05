@@ -54,38 +54,43 @@ export default function useFormDatePickerProps({
     [minDate],
   )
 
-  //must be a fuction
+  //must be a function
   const openPickerIcon = React.useCallback(
     () => <MaterialIcon className="is-size-5">{icon}</MaterialIcon>,
     [icon],
   )
 
+  const textField = React.useCallback(
+    (params: React.PropsWithChildren<TextFieldProps>) => (
+      <StyledTextField
+        {...params}
+        id={id}
+        variant="outlined"
+        margin="dense"
+        size="small"
+        label={undefined}
+        placeholder={placeholder}
+        autoComplete={autocompleteAttributes}
+        aria-describedby={ariaDescribedby}
+        inputProps={{
+          ...params.inputProps,
+          className: clsx(
+            params.inputProps?.className,
+            'input ob-input',
+            className,
+          ),
+        }}
+        fullWidth
+        //we have our own error and helper text state
+        error={undefined}
+      />
+    ),
+    [ariaDescribedby, autocompleteAttributes, className, id, placeholder],
+  )
+
   return {
     slots: {
-      textField: (params: React.PropsWithChildren<TextFieldProps>) => (
-        <StyledTextField
-          {...params}
-          id={id}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          label={undefined}
-          placeholder={placeholder}
-          autoComplete={autocompleteAttributes}
-          aria-describedby={ariaDescribedby}
-          inputProps={{
-            ...params.inputProps,
-            className: clsx(
-              params.inputProps?.className,
-              'input ob-input',
-              className,
-            ),
-          }}
-          fullWidth
-          //we have our own error and helper text state
-          error={undefined}
-        />
-      ),
+      textField,
       openPickerIcon,
     },
     slotProps: {
@@ -97,6 +102,7 @@ export default function useFormDatePickerProps({
           'accept',
         ] as PickersActionBarAction[],
       },
+      popper: { disablePortal: true },
     },
     maxDate: maxDateMemo,
     minDate: minDateMemo,
