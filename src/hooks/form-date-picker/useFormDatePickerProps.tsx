@@ -103,9 +103,9 @@ export default function useFormDatePickerProps({
         ] as PickersActionBarAction[],
       },
       popper: { disablePortal: true },
-      maxDate: maxDateMemo,
-      minDate: minDateMemo,
-      value: valueMemo,
     },
+    maxDate: maxDateMemo,
+    minDate: minDateMemo,
+    value: valueMemo,
   }
 }
