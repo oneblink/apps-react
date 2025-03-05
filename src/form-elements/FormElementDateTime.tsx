@@ -102,17 +102,6 @@ function FormElementDateTime({
               label={element.label}
               format={shortDateTimeFormat}
               {...commonProps}
-              onChange={(newDate) => {
-                if (newDate && !!Date.parse(newDate.toString())) {
-                  onChange(element, {
-                    value: newDate.toISOString(),
-                  })
-                } else {
-                  onChange(element, {
-                    value: undefined,
-                  })
-                }
-              }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
             />

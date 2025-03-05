@@ -50,11 +50,11 @@ export default function useFormDatePickerProps({
   }, [value])
 
   const maxDateMemo = React.useMemo(
-    () => (maxDate ? new Date(maxDate) : null),
+    () => (maxDate ? new Date(maxDate) : undefined),
     [maxDate],
   )
   const minDateMemo = React.useMemo(
-    () => (minDate ? new Date(minDate) : null),
+    () => (minDate ? new Date(minDate) : undefined),
     [minDate],
   )
 
@@ -100,17 +100,6 @@ export default function useFormDatePickerProps({
     ],
   )
 
-  const handleChange = React.useCallback(
-    (newDate) => {
-      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
-        onChange(newDate)
-      } else {
-        onChange(newDate)
-      }
-    },
-    [onChange],
-  )
-
   return {
     slots: {
       textField,
@@ -128,7 +117,13 @@ export default function useFormDatePickerProps({
       popper: { disablePortal: true },
     },
     onClose: onBlur,
-    onChange: handleChange,
+    onChange: (newDate: Date | null) => {
+      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
+        onChange(undefined)
+      } else {
+        onChange(newDate)
+      }
+    },
     maxDate: maxDateMemo,
     minDate: minDateMemo,
     value: valueMemo,
