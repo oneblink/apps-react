@@ -30,6 +30,8 @@ export default function useFormDatePickerProps({
   autocompleteAttributes,
   placeholder,
   className,
+  onBlur,
+  onChange,
 }: {
   id: string
   value: string | undefined
@@ -40,6 +42,8 @@ export default function useFormDatePickerProps({
   autocompleteAttributes: string | undefined
   placeholder: string | undefined
   className: string
+  onBlur: () => void
+  onChange: (newDate: Date | undefined) => void
 }) {
   const valueMemo = React.useMemo(() => {
     return value ? new Date(value) : null
@@ -81,11 +85,30 @@ export default function useFormDatePickerProps({
           ),
         }}
         fullWidth
+        onBlur={onBlur}
         //we have our own error and helper text state
         error={undefined}
       />
     ),
-    [ariaDescribedby, autocompleteAttributes, className, id, placeholder],
+    [
+      ariaDescribedby,
+      autocompleteAttributes,
+      className,
+      id,
+      onBlur,
+      placeholder,
+    ],
+  )
+
+  const handleChange = React.useCallback(
+    (newDate) => {
+      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
+        onChange(newDate)
+      } else {
+        onChange(newDate)
+      }
+    },
+    [onChange],
   )
 
   return {
@@ -104,6 +127,8 @@ export default function useFormDatePickerProps({
       },
       popper: { disablePortal: true },
     },
+    onClose: onBlur,
+    onChange: handleChange,
     maxDate: maxDateMemo,
     minDate: minDateMemo,
     value: valueMemo,

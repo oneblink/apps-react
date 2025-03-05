@@ -69,6 +69,11 @@ function FormElementDate({
     autocompleteAttributes,
     placeholder: element.placeholderValue,
     className: 'cypress-date-control',
+    onBlur: setIsDirty,
+    onChange: (newDate) =>
+      onChange(element, {
+        value: newDate ? format(newDate, 'yyyy-MM-dd') : undefined,
+      }),
   })
 
   const text = React.useMemo(() => {
@@ -102,20 +107,7 @@ function FormElementDate({
               label={element.label}
               format={shortDateFormat}
               {...commonProps}
-              onChange={(newDate) => {
-                if (newDate && !!Date.parse(newDate.toString())) {
-                  onChange(element, {
-                    value: format(newDate, 'yyyy-MM-dd'),
-                  })
-                } else {
-                  onChange(element, {
-                    value: undefined,
-                  })
-                }
-                setIsDirty()
-              }}
               disabled={element.readOnly}
-              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (

@@ -37,16 +37,6 @@ function FormElementTime({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
-  const handleChange = React.useCallback(
-    (newValue: string | undefined) => {
-      onChange(element, {
-        value: newValue,
-      })
-      setIsDirty()
-    },
-    [element, onChange, setIsDirty],
-  )
-
   const commonProps = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
@@ -57,6 +47,12 @@ function FormElementTime({
     autocompleteAttributes,
     placeholder: element.placeholderValue,
     className: 'cypress-time-control',
+    onBlur: setIsDirty,
+    onChange: (newDate) => {
+      onChange(element, {
+        value: newDate?.toISOString(),
+      })
+    },
   })
 
   const timeProps = React.useMemo(() => {
@@ -91,17 +87,8 @@ function FormElementTime({
               label={element.label}
               format={timeFormat}
               {...timeProps}
-              onChange={(newDate) => {
-                if (newDate && Date.parse(newDate.toString())) {
-                  handleChange(newDate.toISOString())
-                } else {
-                  handleChange(undefined)
-                }
-                setIsDirty()
-              }}
               disabled={element.readOnly}
               timeSteps={{ minutes: 1 }}
-              onClose={setIsDirty}
             />
           </div>
           {!!element.readOnly && !!text && (
