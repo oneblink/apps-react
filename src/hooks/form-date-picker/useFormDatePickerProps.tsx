@@ -1,24 +1,7 @@
 import * as React from 'react'
-import { TextField, TextFieldProps, styled } from '@mui/material'
 import { PickersActionBarAction } from '@mui/x-date-pickers'
 import clsx from 'clsx'
 import MaterialIcon from '../../components/MaterialIcon'
-
-const StyledTextField = styled(TextField)(() => ({
-  '& .MuiOutlinedInput-root': {
-    fontFamily: 'inherit',
-    '& fieldset': {
-      borderColor: '#dbdbdb',
-    },
-    '&:hover fieldset': {
-      borderColor: '#b5b5b5',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#485fc7',
-      borderWidth: '1px',
-    },
-  },
-}))
 
 export default function useFormDatePickerProps({
   id,
@@ -64,72 +47,79 @@ export default function useFormDatePickerProps({
     [icon],
   )
 
-  const textField = React.useCallback(
-    (params: React.PropsWithChildren<TextFieldProps>) => (
-      <StyledTextField
-        {...params}
-        id={id}
-        variant="outlined"
-        margin="dense"
-        size="small"
-        label={undefined}
-        placeholder={placeholder}
-        autoComplete={autocompleteAttributes}
-        aria-describedby={ariaDescribedby}
-        inputProps={{
-          ...params.inputProps,
-          className: clsx(
-            params.inputProps?.className,
-            'input ob-input',
-            className,
-          ),
-        }}
-        fullWidth
-        onBlur={(e) => {
-          //need to run the blur function being passed from the picker
-          params?.onBlur?.(e)
-          onBlur()
-        }}
-        //we have our own error and helper text state
-        error={undefined}
-      />
-    ),
+  const formDatePickerProps = React.useMemo(
+    () => ({
+      slots: {
+        openPickerIcon,
+      },
+      slotProps: {
+        actionBar: {
+          actions: [
+            'clear',
+            'today',
+            'cancel',
+            'accept',
+          ] as PickersActionBarAction[],
+        },
+        popper: { disablePortal: true },
+        textField: {
+          id,
+          fullWidth: true,
+          label: undefined,
+          margin: 'dense' as const,
+          size: 'small' as const,
+          placeholder: placeholder,
+          autoComplete: autocompleteAttributes,
+          'aria-describedby': ariaDescribedby,
+          onBlur,
+          //we have our own error and helper text state
+          error: false,
+          inputProps: {
+            className: clsx('input ob-input', className),
+          },
+          sx: {
+            '& .MuiOutlinedInput-root': {
+              fontFamily: 'inherit',
+              '& fieldset': {
+                borderColor: '#dbdbdb',
+              },
+              '&:hover fieldset': {
+                borderColor: '#b5b5b5',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#485fc7',
+                borderWidth: '1px',
+              },
+            },
+          },
+        },
+      },
+      onClose: onBlur,
+      onChange: (newDate: Date | null) => {
+        if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
+          onChange(undefined)
+        } else {
+          onChange(newDate)
+        }
+      },
+      maxDate: maxDateMemo,
+      minDate: minDateMemo,
+      value: valueMemo,
+    }),
     [
       ariaDescribedby,
-      autocompleteAttributes,
       className,
       id,
+      maxDateMemo,
+      minDateMemo,
       onBlur,
+      onChange,
+      openPickerIcon,
       placeholder,
+      valueMemo,
+      autocompleteAttributes,
     ],
   )
 
-  return {
-    slots: {
-      textField,
-      openPickerIcon,
-    },
-    slotProps: {
-      actionBar: {
-        actions: [
-          'clear',
-          'today',
-          'cancel',
-          'accept',
-        ] as PickersActionBarAction[],
-      },
-      popper: { disablePortal: true },
-    },
-    onClose: onBlur,
-    onChange: (newDate: Date | null) => {
-      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
-        onChange(undefined)
-      } else {
-        onChange(newDate)
-      }
-    },
-    maxDate: maxDateMemo,
-    minDate: minDateMemo,
-    value: valueMemo,
-  }
+  return formDatePickerProps
 }
