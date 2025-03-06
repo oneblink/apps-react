@@ -74,21 +74,6 @@ export default function useFormDatePickerProps({
           inputProps: {
             className: clsx('input ob-input', className),
           },
-          sx: {
-            '& .MuiOutlinedInput-root': {
-              fontFamily: 'inherit',
-              '& fieldset': {
-                borderColor: '#dbdbdb',
-              },
-              '&:hover fieldset': {
-                borderColor: '#b5b5b5',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#485fc7',
-                borderWidth: '1px',
-              },
-            },
-          },
         },
       },
       onClose: onBlur,
