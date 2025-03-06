@@ -10,7 +10,6 @@ export default function useFormDatePickerProps({
   minDate,
   icon,
   ariaDescribedby,
-  autocompleteAttributes,
   placeholder,
   className,
   onBlur,
@@ -22,7 +21,6 @@ export default function useFormDatePickerProps({
   minDate: string | undefined
   icon: 'event' | 'date_range' | 'schedule'
   ariaDescribedby: string | undefined
-  autocompleteAttributes: string | undefined
   placeholder: string | undefined
   className: string
   onBlur: () => void
@@ -69,7 +67,6 @@ export default function useFormDatePickerProps({
           margin: 'dense' as const,
           size: 'small' as const,
           placeholder: placeholder,
-          autoComplete: autocompleteAttributes,
           'aria-describedby': ariaDescribedby,
           onBlur,
           //we have our own error and helper text state
@@ -117,7 +114,6 @@ export default function useFormDatePickerProps({
       openPickerIcon,
       placeholder,
       valueMemo,
-      autocompleteAttributes,
     ],
   )
 
