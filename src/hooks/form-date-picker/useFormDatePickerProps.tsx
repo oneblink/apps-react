@@ -64,6 +64,7 @@ export default function useFormDatePickerProps({
     [icon],
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const textField = React.useCallback(
     (params: React.PropsWithChildren<TextFieldProps>) => (
       <StyledTextField
@@ -85,7 +86,11 @@ export default function useFormDatePickerProps({
           ),
         }}
         fullWidth
-        onBlur={onBlur}
+        onBlur={(e) => {
+          //need to run the blur function being passed from the picker
+          params?.onBlur?.(e)
+          onBlur()
+        }}
         //we have our own error and helper text state
         error={undefined}
       />
