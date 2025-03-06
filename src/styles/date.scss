@@ -1,0 +1,18 @@
+.ob-date,
+.ob-datetime,
+.ob-time {
+  & .MuiInputBase-root {
+    font-family: inherit;
+
+    & fieldset {
+      border-color: $input-border-color;
+    }
+    &:hover fieldset {
+      border-color: $input-hover-border-color;
+    }
+    &.Mui-focused fieldset {
+      border-color: $input-focus-border-color;
+      border-width: $control-border-width;
+    }
+  }
+}

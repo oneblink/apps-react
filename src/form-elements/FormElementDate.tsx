@@ -24,7 +24,6 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  autocompleteAttributes?: string
 } & IsDirtyProps
 
 function FormElementDate({
@@ -36,7 +35,6 @@ function FormElementDate({
   displayValidationMessage,
   isDirty,
   setIsDirty,
-  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
@@ -66,7 +64,6 @@ function FormElementDate({
     minDate,
     icon: 'event',
     ariaDescribedby,
-    autocompleteAttributes,
     placeholder: element.placeholderValue,
     className: 'cypress-date-control',
     onBlur: setIsDirty,

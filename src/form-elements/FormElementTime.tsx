@@ -19,7 +19,6 @@ type Props = {
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  autocompleteAttributes?: string
 } & IsDirtyProps
 
 const timeFormat = localisationService.getDateFnsFormats().time
@@ -33,7 +32,6 @@ function FormElementTime({
   displayValidationMessage,
   isDirty,
   setIsDirty,
-  autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
@@ -44,7 +42,6 @@ function FormElementTime({
     minDate: undefined,
     icon: 'schedule',
     ariaDescribedby,
-    autocompleteAttributes,
     placeholder: element.placeholderValue,
     className: 'cypress-time-control',
     onBlur: setIsDirty,
