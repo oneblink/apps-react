@@ -64,7 +64,6 @@ export default function useFormDatePickerProps({
     [icon],
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const textField = React.useCallback(
     (params: React.PropsWithChildren<TextFieldProps>) => (
       <StyledTextField
