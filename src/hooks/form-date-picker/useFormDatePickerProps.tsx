@@ -45,62 +45,46 @@ export default function useFormDatePickerProps({
     [icon],
   )
 
-  const formDatePickerProps = React.useMemo(
-    () => ({
-      slots: {
-        openPickerIcon,
-      },
-      slotProps: {
-        actionBar: {
-          actions: [
-            'clear',
-            'today',
-            'cancel',
-            'accept',
-          ] as PickersActionBarAction[],
-        },
-        popper: { disablePortal: true },
-        textField: {
-          id,
-          fullWidth: true,
-          label: undefined,
-          margin: 'dense' as const,
-          size: 'small' as const,
-          placeholder: placeholder,
-          'aria-describedby': ariaDescribedby,
-          onBlur,
-          //we have our own error and helper text state
-          error: false,
-          inputProps: {
-            className: clsx('input ob-input', className),
-          },
-        },
-      },
-      onClose: onBlur,
-      onChange: (newDate: Date | null) => {
-        if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
-          onChange(undefined)
-        } else {
-          onChange(newDate)
-        }
-      },
-      maxDate: maxDateMemo,
-      minDate: minDateMemo,
-      value: valueMemo,
-    }),
-    [
-      ariaDescribedby,
-      className,
-      id,
-      maxDateMemo,
-      minDateMemo,
-      onBlur,
-      onChange,
+  return {
+    slots: {
       openPickerIcon,
-      placeholder,
-      valueMemo,
-    ],
-  )
-
-  return formDatePickerProps
+    },
+    slotProps: {
+      actionBar: {
+        actions: [
+          'clear',
+          'today',
+          'cancel',
+          'accept',
+        ] as PickersActionBarAction[],
+      },
+      popper: { disablePortal: true },
+      textField: {
+        id,
+        fullWidth: true,
+        label: undefined,
+        margin: 'dense' as const,
+        size: 'small' as const,
+        placeholder: placeholder,
+        'aria-describedby': ariaDescribedby,
+        onBlur,
+        //we have our own error and helper text state
+        error: false,
+        inputProps: {
+          className: clsx('input ob-input', className),
+        },
+      },
+    },
+    onClose: onBlur,
+    onChange: (newDate: Date | null) => {
+      if (!(newDate instanceof Date) || isNaN(newDate.valueOf())) {
+        onChange(undefined)
+      } else {
+        onChange(newDate)
+      }
+    },
+    maxDate: maxDateMemo,
+    minDate: minDateMemo,
+    value: valueMemo,
+  }
 }
