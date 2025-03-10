@@ -20,7 +20,7 @@ export const PickerInputButton = React.memo(function PickerInputButton({
       <Tooltip title={tooltip}>
         <button
           onClick={onClick}
-          className="button is-input-addon"
+          className="button is-input-addon cypress-date-picker-button"
           type="button"
         >
           <span className="icon">
