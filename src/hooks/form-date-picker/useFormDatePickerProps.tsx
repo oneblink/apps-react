@@ -106,10 +106,11 @@ export default function useFormDatePickerProps({
     () => (minDate ? new Date(minDate) : undefined),
     [minDate],
   )
-
   // default used by mui to determine when the mobile picker is used
   // https://mui.com/x/react-date-pickers/date-picker/#available-components
-  const isDesktop = useMediaQuery('@media (pointer: fine)')
+  const desktopMediaQuery = '@media (pointer: fine)'
+
+  const isDesktop = useMediaQuery(desktopMediaQuery)
 
   const openPickerOnMobile = React.useCallback(() => {
     if (!isDesktop) {
@@ -169,6 +170,7 @@ export default function useFormDatePickerProps({
       minDate: minDateMemo,
       value: valueMemo,
       disabled,
+      desktopMediaQuery,
     },
     openPicker,
   ] as const
