@@ -2,7 +2,7 @@ import * as React from 'react'
 import { PickersActionBarAction } from '@mui/x-date-pickers'
 import clsx from 'clsx'
 import useBooleanState from '../useBooleanState'
-import { PopperProps, TextFieldProps } from '@mui/material'
+import { PopperProps, TextFieldProps, useMediaQuery } from '@mui/material'
 import Tooltip from '../../components/renderer/Tooltip'
 import MaterialIcon from '../../components/MaterialIcon'
 
@@ -107,6 +107,16 @@ export default function useFormDatePickerProps({
     [minDate],
   )
 
+  // default used by mui to determine when the mobile picker is used
+  // https://mui.com/x/react-date-pickers/date-picker/#available-components
+  const isDesktop = useMediaQuery('@media (pointer: fine)')
+
+  const openPickerOnMobile = React.useCallback(() => {
+    if (!isDesktop) {
+      openPicker()
+    }
+  }, [isDesktop, openPicker])
+
   return [
     {
       slots: {
@@ -139,6 +149,7 @@ export default function useFormDatePickerProps({
           'aria-describedby': ariaDescribedby,
           onBlur,
           className: clsx('input ob-input', className),
+          onClick: openPickerOnMobile,
         } as TextFieldProps,
       },
       ref,
