@@ -10,7 +10,9 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
+import useFormDatePickerProps, {
+  PickerInputButton,
+} from '../hooks/form-date-picker/useFormDatePickerProps'
 
 type Props = {
   id: string
@@ -35,15 +37,15 @@ function FormElementTime({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
-  const commonProps = useFormDatePickerProps({
+  const [commonProps, openTimePicker] = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
     maxDate: undefined,
     minDate: undefined,
-    icon: 'schedule',
     ariaDescribedby,
     placeholder: element.placeholderValue,
     className: 'cypress-time-control',
+    disabled: element.readOnly,
     onBlur: setIsDirty,
     onChange: (newDate) => {
       onChange(element, {
@@ -79,15 +81,19 @@ function FormElementTime({
         required={element.required}
       >
         <div className="field has-addons">
-          <div className="control is-expanded has-icons-right">
-            <TimePicker
-              label={element.label}
-              format={timeFormat}
-              {...timeProps}
-              disabled={element.readOnly}
-              timeSteps={{ minutes: 1 }}
+          <TimePicker
+            label={element.label}
+            format={timeFormat}
+            {...timeProps}
+            timeSteps={{ minutes: 1 }}
+          />
+          {!element.readOnly && (
+            <PickerInputButton
+              tooltip="Select time"
+              onClick={openTimePicker}
+              icon="schedule"
             />
-          </div>
+          )}
           {!!element.readOnly && !!text && (
             <div className="control">
               <CopyToClipboardButton
