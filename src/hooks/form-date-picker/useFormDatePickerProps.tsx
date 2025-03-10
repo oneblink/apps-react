@@ -53,7 +53,6 @@ const Input = React.forwardRef<
     inputRef,
     value,
     ...props
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   },
   ref,
 ) {
