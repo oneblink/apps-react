@@ -124,6 +124,14 @@ export default function useFormDatePickerProps({
         popper: {
           container: ref.current,
           anchorEl: ref.current,
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              options: {
+                altAxis: false,
+              },
+            },
+          ],
         } as Partial<PopperProps>,
         textField: {
           id,
