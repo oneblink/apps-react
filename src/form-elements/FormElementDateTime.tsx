@@ -12,7 +12,9 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
+import useFormDatePickerProps, {
+  PickerInputButton,
+} from '../hooks/form-date-picker/useFormDatePickerProps'
 
 const shortDateTimeFormat =
   localisationService.getDateFnsFormats().shortDateTime
@@ -57,15 +59,15 @@ function FormElementDateTime({
     })
   }, [fromDate, fromDaysOffset])
 
-  const commonProps = useFormDatePickerProps({
+  const [commonProps, openDateTimePicker] = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
     maxDate,
     minDate,
-    icon: 'date_range',
     ariaDescribedby,
     placeholder: element.placeholderValue,
     className: 'cypress-date-time-control',
+    disabled: element.readOnly,
     onBlur: setIsDirty,
     onChange: (newDate) => {
       onChange(element, {
@@ -94,15 +96,19 @@ function FormElementDateTime({
         required={element.required}
       >
         <div className="field has-addons">
-          <div className="control is-expanded has-icons-right">
-            <DateTimePicker
-              label={element.label}
-              format={shortDateTimeFormat}
-              {...commonProps}
-              disabled={element.readOnly}
-              timeSteps={{ minutes: 1 }}
+          <DateTimePicker
+            label={element.label}
+            format={shortDateTimeFormat}
+            {...commonProps}
+            timeSteps={{ minutes: 1 }}
+          />
+          {!element.readOnly && (
+            <PickerInputButton
+              tooltip="Select date and time"
+              onClick={openDateTimePicker}
+              icon="date_range"
             />
-          </div>
+          )}
           {!!element.readOnly && !!text && (
             <div className="control">
               <CopyToClipboardButton

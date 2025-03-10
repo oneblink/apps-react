@@ -13,7 +13,9 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useFormElementDateFromTo from '../hooks/useFormElementDateFromTo'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import useFormDatePickerProps from '../hooks/form-date-picker/useFormDatePickerProps'
+import useFormDatePickerProps, {
+  PickerInputButton,
+} from '../hooks/form-date-picker/useFormDatePickerProps'
 
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 
@@ -57,16 +59,16 @@ function FormElementDate({
     })
   }, [fromDate, fromDaysOffset])
 
-  const commonProps = useFormDatePickerProps({
+  const [commonProps, openDatePicker] = useFormDatePickerProps({
     id,
     value: typeof value === 'string' ? value : undefined,
     maxDate,
     minDate,
-    icon: 'event',
     ariaDescribedby,
     placeholder: element.placeholderValue,
     className: 'cypress-date-control',
     onBlur: setIsDirty,
+    disabled: element.readOnly,
     onChange: (newDate) =>
       onChange(element, {
         value: newDate ? format(newDate, 'yyyy-MM-dd') : undefined,
@@ -99,14 +101,18 @@ function FormElementDate({
         required={element.required}
       >
         <div className="field has-addons">
-          <div className="control is-expanded has-icons-right">
-            <DatePicker
-              label={element.label}
-              format={shortDateFormat}
-              {...commonProps}
-              disabled={element.readOnly}
+          <DatePicker
+            label={element.label}
+            format={shortDateFormat}
+            {...commonProps}
+          />
+          {!element.readOnly && (
+            <PickerInputButton
+              tooltip="Select date"
+              onClick={openDatePicker}
+              icon="event"
             />
-          </div>
+          )}
           {!!element.readOnly && !!text && (
             <div className="control">
               <CopyToClipboardButton
