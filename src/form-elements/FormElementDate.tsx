@@ -17,8 +17,6 @@ import useFormDatePickerProps, {
   PickerInputButton,
 } from '../hooks/form-date-picker/useFormDatePickerProps'
 
-const shortDateFormat = localisationService.getDateFnsFormats().shortDate
-
 type Props = {
   id: string
   element: FormTypes.DateElement
@@ -43,6 +41,8 @@ function FormElementDate({
   const { fromDate, fromDaysOffset, toDate, toDaysOffset } =
     useFormElementDateFromTo(element)
 
+  const shortDateFormat = localisationService.getDateFnsFormats().shortDate
+
   const maxDate = React.useMemo(() => {
     return parseDateValue({
       dateOnly: true,
@@ -61,7 +61,7 @@ function FormElementDate({
 
   const [commonProps, openDatePicker] = useFormDatePickerProps({
     id,
-    value: typeof value === 'string' ? value : undefined,
+    value: parseDateValue({ dateOnly: false, daysOffset: 0, value }),
     maxDate,
     minDate,
     ariaDescribedby,
