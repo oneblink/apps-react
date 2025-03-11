@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.0] - 2025-03-11
+
 ### Added
 
 - Add download PDF button to payment receipt
@@ -22,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - **[BREAKING]** flatpickr and replaced with @mui/x-date-pickers
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [7.4.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [7.3.2-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- no longer depend upon [flatpickr](https://www.npmjs.com/package/flatpickr)
 
 ## [7.2.0] - 2025-01-29
 
