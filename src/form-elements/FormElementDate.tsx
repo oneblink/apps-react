@@ -59,9 +59,14 @@ function FormElementDate({
     })
   }, [fromDate, fromDaysOffset])
 
+  const isoValue = React.useMemo(
+    () => parseDateValue({ dateOnly: false, daysOffset: 0, value }),
+    [value],
+  )
+
   const [commonProps, openDatePicker] = useFormDatePickerProps({
     id,
-    value: parseDateValue({ dateOnly: false, daysOffset: 0, value }),
+    value: isoValue,
     maxDate,
     minDate,
     ariaDescribedby,
