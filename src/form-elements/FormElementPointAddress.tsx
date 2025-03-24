@@ -7,6 +7,7 @@ import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import { Collapse, Grid } from '@mui/material'
 
 type Props = {
   formId: number
@@ -20,6 +21,7 @@ type Props = {
 } & IsDirtyProps
 
 type AddressType = 'all' | 'physical' | 'mailing'
+const pointAddressClass = 'ob-point-address'
 
 function FormElementPointAddress({
   formId,
@@ -117,7 +119,7 @@ function FormElementPointAddress({
   return (
     <div className="cypress-point-address-element">
       <FormElementLabelContainer
-        className="ob-point-address ob-autocomplete"
+        className={`${pointAddressClass} ob-autocomplete`}
         element={element}
         id={id}
         required={element.required}
@@ -152,7 +154,85 @@ function FormElementPointAddress({
           </div>
         </div>
       )}
+
+      <Collapse in={!!value}>
+        <div
+          className={`notification ${pointAddressClass}__record-display has-margin-top-6`}
+        >
+          <Grid
+            container
+            spacing={1}
+            className={`${pointAddressClass}__container`}
+          >
+            <PointAddressGridItem
+              label="Address"
+              value={value?.addressDetails?.formattedAddress}
+              fullWidth
+            />
+            <PointAddressGridItem
+              label="Local Government Area"
+              value={value?.localGovernmentArea?.lgaName}
+            />
+            <PointAddressGridItem
+              label="Lot Identifier"
+              value={value?.addressDetails?.lotIdentifier}
+            />
+            <PointAddressGridItem
+              label="Cadastral Identifier"
+              value={value?.addressDetails?.cadastralIdentifier}
+            />
+            {value?.cadastralParcels?.map((cadastralParcel, index) => (
+              <PointAddressGridItem
+                key={cadastralParcel.propId || index}
+                label="Cadastral Parcels"
+                value={cadastralParcel?.parcelId?.join(', ')}
+              />
+            ))}
+            {value?.stateElectorate?.map((stateElectorate, index) => (
+              <PointAddressGridItem
+                key={`${stateElectorate.stateElectoralPid || index}`}
+                label={`State Electorate (${stateElectorate.stateElectoralType})`}
+                value={stateElectorate?.stateElectoralName}
+              />
+            ))}
+            <PointAddressGridItem
+              label="Commonwealth Electorate"
+              value={value?.commonwealthElectorate?.commElectoralName}
+            />
+          </Grid>
+        </div>
+      </Collapse>
     </div>
+  )
+}
+
+function PointAddressGridItem({
+  label,
+  value,
+  fullWidth,
+}: {
+  label: string
+  value: string | undefined
+  fullWidth?: boolean
+}) {
+  if (!value) {
+    return null
+  }
+
+  return (
+    <Grid
+      item
+      xs={12}
+      md={fullWidth ? 12 : 6}
+      className={`${pointAddressClass}__container-${label.replaceAll(' ', '-').toLowerCase()}`}
+    >
+      <label
+        className={`is-size-6 has-text-weight-semibold ${pointAddressClass}__detail-label`}
+      >
+        {label}
+      </label>
+      <div className={`${pointAddressClass}__detail-value`}>{value}</div>
+    </Grid>
   )
 }
 
