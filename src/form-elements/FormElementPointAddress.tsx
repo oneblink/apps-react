@@ -155,7 +155,7 @@ function FormElementPointAddress({
         </div>
       )}
 
-      <Collapse in={!!value}>
+      <Collapse in={!!value && !!element.isDisplayingAddressInformation}>
         <div
           className={`notification ${pointAddressClass}__record-display has-margin-top-6`}
         >
@@ -165,40 +165,23 @@ function FormElementPointAddress({
             className={`${pointAddressClass}__container`}
           >
             <PointAddressGridItem
-              label="Address"
-              value={value?.addressDetails?.formattedAddress}
-              fullWidth
-            />
-            <PointAddressGridItem
               label="Local Government Area"
               value={value?.localGovernmentArea?.lgaName}
+              classNameSuffix="local-government-area-name"
             />
             <PointAddressGridItem
-              label="Lot Identifier"
-              value={value?.addressDetails?.lotIdentifier}
-            />
-            <PointAddressGridItem
-              label="Cadastral Identifier"
+              label="Lot / Section / Plan No."
               value={value?.addressDetails?.cadastralIdentifier}
+              classNameSuffix="cadastral-identifier"
             />
             {value?.cadastralParcels?.map((cadastralParcel, index) => (
               <PointAddressGridItem
                 key={cadastralParcel.propId || index}
-                label="Cadastral Parcels"
+                label="Lot / DP Numbers"
                 value={cadastralParcel?.parcelId?.join(', ')}
+                classNameSuffix="cadastral-parcel"
               />
             ))}
-            {value?.stateElectorate?.map((stateElectorate, index) => (
-              <PointAddressGridItem
-                key={`${stateElectorate.stateElectoralPid || index}`}
-                label={`State Electorate (${stateElectorate.stateElectoralType})`}
-                value={stateElectorate?.stateElectoralName}
-              />
-            ))}
-            <PointAddressGridItem
-              label="Commonwealth Electorate"
-              value={value?.commonwealthElectorate?.commElectoralName}
-            />
           </Grid>
         </div>
       </Collapse>
@@ -208,12 +191,12 @@ function FormElementPointAddress({
 
 function PointAddressGridItem({
   label,
+  classNameSuffix,
   value,
-  fullWidth,
 }: {
   label: string
+  classNameSuffix: string
   value: string | undefined
-  fullWidth?: boolean
 }) {
   if (!value) {
     return null
@@ -223,8 +206,9 @@ function PointAddressGridItem({
     <Grid
       item
       xs={12}
-      md={fullWidth ? 12 : 6}
-      className={`${pointAddressClass}__container-${label.replaceAll(' ', '-').toLowerCase()}`}
+      sm={6}
+      md={4}
+      className={`${pointAddressClass}__container-${classNameSuffix}`}
     >
       <label
         className={`is-size-6 has-text-weight-semibold ${pointAddressClass}__detail-label`}
