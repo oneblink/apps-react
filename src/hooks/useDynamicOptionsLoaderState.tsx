@@ -220,7 +220,10 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
       try {
         const result = await formService.getFormElementOptionsSetOptions(
           optionsSetResult.formElementOptionsSet,
-          form.formsAppEnvironmentId,
+          {
+            formId: form.id,
+            formsAppEnvironmentId: form.formsAppEnvironmentId,
+          },
           abortController.signal,
         )
         if (!abortController.signal.aborted) {
@@ -248,6 +251,7 @@ const LoadOptionsSet = React.memo(function LoadOptionsSet({
     }
   }, [
     form.formsAppEnvironmentId,
+    form.id,
     hasOptionsSet,
     optionsSetResult.formElementOptionsSet,
     optionsSetResult.result,
