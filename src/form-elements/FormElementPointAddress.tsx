@@ -7,6 +7,7 @@ import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import { Collapse, Grid } from '@mui/material'
 
 type Props = {
   formId: number
@@ -20,6 +21,7 @@ type Props = {
 } & IsDirtyProps
 
 type AddressType = 'all' | 'physical' | 'mailing'
+const pointAddressClass = 'ob-point-address'
 
 function FormElementPointAddress({
   formId,
@@ -117,7 +119,7 @@ function FormElementPointAddress({
   return (
     <div className="cypress-point-address-element">
       <FormElementLabelContainer
-        className="ob-point-address ob-autocomplete"
+        className={`${pointAddressClass} ob-autocomplete`}
         element={element}
         id={id}
         required={element.required}
@@ -152,7 +154,69 @@ function FormElementPointAddress({
           </div>
         </div>
       )}
+
+      <Collapse in={!!value && !!element.isDisplayingAddressInformation}>
+        <div
+          className={`notification ${pointAddressClass}__record-display has-margin-top-6`}
+        >
+          <Grid
+            container
+            spacing={1}
+            className={`${pointAddressClass}__container`}
+          >
+            <PointAddressGridItem
+              label="Local Government Area"
+              value={value?.localGovernmentArea?.lgaName}
+              classNameSuffix="local-government-area-name"
+            />
+            <PointAddressGridItem
+              label="Lot / Section / Plan No."
+              value={value?.addressDetails?.cadastralIdentifier}
+              classNameSuffix="cadastral-identifier"
+            />
+            {value?.cadastralParcels?.map((cadastralParcel, index) => (
+              <PointAddressGridItem
+                key={cadastralParcel.propId || index}
+                label="Lot / DP Numbers"
+                value={cadastralParcel?.parcelId?.join(', ')}
+                classNameSuffix="cadastral-parcel"
+              />
+            ))}
+          </Grid>
+        </div>
+      </Collapse>
     </div>
+  )
+}
+
+function PointAddressGridItem({
+  label,
+  classNameSuffix,
+  value,
+}: {
+  label: string
+  classNameSuffix: string
+  value: string | undefined
+}) {
+  if (!value) {
+    return null
+  }
+
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={6}
+      md={4}
+      className={`${pointAddressClass}__container-${classNameSuffix}`}
+    >
+      <label
+        className={`is-size-6 has-text-weight-semibold ${pointAddressClass}__detail-label`}
+      >
+        {label}
+      </label>
+      <div className={`${pointAddressClass}__detail-value`}>{value}</div>
+    </Grid>
   )
 }
 
