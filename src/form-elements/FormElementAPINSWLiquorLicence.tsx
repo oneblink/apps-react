@@ -7,6 +7,10 @@ import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import useIsMounted from '../hooks/useIsMounted'
 import { Collapse, Grid } from '@mui/material'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import {
+  NotificationGrid,
+  NotificationGridItem,
+} from '../components/NotificationGrid'
 
 type Props = {
   formId: number
@@ -154,96 +158,91 @@ function FormElementAPINSWLiquorLicence({
         </div>
       )}
       <Collapse in={!!value}>
-        <div
-          className={`notification ${liquorLicenceClassPrefix}record-display has-margin-top-6`}
+        <NotificationGrid
+          className={`${liquorLicenceClassPrefix}record-display has-margin-top-6`}
+          gridClassName={`${liquorLicenceClassPrefix}container`}
         >
-          <Grid
-            container
-            spacing={1}
-            className={`${liquorLicenceClassPrefix}container`}
-          >
-            {value?.licenceDetail?.licenceName && (
-              <Grid
-                item
-                xs={12}
-                className={`${liquorLicenceClassPrefix}licenceName`}
+          {value?.licenceDetail?.licenceName && (
+            <Grid
+              item
+              xs={12}
+              className={`${liquorLicenceClassPrefix}licenceName`}
+            >
+              <h6
+                className={`is-size-5 has-text-weight-semibold ${liquorLicenceClassPrefix}name`}
               >
-                <h6
-                  className={`is-size-5 has-text-weight-semibold ${liquorLicenceClassPrefix}name`}
-                >
-                  {value?.licenceDetail?.licenceName}
-                </h6>
-              </Grid>
-            )}
-            <LicenceDetailGridItem
-              label="Licence Number"
-              value={value?.licenceDetail?.licenceNumber}
-              classNameSuffix="licenceNumber"
-            />
-            <LicenceDetailGridItem
-              label="Licence Type"
-              value={value?.licenceDetail?.licenceTypeName}
-              classNameSuffix="licenceTypeName"
-            />
-            <LicenceDetailGridItem
-              label="Licensee"
-              value={value?.licenceDetail?.licensee}
-              classNameSuffix="licensee"
-            />
-            <LicenceDetailGridItem
-              label="Licensee Birth Date"
-              value={value?.licenceDetail?.licenseeBirthdate}
-              classNameSuffix="licenseeBirthdate"
-            />
-            <LicenceDetailGridItem
-              label="Licencee ABN"
-              value={value?.licenceDetail?.licenceeABN}
-              classNameSuffix="licenceeABN"
-            />
-            <LicenceDetailGridItem
-              label="Licencee ACN"
-              value={value?.licenceDetail?.licenceeACN}
-              classNameSuffix="licenceeACN"
-            />
-            <LicenceDetailGridItem
-              label="Refused Date"
-              value={value?.licenceDetail?.refusedDate}
-              classNameSuffix="refusedDate"
-            />
-            <LicenceDetailGridItem
-              label="Start Date"
-              value={value?.licenceDetail?.startDate}
-              classNameSuffix="startDate"
-            />
-            <LicenceDetailGridItem
-              label="Expiry Date"
-              value={value?.licenceDetail?.expiryDate}
-              classNameSuffix="expiryDate"
-            />
-            <LicenceDetailGridItem
-              label="Status"
-              value={value?.licenceDetail?.status}
-              classNameSuffix="status"
-            />
-            <LicenceDetailGridItem
-              label="Address Type"
-              value={value?.licenceDetail?.addressType}
-              classNameSuffix="addressType"
-            />
-            <LicenceDetailGridItem
-              label="Address"
-              value={value?.licenceDetail?.address}
-              classNameSuffix="address"
-              fullWidth
-            />
-          </Grid>
-        </div>
+                {value?.licenceDetail?.licenceName}
+              </h6>
+            </Grid>
+          )}
+          <LicenceDetailGridItem
+            label="Licence Number"
+            value={value?.licenceDetail?.licenceNumber}
+            classNameSuffix="licenceNumber"
+          />
+          <LicenceDetailGridItem
+            label="Licence Type"
+            value={value?.licenceDetail?.licenceTypeName}
+            classNameSuffix="licenceTypeName"
+          />
+          <LicenceDetailGridItem
+            label="Licensee"
+            value={value?.licenceDetail?.licensee}
+            classNameSuffix="licensee"
+          />
+          <LicenceDetailGridItem
+            label="Licensee Birth Date"
+            value={value?.licenceDetail?.licenseeBirthdate}
+            classNameSuffix="licenseeBirthdate"
+          />
+          <LicenceDetailGridItem
+            label="Licencee ABN"
+            value={value?.licenceDetail?.licenceeABN}
+            classNameSuffix="licenceeABN"
+          />
+          <LicenceDetailGridItem
+            label="Licencee ACN"
+            value={value?.licenceDetail?.licenceeACN}
+            classNameSuffix="licenceeACN"
+          />
+          <LicenceDetailGridItem
+            label="Refused Date"
+            value={value?.licenceDetail?.refusedDate}
+            classNameSuffix="refusedDate"
+          />
+          <LicenceDetailGridItem
+            label="Start Date"
+            value={value?.licenceDetail?.startDate}
+            classNameSuffix="startDate"
+          />
+          <LicenceDetailGridItem
+            label="Expiry Date"
+            value={value?.licenceDetail?.expiryDate}
+            classNameSuffix="expiryDate"
+          />
+          <LicenceDetailGridItem
+            label="Status"
+            value={value?.licenceDetail?.status}
+            classNameSuffix="status"
+          />
+          <LicenceDetailGridItem
+            label="Address Type"
+            value={value?.licenceDetail?.addressType}
+            classNameSuffix="addressType"
+          />
+          <LicenceDetailGridItem
+            label="Address"
+            value={value?.licenceDetail?.address}
+            classNameSuffix="address"
+            fullWidth
+          />
+        </NotificationGrid>
       </Collapse>
     </div>
   )
 }
 
-function LicenceDetailGridItem({
+export function LicenceDetailGridItem({
   label,
   value,
   classNameSuffix,
@@ -254,40 +253,15 @@ function LicenceDetailGridItem({
   classNameSuffix: string
   fullWidth?: boolean
 }) {
-  if (!value) {
-    return null
-  }
-
   return (
-    <Grid
-      item
+    <NotificationGridItem
       className={`${liquorLicenceClassPrefix}${classNameSuffix}`}
-      sx={(theme) => ({
-        flexBasis: '100%',
-        flexGrow: 0,
-        maxWidth: '100%',
-
-        ...(fullWidth
-          ? {}
-          : {
-              [theme.breakpoints.up('sm').replace('@media', '@container')]: {
-                flexBasis: '50%',
-                maxWidth: '50%',
-              },
-              [theme.breakpoints.up('lg').replace('@media', '@container')]: {
-                flexBasis: '33.33%',
-                maxWidth: '33.33%',
-              },
-            }),
-      })}
-    >
-      <label
-        className={`is-size-6 has-text-weight-semibold ${liquorLicenceClassPrefix}detail-label`}
-      >
-        {label}
-      </label>
-      <div className={`${liquorLicenceClassPrefix}detail-value`}>{value}</div>
-    </Grid>
+      fullWidth={fullWidth}
+      value={value}
+      label={label}
+      labelClassName={`${liquorLicenceClassPrefix}detail-label`}
+      valueClassName={`${liquorLicenceClassPrefix}detail-value`}
+    />
   )
 }
 

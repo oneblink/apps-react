@@ -7,7 +7,11 @@ import { FormTypes, PointTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import { Collapse, Grid } from '@mui/material'
+import { Collapse } from '@mui/material'
+import {
+  NotificationGrid,
+  NotificationGridItem,
+} from '../components/NotificationGrid'
 
 type Props = {
   formId: number
@@ -156,34 +160,29 @@ function FormElementPointAddress({
       )}
 
       <Collapse in={!!value && !!element.isDisplayingAddressInformation}>
-        <div
-          className={`notification ${pointAddressClass}__record-display has-margin-top-6`}
+        <NotificationGrid
+          className={`${pointAddressClass}__record-display has-margin-top-6`}
+          gridClassName={`${pointAddressClass}__container`}
         >
-          <Grid
-            container
-            spacing={1}
-            className={`${pointAddressClass}__container`}
-          >
+          <PointAddressGridItem
+            label="Local Government Area"
+            value={value?.localGovernmentArea?.lgaName}
+            classNameSuffix="local-government-area-name"
+          />
+          <PointAddressGridItem
+            label="Lot / Section / Plan No."
+            value={value?.addressDetails?.cadastralIdentifier}
+            classNameSuffix="cadastral-identifier"
+          />
+          {value?.cadastralParcels?.map((cadastralParcel, index) => (
             <PointAddressGridItem
-              label="Local Government Area"
-              value={value?.localGovernmentArea?.lgaName}
-              classNameSuffix="local-government-area-name"
+              key={cadastralParcel.propId || index}
+              label="Lot / DP Numbers"
+              value={cadastralParcel?.parcelId?.join(', ')}
+              classNameSuffix="cadastral-parcel"
             />
-            <PointAddressGridItem
-              label="Lot / Section / Plan No."
-              value={value?.addressDetails?.cadastralIdentifier}
-              classNameSuffix="cadastral-identifier"
-            />
-            {value?.cadastralParcels?.map((cadastralParcel, index) => (
-              <PointAddressGridItem
-                key={cadastralParcel.propId || index}
-                label="Lot / DP Numbers"
-                value={cadastralParcel?.parcelId?.join(', ')}
-                classNameSuffix="cadastral-parcel"
-              />
-            ))}
-          </Grid>
-        </div>
+          ))}
+        </NotificationGrid>
       </Collapse>
     </div>
   )
@@ -198,25 +197,14 @@ function PointAddressGridItem({
   classNameSuffix: string
   value: string | undefined
 }) {
-  if (!value) {
-    return null
-  }
-
   return (
-    <Grid
-      item
-      xs={12}
-      sm={6}
-      md={4}
+    <NotificationGridItem
       className={`${pointAddressClass}__container-${classNameSuffix}`}
-    >
-      <label
-        className={`is-size-6 has-text-weight-semibold ${pointAddressClass}__detail-label`}
-      >
-        {label}
-      </label>
-      <div className={`${pointAddressClass}__detail-value`}>{value}</div>
-    </Grid>
+      value={value}
+      label={label}
+      labelClassName={`${pointAddressClass}__detail-label`}
+      valueClassName={`${pointAddressClass}__detail-value`}
+    />
   )
 }
 
