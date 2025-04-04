@@ -5,15 +5,29 @@ import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import { ArcGISElementValue } from '../components/ArcGISWebMap'
+import { FormElementValueChangeHandler } from '../types/form'
 
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
 type Props = {
   id: string
-  element: FormTypes.ArcGISWebMapElement
+  element: ArcgisElementWithLookupProps
+  value: ArcGISElementValue
+  onChange: FormElementValueChangeHandler<ArcGISElementValue>
 }
 
-function FormElementArcGISWebMap({ id, element }: Props) {
+type DrawingOption = { label: string; color?: string }
+export type ArcgisElementWithLookupProps = FormTypes.ArcGISWebMapElement & {
+  dataLookupId: number
+  elementLookupId: number
+  isDataLookup: boolean
+  isElementLookup: boolean
+  pointDrawingOptions?: DrawingOption[]
+  polygonDrawingOptions?: DrawingOption[]
+}
+
+function FormElementArcGISWebMap({ id, element, value, onChange }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
   const isFormReadOnly = useFormIsReadOnly()
@@ -50,6 +64,8 @@ function FormElementArcGISWebMap({ id, element }: Props) {
             <ArcGISWebMap
               element={element}
               id={id}
+              value={value}
+              onChange={onChange}
               aria-describedby={ariaDescribedby}
             />
           </Suspense>

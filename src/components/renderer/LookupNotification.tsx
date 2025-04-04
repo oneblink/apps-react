@@ -22,6 +22,8 @@ import mergeExecutedLookups from '../../utils/merge-executed-lookups'
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
 import MaterialIcon from '../MaterialIcon'
+import { FormElementLookupResult } from '@oneblink/apps/dist/form-service'
+import { ArcgisElementWithLookupProps } from '../../form-elements/FormElementArcGISWebMap'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
@@ -31,7 +33,7 @@ type FetchLookupPayload = {
 type Props = {
   autoLookupValue?: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
-  element: FormTypes.LookupFormElement
+  element: FormTypes.LookupFormElement | ArcgisElementWithLookupProps
   onLookup: FormElementLookupHandler
   children: React.ReactNode
 }
@@ -47,8 +49,39 @@ function LookupNotificationComponent({
   const isOffline = useIsOffline()
   const definition = useFormDefinition()
   const injectPagesAfter = useInjectPages()
-  const { isLoading, formElementLookups, loadError, onTryAgain } =
-    useFormElementLookups()
+  const {
+    isLoading,
+    formElementLookups: actualLookups,
+    loadError,
+    onTryAgain,
+  } = useFormElementLookups()
+
+  const formElementLookups = React.useMemo(() => {
+    console.log('actualLookups: ', actualLookups)
+    return [
+      ...actualLookups,
+      {
+        id: 88888,
+        name: 'arcgis address lookup',
+        type: 'ELEMENT',
+        organisationId: '59e4069a434764000f900666',
+        excludeDefinition: false,
+        url: 'http://localhost:4000/map/initialise',
+        records: null,
+        runLookupOnClear: false,
+      },
+      {
+        id: 99999,
+        name: 'arcgis map lookup',
+        type: 'DATA',
+        organisationId: '59e4069a434764000f900666',
+        excludeDefinition: false,
+        url: 'http://localhost:4000/map/calculate',
+        records: null,
+        runLookupOnClear: false,
+      },
+    ] as FormElementLookupResult[]
+  }, [actualLookups])
 
   const [onCancelLookup, setOnCancelLookup] = React.useState<
     (() => void) | undefined
@@ -307,6 +340,7 @@ function LookupNotificationComponent({
     ? stringifyAutoLookupValue(autoLookupValue)
     : autoLookupValue
   React.useEffect(() => {
+    console.log(`autoLookupValueString changed: ${element.name} - ${autoLookupValueString}`)
     if (isLoading || loadError) {
       return
     }

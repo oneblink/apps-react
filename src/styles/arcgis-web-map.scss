@@ -1,3 +1,28 @@
 .arcgis-web-map {
     height: 500px;
 }
+
+.oneblink-arcgis-sketch {
+    .widget {
+        background-color: $white;
+        // padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sketch-button {
+        display: flex;
+        background-color: $white;
+        border: none;
+        padding: 0.25rem;
+    }
+    
+    .sketch-button:hover {
+        background-color: $light;
+    }
+    
+    .sketch-button-active {
+        color: $blue;
+    }
+}
+

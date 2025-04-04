@@ -44,7 +44,9 @@ import FormElementBoolean from '../../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
 import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
 import FormElementFreshdeskDependentField from '../../form-elements/FormElementFreshdeskDependentField'
-import FormElementArcGISWebMap from '../../form-elements/FormElementArcGISWebMap'
+import FormElementArcGISWebMap, {
+  ArcgisElementWithLookupProps,
+} from '../../form-elements/FormElementArcGISWebMap'
 
 import {
   APINSWTypes,
@@ -73,6 +75,7 @@ import {
 import { attachmentsService } from '@oneblink/apps'
 import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
 import ElementDOMId from '../../utils/elementDOMIds'
+import { ArcGISElementValue } from '../ArcGISWebMap'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -102,6 +105,10 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
+}
+
+function stringifyArcgisInput(value: ArcGISElementValue | undefined) {
+  return JSON.stringify(value?.userInput)
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -265,6 +272,10 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     () => ({ isDirty, setIsDirty }),
     [isDirty, setIsDirty],
   )
+  if (element.type === 'boolean' && element.name === 'triggerLookup') {
+    element.isElementLookup = true
+    element.elementLookupId = 88888
+  }
   const conditionallyShownOptionsElement =
     formElementConditionallyShown?.type === 'formElement'
       ? formElementConditionallyShown
@@ -1021,7 +1032,35 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       )
     }
     case 'arcGISWebMap': {
-      return <FormElementArcGISWebMap id={id} element={element} />
+      const arcgisElement = {
+        ...element,
+      } as ArcgisElementWithLookupProps
+
+      // arcgisElement.isDataLookup = true
+      // arcgisElement.dataLookupId = 99999
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={arcgisElement}
+          onLookup={onLookup}
+          stringifyAutoLookupValue={
+            stringifyArcgisInput as React.ComponentProps<
+              typeof LookupNotification
+            >['stringifyAutoLookupValue']
+          }
+        >
+          <FormElementArcGISWebMap
+            id={id}
+            element={arcgisElement}
+            value={value as ArcGISElementValue}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementArcGISWebMap
+              >['onChange']
+            }
+          />
+        </LookupNotification>
+      )
     }
     default: {
       console.warn('Invalid element', element)
