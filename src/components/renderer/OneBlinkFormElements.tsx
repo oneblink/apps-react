@@ -44,7 +44,9 @@ import FormElementBoolean from '../../form-elements/FormElementBoolean'
 import FormElementCivicaStreetName from '../../form-elements/FormElementCivicaStreetName'
 import FormElementCivicaNameRecord from '../../form-elements/FormElementCivicaNameRecord'
 import FormElementFreshdeskDependentField from '../../form-elements/FormElementFreshdeskDependentField'
-import FormElementArcGISWebMap from '../../form-elements/FormElementArcGISWebMap'
+import FormElementArcGISWebMap, {
+  stringifyArcgisInput,
+} from '../../form-elements/FormElementArcGISWebMap'
 
 import {
   APINSWTypes,
@@ -73,6 +75,7 @@ import {
 import { attachmentsService } from '@oneblink/apps'
 import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
 import ElementDOMId from '../../utils/elementDOMIds'
+import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -1018,7 +1021,30 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       )
     }
     case 'arcGISWebMap': {
-      return <FormElementArcGISWebMap id={id} element={element} />
+      const v = value as ArcGISWebMapElementValue | undefined
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={element}
+          onLookup={onLookup}
+          stringifyAutoLookupValue={
+            stringifyArcgisInput as React.ComponentProps<
+              typeof LookupNotification
+            >['stringifyAutoLookupValue']
+          }
+        >
+          <FormElementArcGISWebMap
+            id={id}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementArcGISWebMap
+              >['onChange']
+            }
+          />
+        </LookupNotification>
+      )
     }
     default: {
       console.warn('Invalid element', element)
