@@ -5,15 +5,24 @@ import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-
+import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
+import { FormElementValueChangeHandler } from '../types/form'
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
 type Props = {
   id: string
   element: FormTypes.ArcGISWebMapElement
+  value: ArcGISWebMapElementValue | undefined
+  onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
 }
 
-function FormElementArcGISWebMap({ id, element }: Props) {
+export function stringifyArcgisInput(
+  value: ArcGISWebMapElementValue | undefined,
+) {
+  return JSON.stringify(value?.userInput)
+}
+
+function FormElementArcGISWebMap({ id, element, value, onChange }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
   const isFormReadOnly = useFormIsReadOnly()
@@ -51,6 +60,8 @@ function FormElementArcGISWebMap({ id, element }: Props) {
               element={element}
               id={id}
               aria-describedby={ariaDescribedby}
+              value={value}
+              onChange={onChange}
             />
           </Suspense>
         )}

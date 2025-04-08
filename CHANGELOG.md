@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - address information display to point address form element
+- Sketch widget to ArcGIS Web Map element
 
 ### Dependencies
 

@@ -379,6 +379,20 @@ function parsePreFillData(
         })
       })
     }
+    case 'arcGISWebMap': {
+      return parseUnknownAsRecord(value, (record) => {
+        const validProperties = ['drawingLayer', 'userInput', 'layers']
+        if (
+          Object.keys(record).every(
+            (key) =>
+              validProperties.includes(key) &&
+              (!record[key] || Array.isArray(record[key])),
+          )
+        ) {
+          return record
+        }
+      })
+    }
     case 'image':
     case 'html':
     case 'summary':
@@ -504,7 +518,8 @@ export default function generateDefaultData(
         case 'telephone':
         case 'textarea':
         case 'location':
-        case 'apiNSWLiquorLicence': {
+        case 'apiNSWLiquorLicence':
+        case 'arcGISWebMap': {
           if (el.defaultValue) {
             m[el.name] = el.defaultValue
           }
@@ -521,7 +536,6 @@ export default function generateDefaultData(
         case 'infoPage':
         case 'calculation':
         case 'summary':
-        case 'arcGISWebMap':
           break
         default: {
           console.warn('Default value is not supported for element type', el)
