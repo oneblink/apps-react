@@ -178,8 +178,10 @@ function FormElementArcGISWebMap({
           },
         })
         await map.load()
-        drawingLayerRef.current = drawingLayer
-        map.layers.add(drawingLayer)
+        if (!element.readOnly) {
+          drawingLayerRef.current = drawingLayer
+          map.layers.add(drawingLayer)
+        }
 
         const view = new MapView({
           map: map,
@@ -213,11 +215,6 @@ function FormElementArcGISWebMap({
 
         const layerList = new LayerList({
           view,
-          listItemCreatedFunction: (event) => {
-            if (element.readOnly && event.item.layer.title === 'Drawing') {
-              event.item.hidden = true
-            }
-          },
         })
 
         layerPanelRef.current = new Expand({
