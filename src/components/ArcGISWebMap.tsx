@@ -31,6 +31,7 @@ type Props = {
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   'aria-describedby'?: string
+  setIsDirty: () => void
 }
 
 function FormElementArcGISWebMap({
@@ -38,6 +39,7 @@ function FormElementArcGISWebMap({
   id,
   value,
   onChange,
+  setIsDirty,
   ...props
 }: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
@@ -66,7 +68,9 @@ function FormElementArcGISWebMap({
         userInput: updatedGraphics,
       },
     })
-  }, [element, onChange, value])
+
+    setIsDirty()
+  }, [element, onChange, setIsDirty, value])
 
   const updateMapViewSubmissionValue = React.useCallback(() => {
     const zoom = mapViewRef.current?.zoom
@@ -217,8 +221,6 @@ function FormElementArcGISWebMap({
   React.useEffect(() => {
     const loadMap = async () => {
       try {
-        const drawingLayer = new GraphicsLayer({ id: uuid(), title: 'Drawing' })
-
         const map = new WebMap({
           portalItem: {
             id: element.webMapId,
@@ -226,10 +228,6 @@ function FormElementArcGISWebMap({
           basemap: element.basemapId || 'streets'
         })
         await map.load()
-        if (!element.readOnly) {
-          drawingLayerRef.current = drawingLayer
-          map.layers.add(drawingLayer)
-        }
 
         const view = new MapView({
           map: map,
@@ -289,6 +287,12 @@ function FormElementArcGISWebMap({
         view.ui.add(mapGalleryPanelRef.current, 'top-left')
 
         if (!element.readOnly) {
+          const drawingLayer = new GraphicsLayer({
+            id: uuid(),
+            title: 'Drawing',
+          })
+          drawingLayerRef.current = drawingLayer
+          map.layers.add(drawingLayer)
           const sketch = new Sketch({
             view,
             layer: drawingLayer,

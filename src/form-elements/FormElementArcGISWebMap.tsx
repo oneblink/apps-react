@@ -6,7 +6,8 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
-import { FormElementValueChangeHandler } from '../types/form'
+import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
 type Props = {
@@ -14,7 +15,9 @@ type Props = {
   element: FormTypes.ArcGISWebMapElement
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
-}
+  displayValidationMessage: boolean
+  validationMessage: string | undefined
+} & IsDirtyProps
 
 export function stringifyArcgisInput(
   value: ArcGISWebMapElementValue | undefined,
@@ -22,10 +25,22 @@ export function stringifyArcgisInput(
   return JSON.stringify(value?.userInput)
 }
 
-function FormElementArcGISWebMap({ id, element, value, onChange }: Props) {
+function FormElementArcGISWebMap({
+  id,
+  element,
+  value,
+  onChange,
+  displayValidationMessage,
+  isDirty,
+  validationMessage,
+  setIsDirty,
+}: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
   const isFormReadOnly = useFormIsReadOnly()
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isDisplayingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   if (isFormReadOnly) {
     return null
@@ -37,7 +52,7 @@ function FormElementArcGISWebMap({ id, element, value, onChange }: Props) {
         className="ob-arcgis-web-map"
         id={id}
         element={element}
-        required={false}
+        required={element.required}
       >
         {isOffline ? (
           <figure className="ob-figure">
@@ -62,8 +77,16 @@ function FormElementArcGISWebMap({ id, element, value, onChange }: Props) {
               aria-describedby={ariaDescribedby}
               value={value}
               onChange={onChange}
+              setIsDirty={setIsDirty}
             />
           </Suspense>
+        )}
+        {isDisplayingValidationMessage && (
+          <div role="alert" className="has-margin-top-8">
+            <div className="has-text-danger ob-error__text cypress-validation-message">
+              {validationMessage}
+            </div>
+          </div>
         )}
       </FormElementLabelContainer>
     </div>

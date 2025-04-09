@@ -45,8 +45,7 @@ export default function validateSubmission({
         case 'calculation':
         case 'image':
         case 'html':
-        case 'heading':
-        case 'arcGISWebMap': {
+        case 'heading': {
           return partialFormElementsValidation
         }
       }
@@ -676,6 +675,18 @@ export default function validateSubmission({
           if (nestedFormValidation) {
             partialFormElementsValidation[formElement.name] =
               nestedFormValidation
+          }
+          break
+        }
+        case 'arcGISWebMap': {
+          const errorMessages = validationExtensions.presence(
+            value,
+            formElement,
+            'Required',
+          )
+
+          if (errorMessages.length) {
+            partialFormElementsValidation[formElement.name] = errorMessages[0]
           }
           break
         }
