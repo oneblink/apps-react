@@ -7,12 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Sketch widget to ArcGIS Web Map element
+
+### Changed
+
+- ArcGIS Web Map element to handle optional web map & basemap Ids
+
 ## [8.1.0] - 2025-04-04
 
 ### Added
 
 - address information display to point address form element
-- Sketch widget to ArcGIS Web Map element
 
 ### Dependencies
 
