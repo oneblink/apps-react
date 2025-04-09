@@ -213,6 +213,11 @@ function FormElementArcGISWebMap({
 
         const layerList = new LayerList({
           view,
+          listItemCreatedFunction: (event) => {
+            if (element.readOnly && event.item.layer.title === 'Drawing') {
+              event.item.hidden = true
+            }
+          },
         })
 
         layerPanelRef.current = new Expand({
@@ -236,7 +241,7 @@ function FormElementArcGISWebMap({
           visible: false,
         })
 
-        view.ui.add(mapGalleryPanelRef.current, 'top-right')
+        view.ui.add(mapGalleryPanelRef.current, 'top-left')
 
         if (!element.readOnly) {
           const sketch = new Sketch({
