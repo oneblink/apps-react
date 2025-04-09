@@ -178,8 +178,10 @@ function FormElementArcGISWebMap({
           },
         })
         await map.load()
-        drawingLayerRef.current = drawingLayer
-        map.layers.add(drawingLayer)
+        if (!element.readOnly) {
+          drawingLayerRef.current = drawingLayer
+          map.layers.add(drawingLayer)
+        }
 
         const view = new MapView({
           map: map,
@@ -236,7 +238,7 @@ function FormElementArcGISWebMap({
           visible: false,
         })
 
-        view.ui.add(mapGalleryPanelRef.current, 'top-right')
+        view.ui.add(mapGalleryPanelRef.current, 'top-left')
 
         if (!element.readOnly) {
           const sketch = new Sketch({
