@@ -12,6 +12,7 @@ import Sketch from '@arcgis/core/widgets/Sketch'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
 import Layer from '@arcgis/core/layers/Layer'
+import { Point } from '@arcgis/core/geometry'
 import { v4 as uuid } from 'uuid'
 
 import OnLoading from '../components/renderer/OnLoading'
@@ -53,7 +54,7 @@ function FormElementArcGISWebMap({
   const isPageVisible = useIsPageVisible()
   const { isLookingUp } = React.useContext(LookupNotificationContext)
 
-  const updateSubmissionValue = React.useCallback(() => {
+  const updateDrawingInputSubmissionValue = React.useCallback(() => {
     const updatedGraphics = drawingLayerRef.current?.graphics
       .toArray()
       .map((graphic) => graphic.toJSON())
@@ -65,6 +66,24 @@ function FormElementArcGISWebMap({
         userInput: updatedGraphics,
       },
     })
+  }, [element, onChange, value])
+
+  const updateMapViewSubmissionValue = React.useCallback(() => {
+    const zoom = mapViewRef.current?.zoom
+    const latitude = mapViewRef.current?.center.latitude
+    const longitude = mapViewRef.current?.center.longitude
+    if (zoom && latitude && longitude) {
+      onChange(element, {
+        value: {
+          ...(value || {}),
+          view: {
+            zoom,
+            latitude,
+            longitude,
+          },
+        },
+      })
+    }
   }, [element, onChange, value])
 
   React.useEffect(() => {
@@ -79,7 +98,7 @@ function FormElementArcGISWebMap({
           return
         }
         if (sketchEvent.state === 'complete') {
-          updateSubmissionValue()
+          updateDrawingInputSubmissionValue()
         }
       },
     )
@@ -97,7 +116,7 @@ function FormElementArcGISWebMap({
             JSON.stringify(sketchEvent.graphics[0].geometry.toJSON()) !==
             selectedGraphicForUpdate.current
           ) {
-            updateSubmissionValue()
+            updateDrawingInputSubmissionValue()
           }
           selectedGraphicForUpdate.current = undefined
         }
@@ -114,19 +133,40 @@ function FormElementArcGISWebMap({
         sketchToolRef.current?.cancel()
         return
       }
-      updateSubmissionValue()
+      updateDrawingInputSubmissionValue()
+    })
+
+    const mapViewChangeListener = mapViewRef.current?.watch('stationary', () => {
+      const mapView = mapViewRef.current
+      if (mapView && mapView.stationary) {
+        const hasViewChanged =
+          mapView.zoom !== value?.view?.zoom ||
+          mapView.center.longitude !== value?.view?.longitude ||
+          mapView.center.latitude !== value?.view?.latitude
+        if (hasViewChanged) {
+          updateMapViewSubmissionValue()
+        }
+      }
     })
 
     return () => {
       createListener?.remove()
       updateListener?.remove()
       deleteListener?.remove()
+      mapViewChangeListener?.remove()
     }
-  }, [isLoading, updateSubmissionValue, isLookingUp])
+  }, [
+    isLoading,
+    isLookingUp,
+    value,
+    updateDrawingInputSubmissionValue,
+    updateMapViewSubmissionValue,
+  ])
 
   const onSubmissionValueChange = React.useCallback(() => {
+    const view = mapViewRef.current
     const map = mapViewRef.current?.map
-    if (!value || !map) return
+    if (!view || !map) return
     // remove any overlay layers we've added previously
     if (overlayLayerIds && map) {
       const layersToRemove = overlayLayerIds.reduce((toRemove: Layer[], id) => {
@@ -139,7 +179,7 @@ function FormElementArcGISWebMap({
 
     // add any overlay layers in the submission value to the web map
     const newOverlayLayerIds = []
-    if (value.layers) {
+    if (value?.layers) {
       for (const layer of value.layers) {
         const overlayLayer = new GraphicsLayer({ title: layer.title as string })
         overlayLayer.addMany(layer.graphics.map((g) => Graphic.fromJSON(g)))
@@ -151,11 +191,18 @@ function FormElementArcGISWebMap({
 
     // update the web map's drawing layers
     const drawingLayer = drawingLayerRef.current
-    if (value.drawingLayer && drawingLayer) {
+    if (value?.drawingLayer && drawingLayer) {
       map.layers.remove(drawingLayer)
       drawingLayer.removeAll()
       drawingLayer.addMany(value.drawingLayer.map((g) => Graphic.fromJSON(g)))
       map.layers.add(drawingLayer)
+    }
+    if (value?.view) {
+      view.zoom = value.view.zoom
+      view.center = new Point({
+        latitude: value.view.latitude,
+        longitude: value.view.longitude,
+      })
     }
   }, [overlayLayerIds, value])
 
@@ -176,6 +223,7 @@ function FormElementArcGISWebMap({
           portalItem: {
             id: element.webMapId,
           },
+          basemap: element.basemapId || 'streets'
         })
         await map.load()
         if (!element.readOnly) {
