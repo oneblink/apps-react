@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Sketch widget to ArcGIS Web Map element
+- `pointCadastralParcel` form element
 
 ### Changed
 

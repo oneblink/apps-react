@@ -287,6 +287,21 @@ function parsePreFillData(
         return record
       })
     }
+    case 'pointCadastralParcel': {
+      return parseUnknownAsRecord(value, (record) => {
+        const hasParcelId = parseUnknownAsRecord(
+          record.parcelBundle,
+          (parcelBundles) => {
+            return parseUnknownAsRecord(parcelBundles?.[0], (parcelBundle) => {
+              return parseStringValue(parcelBundle?.parcelId)
+            })
+          },
+        )
+        if (hasParcelId) {
+          return record
+        }
+      })
+    }
     case 'pointAddress':
     case 'geoscapeAddress': {
       return parseUnknownAsRecord(value, (record) => {
@@ -404,7 +419,8 @@ function parsePreFillData(
       return
     }
     default: {
-      console.warn('Invalid element type used in prefill data', element)
+      const never: never = element
+      console.warn('Invalid element type used in prefill data', never)
     }
   }
 }
@@ -507,6 +523,7 @@ export default function generateDefaultData(
         }
         case 'freshdeskDependentField':
         case 'geoscapeAddress':
+        case 'pointCadastralParcel':
         case 'pointAddress':
         case 'googleAddress':
         case 'civicaStreetName':
@@ -538,7 +555,8 @@ export default function generateDefaultData(
         case 'summary':
           break
         default: {
-          console.warn('Default value is not supported for element type', el)
+          const never: never = el
+          console.warn('Default value is not supported for element type', never)
         }
       }
 

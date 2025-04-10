@@ -184,6 +184,7 @@ export default function validateSubmission({
         }
         case 'abn':
         case 'geoscapeAddress':
+        case 'pointCadastralParcel':
         case 'pointAddress':
         case 'googleAddress':
         case 'civicaStreetName':
@@ -680,7 +681,8 @@ export default function validateSubmission({
           break
         }
         default: {
-          console.info('Unsupported form element with validation', formElement)
+          const never: never = formElement
+          console.info('Unsupported form element with validation', never)
         }
       }
 
