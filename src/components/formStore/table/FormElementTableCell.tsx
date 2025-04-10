@@ -4,7 +4,10 @@ import { localisationService } from '@oneblink/apps'
 import {
   APINSWTypes,
   FormTypes,
+  GeoscapeTypes,
   GoogleTypes,
+  MiscTypes,
+  PointTypes,
   SubmissionTypes,
 } from '@oneblink/types'
 import { abnService } from '@oneblink/sdk-core'
@@ -17,9 +20,6 @@ import {
 import RepeatableSetCell from './RepeatableSetCell'
 import TableCellCopyButton from './TableCellCopyButton'
 import { format } from 'date-fns'
-import { ABNRecord } from '@oneblink/types/typescript/misc'
-import { GeoscapeAddress } from '@oneblink/types/typescript/geoscape'
-import { PointAddress } from '@oneblink/types/typescript/point'
 
 type Props = {
   formElement: FormTypes.FormElement
@@ -337,7 +337,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'geoscapeAddress': {
-      const value = unknown as GeoscapeAddress
+      const value = unknown as GeoscapeTypes.GeoscapeAddress
       if (typeof value.addressId !== 'string') {
         break
       }
@@ -357,8 +357,22 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       )
     }
 
+    case 'pointCadastralParcel': {
+      const value = unknown as PointTypes.PointCadastralParcelResponse
+      const parcelId = value?.parcelBundle?.[0]?.parcelId
+      if (typeof parcelId !== 'string') {
+        break
+      }
+      return (
+        <>
+          {parcelId}
+          <TableCellCopyButton isHidden={!allowCopy} text={parcelId} />
+        </>
+      )
+    }
+
     case 'pointAddress': {
-      const value = unknown as PointAddress
+      const value = unknown as PointTypes.PointAddress
       if (typeof value.addressId !== 'string') {
         break
       }
@@ -410,7 +424,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'abn': {
-      const value = unknown as ABNRecord
+      const value = unknown as MiscTypes.ABNRecord
       if (!value.ABN || !value.entityType) {
         break
       }
@@ -451,14 +465,17 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     case 'image':
     case 'heading':
     case 'arcGISWebMap':
-    case 'summary': {
+    case 'summary':
+    case 'freshdeskDependentField':
+    case 'compliance': {
       return null
     }
 
     default: {
+      const never: never = formElement
       console.warn(
         'Unsupported element type in Submission Data rendering',
-        formElement,
+        never,
       )
       return null
     }

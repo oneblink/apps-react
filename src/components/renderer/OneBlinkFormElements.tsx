@@ -76,6 +76,7 @@ import { attachmentsService } from '@oneblink/apps'
 import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
 import ElementDOMId from '../../utils/elementDOMIds'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
+import FormElementPointCadastralParcel from '../../form-elements/FormElementPointCadastralParcel'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -871,6 +872,32 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         />
       )
     }
+    case 'pointCadastralParcel': {
+      const v = value as PointTypes.PointCadastralParcelResponse | undefined
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={element}
+          onLookup={onLookup}
+        >
+          <FormElementPointCadastralParcel
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementPointCadastralParcel
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
+            {...dirtyProps}
+          />
+        </LookupNotification>
+      )
+    }
     case 'pointAddress': {
       const v = value as PointTypes.PointAddress | undefined
       return (
@@ -1046,8 +1073,13 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         </LookupNotification>
       )
     }
+    case 'section':
+    case 'page': {
+      return null
+    }
     default: {
-      console.warn('Invalid element', element)
+      const never: never = element
+      console.warn('Invalid element', never)
       return null
     }
   }
