@@ -161,7 +161,7 @@ function FormElementPointCadastralParcel({
                     error
                   </MaterialIcon>
                 ) : (
-                  <MaterialIcon className="is-size-5">error</MaterialIcon>
+                  <MaterialIcon className="is-size-5">map</MaterialIcon>
                 )}
               </span>
             )}
