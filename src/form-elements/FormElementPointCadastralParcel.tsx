@@ -92,14 +92,8 @@ function FormElementPointCadastralParcel({
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
-    if (value) {
-      if (!parcelId) {
-        // Record in value parcelId. This should never happen
-        return
-      }
-      if (label !== parcelId) {
-        setLabel(parcelId)
-      }
+    if (parcelId && label !== parcelId) {
+      setLabel(parcelId)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
