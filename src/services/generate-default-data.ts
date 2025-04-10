@@ -161,6 +161,15 @@ function parseUnknownAsRecord<T>(
   }
 }
 
+function parseUnknownAsArray<T>(
+  value: unknown,
+  validate: (value: unknown[]) => T[] | undefined,
+): T[] | undefined {
+  if (Array.isArray(value)) {
+    return validate(value)
+  }
+}
+
 function parseFormSubmissionModel(
   elements: FormTypes.FormElement[],
   value: unknown,
@@ -396,15 +405,38 @@ function parsePreFillData(
     }
     case 'arcGISWebMap': {
       return parseUnknownAsRecord(value, (record) => {
-        const validProperties = ['drawingLayer', 'userInput', 'layers']
-        if (
-          Object.keys(record).every(
-            (key) =>
-              validProperties.includes(key) &&
-              (!record[key] || Array.isArray(record[key])),
-          )
-        ) {
-          return record
+        return {
+          drawingLayer: parseUnknownAsArray(
+            record.drawingLayer,
+            (drawingLayer) => drawingLayer,
+          ),
+          userInput: parseUnknownAsArray(
+            record.userInput,
+            (userInput) => userInput,
+          ),
+          layers: parseUnknownAsArray(record.layers, (layers) => {
+            if (
+              layers.every((layer) =>
+                parseUnknownAsRecord(
+                  layer,
+                  (layerRecord) =>
+                    parseStringValue(layerRecord.title) &&
+                    Array.isArray(layerRecord.graphics),
+                ),
+              )
+            ) {
+              return layers
+            }
+          }),
+          view: parseUnknownAsRecord(record.view, (view) => {
+            if (
+              parseNumberValue(view.latitude) &&
+              parseNumberValue(view.longitude) &&
+              parseNumberValue(view.zoom)
+            ) {
+              return view
+            }
+          }),
         }
       })
     }
