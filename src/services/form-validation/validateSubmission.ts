@@ -18,6 +18,7 @@ import generateCivicaNameRecordElements from '../generateCivicaNameRecordElement
 import generateFreshdeskDependentFieldElements from '../generateFreshdeskDependentFieldElements'
 import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
+import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -45,8 +46,7 @@ export default function validateSubmission({
         case 'calculation':
         case 'image':
         case 'html':
-        case 'heading':
-        case 'arcGISWebMap': {
+        case 'heading': {
           return partialFormElementsValidation
         }
       }
@@ -677,6 +677,18 @@ export default function validateSubmission({
           if (nestedFormValidation) {
             partialFormElementsValidation[formElement.name] =
               nestedFormValidation
+          }
+          break
+        }
+        case 'arcGISWebMap': {
+          const errorMessages = validationExtensions.presence(
+            (value as ArcGISWebMapElementValue)?.userInput,
+            formElement,
+            'Required',
+          )
+
+          if (errorMessages.length) {
+            partialFormElementsValidation[formElement.name] = errorMessages[0]
           }
           break
         }

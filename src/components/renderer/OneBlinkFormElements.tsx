@@ -1069,6 +1069,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
                 typeof FormElementArcGISWebMap
               >['onChange']
             }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            {...dirtyProps}
           />
         </LookupNotification>
       )
