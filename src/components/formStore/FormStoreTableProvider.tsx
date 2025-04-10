@@ -44,12 +44,20 @@ export function FormStoreTableProvider({
     onRefresh,
     filters: parameters,
     onChangeFilters: onChangeParameters,
-    nextOffset,
+    paging,
   } = useInfiniteScrollDataLoad<
     formStoreService.FormStoreParameters,
+    {
+      limit: number
+      offset: number
+      nextOffset?: number
+    },
     FormStoreRecord
   >({
-    limit: 50,
+    initialPaging: {
+      limit: 50,
+      offset: 0,
+    },
     isManual: true,
     debounceSearchMs: 1000,
     onDefaultFilters: React.useCallback((query) => {
@@ -91,7 +99,10 @@ export function FormStoreTableProvider({
         const result = await formStoreService.searchFormStoreRecords(
           {
             ...currentParameters,
-            paging,
+            paging: paging || {
+              limit: 50,
+              offset: 0,
+            },
             formId: form.id,
             filters,
           },
@@ -99,7 +110,10 @@ export function FormStoreTableProvider({
         )
         return {
           records: result.formStoreRecords,
-          meta: result.meta,
+          paging:
+            typeof result.meta.nextOffset === 'number'
+              ? result.meta
+              : undefined,
         }
       },
       [form.id],
@@ -200,14 +214,14 @@ export function FormStoreTableProvider({
         </>
       )}
 
-      {!!nextOffset && !loadError && isLoading !== 'INITIAL' && (
+      {!!paging && !loadError && isLoading !== 'INITIAL' && (
         <Box padding={4} className="ob-form-store-load-more-button-container">
           <Grid container justifyContent="center">
             <LoadingButton
               className="ob-form-store-load-more-button"
               variant="outlined"
               color="primary"
-              onClick={() => onTryAgain(nextOffset)}
+              onClick={() => onTryAgain(paging)}
               loading={isLoading === 'MORE'}
               size="large"
               loadingPosition="start"

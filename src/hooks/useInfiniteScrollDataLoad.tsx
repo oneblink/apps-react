@@ -10,48 +10,41 @@ export type OnChangeFilters<T> = (
 
 export type LoadingType = 'INITIAL' | 'MORE' | null
 
-export default function useInfiniteScrollDataLoad<Filters, T>({
-  limit,
+export default function useInfiniteScrollDataLoad<Filters, Paging, T>({
+  initialPaging,
   isManual,
   debounceSearchMs,
   onDefaultFilters,
   onSearch,
   onValidateFilters,
 }: {
-  limit: number
+  initialPaging?: Paging
   isManual?: boolean
   debounceSearchMs?: number
   onDefaultFilters: (query: ReturnType<typeof useQuery>) => Filters
   onSearch: (
     filters: Filters,
-    paging: {
-      limit: number
-      offset: number
-    },
+    paging: Paging | undefined,
     abortSignal: AbortSignal,
   ) => Promise<{
     records: T[]
-    meta: {
-      limit: number
-      offset: number
-      nextOffset?: number | undefined
-    }
+    paging: Paging | undefined
   }>
   onValidateFilters?: (filters: Filters) => boolean
 }) {
   const query = useQuery()
 
-  const [{ forceReload, shouldDebounce, offset, filters }, setOffsetState] =
+  const [{ forceReload, shouldDebounce, paging, filters }, setOffsetState] =
     React.useState<{
       forceReload: boolean
       shouldDebounce: boolean
-      offset: number
+      paging: Paging | undefined
       filters: Filters
     }>(() => {
       return {
         forceReload: false,
         shouldDebounce: false,
-        offset: 0,
+        paging: initialPaging,
         filters: onDefaultFilters(query),
       }
     })
@@ -69,16 +62,14 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     [],
   )
 
-  const [{ isLoading, records, error, nextOffset }, setState] = React.useState<{
+  const [{ isLoading, records, error }, setState] = React.useState<{
     isLoading: LoadingType
     records: T[]
     error: Error | null
-    nextOffset: number
   }>({
     isLoading: 'INITIAL',
     records: [],
     error: null,
-    nextOffset: 0,
   })
 
   const fetchRecords = React.useCallback(
@@ -93,23 +84,16 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
       setState((currentState) => ({
         ...currentState,
         error: null,
-        records: offset === 0 ? [] : currentState.records,
-        isLoading: offset === 0 ? 'INITIAL' : 'MORE',
+        records: paging === undefined ? [] : currentState.records,
+        isLoading: paging === undefined ? 'INITIAL' : 'MORE',
       }))
       try {
-        const result = await onSearch(
-          filters,
-          {
-            limit,
-            offset,
-          },
-          abortSignal,
-        )
+        const result = await onSearch(filters, paging, abortSignal)
         setState((currentState) => ({
           error: null,
           records: [...currentState.records, ...result.records],
           isLoading: null,
-          nextOffset: result.meta.nextOffset || 0,
+          paging: result.paging,
         }))
       } catch (error) {
         if (abortSignal.aborted) {
@@ -123,7 +107,7 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
         }))
       }
     },
-    [onValidateFilters, filters, offset, onSearch, limit],
+    [onValidateFilters, filters, onSearch, paging],
   )
 
   React.useEffect(() => {
@@ -140,11 +124,11 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     }
   }, [debounceSearchMs, fetchRecords, shouldDebounce, forceReload])
 
-  const onLoad = React.useCallback((newOffset?: number) => {
+  const onLoad = React.useCallback((newPaging?: Paging) => {
     setOffsetState((currentState) => {
       return {
         ...currentState,
-        offset: typeof newOffset === 'number' ? newOffset : currentState.offset,
+        offset: newPaging !== undefined ? newPaging : currentState.paging,
         forceReload: !currentState.forceReload,
         shouldDebounce: false,
       }
@@ -160,13 +144,13 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
       // - there's an error
       // - it's already loading
       // - there's nothing left to load
-      if (!document.body || error || isLoading || !nextOffset) {
+      if (!document.body || error || isLoading || !paging) {
         return
       }
 
       // Checks that the page has scrolled to the bottom
       if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
-        onLoad(nextOffset)
+        onLoad(paging)
       }
     }
     // Binds our scroll event handler
@@ -175,10 +159,10 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     return () => {
       window.removeEventListener('scroll', scrollEventListener)
     }
-  }, [error, isLoading, isManual, nextOffset, onLoad])
+  }, [error, isLoading, isManual, onLoad, paging])
 
   const onRefresh = React.useCallback(() => {
-    onLoad(0)
+    onLoad(undefined)
   }, [onLoad])
 
   const onReplace = React.useCallback((replacer: (record: T) => T) => {
@@ -197,6 +181,6 @@ export default function useInfiniteScrollDataLoad<Filters, T>({
     filters,
     onChangeFilters,
     onReplace,
-    nextOffset,
+    paging,
   }
 }
