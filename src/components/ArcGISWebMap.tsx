@@ -245,18 +245,24 @@ function FormElementArcGISWebMap({
           view.ui.remove(component)
         }
 
-        view.ui.add(
-          new Search({
-            view,
-          }),
-          'top-left',
-        )
-        view.ui.add(
-          new Home({
-            view,
-          }),
-          'top-left',
-        )
+        if (element.addressSearchWidgetEnabled) {
+          view.ui.add(
+            new Search({
+              view,
+            }),
+            'top-left',
+          )
+        }
+
+        if (element.homeWidgetEnabled) {
+          view.ui.add(
+            new Home({
+              view,
+            }),
+            'top-left',
+          )
+        }
+
         view.ui.add(
           new Zoom({
             view,
@@ -303,6 +309,19 @@ function FormElementArcGISWebMap({
             layer: drawingLayer,
             creationMode: 'single',
             layout: 'vertical',
+            availableCreateTools: element.allowedDrawingTools?.map(
+              (tool) => tool.type,
+            ),
+            // hiding the below by default
+            visibleElements: {
+              duplicateButton: false,
+              settingsMenu: false,
+              undoRedoMenu: false,
+              selectionTools: {
+                'lasso-selection': false,
+                'rectangle-selection': false,
+              },
+            },
           })
           sketchToolRef.current = sketch
           view.ui.add(sketch, 'bottom-right')
