@@ -91,6 +91,7 @@ function FormElementArcGISWebMap({
   }, [element, onChange, value])
 
   React.useEffect(() => {
+    if (element.readOnly) return
     // event listeners for drawing tool creates/updates/deletes
     // these need to be removed and recreated when the submission value changes
     // to ensure they always have access to the latest submission value
@@ -140,18 +141,21 @@ function FormElementArcGISWebMap({
       updateDrawingInputSubmissionValue()
     })
 
-    const mapViewChangeListener = mapViewRef.current?.watch('stationary', () => {
-      const mapView = mapViewRef.current
-      if (mapView && mapView.stationary) {
-        const hasViewChanged =
-          mapView.zoom !== value?.view?.zoom ||
-          mapView.center.longitude !== value?.view?.longitude ||
-          mapView.center.latitude !== value?.view?.latitude
-        if (hasViewChanged) {
-          updateMapViewSubmissionValue()
+    const mapViewChangeListener = mapViewRef.current?.watch(
+      'stationary',
+      () => {
+        const mapView = mapViewRef.current
+        if (mapView && mapView.stationary) {
+          const hasViewChanged =
+            mapView.zoom !== value?.view?.zoom ||
+            mapView.center.longitude !== value?.view?.longitude ||
+            mapView.center.latitude !== value?.view?.latitude
+          if (hasViewChanged) {
+            updateMapViewSubmissionValue()
+          }
         }
-      }
-    })
+      },
+    )
 
     return () => {
       createListener?.remove()
@@ -165,6 +169,7 @@ function FormElementArcGISWebMap({
     value,
     updateDrawingInputSubmissionValue,
     updateMapViewSubmissionValue,
+    element.readOnly,
   ])
 
   const onSubmissionValueChange = React.useCallback(() => {
@@ -225,7 +230,7 @@ function FormElementArcGISWebMap({
           portalItem: {
             id: element.webMapId,
           },
-          basemap: element.basemapId || 'streets'
+          basemap: element.basemapId || 'streets',
         })
         await map.load()
 
