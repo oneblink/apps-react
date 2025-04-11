@@ -2233,4 +2233,103 @@ describe('generateDefaultData()', () => {
       })
     })
   })
+
+  describe.only('"arcGISWebMap" element type', () => {
+    const element: FormTypes.ArcGISWebMapElement = {
+      name: 'arcGISWebMap',
+      label: 'Arc GIS Web Map',
+      type: 'arcGISWebMap',
+      required: false,
+      id: '6b7a8936-a6ac-417a-85b3-2d7d428be5ec',
+      conditionallyShow: false,
+      requiresAllConditionallyShowPredicates: false,
+      readOnly: false,
+      isDataLookup: false,
+      isElementLookup: false,
+      showLayerPanel: false,
+    }
+
+    test('it should remove invalid pre-fill data', () => {
+      const result = generateDefaultData([element], {
+        arcGISWebMap: {
+          view: 123,
+          userInput: '',
+          invalidProp: {},
+          layers: {},
+          drawingLayer: {},
+        },
+      })
+
+      expect(result).toEqual({
+        arcGISWebMap: {
+          view: undefined,
+          layers: undefined,
+          drawingLayer: undefined,
+          userInput: undefined,
+        },
+      })
+    })
+
+    test('it should set default value', () => {
+      const result = generateDefaultData(
+        [
+          {
+            ...element,
+            defaultValue: {
+              view: {
+                zoom: 15,
+                latitude: 123,
+                longitude: 123,
+              },
+              userInput: [],
+              drawingLayer: [],
+              layers: [{ title: 'perimeter', graphics: [] }],
+            },
+          },
+        ],
+        {},
+      )
+
+      expect(result).toEqual({
+        arcGISWebMap: {
+          view: {
+            zoom: 15,
+            latitude: 123,
+            longitude: 123,
+          },
+          userInput: [],
+          drawingLayer: [],
+          layers: [{ title: 'perimeter', graphics: [] }],
+        },
+      })
+    })
+
+    test('it should set valid pre-fill data', () => {
+      const result = generateDefaultData([element], {
+        arcGISWebMap: {
+          view: {
+            zoom: 15,
+            latitude: 123,
+            longitude: 123,
+          },
+          userInput: [],
+          drawingLayer: [],
+          layers: [{ title: 'perimeter', graphics: [] }],
+        },
+      })
+
+      expect(result).toEqual({
+        arcGISWebMap: {
+          view: {
+            zoom: 15,
+            latitude: 123,
+            longitude: 123,
+          },
+          userInput: [],
+          drawingLayer: [],
+          layers: [{ title: 'perimeter', graphics: [] }],
+        },
+      })
+    })
+  })
 })
