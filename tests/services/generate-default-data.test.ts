@@ -2234,7 +2234,7 @@ describe('generateDefaultData()', () => {
     })
   })
 
-  describe.only('"arcGISWebMap" element type', () => {
+  describe('"arcGISWebMap" element type', () => {
     const element: FormTypes.ArcGISWebMapElement = {
       name: 'arcGISWebMap',
       label: 'Arc GIS Web Map',
