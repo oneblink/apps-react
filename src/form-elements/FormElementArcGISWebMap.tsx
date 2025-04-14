@@ -3,7 +3,6 @@ import { FormTypes } from '@oneblink/types'
 import OnLoading from '../components/renderer/OnLoading'
 import useIsOffline from '../hooks/useIsOffline'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
-import useFormIsReadOnly from '../hooks/useFormIsReadOnly'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
@@ -37,14 +36,9 @@ function FormElementArcGISWebMap({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
-  const isFormReadOnly = useFormIsReadOnly()
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =
     (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
-
-  if (isFormReadOnly) {
-    return null
-  }
 
   return (
     <div className="cypress-arcgis-web-map">
