@@ -90,6 +90,17 @@ function FormElementPointCadastralParcel({
     [element, formId, label, onChange, parcelId],
   )
 
+  React.useEffect(() => {
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(() => {
+      loadCadastralParcel(abortController.signal)
+    }, 750)
+    return () => {
+      abortController.abort()
+      clearTimeout(timeoutId)
+    }
+  }, [loadCadastralParcel])
+
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (parcelId && label !== parcelId) {
@@ -142,11 +153,8 @@ function FormElementPointCadastralParcel({
                 }
               }}
               required={element.required}
-              disabled={element.readOnly || isLoading}
-              onBlur={() => {
-                setIsDirty()
-                loadCadastralParcel(new AbortController().signal)
-              }}
+              disabled={element.readOnly}
+              onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
             />
