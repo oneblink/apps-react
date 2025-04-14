@@ -304,7 +304,7 @@ function FormElementArcGISWebMap({
         drawingLayerRef.current = drawingLayer
         map.layers.add(drawingLayer)
 
-        if (!element.readOnly) {
+        if (!element.readOnly && element.allowedDrawingTools?.length) {
           const sketch = new Sketch({
             view,
             layer: drawingLayer,
