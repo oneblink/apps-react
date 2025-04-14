@@ -297,13 +297,14 @@ function FormElementArcGISWebMap({
 
         view.ui.add(mapGalleryPanelRef.current, 'top-left')
 
+        const drawingLayer = new GraphicsLayer({
+          id: uuid(),
+          title: 'Drawing',
+        })
+        drawingLayerRef.current = drawingLayer
+        map.layers.add(drawingLayer)
+
         if (!element.readOnly) {
-          const drawingLayer = new GraphicsLayer({
-            id: uuid(),
-            title: 'Drawing',
-          })
-          drawingLayerRef.current = drawingLayer
-          map.layers.add(drawingLayer)
           const sketch = new Sketch({
             view,
             layer: drawingLayer,
