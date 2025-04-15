@@ -21,8 +21,6 @@ import MaterialIcon from './MaterialIcon'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
-import { LookupNotificationContext } from '../hooks/useLookupNotification'
-
 import '../styles/arcgis-external.css'
 
 type Props = {
@@ -54,7 +52,6 @@ function FormElementArcGISWebMap({
   const [loadError, setLoadError] = React.useState<Error>()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const isPageVisible = useIsPageVisible()
-  const { isLookingUp } = React.useContext(LookupNotificationContext)
 
   const updateDrawingInputSubmissionValue = React.useCallback(() => {
     const updatedGraphics = drawingLayerRef.current?.graphics
@@ -98,10 +95,6 @@ function FormElementArcGISWebMap({
     const createListener = sketchToolRef.current?.on(
       'create',
       (sketchEvent) => {
-        if (isLookingUp) {
-          sketchToolRef.current?.cancel()
-          return
-        }
         if (sketchEvent.state === 'complete') {
           updateDrawingInputSubmissionValue()
         }
@@ -111,10 +104,6 @@ function FormElementArcGISWebMap({
     const updateListener = sketchToolRef.current?.on(
       'update',
       (sketchEvent) => {
-        if (isLookingUp) {
-          sketchToolRef.current?.cancel()
-          return
-        }
         if (sketchEvent.state === 'complete') {
           // only update the submission value if the graphic's geometry was actually changed
           if (
@@ -134,10 +123,6 @@ function FormElementArcGISWebMap({
     )
 
     const deleteListener = sketchToolRef.current?.on('delete', () => {
-      if (isLookingUp) {
-        sketchToolRef.current?.cancel()
-        return
-      }
       updateDrawingInputSubmissionValue()
     })
 
@@ -165,7 +150,6 @@ function FormElementArcGISWebMap({
     }
   }, [
     isLoading,
-    isLookingUp,
     value,
     updateDrawingInputSubmissionValue,
     updateMapViewSubmissionValue,
