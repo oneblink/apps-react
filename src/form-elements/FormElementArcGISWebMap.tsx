@@ -7,9 +7,6 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
-import MaterialIcon from '../components/MaterialIcon'
-import useIsPageVisible from '../hooks/useIsPageVisible'
-
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
 type Props = {
@@ -37,7 +34,6 @@ function FormElementArcGISWebMap({
   validationMessage,
   setIsDirty,
 }: Props) {
-  const isPageVisible = useIsPageVisible()
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isOffline = useIsOffline()
   const { isLookingUp } = React.useContext(LookupNotificationContext)
@@ -76,13 +72,6 @@ function FormElementArcGISWebMap({
               value={value}
               onChange={onChange}
               setIsDirty={setIsDirty}
-              loading={<OnLoading />}
-              errorIcon={
-                <MaterialIcon className="icon-large has-margin-bottom-6 has-text-warning">
-                  error
-                </MaterialIcon>
-              }
-              isPageVisible={isPageVisible}
             />
           </Suspense>
         )}

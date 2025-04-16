@@ -15,6 +15,10 @@ import Layer from '@arcgis/core/layers/Layer'
 import { Point } from '@arcgis/core/geometry'
 import { v4 as uuid } from 'uuid'
 
+import OnLoading from '../components/renderer/OnLoading'
+import MaterialIcon from './MaterialIcon'
+
+import useIsPageVisible from '../hooks/useIsPageVisible'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
@@ -26,9 +30,6 @@ type Props = {
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   'aria-describedby'?: string
   setIsDirty: () => void
-  isPageVisible: boolean
-  loading: React.ReactNode
-  errorIcon: React.ReactNode
 }
 
 function FormElementArcGISWebMap({
@@ -37,9 +38,6 @@ function FormElementArcGISWebMap({
   value,
   onChange,
   setIsDirty,
-  loading,
-  errorIcon,
-  isPageVisible,
   ...props
 }: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
@@ -53,6 +51,7 @@ function FormElementArcGISWebMap({
   const [overlayLayerIds, setOverlayLayerIds] = React.useState<string[]>()
   const [loadError, setLoadError] = React.useState<Error>()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const isPageVisible = useIsPageVisible()
 
   const updateDrawingInputSubmissionValue = React.useCallback(() => {
     const updatedGraphics = drawingLayerRef.current?.graphics
@@ -355,7 +354,9 @@ function FormElementArcGISWebMap({
     return (
       <figure className="ob-figure">
         <div className="figure-content has-text-centered">
-          {errorIcon}
+          <MaterialIcon className="icon-large has-margin-bottom-6 has-text-warning">
+            error
+          </MaterialIcon>
           <h4 className="title is-4">We were unable to display your web map</h4>
           <p>{loadError.message}</p>
         </div>
@@ -365,7 +366,7 @@ function FormElementArcGISWebMap({
 
   return (
     <>
-      {isLoading && loading}
+      {isLoading && <OnLoading />}
       <div
         className="arcgis-web-map"
         ref={ref}
@@ -376,4 +377,4 @@ function FormElementArcGISWebMap({
   )
 }
 
-export default FormElementArcGISWebMap
+export default React.memo(FormElementArcGISWebMap)
