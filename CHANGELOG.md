@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sketch widget to ArcGIS Web Map element
 - `pointCadastralParcel` form element
+- Support for graphic attribute options to ArcGIS Web Map element
 
 ### Changed
 
