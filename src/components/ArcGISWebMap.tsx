@@ -50,13 +50,20 @@ function DrawingOptionsList({
 }) {
   return (
     <div className="esri-widget">
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <b style={{ padding: '0.5rem' }}>Select an option</b>
         <IconButton
           onClick={(e) => {
             e.stopPropagation()
             onClose()
           }}
+          size="small"
           data-cypress="copy-to-clip-board-button"
         >
           <MaterialIcon fontSize="small">close</MaterialIcon>
