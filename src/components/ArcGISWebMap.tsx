@@ -336,6 +336,10 @@ function FormElementArcGISWebMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, isLoading])
 
+  const [drawingOptionsContainerId] = React.useState(
+    () => `OneBlinkDrawingOptionsSelector-${element.id}`,
+  )
+
   React.useEffect(() => {
     const loadMap = async () => {
       try {
@@ -447,7 +451,7 @@ function FormElementArcGISWebMap({
           })
           sketchToolRef.current = sketch
           view.ui.add(sketch, 'bottom-right')
-          view.ui.add('OneBlinkDrawingOptionsSelector', 'bottom-right')
+          view.ui.add(drawingOptionsContainerId, 'bottom-right')
         }
 
         // once the view has loaded
@@ -466,7 +470,7 @@ function FormElementArcGISWebMap({
       setIsLoading(true)
       loadMap()
     }
-  }, [element, isLoading, value])
+  }, [drawingOptionsContainerId, element, isLoading, value])
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -511,7 +515,7 @@ function FormElementArcGISWebMap({
         id={id}
         aria-describedby={props['aria-describedby']}
       />
-      <div id="OneBlinkDrawingOptionsSelector">
+      <div id={drawingOptionsContainerId}>
         {!!activeSketchToolMenu && sketchToolRef.current && (
           <DrawingOptionsList
             options={
