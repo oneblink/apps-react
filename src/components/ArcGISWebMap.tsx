@@ -336,9 +336,7 @@ function FormElementArcGISWebMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, isLoading])
 
-  const [drawingOptionsContainerId] = React.useState(
-    () => `OneBlinkDrawingOptionsSelector-${element.id}`,
-  )
+  const drawingOptionsContainerId = `OneBlinkDrawingOptionsSelector-${element.id}`
 
   React.useEffect(() => {
     const loadMap = async () => {
