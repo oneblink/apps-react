@@ -423,8 +423,16 @@ function FormElementArcGISWebMap({
             layer: drawingLayer,
             creationMode: 'single',
             layout: 'vertical',
-            availableCreateTools: element.allowedDrawingTools?.map(
-              (tool) => tool.type,
+            availableCreateTools: [
+              'point',
+              'polyline',
+              'polygon',
+              'rectangle',
+              'circle',
+            ].filter((createTool) =>
+              element.allowedDrawingTools?.find(
+                (tool) => tool.type === createTool,
+              ),
             ),
             // hiding the below by default
             visibleElements: {
