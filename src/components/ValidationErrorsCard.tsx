@@ -9,10 +9,11 @@ import { FormTypes } from '@oneblink/types'
 import usePages from '../hooks/usePages'
 import ElementDOMId from '../utils/elementDOMIds'
 import scrollToElement from '../utils/scrollToElement'
+import { Clickable } from './Clickable'
 
 const NO_PAGE_KEY = 'NO_PAGE'
 type ValidationErrorMetaData = {
-  id: string
+  elementDOMId: ElementDOMId
   label: string
   page?: {
     label: string
@@ -68,7 +69,7 @@ const getValidationErrors = ({
           })
           if (validationData.set) {
             memo.push({
-              id: elementDOMId.elementContainerDOMId,
+              elementDOMId,
               errorMessage: validationData.set,
               label: el.label,
               page,
@@ -121,7 +122,7 @@ const getValidationErrors = ({
             idPrefix,
           })
           memo.push({
-            id: elementDOMId.elementContainerDOMId,
+            elementDOMId,
             label: el.label,
             page,
             errorMessage: validationMessage,
@@ -265,11 +266,15 @@ const ValidationErrorsCard = ({
                     )}
                     <div className="ob-list has-dividers has-borders ob-validation-notification-card-list ob-validation-color-transition">
                       {errors.map(
-                        ({ errorMessage, label, id }, index, list) => {
+                        (
+                          { errorMessage, label, elementDOMId },
+                          index,
+                          list,
+                        ) => {
                           const isFirst = index === 0
                           const isLast = index === list.length - 1
                           return (
-                            <div
+                            <Clickable
                               key={index}
                               className={clsx(
                                 'ob-list__item is-clickable ob-validation-notification-card-item',
@@ -284,7 +289,7 @@ const ValidationErrorsCard = ({
                                 }
 
                                 scrollToElement({
-                                  id,
+                                  elementDOMId,
                                   navigationTopOffset,
                                   scrollableContainerId,
                                 })
@@ -305,7 +310,7 @@ const ValidationErrorsCard = ({
                               <MaterialIcon className="has-text-grey icon-small ob-validation-notification-card-item-icon">
                                 chevron_right
                               </MaterialIcon>
-                            </div>
+                            </Clickable>
                           )
                         },
                       )}
