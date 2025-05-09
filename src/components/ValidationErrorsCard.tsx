@@ -13,7 +13,7 @@ import { Clickable } from './Clickable'
 
 const NO_PAGE_KEY = 'NO_PAGE'
 type ValidationErrorMetaData = {
-  id: string
+  elementDOMId: ElementDOMId
   label: string
   page?: {
     label: string
@@ -69,7 +69,7 @@ const getValidationErrors = ({
           })
           if (validationData.set) {
             memo.push({
-              id: elementDOMId.elementContainerDOMId,
+              elementDOMId,
               errorMessage: validationData.set,
               label: el.label,
               page,
@@ -122,7 +122,7 @@ const getValidationErrors = ({
             idPrefix,
           })
           memo.push({
-            id: elementDOMId.elementContainerDOMId,
+            elementDOMId,
             label: el.label,
             page,
             errorMessage: validationMessage,
@@ -266,7 +266,11 @@ const ValidationErrorsCard = ({
                     )}
                     <div className="ob-list has-dividers has-borders ob-validation-notification-card-list ob-validation-color-transition">
                       {errors.map(
-                        ({ errorMessage, label, id }, index, list) => {
+                        (
+                          { errorMessage, label, elementDOMId },
+                          index,
+                          list,
+                        ) => {
                           const isFirst = index === 0
                           const isLast = index === list.length - 1
                           return (
@@ -285,7 +289,7 @@ const ValidationErrorsCard = ({
                                 }
 
                                 scrollToElement({
-                                  id,
+                                  elementDOMId,
                                   navigationTopOffset,
                                   scrollableContainerId,
                                 })

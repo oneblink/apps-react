@@ -1,3 +1,5 @@
+import ElementDOMId from './elementDOMIds'
+
 /**
  * Recursively traverses ancestors to find the first visible ancestor element
  * and allow getting its scroll point. It handles the case of ancestor elements
@@ -98,16 +100,16 @@ const findScrollPointOfVisibleAncestorElement = (
 }
 
 const scrollToElement = ({
-  id,
+  elementDOMId,
   navigationTopOffset,
   scrollableContainerId,
 }: {
-  id: string
+  elementDOMId: ElementDOMId
   /** We allow an offset to cater for any headers */
   navigationTopOffset: number | 'CALCULATE'
   scrollableContainerId?: string
 }) => {
-  const element = document.getElementById(id)
+  const element = document.getElementById(elementDOMId.elementContainerDOMId)
   if (element) {
     const getScrollPoint = findScrollPointOfVisibleAncestorElement(element)
     if (getScrollPoint) {
@@ -155,6 +157,8 @@ const scrollToElement = ({
             }
           }
         }
+
+        document.getElementById(elementDOMId.value)?.focus()
       })
     }
   }

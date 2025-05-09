@@ -302,6 +302,7 @@ function FormElementRepeatableSet({
           <AddButton
             onAdd={() => handleAddEntry(0)}
             element={element}
+            id={id}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
           />
         )}
@@ -339,6 +340,7 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(entries.length)}
               element={element}
+              id={id}
             />
           )}
         {(isDirty || displayValidationMessage) &&
@@ -613,10 +615,12 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 )
 
 function AddButton({
+  id,
   onAdd,
   element,
   classes,
 }: {
+  id?: string
   onAdd: () => void
   element: FormTypes.RepeatableSetElement
   isPrimary?: boolean
@@ -632,6 +636,7 @@ function AddButton({
       onClick={onAdd}
       disabled={element.readOnly}
       aria-label={element.addSetEntryLabel ? undefined : 'Add Entry'}
+      id={id}
     >
       <span className="icon">
         <MaterialIcon>add</MaterialIcon>
