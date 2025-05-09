@@ -190,6 +190,7 @@ function FormElementLocation({
                   onClick={onLocate}
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
+                  id={id}
                 >
                   Locate
                 </button>
