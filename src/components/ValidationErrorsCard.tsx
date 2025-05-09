@@ -9,6 +9,7 @@ import { FormTypes } from '@oneblink/types'
 import usePages from '../hooks/usePages'
 import ElementDOMId from '../utils/elementDOMIds'
 import scrollToElement from '../utils/scrollToElement'
+import { Clickable } from './Clickable'
 
 const NO_PAGE_KEY = 'NO_PAGE'
 type ValidationErrorMetaData = {
@@ -269,7 +270,7 @@ const ValidationErrorsCard = ({
                           const isFirst = index === 0
                           const isLast = index === list.length - 1
                           return (
-                            <div
+                            <Clickable
                               key={index}
                               className={clsx(
                                 'ob-list__item is-clickable ob-validation-notification-card-item',
@@ -305,7 +306,7 @@ const ValidationErrorsCard = ({
                               <MaterialIcon className="has-text-grey icon-small ob-validation-notification-card-item-icon">
                                 chevron_right
                               </MaterialIcon>
-                            </div>
+                            </Clickable>
                           )
                         },
                       )}
