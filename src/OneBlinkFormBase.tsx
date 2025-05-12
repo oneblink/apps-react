@@ -414,6 +414,8 @@ function OneBlinkFormBase({
 
   const validationErrorToastFocusElementRef =
     React.useRef<HTMLButtonElement>(null)
+  const [isShowingValidationErrorsCard, setIsShowingValidationErrorsCard] =
+    React.useState(false)
   const { validate } = useFormValidation(pages)
 
   const recaptchaType = React.useMemo(
@@ -444,6 +446,12 @@ function OneBlinkFormBase({
       isOffline,
     ],
   )
+
+  React.useEffect(() => {
+    if (!formElementsValidation) {
+      setIsShowingValidationErrorsCard(false)
+    }
+  }, [formElementsValidation])
 
   // #endregion
   //
@@ -646,6 +654,7 @@ function OneBlinkFormBase({
             closeOnClick: true,
           })
         }
+        setIsShowingValidationErrorsCard(true)
         validationErrorToastFocusElementRef.current?.focus()
         return
       }
@@ -1491,8 +1500,7 @@ function OneBlinkFormBase({
                     </React.Fragment>
                   )}
                   {shouldUseNavigableValidationErrorsNotification &&
-                    !!formElementsValidation &&
-                    hasAttemptedSubmit && (
+                    isShowingValidationErrorsCard && (
                       <ValidationErrorsCard
                         formElementsValidation={formElementsValidation}
                         setPageId={setPageId}
