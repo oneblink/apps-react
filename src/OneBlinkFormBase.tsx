@@ -412,6 +412,8 @@ function OneBlinkFormBase({
   //
   // #region Validation
 
+  const validationErrorToastFocusElementRef =
+    React.useRef<HTMLButtonElement>(null)
   const { validate } = useFormValidation(pages)
 
   const recaptchaType = React.useMemo(
@@ -644,6 +646,7 @@ function OneBlinkFormBase({
             closeOnClick: true,
           })
         }
+        validationErrorToastFocusElementRef.current?.focus()
         return
       }
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
@@ -1500,6 +1503,9 @@ function OneBlinkFormBase({
                         }
                         scrollableContainerId={
                           navigableValidationErrorsNotificationSettings?.scrollableContainerId
+                        }
+                        validationErrorToastFocusElementRef={
+                          validationErrorToastFocusElementRef
                         }
                       />
                     )}
