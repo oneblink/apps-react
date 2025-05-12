@@ -140,12 +140,14 @@ const ValidationErrorsCard = ({
   setPageId,
   navigationTopOffset,
   scrollableContainerId,
+  validationErrorToastFocusElementRef,
 }: {
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: ReturnType<typeof usePages>['setPageId']
   navigationTopOffset: number | 'CALCULATE'
   scrollableContainerId?: string
+  validationErrorToastFocusElementRef: React.RefObject<HTMLButtonElement>
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 
@@ -231,19 +233,20 @@ const ValidationErrorsCard = ({
               </p>
             </div>
             <div className="ob-validation-notification-card-header-collapse-icon-wrapper">
-              {isExpanded ? (
-                <IconButton onClick={contract}>
-                  <MaterialIcon className="icon-small">
-                    expand_more
-                  </MaterialIcon>
-                </IconButton>
-              ) : (
-                <IconButton>
-                  <MaterialIcon className="icon-small has-text-white">
-                    expand_less
-                  </MaterialIcon>
-                </IconButton>
-              )}
+              <IconButton
+                autoFocus
+                ref={validationErrorToastFocusElementRef}
+                onClick={isExpanded ? contract : undefined}
+                aria-label={`${isExpanded ? 'Collapse' : 'Expand'} validation errors`}
+              >
+                <MaterialIcon
+                  className={clsx('icon-small', {
+                    'has-text-white': !isExpanded,
+                  })}
+                >
+                  {isExpanded ? 'expand_more' : 'expand_less'}
+                </MaterialIcon>
+              </IconButton>
             </div>
           </div>
           <div className="ob-validation-notification-card-collapse-wrapper">
