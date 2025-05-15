@@ -4,7 +4,7 @@ import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
-import { sendGoogleAnalyticsEvent } from './utils/sendGAEvents'
+import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 
 function OneBlinkAutoSaveForm({
   form,
