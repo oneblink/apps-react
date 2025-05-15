@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- push submit and abandon events to google analytics
+
 ### Fixed
 
 - accessibility on validation toast
