@@ -4,6 +4,7 @@ import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
+import { sendGoogleAnalyticsEvent } from './utils/sendGAEvents'
 
 function OneBlinkAutoSaveForm({
   form,
@@ -79,7 +80,13 @@ function OneBlinkAutoSaveForm({
             <button
               type="button"
               className="button ob-button is-light cypress-continue-auto-save-start-again-button"
-              onClick={startNewSubmission}
+              onClick={() => {
+                startNewSubmission()
+                sendGoogleAnalyticsEvent('oneblink_form_abandon', {
+                  formId: definition.id,
+                  formName: definition.name,
+                })
+              }}
             >
               Start Again
             </button>

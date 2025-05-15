@@ -56,6 +56,7 @@ import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
 import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
+import { sendGoogleAnalyticsEvent } from './utils/sendGAEvents'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -350,7 +351,11 @@ function OneBlinkFormBase({
       isNavigationAllowed: true,
       hasConfirmedNavigation: true,
     }))
-  }, [])
+    sendGoogleAnalyticsEvent('oneblink_form_abandon', {
+      formId: definition.id,
+      formName: definition.name,
+    })
+  }, [definition.id, definition.name])
 
   React.useEffect(() => {
     if (hasConfirmedNavigation) {
@@ -786,6 +791,10 @@ function OneBlinkFormBase({
           token,
           siteKey: captchaSiteKey as string,
         })),
+      })
+      sendGoogleAnalyticsEvent('oneblink_form_submit', {
+        formId: definition.id,
+        formName: definition.name,
       })
     },
     [
