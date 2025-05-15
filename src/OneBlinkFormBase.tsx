@@ -56,7 +56,7 @@ import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
 import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
-import { sendGoogleAnalyticsEvent } from './utils/sendGAEvents'
+import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
