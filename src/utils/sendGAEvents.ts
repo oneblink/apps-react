@@ -1,3 +1,5 @@
+import { Sentry } from "@oneblink/apps"
+
 export const sendGoogleAnalyticsEvent = (
   eventName: string,
   eventParams: Record<string, unknown>,
@@ -8,6 +10,7 @@ export const sendGoogleAnalyticsEvent = (
       window.gtag('event', eventName, eventParams)
     } catch (e) {
       console.warn('An error occured pushing event to google analytics: ', e)
+      Sentry.captureException(e)
     }
   }
 }
