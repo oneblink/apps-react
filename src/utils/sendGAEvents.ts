@@ -3,7 +3,11 @@ export const sendGoogleAnalyticsEvent = (
   eventParams: Record<string, unknown>,
 ) => {
   if (typeof window.gtag === 'function') {
-    console.log('pushing event to google analytics: ', eventName, eventParams)
-    window.gtag('event', eventName, eventParams)
+    try {
+      console.log('pushing event to google analytics: ', eventName, eventParams)
+      window.gtag('event', eventName, eventParams)
+    } catch (e) {
+      console.warn('An error occured pushing event to google analytics: ', e)
+    }
   }
 }
