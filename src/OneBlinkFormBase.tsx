@@ -384,9 +384,13 @@ function OneBlinkFormBase({
         hasConfirmedNavigation: false,
       }))
     } else {
+      sendGoogleAnalyticsEvent('oneblink_form_abandon', {
+        formId: definition.id,
+        formName: definition.name,
+      })
       onCancel()
     }
-  }, [isDirty, onCancel])
+  }, [definition.id, definition.name, isDirty, onCancel])
 
   const allowNavigation = React.useCallback(() => {
     setUnsavedChangesState((current) => ({
