@@ -3,6 +3,22 @@ import { Sentry, attachmentsService } from '@oneblink/apps'
 import { v4 as uuid } from 'uuid'
 import { blobToCanvas, getBlobOrientation } from './blob-utils'
 
+export function generateErrorAttachment(
+  blob: Blob,
+  fileName: string,
+  element: FormTypes.FormElementBinaryStorage,
+  errorMessage: string,
+): attachmentsService.AttachmentError {
+  return {
+    _id: uuid(),
+    data: blob,
+    fileName,
+    isPrivate: element.storageType !== 'public',
+    type: 'ERROR',
+    errorMessage,
+  }
+}
+
 export function prepareNewAttachment(
   blob: Blob,
   fileName: string,

@@ -2,6 +2,7 @@ import { FormTypes } from '@oneblink/types'
 import * as React from 'react'
 import {
   prepareNewAttachment,
+  generateErrorAttachment,
   correctFileOrientation,
 } from '../../services/attachments'
 import { attachmentsService } from '@oneblink/apps'
@@ -19,18 +20,27 @@ const useAttachments = (
   const addAttachments = React.useCallback(
     async (files: File[]): Promise<void> => {
       if (!files.length) return
-      const newAttachments: attachmentsService.AttachmentNew[] =
-        await Promise.all(
-          files.map(async (file) => {
-            const result = await correctFileOrientation(file)
-            if (result instanceof Blob) {
-              return prepareNewAttachment(result, file.name, element)
-            }
+      const newAttachments: Array<
+        attachmentsService.AttachmentNew | attachmentsService.AttachmentError
+      > = await Promise.all(
+        files.map(async (file) => {
+          if (!file.size) {
+            return generateErrorAttachment(
+              file,
+              file.name,
+              element,
+              'You cannot upload an empty file.',
+            )
+          }
+          const result = await correctFileOrientation(file)
+          if (result instanceof Blob) {
+            return prepareNewAttachment(result, file.name, element)
+          }
 
-            const blob = await canvasToBlob(result)
-            return prepareNewAttachment(blob, file.name, element)
-          }),
-        )
+          const blob = await canvasToBlob(result)
+          return prepareNewAttachment(blob, file.name, element)
+        }),
+      )
 
       onChange(element, {
         value: (currentAttachments) => {
