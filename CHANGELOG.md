@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - push submit and abandon events to google analytics
+- validation to prevent uploading empty files
 
 ### Fixed
 

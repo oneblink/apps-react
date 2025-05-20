@@ -78,6 +78,10 @@ function FormElementCamera({
 
       console.log('File selected event', file)
       try {
+        if (!file.size) {
+          throw new Error('You cannot upload an empty file.')
+        }
+
         if (!checkIfContentTypeIsImage(file.type)) {
           throw new Error(
             `Invalid file type "${file.type}". Please select an image.`,
