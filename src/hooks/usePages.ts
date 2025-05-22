@@ -8,6 +8,46 @@ import {
   FormElementsConditionallyShown,
   FormElementsValidation,
 } from '../types/form'
+import generateConfirmationFormElementName from '../services/generateConfirmationFormElement'
+
+function injectDynamicElements(
+  formElements: FormTypes.FormElement[],
+): FormTypes.FormElement[] {
+  return formElements.reduce<FormTypes.FormElement[]>((memo, formElement) => {
+    if ('elements' in formElement && Array.isArray(formElement.elements)) {
+      memo.push({
+        ...formElement,
+        elements: injectDynamicElements(formElement.elements || []),
+      })
+      return memo
+    }
+
+    memo.push(formElement)
+
+    switch (formElement.type) {
+      case 'email': {
+        if (formElement.requiresConfirmation) {
+          const confirmationFormElementName =
+            generateConfirmationFormElementName(formElement)
+          memo.push({
+            ...formElement,
+            id: confirmationFormElementName,
+            name: confirmationFormElementName,
+            label: `Confirm ${formElement.label}`,
+            isDataLookup: false,
+            isElementLookup: false,
+            defaultValue: undefined,
+            hint: undefined,
+            hintPosition: undefined,
+            requiresConfirmation: false,
+          })
+        }
+      }
+    }
+
+    return memo
+  }, [])
+}
 
 export default function usePages({
   pages,
@@ -26,11 +66,17 @@ export default function usePages({
   const [isStepsHeaderActive, , closeStepsNavigation, toggleStepsNavigation] =
     useBooleanState(false)
 
+  const pagesWithDynamicElements = React.useMemo<
+    FormTypes.PageElement[]
+  >(() => {
+    return injectDynamicElements(pages) as FormTypes.PageElement[]
+  }, [pages])
+
   const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
-    return pages.filter((pageElement) => {
+    return pagesWithDynamicElements.filter((pageElement) => {
       return !formElementsConditionallyShown?.[pageElement.id]?.isHidden
     })
-  }, [formElementsConditionallyShown, pages])
+  }, [formElementsConditionallyShown, pagesWithDynamicElements])
 
   const [currentPageId, setCurrentPageId] = React.useState(visiblePages[0].id)
 

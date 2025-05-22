@@ -4,7 +4,6 @@ import MaterialIcon from './MaterialIcon'
 import { FormElementsValidation } from '../types/form'
 import useBooleanState from '../hooks/useBooleanState'
 import clsx from 'clsx'
-import useFormDefinition from '../hooks/useFormDefinition'
 import { FormTypes } from '@oneblink/types'
 import usePages from '../hooks/usePages'
 import ElementDOMId from '../utils/elementDOMIds'
@@ -136,12 +135,14 @@ const getValidationErrors = ({
 
 const ValidationErrorsCard = ({
   formElementsValidation,
+  visiblePages,
   currentPage,
   setPageId,
   navigationTopOffset,
   scrollableContainerId,
   validationErrorToastFocusElementRef,
 }: {
+  visiblePages: FormTypes.PageElement[]
   formElementsValidation: FormElementsValidation | undefined
   currentPage: FormTypes.PageElement
   setPageId: ReturnType<typeof usePages>['setPageId']
@@ -151,13 +152,11 @@ const ValidationErrorsCard = ({
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 
-  const form = useFormDefinition()
-
   const pagesWithValidationErrors = React.useMemo(() => {
     if (!formElementsValidation) return []
     const flatErrors = getValidationErrors({
       formElementsValidation,
-      elements: form.elements,
+      elements: visiblePages,
       idPrefix: '',
     })
 
@@ -191,7 +190,7 @@ const ValidationErrorsCard = ({
       }
     }
     return Array.from(pages.values())
-  }, [form.elements, formElementsValidation])
+  }, [formElementsValidation, visiblePages])
 
   return (
     <div className="ob-validation-notification-wrapper">
@@ -238,6 +237,7 @@ const ValidationErrorsCard = ({
                 ref={validationErrorToastFocusElementRef}
                 onClick={isExpanded ? contract : undefined}
                 aria-label={`${isExpanded ? 'Collapse' : 'Expand'} validation errors`}
+                className="cypress-validation-notification-toggle-messages-button"
               >
                 <MaterialIcon
                   className={clsx('icon-small', {
@@ -280,7 +280,7 @@ const ValidationErrorsCard = ({
                             <Clickable
                               key={index}
                               className={clsx(
-                                'ob-list__item is-clickable ob-validation-notification-card-item',
+                                'ob-list__item is-clickable ob-validation-notification-card-item cypress-validation-notification-error',
                                 {
                                   'is-first': isFirst,
                                   'is-last': isLast,
@@ -299,13 +299,15 @@ const ValidationErrorsCard = ({
                               }}
                             >
                               <div className="ob-validation-notification-card-item-text">
-                                <p>{label}</p>
+                                <p className="cypress-validation-notification-error-label">
+                                  {label}
+                                </p>
                                 <Tooltip
                                   title={errorMessage}
                                   placement="left"
                                   arrow
                                 >
-                                  <p className="ob-validation-notification-card-item-text-error-message has-text-danger">
+                                  <p className="ob-validation-notification-card-item-text-error-message has-text-danger cypress-validation-notification-error-message">
                                     {errorMessage}
                                   </p>
                                 </Tooltip>

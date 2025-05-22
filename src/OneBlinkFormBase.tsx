@@ -1515,6 +1515,7 @@ function OneBlinkFormBase({
                   {shouldUseNavigableValidationErrorsNotification &&
                     isShowingValidationErrorsCard && (
                       <ValidationErrorsCard
+                        visiblePages={visiblePages}
                         formElementsValidation={formElementsValidation}
                         setPageId={setPageId}
                         currentPage={currentPage}
