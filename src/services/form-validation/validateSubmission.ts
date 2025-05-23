@@ -19,6 +19,7 @@ import generateFreshdeskDependentFieldElements from '../generateFreshdeskDepende
 import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
+import generateConfirmationFormElementName from '../generateConfirmationFormElement'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -322,6 +323,15 @@ export default function validateSubmission({
           ]
           if (errorMessages.length) {
             partialFormElementsValidation[formElement.name] = errorMessages[0]
+          }
+
+          if (formElement.requiresConfirmation && !!value) {
+            const confirmationFormElementName =
+              generateConfirmationFormElementName(formElement)
+            if (value !== submission?.[confirmationFormElementName]) {
+              partialFormElementsValidation[confirmationFormElementName] =
+                'Email addresses do not match'
+            }
           }
           break
         }
