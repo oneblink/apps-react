@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Animations when scrolling from the validation errors toast
+
 ### Added
 
 - `requiresConfirmation` support for email form elements
