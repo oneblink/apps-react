@@ -157,8 +157,9 @@ const scrollToElement = ({
             }
           }
         }
-
-        document.getElementById(elementDOMId.value)?.focus()
+        document.getElementById(elementDOMId.value)?.focus({
+          preventScroll: true,
+        })
       })
     }
   }
