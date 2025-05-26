@@ -13,40 +13,55 @@ import generateConfirmationFormElementName from '../services/generateConfirmatio
 function injectDynamicElements(
   formElements: FormTypes.FormElement[],
 ): FormTypes.FormElement[] {
-  return formElements.reduce<FormTypes.FormElement[]>((memo, formElement) => {
-    if ('elements' in formElement && Array.isArray(formElement.elements)) {
-      memo.push({
-        ...formElement,
-        elements: injectDynamicElements(formElement.elements || []),
-      })
-      return memo
-    }
+  return formElements.reduce<FormTypes.FormElement[]>(
+    (memo, formElement, elementIndex) => {
+      if ('elements' in formElement && Array.isArray(formElement.elements)) {
+        memo.push({
+          ...formElement,
+          elements: injectDynamicElements(formElement.elements || []),
+        })
+        return memo
+      }
 
-    memo.push(formElement)
+      memo.push(formElement)
 
-    switch (formElement.type) {
-      case 'email': {
-        if (formElement.requiresConfirmation) {
-          const confirmationFormElementName =
-            generateConfirmationFormElementName(formElement)
-          memo.push({
-            ...formElement,
-            id: confirmationFormElementName,
-            name: confirmationFormElementName,
-            label: `Confirm ${formElement.label}`,
-            isDataLookup: false,
-            isElementLookup: false,
-            defaultValue: undefined,
-            hint: undefined,
-            hintPosition: undefined,
-            requiresConfirmation: false,
-          })
+      switch (formElement.type) {
+        case 'email': {
+          if (formElement.requiresConfirmation) {
+            const confirmationFormElementName =
+              generateConfirmationFormElementName(formElement)
+
+            // Since confirmation elements are always added directly after an element,
+            // we can just check the next element to see if it has already been added.
+            // This is much more efficient than searching the entire form.
+            const nextElement = formElements[elementIndex + 1] as
+              | FormTypes.FormElement
+              | undefined
+            if (nextElement?.id === confirmationFormElementName) {
+              // Already been added
+              return memo
+            }
+
+            memo.push({
+              ...formElement,
+              id: confirmationFormElementName,
+              name: confirmationFormElementName,
+              label: `Confirm ${formElement.label}`,
+              isDataLookup: false,
+              isElementLookup: false,
+              defaultValue: undefined,
+              hint: undefined,
+              hintPosition: undefined,
+              requiresConfirmation: false,
+            })
+          }
         }
       }
-    }
 
-    return memo
-  }, [])
+      return memo
+    },
+    [],
+  )
 }
 
 export default function usePages({
