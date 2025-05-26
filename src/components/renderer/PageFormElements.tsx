@@ -39,45 +39,63 @@ function PageFormElements({
   const handleLookup = React.useCallback<FormElementLookupHandler>(
     (mergeLookupResults) => {
       setFormSubmission((currentFormSubmission) => {
-        const { submission, elements, executedLookups } = mergeLookupResults({
-          elements: pageElement.elements,
-          submission: currentFormSubmission.submission,
-          lastElementUpdated: currentFormSubmission.lastElementUpdated,
-          executedLookups: currentFormSubmission.executedLookups,
-        })
-
-        const definition = {
-          ...currentFormSubmission.definition,
-        }
         if (pageElement.id === formId.toString()) {
-          definition.elements = elements
-        } else {
-          definition.elements = currentFormSubmission.definition.elements.map(
-            (formElement) => {
-              if (
-                formElement.id === pageElement.id &&
-                formElement.type === 'page'
-              ) {
-                return {
-                  ...formElement,
-                  elements,
-                }
-              } else {
-                return formElement
-              }
+          const { submission, elements, executedLookups } = mergeLookupResults({
+            elements: currentFormSubmission.definition.elements,
+            submission: currentFormSubmission.submission,
+            lastElementUpdated: currentFormSubmission.lastElementUpdated,
+            executedLookups: currentFormSubmission.executedLookups,
+          })
+
+          return {
+            submission,
+            definition: {
+              ...currentFormSubmission.definition,
+              elements: elements,
             },
-          )
+            lastElementUpdated: currentFormSubmission.lastElementUpdated,
+            executedLookups,
+          }
         }
 
-        return {
-          submission,
-          definition,
-          lastElementUpdated: currentFormSubmission.lastElementUpdated,
-          executedLookups,
-        }
+        return currentFormSubmission.definition.elements.reduce<
+          typeof currentFormSubmission
+        >(
+          (memo: typeof currentFormSubmission, formElement) => {
+            if (
+              formElement.id === pageElement.id &&
+              formElement.type === 'page'
+            ) {
+              const { submission, executedLookups, elements } =
+                mergeLookupResults({
+                  elements: formElement.elements,
+                  submission: currentFormSubmission.submission,
+                  lastElementUpdated: currentFormSubmission.lastElementUpdated,
+                  executedLookups: currentFormSubmission.executedLookups,
+                })
+              memo.submission = submission
+              memo.executedLookups = executedLookups
+              memo.definition.elements.push({
+                ...formElement,
+                elements,
+              })
+            } else {
+              memo.definition.elements.push(formElement)
+            }
+
+            return memo
+          },
+          {
+            ...currentFormSubmission,
+            definition: {
+              ...currentFormSubmission.definition,
+              elements: [],
+            },
+          },
+        )
       })
     },
-    [formId, pageElement.elements, pageElement.id, setFormSubmission],
+    [formId, pageElement.id, setFormSubmission],
   )
 
   const form = useFormDefinition()
