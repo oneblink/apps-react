@@ -9,7 +9,6 @@ import {
   FormElementsValidation,
 } from '../types/form'
 import generateConfirmationFormElementName from '../services/generateConfirmationFormElement'
-// import { formElementsService } from '@oneblink/sdk-core'
 
 function injectDynamicElements(
   formElements: FormTypes.FormElement[],
