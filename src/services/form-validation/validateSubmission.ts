@@ -19,7 +19,7 @@ import generateFreshdeskDependentFieldElements from '../generateFreshdeskDepende
 import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
-import generateConfirmationFormElementName from '../generateConfirmationFormElement'
+import { generateConfirmationFormElementName } from '../dynamic-elements'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'

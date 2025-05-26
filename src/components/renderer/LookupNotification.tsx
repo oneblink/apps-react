@@ -22,6 +22,7 @@ import mergeExecutedLookups from '../../utils/merge-executed-lookups'
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
 import MaterialIcon from '../MaterialIcon'
+import { removeDynamicElements } from '../../services/dynamic-elements'
 
 type FetchLookupPayload = {
   element: FormTypes.LookupFormElement
@@ -122,7 +123,8 @@ function LookupNotificationComponent({
       }
 
       onLookup(({ submission, elements, executedLookups }) => {
-        let allElements: FormTypes.FormElement[] = elements
+        let allElements: FormTypes.FormElement[] =
+          removeDynamicElements(elements)
         if (
           Array.isArray(elementLookupResult) &&
           executedLookupResult !== false

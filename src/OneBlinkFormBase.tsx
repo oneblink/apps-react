@@ -295,7 +295,7 @@ function OneBlinkFormBase({
     definition.isMultiPage,
     definition.name,
   ])
-
+  console.log({ pages })
   // #endregion
   //
   //
@@ -785,6 +785,7 @@ function OneBlinkFormBase({
       })
       setIsPreparingToSubmit(false)
       resetRecaptchas()
+      console.log('Submitting form...', { definition })
       onSubmit({
         definition: {
           ...definition,
