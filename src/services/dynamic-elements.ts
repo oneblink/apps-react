@@ -3,7 +3,12 @@
 // These elements are not part of the form definition or the stored form submission.
 
 import { FormTypes } from '@oneblink/types'
-import generateConfirmationFormElementName from './generateConfirmationFormElement'
+
+export function generateConfirmationFormElementName(
+  formElement: FormTypes.EmailElement,
+) {
+  return window.btoa(formElement.name)
+}
 
 export const injectDynamicElements = (
   formElements: FormTypes.FormElement[],
