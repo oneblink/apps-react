@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `requiresConfirmation` support for email form elements
+- `displayAsCheckbox` support for Switch element
 
 ## [8.3.0] - 2025-05-22
 
