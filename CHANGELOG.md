@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- attachment not uploaded if file is not stored locally successfully
 - Animations when scrolling from the validation errors toast
 
 ### Added
