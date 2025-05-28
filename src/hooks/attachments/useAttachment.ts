@@ -63,7 +63,7 @@ export default function useAttachment(
         ...value,
         type: 'ERROR',
         errorMessage:
-          'We were able to read this file from your file system. Please try again. If the problem persists, please contact your application administrators.',
+          'We were unable to read this file from your file system. Please try again. If the problem persists, please contact your application administrators.',
       })
       return
     }
