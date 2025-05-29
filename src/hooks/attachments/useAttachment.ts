@@ -52,28 +52,32 @@ export default function useAttachment(
       !formId ||
       !value ||
       typeof value !== 'object' ||
-      value.type !== 'NEW' ||
-      !value.data
+      value.type !== 'NEW'
     ) {
       return
     }
 
-    const newAttachment = value as attachmentsService.AttachmentNew
     const data = value.data
+    if (!data) {
+      onChange(value._id, {
+        ...value,
+        type: 'ERROR',
+        errorMessage:
+          'We were unable to read this file from your file system. Please try again. If the problem persists, please contact your application administrators.',
+      })
+      return
+    }
 
     let ignore = false
     const abortController = new AbortController()
 
     const effect = async () => {
       try {
-        console.log(
-          'Attempting to upload attachment...',
-          newAttachment.fileName,
-        )
+        console.log('Attempting to upload attachment...', value.fileName)
         const upload = await onUploadAttachment(
           {
             formId,
-            fileName: newAttachment.fileName,
+            fileName: value.fileName,
             contentType: data.type,
             data,
             isPrivate,
@@ -90,19 +94,15 @@ export default function useAttachment(
         console.log('Successfully Uploaded attachment!', upload)
 
         // UPDATE ATTACHMENT
-        onChange(newAttachment._id, upload)
+        onChange(value._id, upload)
       } catch (error) {
         if (ignore) {
           return
         }
 
-        console.warn(
-          'Failed to upload attachment...',
-          newAttachment.fileName,
-          error,
-        )
-        onChange(newAttachment._id, {
-          ...newAttachment,
+        console.warn('Failed to upload attachment...', value.fileName, error)
+        onChange(value._id, {
+          ...value,
           type: 'ERROR',
           errorMessage: (error as Error).message,
         })
