@@ -12,6 +12,7 @@ export const defaultHiddenColumns = [
 
 export type FormTableState = Partial<TableState<FormStoreRecord>> & {
   defaultHiddenColumnsVersion?: string
+  formId?: number
 }
 
 const removeUnhiddenDefaultColumns = (

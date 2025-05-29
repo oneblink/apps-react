@@ -397,7 +397,10 @@ export default function useFormStoreTable({
   const [initialState] = React.useState<FormTableState | undefined>(() => {
     const text = localStorage.getItem(localStorageKey(form.id))
     if (text) {
-      return getVersionedFormTableState(JSON.parse(text))
+      return {
+        ...getVersionedFormTableState(JSON.parse(text)),
+        formId: form.id,
+      }
     }
   })
 
@@ -419,11 +422,13 @@ export default function useFormStoreTable({
   )
 
   React.useEffect(() => {
+    if ((table.state as FormTableState).formId !== form.id) {
+      // If the form id changes, do not save the state from the previous form over the that of the new form
+      return
+    }
     if (!table.state.columnResizing.isResizingColumn) {
-      localStorage.setItem(
-        localStorageKey(form.id),
-        JSON.stringify(table.state),
-      )
+      const storageKey = localStorageKey(form.id)
+      localStorage.setItem(storageKey, JSON.stringify(table.state))
     }
   }, [form.id, table.state])
 
