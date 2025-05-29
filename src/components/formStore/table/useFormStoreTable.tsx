@@ -402,6 +402,9 @@ export default function useFormStoreTable({
         formId: form.id,
       }
     }
+    return {
+      formId: form.id,
+    }
   })
 
   const table = useTable(
