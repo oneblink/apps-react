@@ -16,7 +16,6 @@ function parseAttachment(
   return parseUnknownAsRecord(value, (record) => {
     // Check for attachments that have not been uploaded yet
     if (
-      record.data instanceof Blob &&
       typeof record.type === 'string' &&
       typeof record._id === 'string' &&
       typeof record.fileName === 'string' &&
