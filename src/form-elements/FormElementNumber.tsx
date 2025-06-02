@@ -3,6 +3,7 @@ import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import _debounce from 'lodash.debounce'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes } from '@oneblink/types'
+import { localisationService } from '@oneblink/apps'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
@@ -34,10 +35,15 @@ function FormElementNumber({
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const isPageVisible = useIsPageVisible()
 
-  const text = React.useMemo(
-    () => (typeof value === 'number' ? value.toString() : ''),
-    [value],
-  )
+  const text = React.useMemo(() => {
+    if (typeof value !== 'number') {
+      return ''
+    }
+    if (element.displayAsCurrency) {
+      return localisationService.formatCurrency(value)
+    }
+    return value.toString()
+  }, [value, element.displayAsCurrency])
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = parseFloat(event.target.value)
@@ -92,7 +98,9 @@ function FormElementNumber({
                 autoComplete={autocompleteAttributes}
               />
               <span className="ob-input-icon icon is-small is-right">
-                <MaterialIcon className="is-size-5">tag</MaterialIcon>
+                <MaterialIcon className="is-size-5">
+                  {element.displayAsCurrency ? 'attach_money' : 'tag'}
+                </MaterialIcon>
               </span>
             </div>
             {!!element.readOnly && !!text && (
@@ -216,7 +224,7 @@ const SliderControl = React.memo(function SliderControl({
         step={element.sliderIncrement ? element.sliderIncrement : 1}
         min={element.minNumber}
         max={element.maxNumber}
-        value={text}
+        value={number}
         type="range"
         onChange={onChange}
         required={element.required}

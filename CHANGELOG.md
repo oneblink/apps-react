@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `requiresConfirmation` support for email form elements
 - `displayAsCheckbox` support for Switch element
+- `displayAsCurrency` support for Number element
 
 ## [8.3.0] - 2025-05-22
 

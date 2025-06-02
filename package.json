@@ -11,7 +11,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@nylas/react": "^1.3.1",
-    "@oneblink/sdk-core": "^8.3.0-beta.2",
+    "@oneblink/sdk-core": "^8.4.0-beta.2",
     "@react-google-maps/api": "2.19.2",
     "blueimp-load-image": "^5.16.0",
     "bulma": "^0.9.4",
