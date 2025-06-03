@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.4.0] - 2025-06-03
+
 ### Fixed
 
 - Issue in `useFormStoreTable` where outdated local storage values caused columns to be hidden when they shouldn't be
@@ -18,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `requiresConfirmation` support for email form elements
 - `displayAsCheckbox` support for Switch element
 - `displayAsCurrency` support for Number element
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [8.4.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [8.3.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [8.3.0] - 2025-05-22
 
