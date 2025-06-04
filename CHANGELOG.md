@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `replaceInjectablesOverrides` prop to `OneBlinkFormBase`
+
 ### Fixed
 
 - Issue in `useFormStoreTable` where outdated local storage values caused columns to be hidden when they shouldn't be
