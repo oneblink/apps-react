@@ -1,0 +1,29 @@
+[
+  {
+    "columnResizing": { "columnWidths": {} },
+    "hiddenColumns": [
+      "SUBMISSION_ID",
+      "EXTERNAL_ID",
+      "TASK",
+      "TASK_ACTION",
+      "TASK_GROUP",
+      "TASK_GROUP_INSTANCE",
+      "FORM_ELEMENT_Num"
+    ],
+    "defaultHiddenColumnsVersion": "V1"
+  },
+
+  {
+    "columnResizing": { "columnWidths": {} },
+    "hiddenColumns": [
+      "SUBMISSION_ID",
+      "EXTERNAL_ID",
+      "TASK",
+      "TASK_ACTION",
+      "TASK_GROUP",
+      "TASK_GROUP_INSTANCE",
+      "FORM_ELEMENT_Num"
+    ],
+    "defaultHiddenColumnsVersion": "V1"
+  }
+]
