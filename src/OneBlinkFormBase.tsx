@@ -239,7 +239,7 @@ function OneBlinkFormBase({
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
   const userProfileForInjectables = useUserProfileForInjectablesOutsideContext(
-    replaceInjectablesOverrides?.userProfile,
+    replaceInjectablesOverrides?.getUserProfile,
   )
   const captchasRef = React.useRef<Array<ReCAPTCHA>>([])
 
