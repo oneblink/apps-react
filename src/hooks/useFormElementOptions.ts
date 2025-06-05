@@ -9,7 +9,7 @@ import { useLoadDynamicOptionsEffect } from './useDynamicOptionsLoaderState'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import processInjectableOption from '../services/injectableOptions'
 import useTaskContext from './useTaskContext'
-import useAuth from './useAuth'
+import useUserProfileForInjectables from './useUserProfileForInjectables'
 
 export default function useFormElementOptions<T>({
   element,
@@ -29,7 +29,7 @@ export default function useFormElementOptions<T>({
   onUpdateFormElements: UpdateFormElementsHandler
 }) {
   const taskContext = useTaskContext()
-  const { userProfile } = useAuth()
+  const userProfileForInjectables = useUserProfileForInjectables()
 
   const { formSubmissionModel, elements } = useFormSubmissionModel()
   const conditionallyShownOptions = conditionallyShownOptionsElement?.options
@@ -58,7 +58,7 @@ export default function useFormElementOptions<T>({
           submission: formSubmissionModel,
           formElements: elements,
           taskContext,
-          userProfile: userProfile ?? undefined,
+          userProfile: userProfileForInjectables,
         })
         memo.push(...newOptions)
 
@@ -66,7 +66,13 @@ export default function useFormElementOptions<T>({
       },
       [],
     )
-  }, [elements, formSubmissionModel, shownOptions, taskContext, userProfile])
+  }, [
+    elements,
+    formSubmissionModel,
+    shownOptions,
+    taskContext,
+    userProfileForInjectables,
+  ])
 
   //options that are shown based on conditional logic and user input
   const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {

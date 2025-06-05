@@ -61,6 +61,7 @@ import MaterialIcon from './components/MaterialIcon'
 import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
+import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -236,7 +237,10 @@ function OneBlinkFormBase({
   replaceInjectablesOverrides,
 }: Props) {
   const isOffline = useIsOffline()
-  const { isUsingFormsKey, userProfile } = useAuth()
+  const { isUsingFormsKey } = useAuth()
+  const userProfileForInjectables = useUserProfileForInjectablesOutsideContext(
+    replaceInjectablesOverrides?.userProfile,
+  )
   const captchasRef = React.useRef<Array<ReCAPTCHA>>([])
 
   const theme = React.useMemo(
@@ -791,7 +795,7 @@ function OneBlinkFormBase({
         elements: definition.elements,
         submission: submissionData.submission,
         taskContext: taskContextValue,
-        userProfile: userProfile ?? undefined,
+        userProfile: userProfileForInjectables,
       })
       setIsPreparingToSubmit(false)
       resetRecaptchas()
@@ -818,7 +822,7 @@ function OneBlinkFormBase({
       allowNavigation,
       definition,
       taskContextValue,
-      userProfile,
+      userProfileForInjectables,
       resetRecaptchas,
       onSubmit,
       captchaSiteKey,

@@ -1,22 +1,16 @@
-import { localisationService, authService } from '@oneblink/apps'
-import { useMemo, useCallback } from 'react'
+import { localisationService } from '@oneblink/apps'
+import { useMemo } from 'react'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { useRepeatableSetIndexText } from '../form-elements/FormElementRepeatableSet'
 import useTaskContext from './useTaskContext'
-import useReplaceInjectablesOverrides from './useReplaceInjectablesOverrides'
+import useUserProfileForInjectables from './useUserProfileForInjectables'
 
 export default function useReplaceableText(text: string) {
-  const replaceInjectablesOverrides = useReplaceInjectablesOverrides()
   const textWithIndex = useRepeatableSetIndexText(text)
   const { formSubmissionModel, elements } = useFormSubmissionModel()
   const { task, taskGroup, taskGroupInstance } = useTaskContext()
 
-  const getUserProfile = useCallback(() => {
-    if (replaceInjectablesOverrides?.getUserProfile) {
-      return replaceInjectablesOverrides.getUserProfile()
-    }
-    return authService.getUserProfile()
-  }, [replaceInjectablesOverrides])
+  const userProfile = useUserProfileForInjectables()
 
   return useMemo(() => {
     return localisationService.replaceInjectablesWithElementValues(
@@ -24,7 +18,7 @@ export default function useReplaceableText(text: string) {
       {
         submission: formSubmissionModel,
         formElements: elements,
-        userProfile: getUserProfile() || undefined,
+        userProfile,
         task,
         taskGroup,
         taskGroupInstance,
@@ -33,10 +27,10 @@ export default function useReplaceableText(text: string) {
   }, [
     elements,
     formSubmissionModel,
-    getUserProfile,
     task,
     taskGroup,
     taskGroupInstance,
     textWithIndex,
+    userProfile,
   ])
 }
