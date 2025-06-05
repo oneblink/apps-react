@@ -4,11 +4,11 @@ import { createContext } from 'react'
 
 export type ReplaceInjectablesOverrides = {
   /**
-   * The user profile. If not provided, the user profile will be that of the
-   * currently logged in user. The user profile is used for any injectable
-   * `{USER:}` values.
+   * A function that returns the user profile. If not provided, the user profile
+   * will be that of the currently logged in user. The user profile is used for
+   * any injectable `{USER:}` values.
    */
-  userProfile?: MiscTypes.UserProfile
+  getUserProfile?: () => MiscTypes.UserProfile | undefined
 }
 
 export const ReplaceInjectablesOverridesContext = createContext<
