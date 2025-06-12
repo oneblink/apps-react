@@ -42,11 +42,11 @@ function DrawingOptionsList({
   sketchToolType,
   setSelectedGraphicAttributes,
 }: {
-  options: { id: string; label: string; value: string }[]
+  options: { id: string; label: string; value: string; description?: string }[]
   onClose: () => void
   sketchTool: Sketch
   sketchToolType: SketchCreateTool
-  setSelectedGraphicAttributes: (opt: { label: string; value: string }) => void
+  setSelectedGraphicAttributes: (opt: { label: string; value: string; description?: string }) => void
 }) {
   return (
     <div className="esri-widget">
@@ -71,7 +71,7 @@ function DrawingOptionsList({
       </Box>
       <Divider sx={{ backgroundColor: 'unset', margin: '0px 8px' }} />
       <Box sx={{ maxHeight: '200px', overflowY: 'auto' }}>
-        {options?.map(({ id, value, label }) => (
+        {options?.map(({ id, value, label, description }) => (
           <div
             key={id}
             className="ob-list__item is-clickable"
@@ -79,7 +79,7 @@ function DrawingOptionsList({
             onClick={() => {
               onClose()
               sketchTool?.create(sketchToolType)
-              setSelectedGraphicAttributes({ value, label })
+              setSelectedGraphicAttributes({ value, label, description })
             }}
           >
             {label}
@@ -114,6 +114,7 @@ function FormElementArcGISWebMap({
     React.useState<{
       value: string
       label: string
+      description?: string
     }>()
   // only used when an allowed drawing tool also has a list of graphic attribute options to display to the user
   const [activeSketchToolMenu, setActiveSketchToolMenu] =
@@ -166,6 +167,7 @@ function FormElementArcGISWebMap({
             sketchEvent.graphic.attributes = {
               name: selectedGraphicAttributes.value,
               label: selectedGraphicAttributes.label,
+              description: selectedGraphicAttributes.description,
             }
             setSelectedGraphicAttributes(undefined)
           }
@@ -264,6 +266,7 @@ function FormElementArcGISWebMap({
           mapViewRef.current?.openPopup({
             location: result.mapPoint,
             title: result.graphic.attributes.label,
+            content: result.graphic.attributes.description,
           })
         }
       })
