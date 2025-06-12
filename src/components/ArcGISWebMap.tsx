@@ -12,6 +12,7 @@ import Sketch from '@arcgis/core/widgets/Sketch'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
 import Layer from '@arcgis/core/layers/Layer'
+import Popup from '@arcgis/core/widgets/Popup'
 import { Point } from '@arcgis/core/geometry'
 import { v4 as uuid } from 'uuid'
 
@@ -262,7 +263,6 @@ function FormElementArcGISWebMap({
 
         if (result) {
           mapViewRef.current?.openPopup({
-            location: result.mapPoint,
             title: result.graphic.attributes.label,
           })
         }
@@ -352,6 +352,14 @@ function FormElementArcGISWebMap({
         const view = new MapView({
           map: map,
           container: ref.current || undefined,
+          popup: new Popup({
+            dockEnabled: true,
+            dockOptions: {
+              buttonEnabled: false,
+              breakpoint: false,
+              position: 'bottom-left',
+            },
+          }),
         })
 
         // remove default widgets
@@ -382,7 +390,7 @@ function FormElementArcGISWebMap({
           new Zoom({
             view,
           }),
-          'bottom-left',
+          'bottom-right',
         )
 
         const layerList = new LayerList({
