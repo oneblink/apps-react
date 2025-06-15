@@ -292,27 +292,46 @@ function FormElementArcGISWebMap({
     const view = mapViewRef.current
     const map = mapViewRef.current?.map
     if (!view || !map) return
-    // remove any overlay layers we've added previously
-    if (overlayLayerIds && map) {
+
+    const newLayerIds = value?.layers?.map((l) => l.id)
+    // remove map layers no longer in submission value
+    if (overlayLayerIds) {
       const layersToRemove = overlayLayerIds.reduce((toRemove: Layer[], id) => {
-        const layer = map.layers.find((layer) => layer.id === id)
-        if (layer) toRemove.push(layer)
+        if (!newLayerIds?.includes(id)) {
+          const layer = map.layers.find((layer) => layer.id === id)
+          if (layer) toRemove.push(layer)
+        }
         return toRemove
       }, [])
       map.layers.removeMany(layersToRemove)
     }
 
-    // add any overlay layers in the submission value to the web map
-    const newOverlayLayerIds = []
     if (value?.layers) {
+      // determine if a layer is new or existing and handle accordingly
       for (const layer of value.layers) {
-        const overlayLayer = new GraphicsLayer({ title: layer.title as string })
-        overlayLayer.addMany(layer.graphics.map((g) => Graphic.fromJSON(g)))
-        newOverlayLayerIds.push(overlayLayer.id)
-        map.layers.add(overlayLayer)
+        const existingLayer = map.layers.find(
+          (mapLayer) => mapLayer.id === layer.id,
+        )
+        if (!existingLayer) {
+          const newLayer = new GraphicsLayer({
+            title: layer.title as string,
+            id: layer.id,
+          })
+          newLayer.addMany(layer.graphics.map((g) => Graphic.fromJSON(g)))
+          map.layers.add(newLayer)
+        } else if (existingLayer && existingLayer.type === 'graphics') {
+          const existingGraphicLayer = existingLayer as GraphicsLayer
+          existingGraphicLayer.title = layer.title
+          existingGraphicLayer.graphics.removeAll()
+          existingGraphicLayer.addMany(
+            layer.graphics.map((g) => Graphic.fromJSON(g)),
+          )
+        }
       }
     }
-    setOverlayLayerIds(newOverlayLayerIds)
+
+    // finally, set the new layer ids in state
+    setOverlayLayerIds(newLayerIds)
 
     // update the web map's drawing layers
     const drawingLayer = drawingLayerRef.current
