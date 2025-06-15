@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Location of controls on ArcGIS Web Map element
+- ArcGIS Web Map element layer update handling
 
 ## [8.4.0] - 2025-06-03
 
