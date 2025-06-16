@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Location of controls on ArcGIS Web Map element
 - ArcGIS Web Map element layer update handling
 
+### Fixed
+
+- informational type form elements not being included in lookup submission payload
+
 ## [8.4.0] - 2025-06-03
 
 ### Fixed
