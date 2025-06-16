@@ -24,10 +24,7 @@ function cleanElementValue(
         case 'image':
         case 'heading':
         case 'html': {
-          if (
-            !stripBinaryData &&
-            !formElementsConditionallyShown?.[element.name]?.isHidden
-          ) {
+          if (!formElementsConditionallyShown?.[element.name]?.isHidden) {
             model[element.name] = true
           }
           break
