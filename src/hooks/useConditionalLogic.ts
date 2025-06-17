@@ -6,10 +6,15 @@ import { conditionalLogicService } from '@oneblink/sdk-core'
 import { FormElementsConditionallyShown } from '../types/form'
 import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
 
-export default function useConditionalLogic(
-  definition: FormTypes.Form,
-  submission: SubmissionTypes.S3SubmissionData['submission'],
-) {
+export default function useConditionalLogic({
+  formElements,
+  submission,
+  enableSubmission,
+}: {
+  formElements: FormTypes.FormElement[]
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  enableSubmission: FormTypes.Form['enableSubmission']
+}) {
   const [conditionalLogicError, setConditionalLogicError] = React.useState<
     Error | undefined
   >()
@@ -23,21 +28,21 @@ export default function useConditionalLogic(
   const formElementsConditionallyShown =
     React.useMemo<FormElementsConditionallyShown>(() => {
       return conditionalLogicService.generateFormElementsConditionallyShown({
-        formElements: definition.elements,
+        formElements,
         submission,
         errorCallback,
       })
-    }, [definition.elements, submission, errorCallback])
+    }, [formElements, submission, errorCallback])
 
   const submissionConditionallyEnabled = React.useMemo(() => {
-    if (!definition.enableSubmission) {
+    if (!enableSubmission) {
       return true
     }
     const { requiresAllConditionalPredicates, conditionalPredicates } =
-      definition.enableSubmission
+      enableSubmission
     const { model } = cleanFormSubmissionModel(
       submission,
-      definition.elements,
+      formElements,
       formElementsConditionallyShown,
       true,
     )
@@ -45,12 +50,12 @@ export default function useConditionalLogic(
       isConditional: true,
       requiresAllConditionalPredicates,
       conditionalPredicates,
-      formElements: definition.elements,
+      formElements,
       submission: model,
     })
   }, [
-    definition.elements,
-    definition.enableSubmission,
+    formElements,
+    enableSubmission,
     formElementsConditionallyShown,
     submission,
   ])

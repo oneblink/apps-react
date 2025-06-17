@@ -77,7 +77,6 @@ import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINS
 import ElementDOMId from '../../utils/elementDOMIds'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import FormElementPointCadastralParcel from '../../form-elements/FormElementPointCadastralParcel'
-import { generateConfirmationFormElementName } from '../../services/dynamic-elements'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -123,44 +122,15 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   model,
   parentElement,
 }: Props<T>) {
-  const updatedFormElementsConditionallyShown:
-    | FormElementsConditionallyShown
-    | undefined = React.useMemo(() => {
-    if (!formElementsConditionallyShown) {
-      return undefined
-    }
-
-    const clonedFormElementsConditionallyShown = {
-      ...formElementsConditionallyShown,
-    }
-
-    for (const element of elements) {
-      if (element.type === 'email' && element.requiresConfirmation) {
-        /*
-         * Duplicate the form element conditionally shown for the confirmation
-         * form element. We need to do this here because the confirmation element
-         * does not exist in the form definition, it is only injected into the
-         * page.
-         */
-        const confirmationFormElementName =
-          generateConfirmationFormElementName(element)
-
-        clonedFormElementsConditionallyShown[confirmationFormElementName] =
-          formElementsConditionallyShown[element.name]
-      }
-    }
-    return clonedFormElementsConditionallyShown
-  }, [formElementsConditionallyShown, elements])
-
   return (
     <FormSubmissionModelContextProvider
       elements={parentElement.elements}
       model={model}
-      formElementsConditionallyShown={updatedFormElementsConditionallyShown}
+      formElementsConditionallyShown={formElementsConditionallyShown}
     >
       {elements.map((element) => {
         if (element.type === 'section') {
-          if (updatedFormElementsConditionallyShown?.[element.id]?.isHidden) {
+          if (formElementsConditionallyShown?.[element.id]?.isHidden) {
             return null
           }
 
@@ -190,9 +160,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 element={element}
                 displayValidationMessages={displayValidationMessages}
                 idPrefix={idPrefix}
-                formElementsConditionallyShown={
-                  updatedFormElementsConditionallyShown
-                }
+                formElementsConditionallyShown={formElementsConditionallyShown}
                 formElementsValidation={formElementsValidation}
                 onChange={onChange}
                 onLookup={onLookup}
@@ -207,7 +175,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
 
         if (
           element.type === 'page' ||
-          updatedFormElementsConditionallyShown?.[element.name]?.isHidden
+          formElementsConditionallyShown?.[element.name]?.isHidden
         ) {
           return null
         }
@@ -222,7 +190,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             isEven={isEven}
             id={`${idPrefix}${element.name}`}
             formElementConditionallyShown={
-              updatedFormElementsConditionallyShown?.[element.name]
+              formElementsConditionallyShown?.[element.name]
             }
             formElementValidation={formElementsValidation?.[element.name]}
             onChange={onChange}
