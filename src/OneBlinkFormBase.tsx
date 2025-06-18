@@ -52,6 +52,7 @@ import {
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
 import checkIfAttachmentsExist from './services/checkIfAttachmentsExist'
+import { injectDynamicElements } from './services/dynamic-elements'
 import useAuth from './hooks/useAuth'
 import { formElementsService } from '@oneblink/sdk-core'
 import { TaskContext } from './hooks/useTaskContext'
@@ -310,6 +311,12 @@ function OneBlinkFormBase({
     definition.name,
   ])
 
+  const pagesWithDynamicElements = React.useMemo<
+    FormTypes.PageElement[]
+  >(() => {
+    return injectDynamicElements(pages) as FormTypes.PageElement[]
+  }, [pages])
+
   // #endregion
   //
   //
@@ -425,7 +432,11 @@ function OneBlinkFormBase({
     formElementsConditionallyShown,
     conditionalLogicError,
     submissionConditionallyEnabled,
-  } = useConditionalLogic(definition, submission)
+  } = useConditionalLogic({
+    formElements: pagesWithDynamicElements,
+    submission,
+    enableSubmission: definition.enableSubmission,
+  })
 
   // #endregion
   //
