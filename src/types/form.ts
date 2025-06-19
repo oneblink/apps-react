@@ -65,12 +65,14 @@ export type FormElementLookupHandler = (
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
+    collapsedSectionIds: string[] | undefined
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     executedLookups: ExecutedLookups
   },
 ) => void
+
 export type UpdateFormElementsHandler = (
   setter: (element: FormTypes.FormElement[]) => FormTypes.FormElement[],
 ) => void
@@ -81,6 +83,7 @@ export type SetFormSubmission = React.Dispatch<
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
+    collapsedSectionIds: string[]
   }>
 >
 

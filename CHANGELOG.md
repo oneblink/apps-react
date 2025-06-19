@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Section collapsed/expanded state across persists across autosave/drafts
+
 ### Fixed
 
 - conditional display of email confirmation element

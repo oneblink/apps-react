@@ -21,6 +21,7 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
+  collapsedSectionIds: string[]
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
 }
@@ -33,6 +34,7 @@ function PageFormElements({
   displayValidationMessages,
   formElementsConditionallyShown,
   formElementsValidation,
+  collapsedSectionIds,
   onChange,
   setFormSubmission,
 }: Props) {
@@ -45,6 +47,7 @@ function PageFormElements({
             submission: currentFormSubmission.submission,
             lastElementUpdated: currentFormSubmission.lastElementUpdated,
             executedLookups: currentFormSubmission.executedLookups,
+            collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
           })
 
           return {
@@ -55,6 +58,7 @@ function PageFormElements({
             },
             lastElementUpdated: currentFormSubmission.lastElementUpdated,
             executedLookups,
+            collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
           }
         }
 
@@ -72,6 +76,7 @@ function PageFormElements({
                   submission: currentFormSubmission.submission,
                   lastElementUpdated: currentFormSubmission.lastElementUpdated,
                   executedLookups: currentFormSubmission.executedLookups,
+                  collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
                 })
               memo.submission = submission
               memo.executedLookups = executedLookups
@@ -162,6 +167,7 @@ function PageFormElements({
             onLookup={handleLookup}
             onUpdateFormElements={handleUpdateFormElements}
             idPrefix=""
+            collapsedSectionIds={collapsedSectionIds}
           />
         </div>
       </div>

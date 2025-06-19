@@ -50,6 +50,7 @@ export default function useFormSubmissionState(
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
+    collapsedSectionIds: string[]
   }>(() => {
     const definition = _cloneDeep(form)
     const defaultData = generateDefaultData(
@@ -61,6 +62,7 @@ export default function useFormSubmissionState(
       submission: defaultData,
       lastElementUpdated,
       executedLookups: {},
+      collapsedSectionIds: [],
     }
   })
 }

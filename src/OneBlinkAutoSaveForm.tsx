@@ -48,6 +48,7 @@ function OneBlinkAutoSaveForm({
     handleNavigateAway,
     lastElementUpdated,
     executedLookups,
+    collapsedSectionIds,
   } = useFormSubmissionAutoSaveState({
     form,
     initialSubmission,
@@ -120,6 +121,7 @@ function OneBlinkAutoSaveForm({
       handleNavigateAway={handleNavigateAway}
       lastElementUpdated={lastElementUpdated}
       executedLookups={executedLookups}
+      collapsedSectionIds={collapsedSectionIds}
     />
   )
 }

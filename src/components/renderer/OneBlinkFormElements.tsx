@@ -92,6 +92,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
+  collapsedSectionIds?: string[]
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -121,6 +122,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   onUpdateFormElements,
   model,
   parentElement,
+  collapsedSectionIds,
 }: Props<T>) {
   return (
     <FormSubmissionModelContextProvider
@@ -168,6 +170,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 model={model}
                 parentElement={parentElement}
                 sectionHeaderId={sectionHeaderId}
+                collapsedSectionIds={collapsedSectionIds}
               />
             </div>
           )

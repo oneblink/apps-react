@@ -26,12 +26,24 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   displayValidationMessages,
   onUpdateFormElements,
   sectionHeaderId,
+  collapsedSectionIds = [],
   ...props
 }: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
   sectionHeaderId: string
+  collapsedSectionIds?: string[]
 }) {
-  const [isCollapsed, , , toggle] = useBooleanState(element.isCollapsed)
+  const isCollapsedFromState = collapsedSectionIds.includes(element.id)
+  const [isCollapsed, , , toggle] = useBooleanState(isCollapsedFromState)
+
+  const handleToggle = React.useCallback(() => {
+    // trigger onChange to update the collapsedSectionIds
+    props.onChange(element, {
+      executedLookups: undefined,
+    })
+    toggle()
+  }, [element, props, toggle])
+
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
   const headerRef = React.useRef<HTMLDivElement>(null)
   const id = `${props['idPrefix']}${element.id}`
@@ -70,6 +82,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
                 submission: currentFormSubmission.submission,
                 lastElementUpdated: currentFormSubmission.lastElementUpdated,
                 executedLookups: currentFormSubmission.executedLookups,
+                collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
               })
             model = submission
             newExecutedLookups = executedLookups
@@ -86,6 +99,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           submission: model,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
           executedLookups: newExecutedLookups,
+          collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
         }
       })
     },
@@ -114,13 +128,13 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     )
 
   const handleClickBottomCollapseButton = React.useCallback(() => {
-    toggle()
+    handleToggle()
     headerRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
       inline: 'nearest',
     })
-  }, [toggle])
+  }, [handleToggle])
 
   return (
     <div className={clsx('ob-section', validationClassName)}>
@@ -128,11 +142,11 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         className={clsx('ob-section__header cypress-section-header', {
           'ob-section__header-filled': element.canCollapseFromBottom,
         })}
-        onClick={toggle}
+        onClick={handleToggle}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            toggle()
+            handleToggle()
           }
         }}
         ref={headerRef}
