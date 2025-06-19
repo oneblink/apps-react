@@ -103,6 +103,7 @@ function FormElementForm({
                 submission: model,
                 lastElementUpdated: currentFormSubmission.lastElementUpdated,
                 executedLookups: newExecutedLookups,
+                collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
               })
             model = submission
             newExecutedLookups = executedLookups as ExecutedLookups
@@ -127,6 +128,7 @@ function FormElementForm({
             ...currentFormSubmission.executedLookups,
             [element.name]: newExecutedLookups,
           },
+          collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
         }
       })
     },

@@ -41,21 +41,34 @@ export default function useFormSubmissionAutoSaveState({
   ) => unknown
 }) {
   const [
-    { definition, submission, lastElementUpdated, executedLookups },
+    {
+      definition,
+      submission,
+      lastElementUpdated,
+      executedLookups,
+      collapsedSectionIds,
+    },
     setFormSubmission,
   ] = useFormSubmissionState(form, initialSubmission, resumeAtElement)
 
   const [
-    { isLoadingAutoSaveSubmission, autoSaveSubmission, autoSaveElement },
+    {
+      isLoadingAutoSaveSubmission,
+      autoSaveSubmission,
+      autoSaveElement,
+      autoSaveCollapsedSectionIds,
+    },
     setAutoSaveState,
   ] = React.useState<{
     isLoadingAutoSaveSubmission: boolean
     autoSaveSubmission: SubmissionTypes.S3SubmissionData['submission'] | null
     autoSaveElement: FormElement | null
+    autoSaveCollapsedSectionIds: string[] | null
   }>({
     isLoadingAutoSaveSubmission: true,
     autoSaveSubmission: null,
     autoSaveElement: null,
+    autoSaveCollapsedSectionIds: null,
   })
 
   const throttledAutoSave = React.useMemo(() => {
@@ -63,6 +76,7 @@ export default function useFormSubmissionAutoSaveState({
       (
         model: SubmissionTypes.S3SubmissionData['submission'],
         lastElementUpdated?: FormElement,
+        collapsedSectionIds?: string[],
       ) => {
         if (!formIsDisabled) {
           switch (lastElementUpdated?.type) {
@@ -82,6 +96,15 @@ export default function useFormSubmissionAutoSaveState({
                   `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
                   lastElementUpdated,
                 )
+              }
+            })
+            .then(() => {
+              if (collapsedSectionIds) {
+                return autoSaveService.upsertAutoSaveData<{
+                  collapsedSectionIds: string[]
+                }>(definition.id, `COLLAPSED_SECTION_IDS_${autoSaveKey}`, {
+                  collapsedSectionIds,
+                })
               }
             })
             .catch((error) => {
@@ -168,11 +191,17 @@ export default function useFormSubmissionAutoSaveState({
             definition.id,
             `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
           )
+        const autoSaveCollapsedSectionIdsData =
+          await autoSaveService.getAutoSaveData<{
+            collapsedSectionIds: string[]
+          }>(definition.id, `COLLAPSED_SECTION_IDS_${autoSaveKey}`)
         if (!ignore) {
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
             autoSaveSubmission,
             autoSaveElement,
+            autoSaveCollapsedSectionIds:
+              autoSaveCollapsedSectionIdsData?.collapsedSectionIds || null,
           })
         }
       } catch (error) {
@@ -183,6 +212,7 @@ export default function useFormSubmissionAutoSaveState({
             isLoadingAutoSaveSubmission: false,
             autoSaveSubmission: null,
             autoSaveElement: null,
+            autoSaveCollapsedSectionIds: null,
           })
         }
       }
@@ -211,6 +241,7 @@ export default function useFormSubmissionAutoSaveState({
         throttledAutoSave(
           newFormSubmission.submission,
           newFormSubmission.lastElementUpdated,
+          newFormSubmission.collapsedSectionIds,
         )
 
         return newFormSubmission
@@ -225,6 +256,7 @@ export default function useFormSubmissionAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
       autoSaveElement: null,
+      autoSaveCollapsedSectionIds: null,
     })
   }, [deleteAutoSaveSubmission])
 
@@ -234,14 +266,21 @@ export default function useFormSubmissionAutoSaveState({
         ...currentFormSubmission,
         submission: autoSaveSubmission,
         lastElementUpdated: autoSaveElement ? autoSaveElement : undefined,
+        collapsedSectionIds: autoSaveCollapsedSectionIds || [],
       }))
     }
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
       autoSaveElement: null,
+      autoSaveCollapsedSectionIds: null,
     })
-  }, [autoSaveSubmission, setFormSubmission, autoSaveElement])
+  }, [
+    autoSaveSubmission,
+    setFormSubmission,
+    autoSaveElement,
+    autoSaveCollapsedSectionIds,
+  ])
 
   React.useEffect(() => {
     if (form.continueWithAutosave) {
@@ -254,6 +293,7 @@ export default function useFormSubmissionAutoSaveState({
     submission,
     lastElementUpdated,
     executedLookups,
+    collapsedSectionIds,
     isLoadingAutoSaveSubmission,
     isAutoSaveSubmissionAvailable:
       autoSaveSubmission !== null && !form.continueWithAutosave,

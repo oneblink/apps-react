@@ -200,6 +200,7 @@ export type OneBlinkFormControlledProps = {
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
   executedLookups: ExecutedLookups
+  collapsedSectionIds: string[]
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -236,6 +237,7 @@ function OneBlinkFormBase({
   shouldUseNavigableValidationErrorsNotification = true,
   navigableValidationErrorsNotificationSettings,
   replaceInjectablesOverrides,
+  collapsedSectionIds,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -928,8 +930,7 @@ function OneBlinkFormBase({
         (disabled &&
           element.type !== 'summary' &&
           element.type !== 'calculation') ||
-        element.type === 'page' ||
-        element.type === 'section'
+        element.type === 'page'
       ) {
         return
       }
@@ -938,8 +939,20 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
+      if (element.type === 'section') {
+        setFormSubmission((currentFormSubmission) => {
+          const collapsedSectionIds = currentFormSubmission.collapsedSectionIds
+          const isCurrentlyCollapsed = collapsedSectionIds.includes(element.id)
+          return {
+            ...currentFormSubmission,
+            collapsedSectionIds: isCurrentlyCollapsed
+              ? collapsedSectionIds.filter((id) => id !== element.id)
+              : [...collapsedSectionIds, element.id],
+          }
+        })
+      }
       // dont update the last element updated for elements the user cannot set the value of
-      if (element.type === 'summary' || element.type === 'calculation') {
+      else if (element.type === 'summary' || element.type === 'calculation') {
         setFormSubmission((currentFormSubmission) => ({
           ...currentFormSubmission,
           submission: {
@@ -1239,6 +1252,9 @@ function OneBlinkFormBase({
                                                   model={submission}
                                                   setFormSubmission={
                                                     setFormSubmission
+                                                  }
+                                                  collapsedSectionIds={
+                                                    collapsedSectionIds
                                                   }
                                                 />
                                               ),
