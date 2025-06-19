@@ -21,7 +21,7 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
-  collapsedSectionIds: string[]
+  collapsedSectionIds?: string[]
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
 }
