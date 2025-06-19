@@ -200,7 +200,7 @@ export type OneBlinkFormControlledProps = {
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
   executedLookups: ExecutedLookups
-  collapsedSectionIds: string[]
+  collapsedSectionIds?: string[]
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -941,7 +941,8 @@ function OneBlinkFormBase({
       }))
       if (element.type === 'section') {
         setFormSubmission((currentFormSubmission) => {
-          const collapsedSectionIds = currentFormSubmission.collapsedSectionIds
+          const collapsedSectionIds =
+            currentFormSubmission.collapsedSectionIds || []
           const isCurrentlyCollapsed = collapsedSectionIds.includes(element.id)
           return {
             ...currentFormSubmission,
