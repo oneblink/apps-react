@@ -33,7 +33,8 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   sectionHeaderId: string
   collapsedSectionIds?: string[]
 }) {
-  const isCollapsedFromState = collapsedSectionIds.includes(element.id)
+  const isCollapsedFromState =
+    collapsedSectionIds.includes(element.id) || element.isCollapsed
   const [isCollapsed, , , toggle] = useBooleanState(isCollapsedFromState)
 
   const handleToggle = React.useCallback(() => {
