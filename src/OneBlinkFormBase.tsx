@@ -970,8 +970,6 @@ function OneBlinkFormBase({
             ]
           }
 
-          console.log('currentFormSubmission.sectionState', newSectionState)
-
           return {
             ...currentFormSubmission,
             sectionState: newSectionState,

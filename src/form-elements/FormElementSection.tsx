@@ -21,7 +21,7 @@ import {
 import useValidationClass from '../hooks/useValidationClass'
 import MaterialIcon from '../components/MaterialIcon'
 
-function collapsedStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
+function sectionStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
   if (state === 'COLLAPSED') {
     return true
   }
@@ -45,7 +45,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     (section) => section.id === element.id,
   )
   const isCollapsedFromState = sectionStateEntry?.state
-    ? collapsedStateToBoolean(sectionStateEntry.state)
+    ? sectionStateToBoolean(sectionStateEntry.state)
     : element.isCollapsed
 
   const [isCollapsed, , , toggle] = useBooleanState(isCollapsedFromState)
