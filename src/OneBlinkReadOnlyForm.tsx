@@ -77,7 +77,7 @@ function OneBlinkReadOnlyForm({
       setFormSubmission={setFormSubmission}
       isPendingQueueEnabled={false}
       executedLookups={executedLookups}
-      collapsedSectionIds={[]}
+      sectionState={[]}
       {...rest}
     />
   )

@@ -10,6 +10,7 @@ import {
   NestedFormElementValueChangeHandler,
   SetFormSubmission,
   UpdateFormElementsHandler,
+  SectionState,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 
@@ -21,7 +22,7 @@ export type Props = {
   model: SubmissionTypes.S3SubmissionData['submission']
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
-  collapsedSectionIds?: string[]
+  sectionState?: SectionState
   onChange: NestedFormElementValueChangeHandler
   setFormSubmission: SetFormSubmission
 }
@@ -34,7 +35,7 @@ function PageFormElements({
   displayValidationMessages,
   formElementsConditionallyShown,
   formElementsValidation,
-  collapsedSectionIds,
+  sectionState,
   onChange,
   setFormSubmission,
 }: Props) {
@@ -47,7 +48,7 @@ function PageFormElements({
             submission: currentFormSubmission.submission,
             lastElementUpdated: currentFormSubmission.lastElementUpdated,
             executedLookups: currentFormSubmission.executedLookups,
-            collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+            sectionState: currentFormSubmission.sectionState,
           })
 
           return {
@@ -58,7 +59,7 @@ function PageFormElements({
             },
             lastElementUpdated: currentFormSubmission.lastElementUpdated,
             executedLookups,
-            collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+            sectionState: currentFormSubmission.sectionState,
           }
         }
 
@@ -76,7 +77,7 @@ function PageFormElements({
                   submission: currentFormSubmission.submission,
                   lastElementUpdated: currentFormSubmission.lastElementUpdated,
                   executedLookups: currentFormSubmission.executedLookups,
-                  collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+                  sectionState: currentFormSubmission.sectionState,
                 })
               memo.submission = submission
               memo.executedLookups = executedLookups
@@ -167,7 +168,7 @@ function PageFormElements({
             onLookup={handleLookup}
             onUpdateFormElements={handleUpdateFormElements}
             idPrefix=""
-            collapsedSectionIds={collapsedSectionIds}
+            sectionState={sectionState}
           />
         </div>
       </div>

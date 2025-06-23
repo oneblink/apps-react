@@ -572,7 +572,13 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
     resumeAtElement?: FormTypes.FormElement
   }) {
   const [
-    { definition, submission, lastElementUpdated, executedLookups, collapsedSectionIds },
+    {
+      definition,
+      submission,
+      lastElementUpdated,
+      executedLookups,
+      sectionState,
+    },
     setFormSubmission,
   ] = useFormSubmissionState(form, initialSubmission, resumeAtElement)
   return (
@@ -584,7 +590,7 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
       setFormSubmission={setFormSubmission}
       lastElementUpdated={lastElementUpdated}
       executedLookups={executedLookups}
-      collapsedSectionIds={collapsedSectionIds}
+      sectionState={sectionState}
     />
   )
 })

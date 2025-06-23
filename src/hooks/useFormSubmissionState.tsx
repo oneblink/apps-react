@@ -2,7 +2,7 @@ import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import generateDefaultData from '../services/generate-default-data'
-import { ExecutedLookups } from '../types/form'
+import { ExecutedLookups, SectionState } from '../types/form'
 /**
  * This function is a simple wrapper around the react hook `useState()`. The
  * results can be passed to the [`<OneBlinkForm
@@ -50,7 +50,7 @@ export default function useFormSubmissionState(
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
-    collapsedSectionIds: string[] | undefined
+    sectionState: SectionState | undefined
   }>(() => {
     const definition = _cloneDeep(form)
     const defaultData = generateDefaultData(
@@ -62,7 +62,7 @@ export default function useFormSubmissionState(
       submission: defaultData,
       lastElementUpdated,
       executedLookups: {},
-      collapsedSectionIds: [],
+      sectionState: [],
     }
   })
 }

@@ -59,13 +59,15 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
   }>
 
+export type SectionState = { id: string; state: 'COLLAPSED' | 'EXPANDED' }[]
+
 export type FormElementLookupHandler = (
   setter: (data: {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
-    collapsedSectionIds: string[] | undefined
+    sectionState: SectionState | undefined
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
@@ -83,7 +85,7 @@ export type SetFormSubmission = React.Dispatch<
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
-    collapsedSectionIds: string[] | undefined
+    sectionState: SectionState | undefined
   }>
 >
 

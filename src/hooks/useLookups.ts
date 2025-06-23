@@ -83,7 +83,7 @@ export default function useLookups(
             ...currentFormSubmission.executedLookups,
             [element.name]: true,
           },
-          collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+          sectionState: currentFormSubmission.sectionState,
         }
       })
     },

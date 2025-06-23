@@ -12,6 +12,7 @@ import {
   FormElementLookupHandler,
   UpdateFormElementsHandler,
   ExecutedLookups,
+  SectionState,
 } from '../types/form'
 import {
   HintBelowLabel,
@@ -20,25 +21,37 @@ import {
 import useValidationClass from '../hooks/useValidationClass'
 import MaterialIcon from '../components/MaterialIcon'
 
+function collapsedStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
+  if (state === 'COLLAPSED') {
+    return true
+  }
+  return false
+}
+
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   onLookup,
   displayValidationMessages,
   onUpdateFormElements,
   sectionHeaderId,
-  collapsedSectionIds = [],
+  sectionState = [],
   ...props
 }: Omit<Props<T>, 'elements'> & {
   element: FormTypes.SectionElement
   sectionHeaderId: string
-  collapsedSectionIds?: string[]
+  sectionState?: SectionState
 }) {
-  const isCollapsedFromState =
-    collapsedSectionIds.includes(element.id) || element.isCollapsed
+  const sectionStateEntry = sectionState.find(
+    (section) => section.id === element.id,
+  )
+  const isCollapsedFromState = sectionStateEntry?.state
+    ? collapsedStateToBoolean(sectionStateEntry.state)
+    : element.isCollapsed
+
   const [isCollapsed, , , toggle] = useBooleanState(isCollapsedFromState)
 
   const handleToggle = React.useCallback(() => {
-    // trigger onChange to update the collapsedSectionIds
+    // trigger onChange to update the sectionState
     props.onChange(element, {
       executedLookups: undefined,
     })
@@ -83,7 +96,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
                 submission: currentFormSubmission.submission,
                 lastElementUpdated: currentFormSubmission.lastElementUpdated,
                 executedLookups: currentFormSubmission.executedLookups,
-                collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+                sectionState: currentFormSubmission.sectionState,
               })
             model = submission
             newExecutedLookups = executedLookups
@@ -100,7 +113,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           submission: model,
           lastElementUpdated: currentFormSubmission.lastElementUpdated,
           executedLookups: newExecutedLookups,
-          collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+          sectionState: currentFormSubmission.sectionState,
         }
       })
     },
