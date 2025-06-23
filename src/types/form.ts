@@ -1,4 +1,5 @@
 import { FormTypes, SubmissionTypes, IntegrationTypes } from '@oneblink/types'
+import { NewS3SubmissionData } from '@oneblink/types/typescript/submissions'
 
 export {
   FormElementConditionallyShownElement,
@@ -59,7 +60,7 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
   }>
 
-export type SectionState = { id: string; state: 'COLLAPSED' | 'EXPANDED' }[]
+export type SectionState = NewS3SubmissionData['sectionState']
 
 export type FormElementLookupHandler = (
   setter: (data: {
