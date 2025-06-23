@@ -866,6 +866,7 @@ function OneBlinkFormBase({
           submission,
           backgroundUpload: continueWhilstAttachmentsAreUploading,
           lastElementUpdated,
+          sectionState,
         })
       }
     },
@@ -878,6 +879,7 @@ function OneBlinkFormBase({
       onSaveDraft,
       checkBsbAreValidating,
       lastElementUpdated,
+      sectionState,
     ],
   )
 
