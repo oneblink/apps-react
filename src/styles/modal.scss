@@ -17,7 +17,9 @@
 
 .modal-background-faded {
   @extend .modal-background;
-  opacity: 0.2;
+  opacity: 0.5;
+  // we want this to be black black not what bulma might consider to be black
+  background-color: #000000;
 }
 
 .modal-card {
