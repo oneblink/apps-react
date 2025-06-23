@@ -445,7 +445,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                   submission: entries[index],
                   lastElementUpdated: currentFormSubmission.lastElementUpdated,
                   executedLookups: repeatableSetExecutedLookups[index] ?? {},
-                  collapsedSectionIds: currentFormSubmission.collapsedSectionIds,
+                  sectionState: currentFormSubmission.sectionState,
                 })
               newEntry = submission
               newExecutedLookups = executedLookups as ExecutedLookups

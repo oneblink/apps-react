@@ -1,4 +1,5 @@
 import { FormTypes, SubmissionTypes, IntegrationTypes } from '@oneblink/types'
+import { NewS3SubmissionData } from '@oneblink/types/typescript/submissions'
 
 export {
   FormElementConditionallyShownElement,
@@ -59,13 +60,15 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
   }>
 
+export type SectionState = NewS3SubmissionData['sectionState']
+
 export type FormElementLookupHandler = (
   setter: (data: {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
-    collapsedSectionIds: string[] | undefined
+    sectionState: SectionState | undefined
   }) => {
     submission: SubmissionTypes.S3SubmissionData['submission']
     elements: FormTypes.FormElement[]
@@ -83,7 +86,7 @@ export type SetFormSubmission = React.Dispatch<
     submission: SubmissionTypes.S3SubmissionData['submission']
     lastElementUpdated: FormTypes.FormElement | undefined
     executedLookups: ExecutedLookups
-    collapsedSectionIds: string[] | undefined
+    sectionState: SectionState | undefined
   }>
 >
 

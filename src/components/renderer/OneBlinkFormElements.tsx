@@ -71,6 +71,7 @@ import {
   NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
+  SectionState,
 } from '../../types/form'
 import { attachmentsService } from '@oneblink/apps'
 import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINSWLiquorLicence'
@@ -92,7 +93,7 @@ export type Props<T extends FormTypes._NestedElementsElement> = {
   idPrefix: string
   model: SubmissionTypes.S3SubmissionData['submission']
   parentElement: T
-  collapsedSectionIds?: string[]
+  sectionState?: SectionState
 }
 
 interface FormElementSwitchProps extends IsDirtyProps {
@@ -122,7 +123,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   onUpdateFormElements,
   model,
   parentElement,
-  collapsedSectionIds,
+  sectionState,
 }: Props<T>) {
   return (
     <FormSubmissionModelContextProvider
@@ -170,7 +171,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 model={model}
                 parentElement={parentElement}
                 sectionHeaderId={sectionHeaderId}
-                collapsedSectionIds={collapsedSectionIds}
+                sectionState={sectionState}
               />
             </div>
           )

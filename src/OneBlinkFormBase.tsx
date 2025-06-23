@@ -48,6 +48,7 @@ import {
   FormElementsValidation,
   NestedFormElementValueChangeHandler,
   SetFormSubmission,
+  SectionState,
 } from './types/form'
 import checkBsbsAreInvalid from './services/checkBsbsAreInvalid'
 import checkIfBsbsAreValidating from './services/checkIfBsbsAreValidating'
@@ -200,7 +201,7 @@ export type OneBlinkFormControlledProps = {
   setFormSubmission: SetFormSubmission
   lastElementUpdated?: FormTypes.FormElement
   executedLookups: ExecutedLookups
-  collapsedSectionIds?: string[]
+  sectionState?: SectionState
 }
 
 type Props = OneBlinkFormBaseProps &
@@ -237,7 +238,7 @@ function OneBlinkFormBase({
   shouldUseNavigableValidationErrorsNotification = true,
   navigableValidationErrorsNotificationSettings,
   replaceInjectablesOverrides,
-  collapsedSectionIds,
+  sectionState,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -941,14 +942,37 @@ function OneBlinkFormBase({
       }))
       if (element.type === 'section') {
         setFormSubmission((currentFormSubmission) => {
-          const collapsedSectionIds =
-            currentFormSubmission.collapsedSectionIds || []
-          const isCurrentlyCollapsed = collapsedSectionIds.includes(element.id)
+          const currentSectionState = currentFormSubmission.sectionState || []
+          const existingSectionIndex = currentSectionState.findIndex(
+            (section) => section.id === element.id,
+          )
+          const sectionIsInState = existingSectionIndex >= 0
+          let newSectionState: SectionState
+          if (sectionIsInState) {
+            // Update state of the section
+            newSectionState = currentSectionState.map((section, index) =>
+              index === existingSectionIndex
+                ? {
+                    ...section,
+                    state:
+                      section.state === 'COLLAPSED' ? 'EXPANDED' : 'COLLAPSED',
+                  }
+                : section,
+            )
+          } else {
+            // Add the section to state
+            newSectionState = [
+              ...currentSectionState,
+              {
+                id: element.id,
+                state: element.isCollapsed ? 'EXPANDED' : 'COLLAPSED',
+              },
+            ]
+          }
+
           return {
             ...currentFormSubmission,
-            collapsedSectionIds: isCurrentlyCollapsed
-              ? collapsedSectionIds.filter((id) => id !== element.id)
-              : [...collapsedSectionIds, element.id],
+            sectionState: newSectionState,
           }
         })
       }
@@ -1254,9 +1278,7 @@ function OneBlinkFormBase({
                                                   setFormSubmission={
                                                     setFormSubmission
                                                   }
-                                                  collapsedSectionIds={
-                                                    collapsedSectionIds
-                                                  }
+                                                  sectionState={sectionState}
                                                 />
                                               ),
                                             )}
