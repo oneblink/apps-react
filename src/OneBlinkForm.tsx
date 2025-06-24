@@ -6,6 +6,7 @@ import OneBlinkFormBase, {
   OneBlinkFormUncontrolledProps,
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
+import { SectionState } from './types/form'
 
 export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
 
@@ -565,11 +566,13 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
   form,
   initialSubmission,
   resumeAtElement,
+  resumeSectionState,
   ...props
 }: OneBlinkFormBaseProps &
   OneBlinkFormUncontrolledProps & {
     /** The element to resume the form at. */
     resumeAtElement?: FormTypes.FormElement
+    resumeSectionState?: SectionState
   }) {
   const [
     {
@@ -580,7 +583,12 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
       sectionState,
     },
     setFormSubmission,
-  ] = useFormSubmissionState(form, initialSubmission, resumeAtElement)
+  ] = useFormSubmissionState(
+    form,
+    initialSubmission,
+    resumeAtElement,
+    resumeSectionState,
+  )
   return (
     <OneBlinkFormBase
       {...props}
