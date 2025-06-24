@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - conditional display of email confirmation element
 - nested lookup validation
+- Drawing layer being shown when no drawing tools were configured on the ArcGIS Web Map element
 
 ## [8.5.0] - 2025-06-16
 
