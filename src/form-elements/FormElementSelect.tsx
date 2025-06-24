@@ -102,6 +102,7 @@ function FormElementSelect({
                     onBlur={setIsDirty}
                     aria-describedby={ariaDescribedby}
                     autoComplete={autocompleteAttributes}
+                    aria-required={element.required}
                   >
                     <option value="">Please choose</option>
                     {filteredOptions.map(({ label, value }) => (
@@ -133,6 +134,8 @@ function FormElementSelect({
                 required={element.required}
                 disabled={element.readOnly}
                 onBlur={setIsDirty}
+                aria-describedby={ariaDescribedby}
+                aria-required={element.required}
               >
                 {filteredOptions.map(({ label, value }) => (
                   <option key={value} value={value}>

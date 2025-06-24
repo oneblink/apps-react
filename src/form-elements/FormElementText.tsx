@@ -63,6 +63,7 @@ function FormElementText({
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
+              aria-required={element.required}
             />
           </div>
           {!!element.readOnly && !!value && (

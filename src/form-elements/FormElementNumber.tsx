@@ -96,6 +96,7 @@ function FormElementNumber({
                 onWheel={handleWheel}
                 aria-describedby={ariaDescribedby}
                 autoComplete={autocompleteAttributes}
+                aria-required={element.required}
               />
               <span className="ob-input-icon icon is-small is-right">
                 <MaterialIcon className="is-size-5">
@@ -126,6 +127,7 @@ function FormElementNumber({
             element={element}
             onChange={handleChange}
             onBlur={setIsDirty}
+            ariaDescribedby={ariaDescribedby}
           />
         ) : undefined}
 
@@ -150,11 +152,13 @@ const SliderControl = React.memo(function SliderControl({
   element,
   onChange,
   onBlur,
+  ariaDescribedby,
 }: {
   id: string
   text: string
   value: unknown
   element: FormTypes.NumberElement
+  ariaDescribedby: string | undefined
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => unknown
   onBlur: () => void
 }) {
@@ -228,6 +232,8 @@ const SliderControl = React.memo(function SliderControl({
         type="range"
         onChange={onChange}
         required={element.required}
+        aria-describedby={ariaDescribedby}
+        aria-required={element.required}
         disabled={element.readOnly}
         onBlur={onBlur}
       />

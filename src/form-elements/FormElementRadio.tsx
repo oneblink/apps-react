@@ -71,6 +71,7 @@ function FormElementRadio({
               className="ob-radio-container"
               aria-labelledby={`${id}-label`}
               aria-describedby={ariaDescribedby}
+              aria-required={element.required}
               onBlur={setIsDirty}
             >
               {filteredOptions.map((option) => (

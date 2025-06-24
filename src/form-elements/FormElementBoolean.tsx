@@ -57,6 +57,7 @@ function FormElementBoolean({
               edge="start"
               inputProps={{
                 'aria-describedby': ariaDescribedby,
+                'aria-required': element.required,
               }}
               onBlur={setIsDirty}
             />

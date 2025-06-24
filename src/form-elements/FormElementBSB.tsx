@@ -169,6 +169,7 @@ function FormElementBSB({
               }}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
+              aria-required={element.required}
             />
           </div>
           {bsbRecord && (

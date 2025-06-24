@@ -249,6 +249,7 @@ function FormElementABN({
               onFocus={setIsFocused}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
+              aria-required={element.required}
             />
           </div>
           {value && (

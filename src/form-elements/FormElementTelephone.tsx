@@ -64,6 +64,7 @@ function FormElementTelephone({
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
+              aria-required={element.required}
             />
             <span className="ob-input-icon icon is-small is-right">
               <MaterialIcon className="is-size-5">phone</MaterialIcon>
