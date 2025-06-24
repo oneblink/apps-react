@@ -118,18 +118,13 @@ const validationExtensions = {
     },
   ) {
     if (formElements) {
-      const executedLookupsValue =
+      const nestedExecutedLookupsValue =
         executedLookups !== undefined &&
         typeof executedLookups !== 'boolean' &&
         !Array.isArray(executedLookups)
           ? executedLookups[formElement.name]
           : {}
-      const nestedExecutedLookups =
-        executedLookupsValue !== undefined &&
-        typeof executedLookupsValue !== 'boolean' &&
-        !Array.isArray(executedLookupsValue)
-          ? executedLookupsValue[formElement.name]
-          : {}
+
       const formElementConditionallyShown =
         formElementsConditionallyShown?.[formElement.name]
       const errors = validateSubmission({
@@ -140,9 +135,9 @@ const validationExtensions = {
             ? formElementConditionallyShown.formElements
             : undefined,
         executedLookups:
-          typeof nestedExecutedLookups !== 'boolean' &&
-          !Array.isArray(nestedExecutedLookups)
-            ? nestedExecutedLookups
+          typeof nestedExecutedLookupsValue !== 'boolean' &&
+          !Array.isArray(nestedExecutedLookupsValue)
+            ? nestedExecutedLookupsValue
             : {},
         captchaType,
         isOffline,
