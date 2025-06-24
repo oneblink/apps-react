@@ -15,6 +15,8 @@ import Layer from '@arcgis/core/layers/Layer'
 import Popup from '@arcgis/core/widgets/Popup'
 import { Point } from '@arcgis/core/geometry'
 import { v4 as uuid } from 'uuid'
+import TextSymbol from '@arcgis/core/symbols/TextSymbol'
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
 
 import OnLoading from '../components/renderer/OnLoading'
 import MaterialIcon from './MaterialIcon'
@@ -47,7 +49,11 @@ function DrawingOptionsList({
   onClose: () => void
   sketchTool: Sketch
   sketchToolType: SketchCreateTool
-  setSelectedGraphicAttributes: (opt: { label: string; value: string; description?: string }) => void
+  setSelectedGraphicAttributes: (opt: {
+    label: string
+    value: string
+    description?: string
+  }) => void
 }) {
   return (
     <div className="esri-widget">
@@ -106,6 +112,7 @@ function FormElementArcGISWebMap({
   const drawingLayerRef = React.useRef<GraphicsLayer>()
   const selectedGraphicForUpdate = React.useRef<string>()
   const mapViewRef = React.useRef<MapView>()
+  const measurementLayerRef = React.useRef<GraphicsLayer>()
 
   const [overlayLayerIds, setOverlayLayerIds] = React.useState<string[]>()
   const [loadError, setLoadError] = React.useState<Error>()
@@ -155,6 +162,131 @@ function FormElementArcGISWebMap({
     }
   }, [element, onChange, value])
 
+  // Helper to add measurement labels for a graphic
+  const addMeasurementLabels = React.useCallback((graphic: __esri.Graphic) => {
+    const measurementLayer = measurementLayerRef.current
+    if (!measurementLayer) return
+    measurementLayer.removeAll()
+    const geom = graphic.geometry
+    if (!geom) return
+    const view = mapViewRef.current
+    // Only for polyline or polygon
+    const offsetPixels = 20 // pixels above the line
+    function getOffsetPoint(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      spatialReference: __esri.SpatialReference,
+    ) {
+      // Midpoint in map coordinates
+      const midX = (x1 + x2) / 2
+      const midY = (y1 + y2) / 2
+      if (view) {
+        // Convert midpoint to screen coordinates
+        const screenPt = view.toScreen(
+          new Point({ x: midX, y: midY, spatialReference }),
+        )
+        if (screenPt) {
+          // Offset upward in screen space
+          const offsetScreenPt = { x: screenPt.x, y: screenPt.y - offsetPixels }
+          // Convert back to map coordinates
+          const mapPt = view.toMap(offsetScreenPt)
+          if (mapPt) return mapPt
+        }
+      }
+      // Fallback: offset in map units (may not be visually above)
+      // Calculate the normal vector (perpendicular to the segment)
+      const dx = x2 - x1
+      const dy = y2 - y1
+      const length = Math.sqrt(dx * dx + dy * dy)
+      if (length === 0) return new Point({ x: midX, y: midY, spatialReference })
+      const nx = -dy / length
+      const ny = dx / length
+      const offsetDistance = 20 // meters (or map units)
+      return new Point({
+        x: midX + nx * offsetDistance,
+        y: midY + ny * offsetDistance,
+        spatialReference,
+      })
+    }
+    if (geom.type === 'polyline') {
+      const polyline = geom as __esri.Polyline
+      polyline.paths.forEach((path) => {
+        for (let i = 0; i < path.length - 1; i++) {
+          const [x1, y1] = path[i]
+          const [x2, y2] = path[i + 1]
+          const segment = {
+            type: 'polyline',
+            paths: [
+              [
+                [x1, y1],
+                [x2, y2],
+              ],
+            ],
+            spatialReference: polyline.spatialReference,
+          } as __esri.Polyline
+          const length = geometryEngine.geodesicLength(segment, 'meters')
+          const labelPt = getOffsetPoint(
+            x1,
+            y1,
+            x2,
+            y2,
+            polyline.spatialReference,
+          )
+          const label = new Graphic({
+            geometry: labelPt,
+            symbol: new TextSymbol({
+              text: `${Math.round(length)}m`,
+              color: 'white',
+              haloColor: 'black',
+              haloSize: '1px',
+              font: { size: 12, weight: 'bold' },
+            }),
+          })
+          measurementLayer.add(label)
+        }
+      })
+    } else if (geom.type === 'polygon') {
+      const polygon = geom as __esri.Polygon
+      polygon.rings.forEach((ring) => {
+        for (let i = 0; i < ring.length - 1; i++) {
+          const [x1, y1] = ring[i]
+          const [x2, y2] = ring[i + 1]
+          const segment = {
+            type: 'polyline',
+            paths: [
+              [
+                [x1, y1],
+                [x2, y2],
+              ],
+            ],
+            spatialReference: polygon.spatialReference,
+          } as __esri.Polyline
+          const length = geometryEngine.geodesicLength(segment, 'meters')
+          const labelPt = getOffsetPoint(
+            x1,
+            y1,
+            x2,
+            y2,
+            polygon.spatialReference,
+          )
+          const label = new Graphic({
+            geometry: labelPt,
+            symbol: new TextSymbol({
+              text: `${Math.round(length)}m`,
+              color: 'white',
+              haloColor: 'black',
+              haloSize: '1px',
+              font: { size: 12, weight: 'bold' },
+            }),
+          })
+          measurementLayer.add(label)
+        }
+      })
+    }
+  }, [])
+
   React.useEffect(() => {
     if (element.readOnly) return
     // event listeners for drawing tool creates/updates/deletes
@@ -163,6 +295,10 @@ function FormElementArcGISWebMap({
     const createListener = sketchToolRef.current?.on(
       'create',
       (sketchEvent) => {
+        // Live update while drawing
+        if (sketchEvent.state === 'active' && sketchEvent.graphic) {
+          addMeasurementLabels(sketchEvent.graphic)
+        }
         if (sketchEvent.state === 'complete') {
           if (selectedGraphicAttributes) {
             sketchEvent.graphic.attributes = {
@@ -173,9 +309,12 @@ function FormElementArcGISWebMap({
             setSelectedGraphicAttributes(undefined)
           }
           updateDrawingInputSubmissionValue()
+          addMeasurementLabels(sketchEvent.graphic)
         }
         if (sketchEvent.state === 'cancel') {
           setSelectedGraphicAttributes(undefined)
+          if (measurementLayerRef.current)
+            measurementLayerRef.current.removeAll()
         }
       },
     )
@@ -191,6 +330,7 @@ function FormElementArcGISWebMap({
           ) {
             updateDrawingInputSubmissionValue()
           }
+          addMeasurementLabels(sketchEvent.graphics[0])
           selectedGraphicForUpdate.current = undefined
         }
         if (sketchEvent.state === 'start') {
@@ -204,6 +344,7 @@ function FormElementArcGISWebMap({
     const deleteListener = sketchToolRef.current?.on('delete', () => {
       mapViewRef.current?.closePopup()
       updateDrawingInputSubmissionValue()
+      if (measurementLayerRef.current) measurementLayerRef.current.removeAll()
     })
 
     const mapViewChangeListener = mapViewRef.current?.watch(
@@ -286,6 +427,7 @@ function FormElementArcGISWebMap({
     updateMapViewSubmissionValue,
     element,
     selectedGraphicAttributes,
+    addMeasurementLabels,
   ])
 
   const onSubmissionValueChange = React.useCallback(() => {
@@ -448,6 +590,14 @@ function FormElementArcGISWebMap({
         })
         drawingLayerRef.current = drawingLayer
         map.layers.add(drawingLayer)
+
+        // Add measurement layer above drawing layer
+        const measurementLayer = new GraphicsLayer({
+          id: uuid(),
+          title: 'Measurements',
+        })
+        measurementLayerRef.current = measurementLayer
+        map.layers.add(measurementLayer)
 
         if (!element.readOnly && element.allowedDrawingTools?.length) {
           const sketch = new Sketch({
