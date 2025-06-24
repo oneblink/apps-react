@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Section collapsed/expanded state across persists across autosave/drafts
+- background color when a modal is open
 
 ### Fixed
 
