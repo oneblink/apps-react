@@ -17,6 +17,7 @@ function OneBlinkAutoSaveForm({
   onCancel,
   onSubmit,
   onSaveDraft,
+  resumeSectionState,
   ...props
 }: React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
   /** Pass a unique key for this submission e.g. the `externalId` the parameter */
@@ -60,6 +61,7 @@ function OneBlinkAutoSaveForm({
     onSubmit,
     onSaveDraft,
     formIsDisabled: disabled,
+    resumeSectionState,
   })
 
   if (isLoadingAutoSaveSubmission) {
@@ -107,7 +109,6 @@ function OneBlinkAutoSaveForm({
       </Modal>
     )
   }
-
   return (
     <OneBlinkFormBase
       {...props}

@@ -27,6 +27,7 @@ export default function useFormSubmissionAutoSaveState({
   onCancel,
   onSubmit,
   onSaveDraft,
+  resumeSectionState,
 }: {
   form: FormTypes.Form
   removeAutoSaveDataBeforeSubmit?: boolean
@@ -40,6 +41,7 @@ export default function useFormSubmissionAutoSaveState({
   onSaveDraft?: (
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
+  resumeSectionState?: SectionState
 }) {
   const [
     {
@@ -50,7 +52,12 @@ export default function useFormSubmissionAutoSaveState({
       sectionState,
     },
     setFormSubmission,
-  ] = useFormSubmissionState(form, initialSubmission, resumeAtElement)
+  ] = useFormSubmissionState(
+    form,
+    initialSubmission,
+    resumeAtElement,
+    resumeSectionState,
+  )
 
   const [
     {

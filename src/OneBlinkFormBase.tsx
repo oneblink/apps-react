@@ -1056,6 +1056,14 @@ function OneBlinkFormBase({
           })
         }
       }
+      if (sectionState) {
+        {
+          setFormSubmission((currentFormSubmission) => ({
+            ...currentFormSubmission,
+            sectionState,
+          }))
+        }
+      }
       setHasResumed(true)
     }
   }, [
@@ -1064,6 +1072,8 @@ function OneBlinkFormBase({
     lastElementUpdatedPage,
     lastElementUpdatedExistsOnForm,
     setPageId,
+    sectionState,
+    setFormSubmission,
   ])
 
   if (conditionalLogicError) {

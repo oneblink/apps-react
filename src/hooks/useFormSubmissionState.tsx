@@ -44,6 +44,7 @@ export default function useFormSubmissionState(
   form: FormTypes.Form,
   initialSubmission?: SubmissionTypes.S3SubmissionData['submission'],
   lastElementUpdated?: FormTypes.FormElement,
+  sectionState?: SectionState,
 ) {
   return React.useState<{
     definition: FormTypes.Form
@@ -62,7 +63,7 @@ export default function useFormSubmissionState(
       submission: defaultData,
       lastElementUpdated,
       executedLookups: {},
-      sectionState: [],
+      sectionState,
     }
   })
 }
