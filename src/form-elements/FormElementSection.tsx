@@ -42,7 +42,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   sectionState?: SectionState
 }) {
   const sectionStateEntry = sectionState.find(
-    (section) => section.id === element.id,
+    (section) => section.id === `${props['idPrefix']}${element.id}`,
   )
   const isCollapsedFromState = sectionStateEntry?.state
     ? sectionStateToBoolean(sectionStateEntry.state)
@@ -54,7 +54,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
     // trigger onChange to update the sectionState
     props.onChange(element, {
       executedLookups: undefined,
-    })
+    }, props['idPrefix'])
     toggle()
   }, [element, props, toggle])
 
@@ -213,6 +213,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
             onLookup={handleLookup}
             elements={element.elements}
             onUpdateFormElements={handleUpdateNestedFormElements}
+            sectionState={sectionState}
           />
         </SectionElementsWrapper>
       </Collapse>

@@ -46,6 +46,7 @@ export type ExecutedLookupValue = NonNullable<ExecutedLookups>[string]
 type ValueChangeHandler<U extends Record<string, unknown>> = (
   element: FormTypes.FormElement,
   opts: U,
+  idPrefix?: string,
 ) => void
 
 export type FormElementValueChangeHandler<T = unknown> = ValueChangeHandler<{
