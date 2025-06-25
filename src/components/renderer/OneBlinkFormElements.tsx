@@ -108,6 +108,7 @@ interface FormElementSwitchProps extends IsDirtyProps {
   onChange: NestedFormElementValueChangeHandler
   onLookup: FormElementLookupHandler
   onUpdateFormElements: UpdateFormElementsHandler
+  sectionState: SectionState
 }
 
 function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
@@ -200,6 +201,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
             onChange={onChange}
             onLookup={onLookup}
             onUpdateFormElements={onUpdateFormElements}
+            sectionState={sectionState}
           />
         )
       })}
@@ -268,6 +270,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  sectionState,
 }: FormElementSwitchProps & IsDirtyProps) {
   const dirtyProps = React.useMemo(
     () => ({ isDirty, setIsDirty }),
@@ -601,6 +604,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           displayValidationMessage={displayValidationMessage}
           onUpdateFormElements={onUpdateFormElements}
+          sectionState={sectionState}
           {...dirtyProps}
         />
       )
@@ -713,6 +717,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          sectionState={sectionState}
         />
       )
     }
@@ -873,6 +878,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          sectionState={sectionState}
         />
       )
     }
@@ -1022,6 +1028,7 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           formElementValidation={formElementValidation}
           formElementConditionallyShown={formElementConditionallyShown}
           onUpdateFormElements={onUpdateFormElements}
+          sectionState={sectionState}
         />
       )
     }

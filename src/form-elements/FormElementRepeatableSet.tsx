@@ -20,6 +20,7 @@ import {
   NestedFormElementValueChangeHandler,
   IsDirtyProps,
   UpdateFormElementsHandler,
+  SectionState,
 } from '../types/form'
 import useFormElementRepeatableSetEntries from '../hooks/useFormElementRepeatableSetEntries'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
@@ -41,6 +42,7 @@ type Props = {
   formElementValidation: FormElementValidation | undefined
   displayValidationMessage: boolean
   onUpdateFormElements: UpdateFormElementsHandler
+  sectionState: SectionState
 } & IsDirtyProps
 
 const RepeatableSetIndexContext = React.createContext<number>(0)
@@ -118,6 +120,7 @@ function FormElementRepeatableSet({
   onUpdateFormElements,
   isDirty,
   setIsDirty,
+  sectionState,
 }: Props) {
   const entries = React.useMemo(
     () => (Array.isArray(value) ? value : []),
@@ -189,7 +192,18 @@ function FormElementRepeatableSet({
         value,
         executedLookups,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
+      idPrefix?: string,
     ) => {
+      if (nestedElement.type === 'section') {
+        // trigger onChange to update sectionState
+        onChange(
+          {
+            ...nestedElement,
+            id: idPrefix ? `${idPrefix}${nestedElement.id}` : nestedElement.id,
+          },
+          { executedLookups: undefined },
+        )
+      }
       if (!('name' in nestedElement)) {
         return
       }
@@ -332,6 +346,7 @@ function FormElementRepeatableSet({
               }
               displayValidationMessages={displayValidationMessage}
               onUpdateFormElements={onUpdateFormElements}
+              sectionState={sectionState}
             />
           )
         })}
@@ -377,11 +392,13 @@ type RepeatableSetEntryProps = {
       value,
       executedLookups,
     }: Parameters<NestedFormElementValueChangeHandler>[1],
+    idPrefix?: string,
   ) => void
   onLookup: FormElementLookupHandler
   onAdd: (index: number) => unknown
   onRemove: (index: number) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
+  sectionState: SectionState
 }
 
 const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
@@ -401,16 +418,23 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     onRemove,
     onUpdateFormElements,
     showAddButton,
+    sectionState,
   }: RepeatableSetEntryProps) {
     const [isConfirmingRemove, confirmRemove, cancelRemove] =
       useBooleanState(false)
+    const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
 
     const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
-      (nestedElement, { value, executedLookups }) => {
-        onChange(index, nestedElement, {
-          value,
-          executedLookups,
-        })
+      (nestedElement, { value, executedLookups }, idPrefix) => {
+        onChange(
+          index,
+          nestedElement,
+          {
+            value,
+            executedLookups,
+          },
+          idPrefix,
+        )
       },
       [index, onChange],
     )
@@ -518,8 +542,6 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
         [element.id, onUpdateFormElements],
       )
 
-    const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
-
     return (
       <RepeatableSetEntryProvider
         index={index}
@@ -589,6 +611,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                 parentElement={element}
                 formElementsConditionallyShown={formElementsConditionallyShown}
                 onUpdateFormElements={handleUpdateNestedFormElements}
+                sectionState={sectionState}
               />
               {element.layout === 'MULTIPLE_ADD_BUTTONS' && (
                 <RemoveButton

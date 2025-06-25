@@ -7,6 +7,7 @@ import {
   FormElementLookupHandler,
   FormElementValidation,
   NestedFormElementValueChangeHandler,
+  SectionState,
   UpdateFormElementsHandler,
 } from '../types/form'
 import ElementDOMId from '../utils/elementDOMIds'
@@ -24,6 +25,7 @@ export type Props = {
   displayValidationMessages: boolean
   formElementConditionallyShown: FormElementConditionallyShown | undefined
   onUpdateFormElements: UpdateFormElementsHandler
+  sectionState: SectionState
 }
 
 function FormElementForm({
@@ -37,6 +39,7 @@ function FormElementForm({
   onChange,
   onLookup,
   onUpdateFormElements,
+  sectionState,
 }: Props) {
   const handleNestedChange = React.useCallback(
     (
@@ -45,7 +48,18 @@ function FormElementForm({
         value: nestedElementValue,
         executedLookups: nestedExecutedLookups,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
+      idPrefix?: string,
     ) => {
+      if (nestedElement.type === 'section') {
+        // trigger onChange to update sectionState
+        onChange(
+          {
+            ...nestedElement,
+            id: idPrefix ? `${idPrefix}${nestedElement.id}` : nestedElement.id,
+          },
+          { executedLookups: undefined },
+        )
+      }
       if (!('name' in nestedElement)) return
       onChange(element, {
         value: (existingValue) => ({
@@ -193,6 +207,7 @@ function FormElementForm({
       parentElement={parentElement}
       idPrefix={elementDOMId.subFormDOMIdPrefix}
       onUpdateFormElements={handleUpdateNestedFormElements}
+      sectionState={sectionState}
     />
   )
 }
