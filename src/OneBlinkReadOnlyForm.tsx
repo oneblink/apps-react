@@ -6,7 +6,7 @@ import OneBlinkFormBase, {
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
 
-function recursivelySetReadOnly(
+export function recursivelySetReadOnly(
   elements: FormTypes.FormElement[],
 ): FormTypes.FormElement[] {
   const newElements = elements
