@@ -69,8 +69,8 @@ function FormElementForm({
           [nestedElement.name]:
             typeof nestedElementValue === 'function'
               ? nestedElementValue(
-                existingValue ? existingValue[nestedElement.name] : undefined,
-              )
+                  existingValue ? existingValue[nestedElement.name] : undefined,
+                )
               : nestedElementValue,
         }),
         executedLookups: (existingExecutedLookups) => {
@@ -85,10 +85,10 @@ function FormElementForm({
             [nestedElement.name]:
               typeof nestedExecutedLookups === 'function'
                 ? nestedExecutedLookups(
-                  existingExecutedLookups?.[
-                  nestedElement.name
-                  ] as ExecutedLookups,
-                )
+                    existingExecutedLookups?.[
+                      nestedElement.name
+                    ] as ExecutedLookups,
+                  )
                 : nestedExecutedLookups,
           }
         },
@@ -175,7 +175,7 @@ function FormElementForm({
           : element.elements
         : [],
     }
-  }, [element.elements])
+  }, [element.elements, element.readOnly])
 
   const handleUpdateNestedFormElements =
     React.useCallback<UpdateFormElementsHandler>(
