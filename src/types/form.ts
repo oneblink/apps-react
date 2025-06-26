@@ -59,6 +59,7 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
     executedLookups:
       | ExecutedLookupValue
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
+    deleteSection?: boolean
   }>
 
 export type SectionState = NewS3SubmissionData['sectionState']

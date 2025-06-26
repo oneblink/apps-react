@@ -195,13 +195,12 @@ function FormElementRepeatableSet({
       })
 
       sectionsToRemove.forEach((sectionToRemove) => {
-        console.log('Removing section from state', sectionToRemove.id)
         onChange(
           {
             id: sectionToRemove.id,
             type: 'section',
           } as FormTypes.SectionElement,
-          { executedLookups: undefined, value: [{ delete: true }] },
+          { executedLookups: undefined, deleteSection: true },
         )
       })
 
@@ -223,7 +222,7 @@ function FormElementRepeatableSet({
               id: sectionId,
               type: 'section',
             } as FormTypes.SectionElement,
-            { executedLookups: undefined, value: [{ delete: true }] },
+            { executedLookups: undefined, deleteSection: true },
           )
 
           // Add the new section with updated ID
@@ -623,7 +622,9 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
         [element.id, onUpdateFormElements],
       )
 
-    const idPrefix = elementDOMId.repeatableSetEntryDOMIdPrefix(index.toString())
+    const idPrefix = elementDOMId.repeatableSetEntryDOMIdPrefix(
+      index.toString(),
+    )
 
     return (
       <RepeatableSetEntryProvider
