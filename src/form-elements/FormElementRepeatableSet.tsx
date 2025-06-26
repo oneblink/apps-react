@@ -50,12 +50,20 @@ const RepeatableSetIndexContext = React.createContext<number>(0)
 function RepeatableSetEntryProvider({
   index,
   isAnimated,
+  element,
+  idPrefix,
   onRemove,
   children,
 }: {
   isAnimated: boolean
   index: number
-  onRemove: (index: number) => void
+  element: FormTypes.RepeatableSetElement
+  idPrefix?: string
+  onRemove: (
+    index: number,
+    element: FormTypes.RepeatableSetElement,
+    idPrefix?: string,
+  ) => void
   children: (renderProps: { onRemove: () => void }) => React.ReactNode
 }) {
   const [isExpanded, setIsExpanded] = React.useState(true)
@@ -64,9 +72,9 @@ function RepeatableSetEntryProvider({
     if (isAnimated) {
       setIsExpanded(false)
     } else {
-      onRemove(index)
+      onRemove(index, element, idPrefix)
     }
-  }, [index, isAnimated, onRemove])
+  }, [index, isAnimated, onRemove, element, idPrefix])
 
   const node = (
     <RepeatableSetIndexContext.Provider value={index}>
@@ -85,7 +93,7 @@ function RepeatableSetEntryProvider({
       in={isExpanded}
       appear
       onExited={() => {
-        onRemove(index)
+        onRemove(index, element, idPrefix)
       }}
       classes={{
         root: 'ob-repeatable-set__collapsible',
@@ -162,7 +170,75 @@ function FormElementRepeatableSet({
   )
 
   const handleRemoveEntry = React.useCallback(
-    (index: number) => {
+    (
+      index: number,
+      element: FormTypes.RepeatableSetElement,
+      idPrefix?: string,
+    ) => {
+      const currentSectionState = sectionState || []
+      const entryIdPrefix = idPrefix || ''
+      const sectionsToRemove = currentSectionState.filter((section) =>
+        section.id.startsWith(entryIdPrefix),
+      )
+
+      const sectionsToUpdate = currentSectionState.filter((section) => {
+        // Match pattern: {elementName}_entry-{index}_
+        const match = section.id.match(
+          new RegExp(`${element.name}_entry-(\\d+)_`),
+        )
+
+        if (match) {
+          const entryIndex = parseInt(match[1], 10)
+          return entryIndex > index
+        }
+        return false
+      })
+
+      sectionsToRemove.forEach((sectionToRemove) => {
+        onChange(
+          {
+            id: sectionToRemove.id,
+            type: 'section',
+          } as FormTypes.SectionElement,
+          { executedLookups: undefined, deleteSection: true },
+        )
+      })
+
+      sectionsToUpdate.forEach((sectionToUpdate) => {
+        const sectionId = sectionToUpdate.id
+        // Match pattern: {elementName}_entry-{index}_{restOfId}
+        const match = sectionId.match(
+          new RegExp(`${element.name}_entry-(\\d+)_(.+)`),
+        )
+        if (match) {
+          const oldEntryIndex = parseInt(match[1], 10)
+          const restOfId = match[2]
+          const newEntryIndex = oldEntryIndex - 1
+          const newSectionId = `${element.name}_entry-${newEntryIndex}_${restOfId}`
+
+          // Remove the old section
+          onChange(
+            {
+              id: sectionId,
+              type: 'section',
+            } as FormTypes.SectionElement,
+            { executedLookups: undefined, deleteSection: true },
+          )
+
+          // Add the new section with updated ID
+          onChange(
+            {
+              id: newSectionId,
+              type: 'section',
+            } as FormTypes.SectionElement,
+            {
+              executedLookups: undefined,
+              value: [{ state: sectionToUpdate.state }],
+            },
+          )
+        }
+      })
+
       onChange(element, {
         value: (existingEntries) => {
           const newEntries = [...(existingEntries || [])]
@@ -181,7 +257,7 @@ function FormElementRepeatableSet({
       })
       setIsDirty()
     },
-    [element, onChange, setIsDirty],
+    [onChange, setIsDirty, sectionState],
   )
 
   const handleNestedChange = React.useCallback(
@@ -396,7 +472,11 @@ type RepeatableSetEntryProps = {
   ) => void
   onLookup: FormElementLookupHandler
   onAdd: (index: number) => unknown
-  onRemove: (index: number) => unknown
+  onRemove: (
+    index: number,
+    element: FormTypes.RepeatableSetElement,
+    idPrefix?: string,
+  ) => unknown
   onUpdateFormElements: UpdateFormElementsHandler
   sectionState: SectionState
 }
@@ -542,9 +622,15 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
         [element.id, onUpdateFormElements],
       )
 
+    const idPrefix = elementDOMId.repeatableSetEntryDOMIdPrefix(
+      index.toString(),
+    )
+
     return (
       <RepeatableSetEntryProvider
         index={index}
+        element={element}
+        idPrefix={idPrefix}
         onRemove={onRemove}
         isAnimated={element.layout === 'MULTIPLE_ADD_BUTTONS'}
       >
@@ -598,9 +684,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
 
               <OneBlinkFormElements
                 formId={formId}
-                idPrefix={elementDOMId.repeatableSetEntryDOMIdPrefix(
-                  index.toString(),
-                )}
+                idPrefix={idPrefix}
                 isEven={isEven}
                 formElementsValidation={formElementsValidation}
                 displayValidationMessages={displayValidationMessages}
