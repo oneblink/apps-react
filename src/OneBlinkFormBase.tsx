@@ -64,6 +64,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
+import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -123,6 +124,11 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   captchaSiteKey?: string
   /** Change properties for certain buttons on the form. */
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
+  /** Set a custom validation icon and accessible label. */
+  validationIcon?: {
+    icon: string
+    accessibleLabel?: string
+  }
   /** Number of days attachments are retained for. */
   attachmentRetentionInDays?: number
   /**
@@ -223,6 +229,7 @@ function OneBlinkFormBase({
   onSaveDraft,
   setFormSubmission,
   buttons,
+  validationIcon,
   primaryColour,
   attachmentRetentionInDays,
   isPendingQueueEnabled,
@@ -1255,55 +1262,59 @@ function OneBlinkFormBase({
                                 <AbnLookupAuthenticationGuidContext.Provider
                                   value={abnLookupAuthenticationGuid}
                                 >
-                                  <CaptchaContext.Provider
-                                    value={captchaContextValue}
+                                  <ValidationIconConfigurationContext.Provider
+                                    value={validationIcon}
                                   >
-                                    <AttachmentBlobsProvider>
-                                      <FormIsReadOnlyContext.Provider
-                                        value={isReadOnly}
-                                      >
-                                        <TaskContext.Provider
-                                          value={taskContextValue}
+                                    <CaptchaContext.Provider
+                                      value={captchaContextValue}
+                                    >
+                                      <AttachmentBlobsProvider>
+                                        <FormIsReadOnlyContext.Provider
+                                          value={isReadOnly}
                                         >
-                                          <OnUploadAttachmentContext.Provider
-                                            value={onUploadAttachment}
+                                          <TaskContext.Provider
+                                            value={taskContextValue}
                                           >
-                                            {visiblePages.map(
-                                              (
-                                                pageElement: FormTypes.PageElement,
-                                              ) => (
-                                                <PageFormElements
-                                                  key={pageElement.id}
-                                                  isActive={
-                                                    pageElement.id ===
-                                                    currentPage.id
-                                                  }
-                                                  formId={definition.id}
-                                                  formElementsConditionallyShown={
-                                                    formElementsConditionallyShown
-                                                  }
-                                                  formElementsValidation={
-                                                    formElementsValidation
-                                                  }
-                                                  displayValidationMessages={
-                                                    hasAttemptedSubmit ||
-                                                    isDisplayingCurrentPageError
-                                                  }
-                                                  pageElement={pageElement}
-                                                  onChange={handleChange}
-                                                  model={submission}
-                                                  setFormSubmission={
-                                                    setFormSubmission
-                                                  }
-                                                  sectionState={sectionState}
-                                                />
-                                              ),
-                                            )}
-                                          </OnUploadAttachmentContext.Provider>
-                                        </TaskContext.Provider>
-                                      </FormIsReadOnlyContext.Provider>
-                                    </AttachmentBlobsProvider>
-                                  </CaptchaContext.Provider>
+                                            <OnUploadAttachmentContext.Provider
+                                              value={onUploadAttachment}
+                                            >
+                                              {visiblePages.map(
+                                                (
+                                                  pageElement: FormTypes.PageElement,
+                                                ) => (
+                                                  <PageFormElements
+                                                    key={pageElement.id}
+                                                    isActive={
+                                                      pageElement.id ===
+                                                      currentPage.id
+                                                    }
+                                                    formId={definition.id}
+                                                    formElementsConditionallyShown={
+                                                      formElementsConditionallyShown
+                                                    }
+                                                    formElementsValidation={
+                                                      formElementsValidation
+                                                    }
+                                                    displayValidationMessages={
+                                                      hasAttemptedSubmit ||
+                                                      isDisplayingCurrentPageError
+                                                    }
+                                                    pageElement={pageElement}
+                                                    onChange={handleChange}
+                                                    model={submission}
+                                                    setFormSubmission={
+                                                      setFormSubmission
+                                                    }
+                                                    sectionState={sectionState}
+                                                  />
+                                                ),
+                                              )}
+                                            </OnUploadAttachmentContext.Provider>
+                                          </TaskContext.Provider>
+                                        </FormIsReadOnlyContext.Provider>
+                                      </AttachmentBlobsProvider>
+                                    </CaptchaContext.Provider>
+                                  </ValidationIconConfigurationContext.Provider>
                                 </AbnLookupAuthenticationGuidContext.Provider>
                               </GoogleMapsApiKeyContext.Provider>
                             </InjectPagesContext.Provider>
