@@ -16,6 +16,7 @@ import { FormElementValueChangeHandler } from '../types/form'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import { IsDirtyProps } from '../types/form'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   id: string
@@ -69,11 +70,9 @@ function FormElementSignature({
         </div>
 
         {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage>
+            {validationMessage}
+          </FormElementValidationMessage>
         )}
       </FormElementLabelContainer>
     </div>

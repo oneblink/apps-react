@@ -8,6 +8,7 @@ import useGoogle from '../hooks/useGoogle'
 import useIsMounted from '../hooks/useIsMounted'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
+import { ValidationIcon } from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -255,6 +256,7 @@ function FormElementGoogleAddress({
       {error && (
         <div role="alert" className="has-margin-top-8">
           <div className="has-text-danger ob-error__text cypress-google-address-details-error-message">
+            <ValidationIcon />
             {error.message}
           </div>
         </div>

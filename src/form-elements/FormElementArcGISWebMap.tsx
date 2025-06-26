@@ -7,6 +7,7 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 
 type Props = {
@@ -76,11 +77,9 @@ function FormElementArcGISWebMap({
           </Suspense>
         )}
         {isDisplayingValidationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage>
+            {validationMessage}
+          </FormElementValidationMessage>
         )}
       </FormElementLabelContainer>
     </div>

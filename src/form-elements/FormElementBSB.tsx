@@ -9,6 +9,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { formService } from '@oneblink/apps'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   id: string
@@ -200,11 +201,9 @@ function FormElementBSB({
           />
         )}
         {isDisplayingValidationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {errorMessage || validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage>
+            {errorMessage || validationMessage}
+          </FormElementValidationMessage>
         )}
       </FormElementLabelContainer>
     </div>

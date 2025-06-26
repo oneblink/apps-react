@@ -17,6 +17,7 @@ import useLoadDataState from '../hooks/useLoadDataState'
 import OnLoading from '../components/renderer/OnLoading'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   id: string
@@ -178,11 +179,9 @@ function FormElementBarcodeScanner({
         )}
 
         {isDisplayingValidationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage>
+            {validationMessage}
+          </FormElementValidationMessage>
         )}
       </FormElementLabelContainer>
     </div>

@@ -13,6 +13,7 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import useFormDatePickerProps, {
   PickerInputButton,
 } from '../hooks/form-date-picker/useFormDatePickerProps'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   id: string
@@ -112,11 +113,9 @@ function FormElementTime({
         </div>
 
         {isDisplayingValidationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage>
+            {validationMessage}
+          </FormElementValidationMessage>
         )}
       </FormElementLabelContainer>
     </div>

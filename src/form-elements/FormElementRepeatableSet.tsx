@@ -27,6 +27,7 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
 import ElementDOMId from '../utils/elementDOMIds'
 import { Collapse } from '@mui/material'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -450,11 +451,9 @@ function FormElementRepeatableSet({
         {(isDirty || displayValidationMessage) &&
           !!repeatableSetValidation &&
           !!repeatableSetValidation.set && (
-            <div role="alert" className="has-margin-top-8">
-              <div className="has-text-danger ob-error__text cypress-validation-message">
-                {repeatableSetValidation.set}
-              </div>
-            </div>
+            <FormElementValidationMessage>
+              {repeatableSetValidation.set}
+            </FormElementValidationMessage>
           )}
       </FormElementLabelContainer>
     </div>
