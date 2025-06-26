@@ -950,7 +950,13 @@ function OneBlinkFormBase({
           )
           const sectionIsInState = existingSectionIndex >= 0
           let newSectionState: SectionState
-          if (sectionIsInState) {
+          // Bit of a hack, but it works. 
+          // Delete flag is added to the value to trigger a section removal in repeatable sets
+          if (value && Array.isArray(value) && value[0]?.delete) {
+            newSectionState = currentSectionState.filter(
+              (section) => section.id !== element.id,
+            )
+          } else if (sectionIsInState) {
             // Update state of the section
             newSectionState = currentSectionState.map((section, index) =>
               index === existingSectionIndex
@@ -972,6 +978,7 @@ function OneBlinkFormBase({
             ]
           }
 
+          console.log('newSectionState', newSectionState)
           return {
             ...currentFormSubmission,
             sectionState: newSectionState,

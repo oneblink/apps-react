@@ -48,7 +48,7 @@
     "@mui/material": "^5.15.6",
     "@mui/x-date-pickers": "^6.20.2",
     "@oneblink/apps": "^23.0.0-beta.4",
-    "@oneblink/release-cli": "^3.3.1-beta.4",
+    "@oneblink/release-cli": "^3.4.0-beta.1",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
@@ -136,6 +136,6 @@
     "test": "jest",
     "types": "npm i -D github:oneblink/types",
     "typescript": "tsc --noEmit",
-    "update-dependents": "oneblink-release update-dependents"
+    "update-dependents": "oneblink-release update-dependents --force"
   }
 }
