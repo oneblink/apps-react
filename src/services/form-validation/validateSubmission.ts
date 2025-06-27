@@ -20,6 +20,7 @@ import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '@oneblink/apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { generateConfirmationFormElementName } from '../dynamic-elements'
+import { determineLookupButtonIsRequired } from './determineLookupButtonIsRequired'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -697,6 +698,23 @@ export default function validateSubmission({
             'Required',
           )
 
+          if (errorMessages.length) {
+            partialFormElementsValidation[formElement.name] = errorMessages[0]
+          }
+          break
+        }
+        case 'lookupButton': {
+          const errorMessages = validationExtensions.lookups({
+            formElement: {
+              ...formElement,
+              required: determineLookupButtonIsRequired(
+                formElement.elementDependencies,
+                elements,
+                submission ? [submission] : [],
+              ),
+            },
+            executedLookups,
+          })
           if (errorMessages.length) {
             partialFormElementsValidation[formElement.name] = errorMessages[0]
           }

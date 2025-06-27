@@ -458,6 +458,7 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       )
     }
 
+    case 'lookupButton':
     case 'html':
     case 'form':
     case 'infoPage':
