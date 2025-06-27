@@ -925,7 +925,7 @@ function OneBlinkFormBase({
   // #region Submission/Definition Changes
 
   const handleChange = React.useCallback<NestedFormElementValueChangeHandler>(
-    (element, { value, executedLookups, deleteSection }) => {
+    (element, { value, executedLookups, deleteSection, sectionState }) => {
       if (
         //This will ensure on a read only form that the summary and calculation elements
         //can still be displayed as it needs handleChange so it can render
@@ -950,7 +950,6 @@ function OneBlinkFormBase({
           )
           const sectionIsInState = existingSectionIndex >= 0
           let newSectionState: SectionState
-          
           if (sectionIsInState && deleteSection) {
             newSectionState = currentSectionState.filter(
               (section) => section.id !== element.id,
@@ -1016,6 +1015,10 @@ function OneBlinkFormBase({
                     )
                   : executedLookups,
             },
+            sectionState:
+              typeof sectionState === 'function'
+                ? sectionState(currentFormSubmission.sectionState)
+                : sectionState,
           }
         })
       }

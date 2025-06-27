@@ -53,6 +53,8 @@ export type FormElementValueChangeHandler<T = unknown> = ValueChangeHandler<{
   value?: T | ((existingValue?: T) => T | undefined)
 }>
 
+export type SectionState = NewS3SubmissionData['sectionState']
+
 export type NestedFormElementValueChangeHandler<T = unknown> =
   ValueChangeHandler<{
     value?: T | ((existingValue?: T) => T | undefined)
@@ -60,9 +62,9 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
       | ExecutedLookupValue
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
     deleteSection?: boolean
+    sectionState: SectionState | ((currentSectionState: SectionState) => SectionState)
   }>
 
-export type SectionState = NewS3SubmissionData['sectionState']
 
 export type FormElementLookupHandler = (
   setter: (data: {
