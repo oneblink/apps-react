@@ -16,6 +16,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import { useReverseGeocodeContext } from '../components/renderer/ReverseGeocode'
+import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 
 type Props = {
   id: string
@@ -69,6 +70,7 @@ function FormElementLocation({
   isDirty,
   setIsDirty,
 }: Props) {
+  const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [isLocationPickerOpen, showLocationPicker, hideLocationPicker] =
     useBooleanState(false)
 
@@ -191,6 +193,8 @@ function FormElementLocation({
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
                   id={id}
+                  aria-required={element.required}
+                  aria-describedby={ariaDescribedby}
                 >
                   Locate
                 </button>

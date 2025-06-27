@@ -211,6 +211,7 @@ function FormElementCompliance({
               role="group"
               aria-labelledby={`${id}-label`}
               aria-describedby={ariaDescribedby}
+              aria-required={element.required}
             >
               {filteredOptions.map((option) => {
                 const isSelected = typedValue?.value === option.value

@@ -372,6 +372,7 @@ function FormElementRepeatableSet({
             element={element}
             id={id}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
+            aria-required={!!(minSetEntries && minSetEntries > 0)}
           />
         )}
         {entries.map((entry, index) => {

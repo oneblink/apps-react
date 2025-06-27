@@ -325,6 +325,7 @@ function FormElementCamera({
             required={element.required}
             disabled={element.readOnly}
             onChange={fileChange}
+            aria-required={element.required}
           />
           <div className="buttons ob-buttons">
             {value ? (

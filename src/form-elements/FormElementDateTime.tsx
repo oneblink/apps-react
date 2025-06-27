@@ -68,6 +68,7 @@ function FormElementDateTime({
     placeholder: element.placeholderValue,
     className: 'cypress-date-time-control',
     disabled: element.readOnly,
+    required: element.required,
     onBlur: setIsDirty,
     onChange: (newDate) => {
       onChange(element, {

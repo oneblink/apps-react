@@ -140,6 +140,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
             setIsDirty={setIsDirty}
             aria-describedby={ariaDescribedby}
             autoComplete={autocompleteAttributes}
+            aria-required={element.required}
           />
         </FormElementOptions>
       </FormElementLabelContainer>
@@ -218,6 +219,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
           autoComplete={autocompleteAttributes}
+          aria-required={element.required}
         />
       </FormElementLabelContainer>
     </div>

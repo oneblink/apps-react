@@ -74,6 +74,7 @@ function FormElementDate({
     className: 'cypress-date-control',
     onBlur: setIsDirty,
     disabled: element.readOnly,
+    required: element.required,
     onChange: (newDate) =>
       onChange(element, {
         value: newDate ? format(newDate, 'yyyy-MM-dd') : undefined,

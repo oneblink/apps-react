@@ -79,6 +79,7 @@ export default function useFormDatePickerProps({
   className,
   onBlur,
   onChange,
+  required,
 }: {
   id: string
   value: string | undefined
@@ -88,6 +89,7 @@ export default function useFormDatePickerProps({
   placeholder: string | undefined
   disabled: boolean | undefined
   className: string
+  required: boolean
   onBlur: () => void
   onChange: (newDate: Date | undefined) => void
 }) {
@@ -148,6 +150,7 @@ export default function useFormDatePickerProps({
           id,
           placeholder: placeholder,
           'aria-describedby': ariaDescribedby,
+          'aria-required': required,
           onBlur,
           className: clsx('input ob-input', className),
           onClick: openPickerOnMobile,

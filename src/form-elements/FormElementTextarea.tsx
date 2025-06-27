@@ -70,6 +70,7 @@ function FormElementTextarea({
             onBlur={setIsDirty}
             aria-describedby={ariaDescribedby}
             autoComplete={autocompleteAttributes}
+            aria-required={element.required}
             minRows={4}
           />
         </div>

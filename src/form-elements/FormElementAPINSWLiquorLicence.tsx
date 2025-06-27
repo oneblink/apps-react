@@ -146,6 +146,7 @@ function FormElementAPINSWLiquorLicence({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
+          aria-required={element.required}
           autoComplete={autocompleteAttributes}
         />
       </FormElementLabelContainer>
