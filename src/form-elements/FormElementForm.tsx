@@ -47,6 +47,7 @@ function FormElementForm({
       {
         value: nestedElementValue,
         executedLookups: nestedExecutedLookups,
+        sectionState,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
       idPrefix?: string,
     ) => {
@@ -57,7 +58,7 @@ function FormElementForm({
             ...nestedElement,
             id: idPrefix ? `${idPrefix}${nestedElement.id}` : nestedElement.id,
           },
-          { executedLookups: undefined },
+          { executedLookups: undefined, sectionState },
         )
       }
       if (!('name' in nestedElement)) return
@@ -90,6 +91,7 @@ function FormElementForm({
                 : nestedExecutedLookups,
           }
         },
+        sectionState,
       })
     },
     [element, onChange],

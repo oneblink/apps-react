@@ -52,11 +52,16 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 
   const handleToggle = React.useCallback(() => {
     // trigger onChange to update the sectionState
-    props.onChange(element, {
-      executedLookups: undefined,
-    }, props['idPrefix'])
+    props.onChange(
+      element,
+      {
+        executedLookups: undefined,
+        sectionState,
+      },
+      props['idPrefix'],
+    )
     toggle()
-  }, [element, props, toggle])
+  }, [element, props, sectionState, toggle])
 
   const [isDisplayingError, setIsDisplayingError] = React.useState(isCollapsed)
   const headerRef = React.useRef<HTMLDivElement>(null)

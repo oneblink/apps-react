@@ -163,6 +163,7 @@ function FormElementRepeatableSet({
           newExistingExecutedLookups.push({})
           return newExistingExecutedLookups
         },
+        sectionState: (currentSectionState) => currentSectionState,
       })
       setIsDirty()
     },
@@ -175,69 +176,7 @@ function FormElementRepeatableSet({
       element: FormTypes.RepeatableSetElement,
       idPrefix?: string,
     ) => {
-      const currentSectionState = sectionState || []
       const entryIdPrefix = idPrefix || ''
-      const sectionsToRemove = currentSectionState.filter((section) =>
-        section.id.startsWith(entryIdPrefix),
-      )
-
-      const sectionsToUpdate = currentSectionState.filter((section) => {
-        // Match pattern: {elementName}_entry-{index}_
-        const match = section.id.match(
-          new RegExp(`${element.name}_entry-(\\d+)_`),
-        )
-
-        if (match) {
-          const entryIndex = parseInt(match[1], 10)
-          return entryIndex > index
-        }
-        return false
-      })
-
-      sectionsToRemove.forEach((sectionToRemove) => {
-        onChange(
-          {
-            id: sectionToRemove.id,
-            type: 'section',
-          } as FormTypes.SectionElement,
-          { executedLookups: undefined, deleteSection: true },
-        )
-      })
-
-      sectionsToUpdate.forEach((sectionToUpdate) => {
-        const sectionId = sectionToUpdate.id
-        // Match pattern: {elementName}_entry-{index}_{restOfId}
-        const match = sectionId.match(
-          new RegExp(`${element.name}_entry-(\\d+)_(.+)`),
-        )
-        if (match) {
-          const oldEntryIndex = parseInt(match[1], 10)
-          const restOfId = match[2]
-          const newEntryIndex = oldEntryIndex - 1
-          const newSectionId = `${element.name}_entry-${newEntryIndex}_${restOfId}`
-
-          // Remove the old section
-          onChange(
-            {
-              id: sectionId,
-              type: 'section',
-            } as FormTypes.SectionElement,
-            { executedLookups: undefined, deleteSection: true },
-          )
-
-          // Add the new section with updated ID
-          onChange(
-            {
-              id: newSectionId,
-              type: 'section',
-            } as FormTypes.SectionElement,
-            {
-              executedLookups: undefined,
-              value: [{ state: sectionToUpdate.state }],
-            },
-          )
-        }
-      })
 
       onChange(element, {
         value: (existingEntries) => {
@@ -254,10 +193,47 @@ function FormElementRepeatableSet({
           newExistingExecutedLookups.splice(index, 1)
           return newExistingExecutedLookups
         },
+        sectionState: (currentSectionState) => {
+          return (
+            currentSectionState?.reduce(
+              (
+                state: {
+                  id: string
+                  state: 'COLLAPSED' | 'EXPANDED'
+                }[],
+                section,
+              ) => {
+                if (!section.id.startsWith(entryIdPrefix)) {
+                  // Match pattern: {elementName}_entry-{index}_
+                  // also yields a prefix and suffix for any match found
+                  const idPrefixWithFullIdPattern = new RegExp(
+                    `(.+)${element.name}_entry-(\\d+)_(.+)`,
+                  )
+                  const match = section.id.match(idPrefixWithFullIdPattern)
+
+                  if (match) {
+                    const oldEntryIndex = parseInt(match[2], 10)
+                    if (oldEntryIndex > index) {
+                      const prefix = match[1]
+                      const restOfId = match[3]
+                      const newEntryIndex = oldEntryIndex - 1
+                      section.id = `${prefix ? prefix : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                    }
+                  }
+
+                  state.push(section)
+                }
+
+                return state
+              },
+              [],
+            ) || []
+          )
+        },
       })
       setIsDirty()
     },
-    [onChange, setIsDirty, sectionState],
+    [onChange, setIsDirty],
   )
 
   const handleNestedChange = React.useCallback(
@@ -267,6 +243,7 @@ function FormElementRepeatableSet({
       {
         value,
         executedLookups,
+        sectionState,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
       idPrefix?: string,
     ) => {
@@ -277,7 +254,7 @@ function FormElementRepeatableSet({
             ...nestedElement,
             id: idPrefix ? `${idPrefix}${nestedElement.id}` : nestedElement.id,
           },
-          { executedLookups: undefined },
+          { executedLookups: undefined, sectionState },
         )
       }
       if (!('name' in nestedElement)) {
@@ -322,6 +299,7 @@ function FormElementRepeatableSet({
           )
           return newExecutedLookups
         },
+        sectionState,
       })
     },
     [element, onChange],
@@ -505,13 +483,14 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
 
     const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
-      (nestedElement, { value, executedLookups }, idPrefix) => {
+      (nestedElement, { value, executedLookups, sectionState }, idPrefix) => {
         onChange(
           index,
           nestedElement,
           {
             value,
             executedLookups,
+            sectionState,
           },
           idPrefix,
         )
