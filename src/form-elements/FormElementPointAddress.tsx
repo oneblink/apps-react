@@ -148,7 +148,6 @@ function FormElementPointAddress({
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
           autoComplete={autocompleteAttributes}
-          aria-required={element.required}
         />
       </FormElementLabelContainer>
 

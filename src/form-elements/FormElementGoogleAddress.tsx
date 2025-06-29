@@ -242,7 +242,6 @@ function FormElementGoogleAddress({
           isDirty={isDirty}
           setIsDirty={setIsDirty}
           aria-describedby={ariaDescribedby}
-          aria-required={element.required}
           branding={
             <a className="dropdown-item cypress-powered-by-google ob-autocomplete__drop-down-item-powered-by-google">
               powered by{' '}

@@ -69,7 +69,6 @@ function FormElementArcGISWebMap({
               element={element}
               id={id}
               aria-describedby={ariaDescribedby}
-              aria-required={element.required}
               value={value}
               onChange={onChange}
               setIsDirty={setIsDirty}
