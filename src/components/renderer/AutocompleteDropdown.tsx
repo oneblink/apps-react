@@ -292,6 +292,7 @@ function AutocompleteDropdown<T>({
               onKeyDown={onKeyDown}
               onChange={handleChangeLabel}
               aria-describedby={props['aria-describedby']}
+              aria-required={required}
             />
             {isShowingValid && (
               <span className=" ob-input-icon icon is-small is-right">

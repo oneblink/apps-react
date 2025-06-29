@@ -545,6 +545,7 @@ function FormElementArcGISWebMap({
         ref={ref}
         id={id}
         aria-describedby={props['aria-describedby']}
+        aria-required={element.required}
       />
       <div id={drawingOptionsContainerId}>
         {!!activeSketchToolMenu && sketchToolRef.current && (
