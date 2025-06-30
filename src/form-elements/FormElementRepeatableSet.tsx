@@ -163,11 +163,33 @@ function FormElementRepeatableSet({
           newExistingExecutedLookups.push({})
           return newExistingExecutedLookups
         },
-        sectionState: (currentSectionState) => currentSectionState,
+        sectionState: (currentSectionState) => {
+          return (
+            currentSectionState?.map((section) => {
+              const idPrefixPattern = new RegExp(
+                `(.+)?${element.name}_entry-(.+)_(.+)`,
+              )
+              const entryIdPrefixMatches = section.id.match(idPrefixPattern)
+
+              if (entryIdPrefixMatches) {
+                const startOfId = entryIdPrefixMatches[1]
+                const entryIndex = parseInt(entryIdPrefixMatches[2])
+                const restOfId = entryIdPrefixMatches[3]
+
+                if (entryIndex >= index) {
+                  const newEntryIndex = entryIndex + 1
+                  section.id = `${startOfId ? startOfId : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                }
+              }
+
+              return section
+            }, []) || []
+          )
+        },
       })
       setIsDirty()
     },
-    [element, onChange, setIsDirty, entries],
+    [element, onChange, setIsDirty, entries.length],
   )
 
   const handleRemoveEntry = React.useCallback(
@@ -204,7 +226,7 @@ function FormElementRepeatableSet({
                 section,
               ) => {
                 const idPrefixPattern = new RegExp(
-                  `(.+)${element.name}_entry-(\\d+)`,
+                  `(.+)?${element.name}_entry-(\\d+)`,
                 )
                 const entryIdPrefixMatches =
                   entryIdPrefix.match(idPrefixPattern)
@@ -212,13 +234,14 @@ function FormElementRepeatableSet({
                   !section.id.startsWith(entryIdPrefix) &&
                   entryIdPrefixMatches
                 ) {
-                  const parentElementPath = entryIdPrefixMatches[1]
+                  const parentElementPath =
+                    entryIdPrefixMatches[1] || `${element.name}_entry`
                   // only update nested sections where the parent path matches the entry that was removed
                   if (section.id.startsWith(parentElementPath)) {
                     // Match pattern: {elementName}_entry-{index}_
                     // also yields a prefix and suffix for any match found
                     const idPrefixWithFullIdPattern = new RegExp(
-                      `(.+)${element.name}_entry-(\\d+)_(.+)`,
+                      `(.+)?${element.name}_entry-(\\d+)_(.+)`,
                     )
                     const match = section.id.match(idPrefixWithFullIdPattern)
 
