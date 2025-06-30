@@ -1015,10 +1015,11 @@ function OneBlinkFormBase({
                     )
                   : executedLookups,
             },
-            sectionState:
-              typeof sectionState === 'function'
+            sectionState: sectionState
+              ? typeof sectionState === 'function'
                 ? sectionState(currentFormSubmission.sectionState)
-                : sectionState,
+                : sectionState
+              : currentFormSubmission.sectionState,
           }
         })
       }

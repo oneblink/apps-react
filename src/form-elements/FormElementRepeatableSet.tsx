@@ -203,21 +203,33 @@ function FormElementRepeatableSet({
                 }[],
                 section,
               ) => {
-                if (!section.id.startsWith(entryIdPrefix)) {
-                  // Match pattern: {elementName}_entry-{index}_
-                  // also yields a prefix and suffix for any match found
-                  const idPrefixWithFullIdPattern = new RegExp(
-                    `(.+)${element.name}_entry-(\\d+)_(.+)`,
-                  )
-                  const match = section.id.match(idPrefixWithFullIdPattern)
+                const idPrefixPattern = new RegExp(
+                  `(.+)${element.name}_entry-(\\d+)`,
+                )
+                const entryIdPrefixMatches =
+                  entryIdPrefix.match(idPrefixPattern)
+                if (
+                  !section.id.startsWith(entryIdPrefix) &&
+                  entryIdPrefixMatches
+                ) {
+                  const parentElementPath = entryIdPrefixMatches[1]
+                  // only update nested sections where the parent path matches the entry that was removed
+                  if (section.id.startsWith(parentElementPath)) {
+                    // Match pattern: {elementName}_entry-{index}_
+                    // also yields a prefix and suffix for any match found
+                    const idPrefixWithFullIdPattern = new RegExp(
+                      `(.+)${element.name}_entry-(\\d+)_(.+)`,
+                    )
+                    const match = section.id.match(idPrefixWithFullIdPattern)
 
-                  if (match) {
-                    const oldEntryIndex = parseInt(match[2], 10)
-                    if (oldEntryIndex > index) {
-                      const prefix = match[1]
-                      const restOfId = match[3]
-                      const newEntryIndex = oldEntryIndex - 1
-                      section.id = `${prefix ? prefix : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                    if (match) {
+                      const oldEntryIndex = parseInt(match[2], 10)
+                      if (oldEntryIndex > index) {
+                        const prefix = match[1]
+                        const restOfId = match[3]
+                        const newEntryIndex = oldEntryIndex - 1
+                        section.id = `${prefix ? prefix : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                      }
                     }
                   }
 
