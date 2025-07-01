@@ -10,6 +10,7 @@ import {
   attachmentsService,
 } from '@oneblink/apps'
 import {
+  EnvironmentTypes,
   FormTypes,
   FormsAppsTypes,
   ScheduledTasksTypes,
@@ -126,10 +127,7 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
   /** Change properties for certain buttons on the form. */
   buttons?: FormsAppsTypes.FormsListStyles['buttons']
   /** Set a custom validation icon and accessible label. */
-  validationIcon?: {
-    icon: string
-    accessibleLabel?: string
-  }
+  validationIcon?: EnvironmentTypes.FormsAppEnvironmentStyles['validationIcon']
   /** Number of days attachments are retained for. */
   attachmentRetentionInDays?: number
   /**

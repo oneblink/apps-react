@@ -275,9 +275,9 @@ function FormElementABN({
           <ABNDisplay abnRecord={value} className="ob-abn__display-mobile" />
         )}
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {error?.message || validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage
+            message={error?.message || validationMessage}
+          />
         )}
       </FormElementLabelContainer>
     </div>

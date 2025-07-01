@@ -146,9 +146,7 @@ function FormElementRadio({
         </FormElementOptions>
 
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
     </div>

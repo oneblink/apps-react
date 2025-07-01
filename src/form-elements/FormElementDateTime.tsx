@@ -128,9 +128,7 @@ function FormElementDateTime({
         </div>
 
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
     </div>

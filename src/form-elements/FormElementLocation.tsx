@@ -204,14 +204,10 @@ function FormElementLocation({
         </div>
 
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
         {reverseGeocodingErrorMsg && (
-          <FormElementValidationMessage>
-            {reverseGeocodingErrorMsg}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={reverseGeocodingErrorMsg} />
         )}
       </FormElementLabelContainer>
     </div>

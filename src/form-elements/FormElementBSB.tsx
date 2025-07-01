@@ -201,9 +201,9 @@ function FormElementBSB({
           />
         )}
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {errorMessage || validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage
+            message={errorMessage || validationMessage}
+          />
         )}
       </FormElementLabelContainer>
     </div>

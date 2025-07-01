@@ -242,9 +242,7 @@ function FormElementCompliance({
             </div>
           </FormElementOptions>
           {(isDirty || displayValidationMessage) && !!validationMessage && (
-            <FormElementValidationMessage>
-              {validationMessage}
-            </FormElementValidationMessage>
+            <FormElementValidationMessage message={validationMessage} />
           )}
           <div className="buttons ob-buttons ob-buttons-compliance cypress-compliance-button-group">
             <ComplianceButton

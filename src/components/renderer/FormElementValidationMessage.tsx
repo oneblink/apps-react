@@ -1,8 +1,9 @@
 import * as React from 'react'
+import clsx from 'clsx'
 import useValidationIconConfiguration from '../../hooks/useValidationIconConfiguration'
 import MaterialIcon from '../MaterialIcon'
 
-export function ValidationIcon() {
+export const ValidationIcon = React.memo(function ValidationIcon() {
   const validationIconConfiguration = useValidationIconConfiguration()
 
   if (!validationIconConfiguration) {
@@ -18,23 +19,30 @@ export function ValidationIcon() {
       {validationIconConfiguration.icon}
     </MaterialIcon>
   )
-}
+})
 
-export default function FormElementValidationMessage({
-  children,
+export default React.memo(function FormElementValidationMessage({
+  message,
+  className,
 }: {
-  children?: React.ReactNode
+  message?: string
+  className?: string
 }) {
-  if (!children) {
+  if (!message) {
     return null
   }
 
   return (
     <div role="alert" className="has-margin-top-8">
-      <div className="has-text-danger ob-error__text cypress-validation-message">
+      <div
+        className={clsx(
+          'has-text-danger ob-error__text cypress-validation-message',
+          className,
+        )}
+      >
         <ValidationIcon />
-        {children}
+        <span>{message}</span>
       </div>
     </div>
   )
-}
+})

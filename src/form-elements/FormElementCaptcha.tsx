@@ -55,9 +55,7 @@ function FormElementCaptcha({
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
         {isOffline ? (
-          <FormElementValidationMessage>
-            {RECAPTCHA_OFFLINE_MESSAGE}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={RECAPTCHA_OFFLINE_MESSAGE} />
         ) : (
           <>
             <ReCAPTCHA
@@ -65,9 +63,7 @@ function FormElementCaptcha({
               className="ob-input cypress-captcha-control"
             />
             {displayValidationMessage && !!validationMessage && (
-              <FormElementValidationMessage>
-                {validationMessage}
-              </FormElementValidationMessage>
+              <FormElementValidationMessage message={validationMessage} />
             )}
           </>
         )}

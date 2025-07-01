@@ -217,9 +217,7 @@ function FormElementCheckboxes({
         </FormElementOptions>
 
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
     </div>

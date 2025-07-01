@@ -155,9 +155,7 @@ function FormElementSelect({
           )}
 
           {isDisplayingValidationMessage && (
-            <FormElementValidationMessage>
-              {validationMessage}
-            </FormElementValidationMessage>
+            <FormElementValidationMessage message={validationMessage} />
           )}
         </FormElementOptions>
       </FormElementLabelContainer>

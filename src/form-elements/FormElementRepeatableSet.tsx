@@ -451,9 +451,9 @@ function FormElementRepeatableSet({
         {(isDirty || displayValidationMessage) &&
           !!repeatableSetValidation &&
           !!repeatableSetValidation.set && (
-            <FormElementValidationMessage>
-              {repeatableSetValidation.set}
-            </FormElementValidationMessage>
+            <FormElementValidationMessage
+              message={repeatableSetValidation.set}
+            />
           )}
       </FormElementLabelContainer>
     </div>

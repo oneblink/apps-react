@@ -376,9 +376,7 @@ function FormElementCamera({
           </div>
         </div>
         {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
 

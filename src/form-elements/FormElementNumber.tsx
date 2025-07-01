@@ -133,9 +133,7 @@ function FormElementNumber({
         ) : undefined}
 
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
     </div>

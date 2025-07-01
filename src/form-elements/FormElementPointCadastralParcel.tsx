@@ -186,9 +186,9 @@ function FormElementPointCadastralParcel({
           )}
         </div>
         {isDisplayingValidationMessage && (
-          <FormElementValidationMessage>
-            {error?.message || validationMessage}
-          </FormElementValidationMessage>
+          <FormElementValidationMessage
+            message={error?.message || validationMessage}
+          />
         )}
       </FormElementLabelContainer>
 
