@@ -64,6 +64,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
+import OneBlinkFormFooter from './components/OneBlinkFormFooter'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -1440,6 +1441,10 @@ function OneBlinkFormBase({
                         )}
                       </div>
                     </form>
+
+                    {!!definition.footer?.html && (
+                      <OneBlinkFormFooter footer={definition.footer?.html} />
+                    )}
 
                     {!isReadOnly && !isPreview && (
                       <React.Fragment>
