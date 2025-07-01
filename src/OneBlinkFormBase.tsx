@@ -64,7 +64,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
-import sanitizeHtml from './services/sanitize-html'
+import OneBlinkFormFooter from './components/OneBlinkFormFooter'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -1086,11 +1086,6 @@ function OneBlinkFormBase({
     setFormSubmission,
   ])
 
-  const sanitizedFooterHtml = React.useMemo(() => {
-    if (!definition.footer?.html) return ''
-    return sanitizeHtml(definition.footer.html)
-  }, [definition.footer?.html])
-
   if (conditionalLogicError) {
     return (
       <>
@@ -1447,14 +1442,8 @@ function OneBlinkFormBase({
                       </div>
                     </form>
 
-                    {!!sanitizedFooterHtml && (
-                      <footer
-                        className="ob-footer-container"
-                        // eslint-disable-next-line react/no-danger
-                        dangerouslySetInnerHTML={{
-                          __html: sanitizedFooterHtml,
-                        }}
-                      />
+                    {!!definition.footer?.html && (
+                      <OneBlinkFormFooter footer={definition.footer?.html} />
                     )}
 
                     {!isReadOnly && !isPreview && (
