@@ -439,6 +439,7 @@ function parsePreFillData(
         }
       })
     }
+    case 'lookupButton':
     case 'image':
     case 'html':
     case 'summary':
@@ -577,6 +578,7 @@ export default function generateDefaultData(
           m[el.name] = el.defaultValue || false
           break
         }
+        case 'lookupButton':
         case 'captcha':
         case 'heading':
         case 'html':
