@@ -193,7 +193,6 @@ function FormElementLocation({
                   disabled={element.readOnly}
                   onBlur={setIsDirty}
                   id={id}
-                  aria-required={element.required}
                   aria-describedby={ariaDescribedby}
                 >
                   Locate
