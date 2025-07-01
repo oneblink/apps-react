@@ -29,6 +29,16 @@ function cleanElementValue(
           }
           break
         }
+        // Lookup buttons submission value is as follows:
+        // `undefined` is it was hidden conditionally
+        // `true` if the lookup ran without dependencies changed after
+        // `false` if the lookup did not run or dependencies changed after it was run and it was not run again.
+        case 'lookupButton': {
+          if (!formElementsConditionallyShown?.[element.name]?.isHidden) {
+            model[element.name] = !!submission[element.name]
+          }
+          break
+        }
         // Need to remove captcha tokens and save
         // them to POST them to the server for validation
         case 'captcha': {

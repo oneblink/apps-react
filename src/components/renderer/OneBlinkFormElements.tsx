@@ -78,6 +78,7 @@ import FormElementAPINSWLiquorLicence from '../../form-elements/FormElementAPINS
 import ElementDOMId from '../../utils/elementDOMIds'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import FormElementPointCadastralParcel from '../../form-elements/FormElementPointCadastralParcel'
+import FormElementLookupButton from '../../form-elements/FormElementLookupButton'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -1085,6 +1086,23 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             {...dirtyProps}
           />
         </LookupNotification>
+      )
+    }
+    case 'lookupButton': {
+      return (
+        <FormElementLookupButton
+          id={id}
+          element={element}
+          validationMessage={validationMessage}
+          displayValidationMessage={displayValidationMessage}
+          onChange={
+            onChange as React.ComponentProps<
+              typeof FormElementLookupButton
+            >['onChange']
+          }
+          onLookup={onLookup}
+          {...dirtyProps}
+        />
       )
     }
     case 'section':

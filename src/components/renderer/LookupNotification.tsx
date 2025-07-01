@@ -303,9 +303,13 @@ function LookupNotificationComponent({
   // We add this stringify function here to allow the value to be
   // an object which may have a reference change, but the values
   // have not changed. e.g. the 'location' element's value
-  const autoLookupValueString = stringifyAutoLookupValue
-    ? stringifyAutoLookupValue(autoLookupValue)
-    : autoLookupValue
+  const autoLookupValueString = React.useMemo(() => {
+    if (stringifyAutoLookupValue) {
+      return stringifyAutoLookupValue(autoLookupValue)
+    } else {
+      return autoLookupValue
+    }
+  }, [autoLookupValue, stringifyAutoLookupValue])
   React.useEffect(() => {
     if (isLoading || loadError) {
       return
