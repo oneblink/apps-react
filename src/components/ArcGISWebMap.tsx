@@ -467,6 +467,8 @@ function FormElementArcGISWebMap({
             id: layer.id,
           })
           newLayer.addMany(layer.graphics.map((g) => Graphic.fromJSON(g)))
+          newLayer.visible =
+            typeof layer.visible === 'boolean' ? layer.visible : true
           map.layers.add(newLayer)
         } else if (existingLayer && existingLayer.type === 'graphics') {
           const existingGraphicLayer = existingLayer as GraphicsLayer
@@ -475,6 +477,8 @@ function FormElementArcGISWebMap({
           existingGraphicLayer.addMany(
             layer.graphics.map((g) => Graphic.fromJSON(g)),
           )
+          existingGraphicLayer.visible =
+            typeof layer.visible === 'boolean' ? layer.visible : true
         }
       }
     }
