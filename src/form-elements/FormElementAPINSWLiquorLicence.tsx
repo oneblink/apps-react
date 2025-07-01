@@ -152,12 +152,10 @@ function FormElementAPINSWLiquorLicence({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <FormElementValidationMessage
-            message={error.toString()}
-            className="cypress-api-nsw-liquor-licence-error-message"
-          />
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-api-nsw-liquor-licence-error-message"
+        />
       )}
       <Collapse in={!!value}>
         <NotificationGrid

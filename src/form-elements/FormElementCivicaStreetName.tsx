@@ -108,12 +108,10 @@ function FormElementCivicaStreetName({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <FormElementValidationMessage
-            message={error.toString()}
-            className="cypress-civica-street-name-error-message"
-          />
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-civica-street-name-error-message"
+        />
       )}
     </div>
   )

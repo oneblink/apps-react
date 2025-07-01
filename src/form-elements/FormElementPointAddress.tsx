@@ -12,6 +12,7 @@ import {
   NotificationGrid,
   NotificationGridItem,
 } from '../components/NotificationGrid'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -152,11 +153,10 @@ function FormElementPointAddress({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <div className="has-text-danger ob-error__text cypress-point-address-details-error-message">
-            {error.toString()}
-          </div>
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-point-address-details-error-message"
+        />
       )}
 
       <Collapse in={!!value && !!element.isDisplayingAddressInformation}>

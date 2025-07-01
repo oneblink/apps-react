@@ -141,12 +141,10 @@ function FormElementGeoscapeAddress({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <FormElementValidationMessage
-            message={error.toString()}
-            className="cypress-geoscape-address-details-error-message"
-          />
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-geoscape-address-details-error-message"
+        />
       )}
     </div>
   )
