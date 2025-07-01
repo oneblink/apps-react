@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - lookup button form element
 - Rendering of form `footer` HTML
+- validation icon
 
 ## [8.6.0] - 2025-07-01
 
