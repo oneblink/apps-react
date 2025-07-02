@@ -45,7 +45,6 @@ function FormElementFiles({
     element,
     onChange,
     setIsDirty,
-    element.maxFileSize,
   )
 
   const inputRef = React.useRef<HTMLInputElement>(null)

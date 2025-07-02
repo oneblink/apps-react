@@ -14,7 +14,6 @@ const useAttachments = (
   element: FormTypes.FilesElement,
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>,
   setIsDirty: IsDirtyProps['setIsDirty'],
-  maxFileSize: number | undefined,
 ) => {
   const isMounted = useIsMounted()
 
@@ -34,12 +33,12 @@ const useAttachments = (
             )
           }
           const fileSizeInMB = file.size / 1024 / 1024
-          if (maxFileSize && fileSizeInMB > maxFileSize) {
+          if (element.maxFileSize && fileSizeInMB > element.maxFileSize) {
             return generateErrorAttachment(
               file,
               file.name,
               element,
-              `File size ${fileSizeInMB.toFixed(2)}MB exceeds the allowed maximum of ${maxFileSize}MB.`,
+              `File size ${fileSizeInMB.toFixed(2)}MB exceeds the allowed maximum of ${element.maxFileSize}MB.`,
             )
           }
           const result = await correctFileOrientation(file)
@@ -62,7 +61,7 @@ const useAttachments = (
         setIsDirty()
       }
     },
-    [element, isMounted, maxFileSize, onChange, setIsDirty],
+    [element, isMounted, onChange, setIsDirty],
   )
 
   const removeAttachment = React.useCallback(
