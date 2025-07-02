@@ -62,7 +62,7 @@ const useAttachments = (
         setIsDirty()
       }
     },
-    [element, isMounted, onChange, setIsDirty],
+    [element, isMounted, maxFileSize, onChange, setIsDirty],
   )
 
   const removeAttachment = React.useCallback(
