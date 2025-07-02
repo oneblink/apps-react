@@ -77,10 +77,13 @@ function FormElementTextarea({
         </div>
 
         {(isDisplayingValidationMessage || !!element.maxLength) && (
-          <div role="alert" className="has-margin-top-8">
+          <div className="has-margin-top-8">
             <div className="is-flex is-justify-content-space-between">
               {isDisplayingValidationMessage ? (
-                <div className="has-text-danger ob-error__text cypress-validation-message">
+                <div
+                  role="alert"
+                  className="has-text-danger ob-error__text cypress-validation-message"
+                >
                   <ValidationIcon />
                   {validationMessage}
                 </div>

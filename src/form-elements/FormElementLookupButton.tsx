@@ -11,6 +11,7 @@ import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import LookupNotification from '../components/renderer/LookupNotification'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
 import { formElementsService } from '@oneblink/sdk-core'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type ValidationMessageProps = {
   displayValidationMessage: boolean
@@ -42,13 +43,7 @@ const FormElementLookupButtonValidationMessage = memo(
       return null
     }
 
-    return (
-      <div role="alert" className="has-margin-top-8">
-        <div className="has-text-danger ob-error__text cypress-validation-message">
-          {validationMessage}
-        </div>
-      </div>
-    )
+    return <FormElementValidationMessage message={validationMessage} />
   },
 )
 
@@ -95,6 +90,15 @@ function FormElementLookupButton({
     })
   }, [element, onChange, stringifyData])
 
+  const value = useMemo(() => {
+    // Want the value to be `true` if there is data or if there are
+    // no element dependencies i.e. the lookup can be run at any time.
+    if (!element.elementDependencies.length || data) {
+      return true
+    }
+    return undefined
+  }, [data, element.elementDependencies.length])
+
   return (
     <LookupNotification
       autoLookupValue={isAutoLookup ? stringifyData : undefined}
@@ -110,8 +114,7 @@ function FormElementLookupButton({
           required={false}
         >
           <LookupButton
-            // Want the value to be `undefined` if there is no data, otherwise `true`
-            value={data && true}
+            value={value}
             validationMessage={undefined}
             lookupButtonConfig={element.lookupButton}
           />
