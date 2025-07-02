@@ -11,6 +11,7 @@ import {
   NotificationGrid,
   NotificationGridItem,
 } from '../components/NotificationGrid'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -151,11 +152,10 @@ function FormElementAPINSWLiquorLicence({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <div className="has-text-danger ob-error__text cypress-api-nsw-liquor-licence-error-message">
-            {error.toString()}
-          </div>
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-api-nsw-liquor-licence-error-message"
+        />
       )}
       <Collapse in={!!value}>
         <NotificationGrid

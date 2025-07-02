@@ -13,6 +13,7 @@ import {
   NotificationGridItem,
 } from '../components/NotificationGrid'
 import MaterialIcon from '../components/MaterialIcon'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 const pointCadastralParcelClass = 'ob-point-cadastral-parcel'
 
@@ -185,11 +186,9 @@ function FormElementPointCadastralParcel({
           )}
         </div>
         {isDisplayingValidationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {error?.message || validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage
+            message={error?.message || validationMessage}
+          />
         )}
       </FormElementLabelContainer>
 

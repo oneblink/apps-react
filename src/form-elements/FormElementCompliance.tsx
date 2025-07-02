@@ -18,6 +18,7 @@ import {
 } from '../types/form'
 import { attachmentsService } from '@oneblink/apps'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 interface Props extends IsDirtyProps {
   id: string
@@ -241,11 +242,7 @@ function FormElementCompliance({
             </div>
           </FormElementOptions>
           {(isDirty || displayValidationMessage) && !!validationMessage && (
-            <div role="alert" className="has-margin-top-8">
-              <div className="has-text-danger ob-error__text cypress-validation-message">
-                {validationMessage}
-              </div>
-            </div>
+            <FormElementValidationMessage message={validationMessage} />
           )}
           <div className="buttons ob-buttons ob-buttons-compliance cypress-compliance-button-group">
             <ComplianceButton

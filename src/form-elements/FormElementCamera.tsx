@@ -24,6 +24,7 @@ import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   id: string
@@ -375,11 +376,7 @@ function FormElementCamera({
           </div>
         </div>
         {(isDirty || displayValidationMessage) && !!validationMessage && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage message={validationMessage} />
         )}
       </FormElementLabelContainer>
 

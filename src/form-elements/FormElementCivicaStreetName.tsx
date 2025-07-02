@@ -6,6 +6,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormTypes, CivicaTypes } from '@oneblink/types'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -107,11 +108,10 @@ function FormElementCivicaStreetName({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <div className="has-text-danger ob-error__text cypress-civica-street-name-error-message">
-            {error.toString()}
-          </div>
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-civica-street-name-error-message"
+        />
       )}
     </div>
   )

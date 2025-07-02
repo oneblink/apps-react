@@ -9,6 +9,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import { ValidationIcon } from '../components/renderer/FormElementValidationMessage'
 
 const StyledTextareaAutosize = styled(TextareaAutosize)(() => ({
   resize: 'vertical',
@@ -80,6 +81,7 @@ function FormElementTextarea({
             <div className="is-flex is-justify-content-space-between">
               {isDisplayingValidationMessage ? (
                 <div className="has-text-danger ob-error__text cypress-validation-message">
+                  <ValidationIcon />
                   {validationMessage}
                 </div>
               ) : (

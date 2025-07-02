@@ -7,6 +7,7 @@ import useIsOffline from '../hooks/useIsOffline'
 import useReCAPTCHAProps from '../hooks/useReCAPTCHAProps'
 import { RECAPTCHA_OFFLINE_MESSAGE } from '../services/form-validation/validateSubmission'
 import { FormElementValueChangeHandler } from '../types/form'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   element: FormTypes.CaptchaElement
@@ -54,9 +55,7 @@ function FormElementCaptcha({
     <div className="cypress-captcha-element">
       <div className="ob-form__element ob-captcha">
         {isOffline ? (
-          <div role="alert" className="has-margin-top-8">
-            <span className="has-text-danger">{RECAPTCHA_OFFLINE_MESSAGE}</span>
-          </div>
+          <FormElementValidationMessage message={RECAPTCHA_OFFLINE_MESSAGE} />
         ) : (
           <>
             <ReCAPTCHA
@@ -64,11 +63,7 @@ function FormElementCaptcha({
               className="ob-input cypress-captcha-control"
             />
             {displayValidationMessage && !!validationMessage && (
-              <div role="alert" className="has-margin-top-8">
-                <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
-                  {validationMessage}
-                </div>
-              </div>
+              <FormElementValidationMessage message={validationMessage} />
             )}
           </>
         )}

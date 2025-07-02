@@ -7,6 +7,7 @@ import { FormTypes, GeoscapeTypes } from '@oneblink/types'
 import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 type Props = {
   formId: number
@@ -140,11 +141,10 @@ function FormElementGeoscapeAddress({
       </FormElementLabelContainer>
 
       {error && (
-        <div role="alert" className="has-margin-top-8">
-          <div className="has-text-danger ob-error__text cypress-geoscape-address-details-error-message">
-            {error.toString()}
-          </div>
-        </div>
+        <FormElementValidationMessage
+          message={error.toString()}
+          className="cypress-geoscape-address-details-error-message"
+        />
       )}
     </div>
   )
