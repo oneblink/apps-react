@@ -1452,17 +1452,17 @@ function OneBlinkFormBase({
                       </div>
                     </form>
 
-                    <FormSubmissionModelContextProvider
-                      elements={definition.elements}
-                      model={submission}
-                      formElementsConditionallyShown={
-                        formElementsConditionallyShown
-                      }
-                    >
-                      {!!definition.footer?.html && (
+                    {!!definition.footer?.html && (
+                      <FormSubmissionModelContextProvider
+                        elements={definition.elements}
+                        model={submission}
+                        formElementsConditionallyShown={
+                          formElementsConditionallyShown
+                        }
+                      >
                         <OneBlinkFormFooter footer={definition.footer?.html} />
-                      )}
-                    </FormSubmissionModelContextProvider>
+                      </FormSubmissionModelContextProvider>
+                    )}
 
                     {!isReadOnly && !isPreview && (
                       <React.Fragment>
