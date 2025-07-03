@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `dateTimeCompleted` to form store table
 - Dimensions to drawing tool for `arcGISWebMap` element
 - handling for ArcGIS web map layer visibility
+- read-only functionality to "Form" form elements
 
 ### Changed
 

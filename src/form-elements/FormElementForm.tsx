@@ -11,6 +11,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import ElementDOMId from '../utils/elementDOMIds'
+import { recursivelySetReadOnly } from '../OneBlinkReadOnlyForm'
 
 export type Props = {
   formId: number
@@ -168,9 +169,13 @@ function FormElementForm({
 
   const parentElement = React.useMemo(() => {
     return {
-      elements: Array.isArray(element.elements) ? element.elements : [],
+      elements: Array.isArray(element.elements)
+        ? element.readOnly
+          ? recursivelySetReadOnly(element.elements)
+          : element.elements
+        : [],
     }
-  }, [element.elements])
+  }, [element.elements, element.readOnly])
 
   const handleUpdateNestedFormElements =
     React.useCallback<UpdateFormElementsHandler>(
