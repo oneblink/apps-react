@@ -13,7 +13,17 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
 import Layer from '@arcgis/core/layers/Layer'
 import Popup from '@arcgis/core/widgets/Popup'
-import { Point } from '@arcgis/core/geometry'
+import {
+  Point,
+  Polygon,
+  SpatialReference,
+  Polyline,
+} from '@arcgis/core/geometry'
+import TextSymbol from '@arcgis/core/symbols/TextSymbol'
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
+import { Box, Divider, IconButton } from '@mui/material'
+import throttle from 'lodash.throttle'
+import { localisationService } from '@oneblink/apps'
 import { v4 as uuid } from 'uuid'
 
 import OnLoading from '../components/renderer/OnLoading'
@@ -23,7 +33,6 @@ import useIsPageVisible from '../hooks/useIsPageVisible'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
-import { Box, Divider, IconButton } from '@mui/material'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
@@ -110,6 +119,7 @@ function FormElementArcGISWebMap({
   const drawingLayerRef = React.useRef<GraphicsLayer>()
   const selectedGraphicForUpdate = React.useRef<string>()
   const mapViewRef = React.useRef<MapView>()
+  const measurementLayerRef = React.useRef<GraphicsLayer>()
 
   const [overlayLayerIds, setOverlayLayerIds] = React.useState<string[]>()
   const [loadError, setLoadError] = React.useState<Error>()
@@ -159,6 +169,127 @@ function FormElementArcGISWebMap({
     }
   }, [element, onChange, value])
 
+  const getGeometryPoints = (
+    geom: __esri.Geometry,
+    spatialRef: SpatialReference,
+  ) => {
+    if (geom.type === 'polygon') {
+      const polygon = geom as Polygon
+      return polygon.rings[0].map(
+        (ring) =>
+          new Point({
+            x: ring[0],
+            y: ring[1],
+            spatialReference: spatialRef,
+          }),
+      )
+    } else if (geom.type === 'polyline') {
+      const polyline = geom as Polyline
+      return polyline.paths[0].map(
+        (path) =>
+          new Point({
+            x: path[0],
+            y: path[1],
+            spatialReference: spatialRef,
+          }),
+      )
+    }
+  }
+
+  const addMeasurementLabels = React.useCallback(
+    (graphics: __esri.Graphic[]) => {
+      const spatialRef = new SpatialReference({ wkid: 3857 })
+      const measurementLayer = measurementLayerRef.current
+      const mapView = mapViewRef.current
+      if (!measurementLayer || !mapView) return
+      measurementLayer.removeAll()
+
+      for (const graphic of graphics) {
+        const geom = graphic.geometry
+        if (!geom || (geom.type !== 'polygon' && geom.type !== 'polyline'))
+          continue
+
+        const points = getGeometryPoints(geom, spatialRef)
+        if (!points) continue
+
+        const { distanceUnit, distanceUnitShortName } =
+          localisationService.getDistanceUnits()
+        if (distanceUnit !== 'meters' && distanceUnit !== 'feet') {
+          console.warn(
+            'Unsupported distance unit provided in tenant configuration: ',
+            distanceUnit,
+          )
+          return
+        }
+        const graphics: Graphic[] = []
+
+        for (let i = 1; i < points.length; i++) {
+          const distance = geometryEngine.distance(
+            points[i],
+            points[i - 1],
+            distanceUnit,
+          )
+
+          const x1 = points[i].x
+          const x2 = points[i - 1].x
+          const y1 = points[i].y
+          const y2 = points[i - 1].y
+
+          const midpoint = new Point({
+            x: (x1 + x2) / 2,
+            y: (y1 + y2) / 2,
+            spatialReference: spatialRef,
+          })
+
+          // Angle of the measurement label - this will be rotated to be parallel with the polygon or polyline edge
+          const dx = x2 - x1
+          const dy = y2 - y1
+          const radians = Math.atan2(dy, dx)
+          let degrees = radians * (180 / Math.PI)
+          if (degrees > 90 || degrees < -90) {
+            degrees += 180
+          }
+
+          const pixelOffset = 10
+          const normalAngle = radians + Math.PI / 2
+          const offsetScreenX = pixelOffset * Math.cos(normalAngle)
+          const offsetScreenY = pixelOffset * Math.sin(normalAngle)
+
+          const screenPoint = mapView.toScreen(midpoint)
+          screenPoint.x += offsetScreenX
+          screenPoint.y -= offsetScreenY
+          const offsetMapPoint = mapView.toMap(screenPoint)
+
+          graphics.push(
+            new Graphic({
+              geometry: offsetMapPoint,
+              symbol: new TextSymbol({
+                text: distance.toFixed(0) + distanceUnitShortName,
+                color: 'black',
+                haloColor: 'white',
+                haloSize: 1,
+                angle: -degrees,
+              }),
+            }),
+          )
+        }
+
+        measurementLayer.addMany(graphics)
+        mapViewRef.current?.map.reorder(
+          measurementLayer,
+          mapViewRef.current?.map.layers.length,
+        )
+      }
+    },
+    [],
+  )
+
+  const clearMeasurementLabels = React.useCallback(() => {
+    if (measurementLayerRef.current) {
+      measurementLayerRef.current.removeAll()
+    }
+  }, [])
+
   React.useEffect(() => {
     if (element.readOnly) return
     // event listeners for drawing tool creates/updates/deletes
@@ -166,7 +297,10 @@ function FormElementArcGISWebMap({
     // to ensure they always have access to the latest submission value
     const createListener = sketchToolRef.current?.on(
       'create',
-      (sketchEvent) => {
+      throttle((sketchEvent: __esri.SketchCreateEvent) => {
+        if (sketchEvent.state === 'active') {
+          addMeasurementLabels([sketchEvent.graphic])
+        }
         if (sketchEvent.state === 'complete') {
           if (selectedGraphicAttributes) {
             sketchEvent.graphic.attributes = {
@@ -177,16 +311,21 @@ function FormElementArcGISWebMap({
             setSelectedGraphicAttributes(undefined)
           }
           updateDrawingInputSubmissionValue()
+          clearMeasurementLabels()
         }
         if (sketchEvent.state === 'cancel') {
           setSelectedGraphicAttributes(undefined)
+          clearMeasurementLabels()
         }
-      },
+      }, 100),
     )
 
     const updateListener = sketchToolRef.current?.on(
       'update',
-      (sketchEvent) => {
+      throttle((sketchEvent: __esri.SketchUpdateEvent) => {
+        if (sketchEvent.state === 'active') {
+          addMeasurementLabels(sketchEvent.graphics)
+        }
         if (sketchEvent.state === 'complete') {
           // only update the submission value if the graphic's geometry was actually changed
           if (
@@ -196,18 +335,21 @@ function FormElementArcGISWebMap({
             updateDrawingInputSubmissionValue()
           }
           selectedGraphicForUpdate.current = undefined
+          clearMeasurementLabels()
         }
         if (sketchEvent.state === 'start') {
           selectedGraphicForUpdate.current = JSON.stringify(
             sketchEvent.graphics[0].geometry.clone().toJSON(),
           )
+          addMeasurementLabels(sketchEvent.graphics)
         }
-      },
+      }, 100),
     )
 
     const deleteListener = sketchToolRef.current?.on('delete', () => {
       mapViewRef.current?.closePopup()
       updateDrawingInputSubmissionValue()
+      clearMeasurementLabels()
     })
 
     const mapViewChangeListener = mapViewRef.current?.watch(
@@ -265,7 +407,7 @@ function FormElementArcGISWebMap({
         // get the graphic we want to display the popup for.
         const result = response.results
           .filter((r) => r.type === 'graphic')
-          .find((r) => !!r.graphic.attributes.label)
+          .find((r) => !!r.graphic.attributes?.label)
 
         if (result) {
           mapViewRef.current?.openPopup({
@@ -290,6 +432,8 @@ function FormElementArcGISWebMap({
     updateMapViewSubmissionValue,
     element,
     selectedGraphicAttributes,
+    addMeasurementLabels,
+    clearMeasurementLabels,
   ])
 
   const onSubmissionValueChange = React.useCallback(() => {
@@ -340,10 +484,8 @@ function FormElementArcGISWebMap({
     // update the web map's drawing layers
     const drawingLayer = drawingLayerRef.current
     if (value?.drawingLayer && drawingLayer) {
-      map.layers.remove(drawingLayer)
       drawingLayer.removeAll()
       drawingLayer.addMany(value.drawingLayer.map((g) => Graphic.fromJSON(g)))
-      map.layers.add(drawingLayer)
     }
     if (value?.view) {
       view.zoom = value.view.zoom
@@ -453,6 +595,16 @@ function FormElementArcGISWebMap({
           })
           drawingLayerRef.current = drawingLayer
           map.layers.add(drawingLayer)
+
+          // Add measurement layer above drawing layer
+          const measurementLayer = new GraphicsLayer({
+            id: uuid(),
+            title: 'Measurements',
+            listMode: 'hide',
+          })
+          measurementLayerRef.current = measurementLayer
+          map.layers.add(measurementLayer)
+
           const sketch = new Sketch({
             view,
             layer: drawingLayer,
