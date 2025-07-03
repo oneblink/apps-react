@@ -15,6 +15,7 @@ import Modal from '../renderer/Modal'
 import MaterialIcon from '../MaterialIcon'
 import useReCAPTCHAProps from '../../hooks/useReCAPTCHAProps'
 import { CaptchaType } from '../../typedoc'
+import FormElementValidationMessage from '../renderer/FormElementValidationMessage'
 
 interface TrustedFrame {
   submitForm(
@@ -437,11 +438,10 @@ function WestpacQuickStreamPaymentForm({
                   className="ob-input cypress-captcha-control ob-payment-form__westpac-quickstream-captcha"
                 />
                 {displayCaptchaRequired && (
-                  <div role="alert" className="has-margin-top-8">
-                    <div className="has-text-danger ob-error__text cypress-required cypress-validation-message">
-                      Please complete the CAPTCHA successfully
-                    </div>
-                  </div>
+                  <FormElementValidationMessage
+                    message="Please complete the CAPTCHA successfully"
+                    className="cypress-required"
+                  />
                 )}
               </>
             )}
