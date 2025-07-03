@@ -245,11 +245,12 @@ function FormElementArcGISWebMap({
           const dx = x2 - x1
           const dy = y2 - y1
           const radians = Math.atan2(dy, dx)
-          let degrees = radians * (180 / Math.PI)
-          if (degrees > 90 || degrees < -90) {
-            degrees += 180
+          let angle = radians * (-180 / Math.PI)
+          if (angle > 90 || angle < -90) {
+            angle += 180
           }
 
+          // offset of the measurement label against the edge of the polygon/polyline it's measuring
           const pixelOffset = 10
           const normalAngle = radians + Math.PI / 2
           const offsetScreenX = pixelOffset * Math.cos(normalAngle)
@@ -268,7 +269,7 @@ function FormElementArcGISWebMap({
                 color: 'black',
                 haloColor: 'white',
                 haloSize: 1,
-                angle: -degrees,
+                angle,
               }),
             }),
           )
