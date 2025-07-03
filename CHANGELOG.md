@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rendering of form `footer` HTML
 - validation icon
 - `maxFileSize` validation for `files` element
+- `dateTimeCompleted` to form store table
 
 ### Changed
 

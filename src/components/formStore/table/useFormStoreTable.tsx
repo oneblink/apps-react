@@ -14,10 +14,7 @@ import { FormTypes } from '@oneblink/types'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 import { formStoreService, localisationService } from '@oneblink/apps'
 import { FormStoreElementsContext } from '../OneBlinkFormStoreProvider'
-import getVersionedFormTableState, {
-  defaultHiddenColumns,
-  FormTableState,
-} from './getVersionedState'
+import getVersionedFormTableState, { FormTableState } from './getVersionedState'
 
 const defaultColumn = {
   minWidth: 150,
@@ -70,6 +67,51 @@ export default function useFormStoreTable({
       onChangeParameters,
       allowCopy: true,
       initialColumns: [
+        {
+          id: 'COMPLETED_AT',
+          headerText: 'Completion Date Time',
+          sorting: {
+            property: 'dateTimeCompleted',
+            direction: parameters.sorting?.find(
+              ({ property }) => property === 'dateTimeCompleted',
+            )?.direction,
+          },
+          filter: {
+            type: 'DATETIME',
+            value: parameters.filters?.dateTimeCompleted as
+              | { $gte?: string; $lte?: string }
+              | undefined,
+            onChange: (newValue) => {
+              onChangeParameters(
+                (currentParameters) => ({
+                  ...currentParameters,
+                  filters: {
+                    ...currentParameters.filters,
+                    dateTimeCompleted: newValue,
+                  },
+                }),
+                false,
+              )
+            },
+          },
+          Cell: ({
+            row: { original: formStoreRecord },
+          }: CellProps<FormStoreRecord>) => {
+            if (!formStoreRecord.dateTimeCompleted) {
+              return null
+            }
+            const text = format(
+              new Date(formStoreRecord.dateTimeCompleted),
+              localisationService.getDateFnsFormats().longDateTime,
+            )
+            return (
+              <>
+                {text}
+                <TableCellCopyButton text={text} />
+              </>
+            )
+          },
+        },
         {
           id: 'SUBMITTED_AT',
           headerText: 'Submission Date Time',
@@ -396,15 +438,13 @@ export default function useFormStoreTable({
 
   const [initialState] = React.useState<FormTableState | undefined>(() => {
     const text = localStorage.getItem(localStorageKey(form.id))
-    if (text) {
-      return {
-        ...getVersionedFormTableState(JSON.parse(text)),
-        formId: form.id,
-      }
-    }
-    return {
-      formId: form.id,
-    }
+    return getVersionedFormTableState(
+      text
+        ? JSON.parse(text)
+        : {
+            formId: form.id,
+          },
+    )
   })
 
   const table = useTable(
@@ -414,11 +454,7 @@ export default function useFormStoreTable({
       defaultColumn,
       autoResetHiddenColumns: false,
       autoResetResize: false,
-      initialState: initialState
-        ? initialState
-        : {
-            hiddenColumns: defaultHiddenColumns,
-          },
+      initialState,
     },
     useFlexLayout,
     useResizeColumns,
