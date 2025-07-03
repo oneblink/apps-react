@@ -6,6 +6,7 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'
 import { LookupNotificationContext } from '../../hooks/useLookupNotification'
 import MaterialIcon from '../MaterialIcon'
+import FormElementValidationMessage from './FormElementValidationMessage'
 
 type AutocompleteOption<T> = {
   label: string
@@ -360,11 +361,7 @@ function AutocompleteDropdown<T>({
       {(isDirty || displayValidationMessage) &&
         !!validationMessage &&
         !isShowingLoading && (
-          <div role="alert" className="has-margin-top-8">
-            <div className="has-text-danger ob-error__text cypress-validation-message">
-              {validationMessage}
-            </div>
-          </div>
+          <FormElementValidationMessage message={validationMessage} />
         )}
     </>
   )
