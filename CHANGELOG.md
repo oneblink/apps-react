@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - validation icon
 - `maxFileSize` validation for `files` element
 - `dateTimeCompleted` to form store table
+- Dimensions to drawing tool for `arcGISWebMap` element
 
 ### Changed
 
