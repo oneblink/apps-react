@@ -225,12 +225,6 @@ function FormElementArcGISWebMap({
         const graphics: Graphic[] = []
 
         for (let i = 1; i < points.length; i++) {
-          const distance = geometryEngine.distance(
-            points[i],
-            points[i - 1],
-            distanceUnit,
-          )
-
           const x1 = points[i].x
           const x2 = points[i - 1].x
           const y1 = points[i].y
@@ -262,6 +256,16 @@ function FormElementArcGISWebMap({
           screenPoint.y -= offsetScreenY
           const offsetMapPoint = mapView.toMap(screenPoint)
 
+          const polyline = new Polyline({
+            paths: [
+              [
+                [points[i].longitude, points[i].latitude],
+                [points[i - 1].longitude, points[i - 1].latitude],
+              ],
+            ],
+            spatialReference: { wkid: 4326 },
+          })
+          const distance = geometryEngine.geodesicLength(polyline, distanceUnit)
           graphics.push(
             new Graphic({
               geometry: offsetMapPoint,
