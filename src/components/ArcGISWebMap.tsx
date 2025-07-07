@@ -198,6 +198,7 @@ function FormElementArcGISWebMap({
 
   const addMeasurementLabels = React.useCallback(
     (graphics: __esri.Graphic[]) => {
+      if (!element.measurementDimensionsEnabled) return
       const spatialRef = new SpatialReference({ wkid: 3857 })
       const measurementLayer = measurementLayerRef.current
       const mapView = mapViewRef.current
@@ -282,7 +283,7 @@ function FormElementArcGISWebMap({
         )
       }
     },
-    [],
+    [element],
   )
 
   const clearMeasurementLabels = React.useCallback(() => {
@@ -602,13 +603,15 @@ function FormElementArcGISWebMap({
           map.layers.add(drawingLayer)
 
           // Add measurement layer above drawing layer
-          const measurementLayer = new GraphicsLayer({
-            id: uuid(),
-            title: 'Measurements',
-            listMode: 'hide',
-          })
-          measurementLayerRef.current = measurementLayer
-          map.layers.add(measurementLayer)
+          if (element.measurementDimensionsEnabled) {
+            const measurementLayer = new GraphicsLayer({
+              id: uuid(),
+              title: 'Measurements',
+              listMode: 'hide',
+            })
+            measurementLayerRef.current = measurementLayer
+            map.layers.add(measurementLayer)
+          }
 
           const sketch = new Sketch({
             view,
