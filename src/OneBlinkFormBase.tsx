@@ -65,9 +65,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
-import OneBlinkFormFooter from './components/OneBlinkFormFooter'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
-import { FormSubmissionModelContextProvider } from './hooks/useFormSubmissionModelContext'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -1450,20 +1448,6 @@ function OneBlinkFormBase({
                           </div>
                         )}
                       </div>
-
-                      {!!definition.footer?.html && (
-                        <FormSubmissionModelContextProvider
-                          elements={definition.elements}
-                          model={submission}
-                          formElementsConditionallyShown={
-                            formElementsConditionallyShown
-                          }
-                        >
-                          <OneBlinkFormFooter
-                            footer={definition.footer?.html}
-                          />
-                        </FormSubmissionModelContextProvider>
-                      )}
                     </form>
 
                     {!isReadOnly && !isPreview && (
