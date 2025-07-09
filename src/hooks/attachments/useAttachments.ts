@@ -30,6 +30,7 @@ const useAttachments = (
               file.name,
               element,
               'You cannot upload an empty file.',
+              'EMPTY_FILE',
             )
           }
           const fileSizeInMB = file.size / 1024 / 1024
@@ -39,6 +40,7 @@ const useAttachments = (
               file.name,
               element,
               `File size ${fileSizeInMB.toFixed(2)}MB exceeds the allowed maximum of ${element.maxFileSize}MB.`,
+              'EXCEEDS_MAX_SIZE',
             )
           }
           const result = await correctFileOrientation(file)

@@ -8,6 +8,7 @@ export function generateErrorAttachment(
   fileName: string,
   element: FormTypes.FormElementBinaryStorage,
   errorMessage: string,
+  errorType?: attachmentsService.AttachmentError['errorType'],
 ): attachmentsService.AttachmentError {
   return {
     _id: uuid(),
@@ -16,6 +17,7 @@ export function generateErrorAttachment(
     isPrivate: element.storageType !== 'public',
     type: 'ERROR',
     errorMessage,
+    errorType,
   }
 }
 
