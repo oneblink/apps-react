@@ -107,19 +107,54 @@ export function getInvalidAttachment(
 export function validateAttachments(
   value: FormElementBinaryStorageValue[] | undefined,
 ): string[] {
-  const invalidAttachmentNames = value?.reduce(
-    (invalidAttachmentNames: string[], att) => {
-      const attachmentName = getInvalidAttachment(att)?.fileName
-      if (attachmentName) {
-        invalidAttachmentNames.push(attachmentName)
-      }
-      return invalidAttachmentNames
-    },
-    [],
-  )
-  if (invalidAttachmentNames?.length) {
-    return [`${invalidAttachmentNames.join(', ')} could not be uploaded.`]
+  const exceedsMaximumSize = value?.some((att) => {
+    const invalidAttachment = getInvalidAttachment(att)
+    if (
+      invalidAttachment?.fileName &&
+      invalidAttachment?.errorType === 'EXCEEDS_MAX_SIZE'
+    ) {
+      return true
+    }
+  })
+  const emptyFiles = value?.some((att) => {
+    const invalidAttachment = getInvalidAttachment(att)
+    if (
+      invalidAttachment?.fileName &&
+      invalidAttachment?.errorType === 'EMPTY_FILE'
+    ) {
+      return true
+    }
+  })
+  if (!exceedsMaximumSize && !emptyFiles) {
+    const invalidAttachmentNames = value?.reduce(
+      (invalidAttachmentNames: string[], att) => {
+        const attachmentName = getInvalidAttachment(att)?.fileName
+        if (attachmentName) {
+          invalidAttachmentNames.push(attachmentName)
+        }
+        return invalidAttachmentNames
+      },
+      [],
+    )
+    if (invalidAttachmentNames?.length) {
+      return [`${invalidAttachmentNames.join(', ')} could not be uploaded.`]
+    }
+    return []
   }
+  let errorMessage
+  if (exceedsMaximumSize) {
+    errorMessage = 'One or more of the files exceed the maximum size allowed.'
+  }
+  if (emptyFiles) {
+    const emptyMessage = 'One or more of the files are empty.'
+    errorMessage = errorMessage
+      ? `${errorMessage} ${emptyMessage}`
+      : emptyMessage
+  }
+  if (errorMessage) {
+    return [errorMessage]
+  }
+
   return []
 }
 
