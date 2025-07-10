@@ -367,8 +367,8 @@ function parsePreFillData(
             element.elements,
             v
               ? {
-                  ...v,
                   ...generateNewRepeatableSetEntry(),
+                  ...v,
                 }
               : undefined,
           )
