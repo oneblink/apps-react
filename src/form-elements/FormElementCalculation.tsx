@@ -214,7 +214,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         },
       )
     },
-    [],
+    [form.elements],
   )
 
   const { calculation, hasError } = React.useMemo(() => {
