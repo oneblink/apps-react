@@ -9,6 +9,7 @@ import { FormElementValueChangeHandler } from '../types/form'
 import { formElementsService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
 import MaterialIcon from '../components/MaterialIcon'
+import useFormDefinition from '../hooks/useFormDefinition'
 
 type Props = {
   element: FormTypes.CalculationElement
@@ -33,6 +34,7 @@ function roundToFixed(number: number, decimals: number) {
 
 function FormElementCalculation({ element, onChange, value }: Props) {
   const { formSubmissionModel } = useFormSubmissionModel()
+  const form = useFormDefinition()
 
   const htmlValue = React.useMemo(() => {
     let htmlTemplate
@@ -175,6 +177,24 @@ function FormElementCalculation({ element, onChange, value }: Props) {
                   },
                   0,
                 )
+              }
+
+              // if the value is an object, we take the element name and check to see
+              // if this element is a nested form element. If so, we take the next nested element name,
+              // find its value in the object and return it for the next iteration to handle
+
+              if (typeof elementValue === 'object') {
+                const formFormElement = formElementsService.findFormElement(
+                  form.elements,
+                  (e) =>
+                    e.type === 'form' && e.name === nestedElementNames[index],
+                )
+                const nextElementName = nestedElementNames[index + 1]
+                if (formFormElement && nextElementName) {
+                  return (elementValue as Record<string, unknown>)[
+                    nextElementName
+                  ]
+                }
               }
 
               // "compliance" form element has an object value with a "value" property.
