@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `repeatableSet` being re-animated when lookup fires
 
+### Changed
+
+- `calculation` element logic to allow elements referenced in sub forms
+
 ## [8.7.0] - 2025-07-10
 
 ### Added
