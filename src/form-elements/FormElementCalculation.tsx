@@ -182,7 +182,6 @@ function FormElementCalculation({ element, onChange, value }: Props) {
               // if the value is an object, we take the element name and check to see
               // if this element is a nested form element. If so, we take the next nested element name,
               // find its value in the object and return it for the next iteration to handle
-
               if (typeof elementValue === 'object') {
                 const formFormElement = formElementsService.findFormElement(
                   form.elements,
