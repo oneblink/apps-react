@@ -66,6 +66,8 @@ import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
+import checkSnapshotsAreReadyForUpload from './services/checkSnapshotsAreReadyForUpload'
+import uploadSnapshots from './services/uploadSnapshots'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -676,12 +678,35 @@ function OneBlinkFormBase({
     })
   }, [definition.elements, setFormSubmission, submission, captchaType])
 
+  const checkSnapshotsAreReady = React.useCallback(
+    (submission: SubmissionTypes.S3SubmissionData['submission']) => {
+      if (!checkSnapshotsAreReadyForUpload(definition, submission)) {
+        bulmaToast.toast({
+          message:
+            'arcGIS map snapshots are still being generated, please wait for them to finish before trying again.',
+          type: 'is-primary',
+          extraClasses: 'ob-toast cypress-still-generating-toast',
+          duration: 4000,
+          pauseOnHover: true,
+          closeOnClick: true,
+        })
+        return false
+      }
+
+      return true
+    },
+    [definition],
+  )
+
   const prepareSubmission = React.useCallback(
     async (
       continueWhilstAttachmentsAreUploading: boolean,
     ): Promise<ReturnType<typeof getCurrentSubmissionData> | undefined> => {
       const submissionData = getCurrentSubmissionData(false)
       if (!checkBsbAreValidating(submissionData.submission)) {
+        return
+      }
+      if (!checkSnapshotsAreReady(submissionData.submission)) {
         return
       }
       if (formElementsValidation) {
@@ -702,6 +727,10 @@ function OneBlinkFormBase({
       }
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
         return
+      }
+
+      if (!continueWhilstAttachmentsAreUploading) {
+        await uploadSnapshots(definition, submissionData.submission)
       }
       if (
         !continueWhilstAttachmentsAreUploading &&
@@ -774,6 +803,7 @@ function OneBlinkFormBase({
       checkAttachmentsCanBeSubmitted,
       checkBsbAreValidating,
       checkBsbsCanBeSubmitted,
+      checkSnapshotsAreReady,
       definition,
       formElementsValidation,
       getCurrentSubmissionData,

@@ -30,9 +30,11 @@ import OnLoading from '../components/renderer/OnLoading'
 import MaterialIcon from './MaterialIcon'
 
 import useIsPageVisible from '../hooks/useIsPageVisible'
+import { prepareNewAttachment } from '../services/attachments'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
+import { urlToBlobAsync } from '../services/blob-utils'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
@@ -135,39 +137,83 @@ function FormElementArcGISWebMap({
   const [activeSketchToolMenu, setActiveSketchToolMenu] =
     React.useState<SketchCreateTool>()
 
+  const [_screenshot, setScreenshot] = React.useState<string>()
+
+  const handleChange = React.useCallback(
+    async (value: ArcGISWebMapElementValue | undefined) => {
+      console.log('setting screenshot to undefined')
+      onChange(element, {
+        value: {
+          ...value,
+          // @ts-expect-error - POC
+          snapshot: prepareNewAttachment(
+            new Blob(),
+            `${element.id}-screenshot.png`,
+            element,
+          ),
+        },
+      })
+      try {
+        const screenshot = await mapViewRef.current?.takeScreenshot()
+        if (!screenshot?.dataUrl) return
+        console.log('setting screenshot', screenshot)
+        setScreenshot(screenshot?.dataUrl)
+        onChange(element, {
+          value: {
+            ...value,
+            // @ts-expect-error - POC
+            snapshot: prepareNewAttachment(
+              await urlToBlobAsync(screenshot.dataUrl),
+              `${element.id}-screenshot.png`,
+              element,
+            ),
+          },
+        })
+      } catch (error) {
+        console.error('error taking screenshot - skipping', error)
+        onChange(element, {
+          value: {
+            ...value,
+            // @ts-expect-error - POC
+            snapshot: undefined,
+          },
+        })
+      }
+
+      setIsDirty()
+    },
+    [element, onChange, setIsDirty],
+  )
+
   const updateDrawingInputSubmissionValue = React.useCallback(() => {
     const updatedGraphics = drawingLayerRef.current?.graphics
       .toArray()
       .map((graphic) => graphic.toJSON())
 
-    onChange(element, {
-      value: {
-        ...(value || {}),
-        drawingLayer: updatedGraphics,
-        userInput: updatedGraphics,
-      },
+    handleChange({
+      ...(value || {}),
+      drawingLayer: updatedGraphics,
+      userInput: updatedGraphics,
     })
 
     setIsDirty()
-  }, [element, onChange, setIsDirty, value])
+  }, [handleChange, setIsDirty, value])
 
   const updateMapViewSubmissionValue = React.useCallback(() => {
     const zoom = mapViewRef.current?.zoom
     const latitude = mapViewRef.current?.center.latitude
     const longitude = mapViewRef.current?.center.longitude
     if (zoom && latitude && longitude) {
-      onChange(element, {
-        value: {
-          ...(value || {}),
-          view: {
-            zoom,
-            latitude,
-            longitude,
-          },
+      handleChange({
+        ...(value || {}),
+        view: {
+          zoom,
+          latitude,
+          longitude,
         },
       })
     }
-  }, [element, onChange, value])
+  }, [handleChange, value])
 
   const getGeometryPoints = (
     geom: __esri.Geometry,
@@ -304,7 +350,7 @@ function FormElementArcGISWebMap({
     const createListener = sketchToolRef.current?.on(
       'create',
       throttle((sketchEvent: __esri.SketchCreateEvent) => {
-        if (sketchEvent.state === 'active') {
+        if (sketchEvent.state === 'active' && sketchEvent.tool !== 'circle') {
           addMeasurementLabels([sketchEvent.graphic])
         }
         if (sketchEvent.state === 'complete') {
@@ -710,6 +756,7 @@ function FormElementArcGISWebMap({
         id={id}
         aria-describedby={props['aria-describedby']}
       />
+      <img src={_screenshot} alt="Screenshot" />
       <div id={drawingOptionsContainerId}>
         {!!activeSketchToolMenu && sketchToolRef.current && (
           <DrawingOptionsList
