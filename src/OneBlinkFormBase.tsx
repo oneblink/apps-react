@@ -712,6 +712,10 @@ function OneBlinkFormBase({
 
       if (captchaType === 'INVISIBLE') {
         if (captchasRef.current.length) {
+          if (isOffline) {
+            setPromptOfflineSubmissionAttempt(true)
+            return
+          }
           const tokenResults = await Promise.allSettled(
             captchasRef.current.map((captcha) => captcha.executeAsync()),
           )
