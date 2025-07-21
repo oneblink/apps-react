@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Do not mark changes as unsaved when collapsing or expanding sections
+
 ### Fixed
 
 - `repeatableSet` being re-animated when lookup fires
