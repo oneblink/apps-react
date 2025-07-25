@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `repeatableSet` being re-animated when lookup fires
+- esri layers order not being respected
 
 ### Changed
 

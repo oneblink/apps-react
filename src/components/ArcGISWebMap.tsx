@@ -440,7 +440,9 @@ function FormElementArcGISWebMap({
     clearMeasurementLabels,
   ])
 
-  const [initialStringifedLayers] = useState(() => JSON.stringify(value?.layers))
+  const [initialStringifedLayers] = React.useState(() =>
+    JSON.stringify(value?.layers),
+  )
   const stringifedLayersRef = React.useRef<string>(initialStringifedLayers)
 
   const onSubmissionValueChange = React.useCallback(() => {
