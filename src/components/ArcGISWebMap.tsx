@@ -11,7 +11,6 @@ import BaseMapGallery from '@arcgis/core/widgets/BasemapGallery'
 import Sketch from '@arcgis/core/widgets/Sketch'
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer'
 import Graphic from '@arcgis/core/Graphic'
-import Layer from '@arcgis/core/layers/Layer'
 import Popup from '@arcgis/core/widgets/Popup'
 import {
   Point,
@@ -121,7 +120,6 @@ function FormElementArcGISWebMap({
   const mapViewRef = React.useRef<MapView>()
   const measurementLayerRef = React.useRef<GraphicsLayer>()
 
-  const [overlayLayerIds, setOverlayLayerIds] = React.useState<string[]>()
   const [loadError, setLoadError] = React.useState<Error>()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const isPageVisible = useIsPageVisible()
@@ -442,31 +440,25 @@ function FormElementArcGISWebMap({
     clearMeasurementLabels,
   ])
 
+  const [initialStringifedLayers] = React.useState(() =>
+    JSON.stringify(value?.layers),
+  )
+  const stringifedLayersRef = React.useRef<string>(initialStringifedLayers)
+
   const onSubmissionValueChange = React.useCallback(() => {
     const view = mapViewRef.current
     const map = mapViewRef.current?.map
     if (!view || !map) return
 
-    const newLayerIds = value?.layers?.map((l) => l.id)
-    // remove map layers no longer in submission value
-    if (overlayLayerIds) {
-      const layersToRemove = overlayLayerIds.reduce((toRemove: Layer[], id) => {
-        if (!newLayerIds?.includes(id)) {
-          const layer = map.layers.find((layer) => layer.id === id)
-          if (layer) toRemove.push(layer)
-        }
-        return toRemove
-      }, [])
-      map.layers.removeMany(layersToRemove)
-    }
+    // if the layers have changed, remove all layers and repaint
+    const currentStringifedLayers = JSON.stringify(value?.layers)
+    if (stringifedLayersRef.current !== currentStringifedLayers) {
+      stringifedLayersRef.current = currentStringifedLayers
+      // remove all layers and repaint
+      map.layers.removeAll()
 
-    if (value?.layers) {
-      // determine if a layer is new or existing and handle accordingly
-      for (const layer of value.layers) {
-        const existingLayer = map.layers.find(
-          (mapLayer) => mapLayer.id === layer.id,
-        )
-        if (!existingLayer) {
+      if (value?.layers) {
+        for (const layer of value.layers) {
           const newLayer = new GraphicsLayer({
             title: layer.title as string,
             id: layer.id,
@@ -475,27 +467,17 @@ function FormElementArcGISWebMap({
           newLayer.visible =
             typeof layer.visible === 'boolean' ? layer.visible : true
           map.layers.add(newLayer)
-        } else if (existingLayer && existingLayer.type === 'graphics') {
-          const existingGraphicLayer = existingLayer as GraphicsLayer
-          existingGraphicLayer.title = layer.title
-          existingGraphicLayer.graphics.removeAll()
-          existingGraphicLayer.addMany(
-            layer.graphics.map((g) => Graphic.fromJSON(g)),
-          )
-          existingGraphicLayer.visible =
-            typeof layer.visible === 'boolean' ? layer.visible : true
         }
       }
     }
 
-    // finally, set the new layer ids in state
-    setOverlayLayerIds(newLayerIds)
-
-    // update the web map's drawing layers
+    // add the web map's drawing layers back
     const drawingLayer = drawingLayerRef.current
     if (value?.drawingLayer && drawingLayer) {
       drawingLayer.removeAll()
       drawingLayer.addMany(value.drawingLayer.map((g) => Graphic.fromJSON(g)))
+      map.layers.add(drawingLayer)
+      map.layers.reorder(drawingLayer, map.layers.length - 1)
     }
     if (value?.view) {
       view.zoom = value.view.zoom
@@ -504,7 +486,7 @@ function FormElementArcGISWebMap({
         longitude: value.view.longitude,
       })
     }
-  }, [overlayLayerIds, value])
+  }, [value])
 
   React.useEffect(() => {
     if (!isLoading && mapViewRef.current) {
