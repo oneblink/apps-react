@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Do not mark changes as unsaved when collapsing or expanding sections
+
 ### Fixed
 
 - invisible reCAPTCHAs and offline submit hanging
+- expanding/collapsing sections triggering dirty state
 
 ## [8.7.1] - 2025-07-25
 
