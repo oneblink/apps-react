@@ -947,69 +947,54 @@ function OneBlinkFormBase({
         return
       }
 
-      // Do not mark changes as unsaved when collapsing or expanding sections
-      if (element.type !== 'section') {
-        setUnsavedChangesState((current) => ({
-          ...current,
-          isDirty: true,
-        }))
-      }
-
-      if (element.type === 'section') {
-        setFormSubmission((currentFormSubmission) => {
-          const currentSectionState = currentFormSubmission.sectionState || []
-          const existingSectionIndex = currentSectionState.findIndex(
-            (section) => section.id === element.id,
-          )
-          const sectionIsInState = existingSectionIndex >= 0
-          let newSectionState: SectionState
-          if (sectionIsInState && deleteSection) {
-            newSectionState = currentSectionState.filter(
-              (section) => section.id !== element.id,
+      switch (element.type) {
+        case 'section': {
+          setFormSubmission((currentFormSubmission) => {
+            const currentSectionState = currentFormSubmission.sectionState || []
+            const existingSectionIndex = currentSectionState.findIndex(
+              (section) => section.id === element.id,
             )
-          } else if (sectionIsInState) {
-            // Update state of the section
-            newSectionState = currentSectionState.map((section, index) =>
-              index === existingSectionIndex
-                ? {
-                    ...section,
-                    state:
-                      section.state === 'COLLAPSED' ? 'EXPANDED' : 'COLLAPSED',
-                  }
-                : section,
-            )
-          } else {
-            // Add the section to state
-            newSectionState = [
-              ...currentSectionState,
-              {
-                id: element.id,
-                state: element.isCollapsed ? 'EXPANDED' : 'COLLAPSED',
-              },
-            ]
-          }
+            const sectionIsInState = existingSectionIndex >= 0
+            let newSectionState: SectionState
+            if (sectionIsInState && deleteSection) {
+              newSectionState = currentSectionState.filter(
+                (section) => section.id !== element.id,
+              )
+            } else if (sectionIsInState) {
+              // Update state of the section
+              newSectionState = currentSectionState.map((section, index) =>
+                index === existingSectionIndex
+                  ? {
+                      ...section,
+                      state:
+                        section.state === 'COLLAPSED'
+                          ? 'EXPANDED'
+                          : 'COLLAPSED',
+                    }
+                  : section,
+              )
+            } else {
+              // Add the section to state
+              newSectionState = [
+                ...currentSectionState,
+                {
+                  id: element.id,
+                  state: element.isCollapsed ? 'EXPANDED' : 'COLLAPSED',
+                },
+              ]
+            }
 
-          return {
-            ...currentFormSubmission,
-            sectionState: newSectionState,
-          }
-        })
-      }
-      // dont update the last element updated for elements the user cannot set the value of
-      else if (element.type === 'summary' || element.type === 'calculation') {
-        setFormSubmission((currentFormSubmission) => ({
-          ...currentFormSubmission,
-          submission: {
-            ...currentFormSubmission.submission,
-            [element.name]:
-              typeof value === 'function'
-                ? value(currentFormSubmission.submission[element.name])
-                : value,
-          },
-        }))
-      } else {
-        setFormSubmission((currentFormSubmission) => {
-          return {
+            return {
+              ...currentFormSubmission,
+              sectionState: newSectionState,
+            }
+          })
+          break
+        }
+        // Don't update the last element updated for elements the user cannot set the value of
+        case 'summary':
+        case 'calculation': {
+          setFormSubmission((currentFormSubmission) => ({
             ...currentFormSubmission,
             submission: {
               ...currentFormSubmission.submission,
@@ -1018,23 +1003,43 @@ function OneBlinkFormBase({
                   ? value(currentFormSubmission.submission[element.name])
                   : value,
             },
-            lastElementUpdated: element,
-            executedLookups: {
-              ...currentFormSubmission.executedLookups,
-              [element.name]:
-                typeof executedLookups === 'function'
-                  ? executedLookups(
-                      currentFormSubmission.executedLookups?.[element.name],
-                    )
-                  : executedLookups,
-            },
-            sectionState: sectionState
-              ? typeof sectionState === 'function'
-                ? sectionState(currentFormSubmission.sectionState)
-                : sectionState
-              : currentFormSubmission.sectionState,
-          }
-        })
+          }))
+          break
+        }
+        default: {
+          setUnsavedChangesState((current) => ({
+            ...current,
+            isDirty: true,
+          }))
+
+          setFormSubmission((currentFormSubmission) => {
+            return {
+              ...currentFormSubmission,
+              submission: {
+                ...currentFormSubmission.submission,
+                [element.name]:
+                  typeof value === 'function'
+                    ? value(currentFormSubmission.submission[element.name])
+                    : value,
+              },
+              lastElementUpdated: element,
+              executedLookups: {
+                ...currentFormSubmission.executedLookups,
+                [element.name]:
+                  typeof executedLookups === 'function'
+                    ? executedLookups(
+                        currentFormSubmission.executedLookups?.[element.name],
+                      )
+                    : executedLookups,
+              },
+              sectionState: sectionState
+                ? typeof sectionState === 'function'
+                  ? sectionState(currentFormSubmission.sectionState)
+                  : sectionState
+                : currentFormSubmission.sectionState,
+            }
+          })
+        }
       }
     },
     [disabled, setFormSubmission],

@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - invisible reCAPTCHAs and offline submit hanging
-- expanding/collapsing sections triggering dirty state
+- expanding/collapsing sections, calculations and summary elements triggering dirty state
 
 ## [8.7.1] - 2025-07-25
 
