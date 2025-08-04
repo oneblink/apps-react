@@ -450,9 +450,12 @@ function FormElementArcGISWebMap({
     const map = mapViewRef.current?.map
     if (!view || !map) return
 
-    // if the layers have changed, remove all layers and repaint
-    const currentStringifedLayers = JSON.stringify(value?.layers)
-    if (stringifedLayersRef.current !== currentStringifedLayers) {
+    // if the layers have changed or if the map has no layers, remove all layers and repaint
+    const currentStringifedLayers = JSON.stringify(value?.layers, null, 2)
+    if (
+      stringifedLayersRef.current !== currentStringifedLayers ||
+      !map.layers.length
+    ) {
       stringifedLayersRef.current = currentStringifedLayers
       // remove all layers and repaint
       map.layers.removeAll()
