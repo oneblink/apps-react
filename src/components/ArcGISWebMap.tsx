@@ -451,7 +451,7 @@ function FormElementArcGISWebMap({
     if (!view || !map) return
 
     // if the layers have changed or if the map has no layers, remove all layers and repaint
-    const currentStringifedLayers = JSON.stringify(value?.layers, null, 2)
+    const currentStringifedLayers = JSON.stringify(value?.layers)
     if (
       stringifedLayersRef.current !== currentStringifedLayers ||
       !map.layers.length
