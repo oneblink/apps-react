@@ -440,10 +440,7 @@ function FormElementArcGISWebMap({
     clearMeasurementLabels,
   ])
 
-  const [initialStringifedLayers] = React.useState(() =>
-    JSON.stringify(value?.layers),
-  )
-  const stringifedLayersRef = React.useRef<string>(initialStringifedLayers)
+  const stringifedLayersRef = React.useRef<string>('')
 
   const onSubmissionValueChange = React.useCallback(() => {
     const view = mapViewRef.current
@@ -496,8 +493,7 @@ function FormElementArcGISWebMap({
       onSubmissionValueChange()
     }
     // only run the above when the submission value changes or the map finishes loading
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, isLoading])
+  }, [onSubmissionValueChange, isLoading])
 
   const drawingOptionsContainerId = `OneBlinkDrawingOptionsSelector-${element.id}`
 
