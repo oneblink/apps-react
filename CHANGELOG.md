@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.8.0] - 2025-08-04
+
 ### Fixed
 
 - invisible reCAPTCHAs and offline submit hanging
 - expanding/collapsing sections, calculations and summary elements triggering dirty state
 - ESRI map layers not rendering initial value
+
+### Dependencies
+
+- update [@oneblink/sdk-core](https://www.npmjs.com/package/@oneblink/sdk-core) to [8.6.0](https://github.com/oneblink/sdk-core-js/releases/tag/v8.6.0) (from [8.6.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [8.7.1] - 2025-07-25
 
