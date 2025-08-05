@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- arc gis image download to data manager
+
 ## [8.8.0] - 2025-08-04
 
 ### Fixed

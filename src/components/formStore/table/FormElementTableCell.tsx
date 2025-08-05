@@ -3,6 +3,7 @@ import { Link, Typography } from '@mui/material'
 import { localisationService } from '@oneblink/apps'
 import {
   APINSWTypes,
+  ArcGISTypes,
   FormTypes,
   GeoscapeTypes,
   GoogleTypes,
@@ -85,6 +86,16 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
           file={unknown as React.ComponentProps<typeof FileChip>['file']}
         />
       )
+    }
+
+    case 'arcGISWebMap': {
+      const file = (unknown as ArcGISTypes.ArcGISWebMapElementValue | undefined)
+        ?.snapshotImage
+      if (file) {
+        return <FileChip file={file} />
+      } else {
+        break
+      }
     }
 
     case 'textarea': {
@@ -465,7 +476,6 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     case 'captcha':
     case 'image':
     case 'heading':
-    case 'arcGISWebMap':
     case 'summary':
     case 'freshdeskDependentField':
     case 'compliance': {
