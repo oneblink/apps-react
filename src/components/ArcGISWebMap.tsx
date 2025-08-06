@@ -40,6 +40,12 @@ type Props = {
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   'aria-describedby'?: string
   setIsDirty: () => void
+  takeScreenShotRef: React.MutableRefObject<
+    | (() => Promise<{
+        dataUrl: string
+      }>)
+    | undefined
+  >
 }
 
 type SketchCreateTool = Parameters<Sketch['create']>[0]
@@ -109,6 +115,7 @@ function FormElementArcGISWebMap({
   value,
   onChange,
   setIsDirty,
+  takeScreenShotRef,
   ...props
 }: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
@@ -633,6 +640,12 @@ function FormElementArcGISWebMap({
         // once the view has loaded
         view.when(() => {
           mapViewRef.current = view
+          takeScreenShotRef.current = async () => {
+            const screenshot = await view.takeScreenshot()
+            return {
+              dataUrl: screenshot.dataUrl,
+            }
+          }
           setIsLoading(false)
         })
       } catch (e) {
@@ -646,7 +659,7 @@ function FormElementArcGISWebMap({
       setIsLoading(true)
       loadMap()
     }
-  }, [drawingOptionsContainerId, element, isLoading, value])
+  }, [drawingOptionsContainerId, element, isLoading, takeScreenShotRef, value])
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -684,7 +697,11 @@ function FormElementArcGISWebMap({
 
   return (
     <>
-      {isLoading && <OnLoading />}
+      {isLoading && (
+        <div className="figure-content-absolute-center">
+          <OnLoading small />
+        </div>
+      )}
       <div
         className="arcgis-web-map"
         ref={ref}

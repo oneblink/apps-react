@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid'
 import { blobToCanvas, getBlobOrientation } from './blob-utils'
 
 export function generateErrorAttachment(
-  blob: Blob,
+  blob: Blob | undefined,
   fileName: string,
   element: FormTypes.FormElementBinaryStorage,
   errorMessage: string,

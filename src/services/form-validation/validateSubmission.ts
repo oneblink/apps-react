@@ -13,6 +13,7 @@ import {
   checkFileNameIsValid,
   getCleanRepeatableSetConfiguration,
   getCleanDateRangeConfiguration,
+  validateAttachments,
 } from './validators'
 import generateCivicaNameRecordElements from '../generateCivicaNameRecordElements'
 import generateFreshdeskDependentFieldElements from '../generateFreshdeskDependentFieldElements'
@@ -692,10 +693,29 @@ export default function validateSubmission({
           break
         }
         case 'arcGISWebMap': {
+          const arcGISWebMapElementValue = value as
+            | ArcGISWebMapElementValue
+            | undefined
           const errorMessages = validationExtensions.presence(
-            (value as ArcGISWebMapElementValue)?.userInput,
+            arcGISWebMapElementValue?.userInput,
             formElement,
             'Required',
+          )
+
+          errorMessages.push(
+            ...validators.length(
+              arcGISWebMapElementValue?.snapshotImages || [],
+              {
+                minimum: formElement.minSnapshotImages,
+                maximum: formElement.maxSnapshotImages,
+                tooLong: 'Cannot capture more than %{count} image(s)',
+                tooShort: 'Must capture at least %{count} image(s)',
+              },
+            ),
+          )
+
+          errorMessages.push(
+            ...validateAttachments(arcGISWebMapElementValue?.snapshotImages),
           )
 
           if (errorMessages.length) {
