@@ -89,13 +89,17 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
     }
 
     case 'arcGISWebMap': {
-      const file = (unknown as ArcGISTypes.ArcGISWebMapElementValue | undefined)
-        ?.snapshotImage
-      if (file) {
-        return <FileChip file={file} />
-      } else {
+      const arcGISWebMapElementValue = unknown as
+        | ArcGISTypes.ArcGISWebMapElementValue
+        | undefined
+      if (!arcGISWebMapElementValue?.snapshotImages?.length) {
         break
       }
+      return (
+        <FilesElementDataTableCellContent
+          value={arcGISWebMapElementValue.snapshotImages}
+        />
+      )
     }
 
     case 'textarea': {
