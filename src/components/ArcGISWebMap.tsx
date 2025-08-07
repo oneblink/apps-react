@@ -478,13 +478,17 @@ function FormElementArcGISWebMap({
       }
     }
 
-    // add the web map's drawing layers back
+    // add the web map's drawing and measurement layers back
     const drawingLayer = drawingLayerRef.current
     if (value?.drawingLayer && drawingLayer) {
       drawingLayer.removeAll()
       drawingLayer.addMany(value.drawingLayer.map((g) => Graphic.fromJSON(g)))
       map.layers.add(drawingLayer)
       map.layers.reorder(drawingLayer, map.layers.length - 1)
+    }
+    if (measurementLayerRef.current) {
+      map.layers.add(measurementLayerRef.current)
+      map.layers.reorder(measurementLayerRef.current, map.layers.length - 1)
     }
     if (value?.view) {
       view.zoom = value.view.zoom
