@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FormTypes } from '@oneblink/types'
+import { ArcGISTypes, FormTypes } from '@oneblink/types'
 import MapView from '@arcgis/core/views/MapView'
 import WebMap from '@arcgis/core/WebMap'
 import Home from '@arcgis/core/widgets/Home'
@@ -33,15 +33,20 @@ import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
 
+export function generateArcGISAutomatedSnapshotFileName(
+  element: FormTypes.ArcGISWebMapElement,
+) {
+  return `${element.name}_automated.png`
+}
+
 type Props = {
   element: FormTypes.ArcGISWebMapElement
   id: string
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   'aria-describedby'?: string
-  setIsDirty: () => void
   takeScreenShotRef: React.MutableRefObject<
-    | (() => Promise<{
+    | ((view?: ArcGISTypes.ArcGISWebMapElementValue['view']) => Promise<{
         dataUrl: string
       }>)
     | undefined
@@ -114,7 +119,6 @@ function FormElementArcGISWebMap({
   id,
   value,
   onChange,
-  setIsDirty,
   takeScreenShotRef,
   ...props
 }: Props) {
@@ -145,16 +149,19 @@ function FormElementArcGISWebMap({
       .toArray()
       .map((graphic) => graphic.toJSON())
 
+    const fileName = generateArcGISAutomatedSnapshotFileName(element)
     onChange(element, {
-      value: {
-        ...(value || {}),
+      value: (existingValue) => ({
+        ...(existingValue || {}),
         drawingLayer: updatedGraphics,
         userInput: updatedGraphics,
-      },
+        // Remove automated snapshot images when drawing again
+        snapshotImages: existingValue?.snapshotImages?.filter(
+          (snapshotImage) => snapshotImage.fileName !== fileName,
+        ),
+      }),
     })
-
-    setIsDirty()
-  }, [element, onChange, setIsDirty, value])
+  }, [element, onChange])
 
   const updateMapViewSubmissionValue = React.useCallback(() => {
     const zoom = mapViewRef.current?.zoom
@@ -162,17 +169,17 @@ function FormElementArcGISWebMap({
     const longitude = mapViewRef.current?.center.longitude
     if (zoom && latitude && longitude) {
       onChange(element, {
-        value: {
-          ...(value || {}),
+        value: (existingValue) => ({
+          ...(existingValue || {}),
           view: {
             zoom,
             latitude,
             longitude,
           },
-        },
+        }),
       })
     }
-  }, [element, onChange, value])
+  }, [element, onChange])
 
   const getGeometryPoints = (
     geom: __esri.Geometry,
@@ -644,7 +651,36 @@ function FormElementArcGISWebMap({
         // once the view has loaded
         view.when(() => {
           mapViewRef.current = view
-          takeScreenShotRef.current = async () => {
+          takeScreenShotRef.current = async (
+            viewToScreenShot?: ArcGISTypes.ArcGISWebMapElementValue['view'],
+          ) => {
+            if (viewToScreenShot) {
+              await view.goTo(
+                {
+                  center: [
+                    viewToScreenShot.longitude,
+                    viewToScreenShot.latitude,
+                  ],
+                  zoom: viewToScreenShot.zoom,
+                },
+                {
+                  animate: true,
+                },
+              )
+              console.log('waiting for view to render visible')
+              await new Promise((resolve) => {
+                if (!view.updating) {
+                  resolve(undefined)
+                } else {
+                  const handle = view.watch('updating', (updating) => {
+                    if (!updating) {
+                      handle.remove()
+                      resolve(undefined)
+                    }
+                  })
+                }
+              })
+            }
             const screenshot = await view.takeScreenshot()
             return {
               dataUrl: screenshot.dataUrl,

@@ -19,7 +19,8 @@ type Props = {
   isContentTypeImage?: boolean
   fileName: string
   attachmentUrl: string | undefined | null
-  onRemove: () => void
+  /** If set to `undefined`, the remove button will be hidden */
+  onRemove: (() => void) | undefined
   onDownload?: () => void
   onRetry?: () => void
   progress: undefined | number
