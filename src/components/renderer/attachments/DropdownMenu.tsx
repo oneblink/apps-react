@@ -7,7 +7,8 @@ import MaterialIcon from '../../MaterialIcon'
 
 interface Props {
   element: FormTypes.FilesElement
-  onRemove: () => void
+  /** If set to `undefined`, the remove button will be hidden */
+  onRemove: (() => void) | undefined
   onDownload?: () => void
   onRetry?: () => void
   attachmentUrl: string | null | undefined
@@ -95,18 +96,20 @@ const DropdownMenu = ({
               <MaterialIcon className="icon-small">open_in_new</MaterialIcon>
             </a>
           )}
-          <a
-            className={clsx('dropdown-item cypress-file-remove-button', {
-              'ob-files__menu-remove-hidden': element.readOnly,
-            })}
-            onClick={() => {
-              hideMore()
-              onRemove()
-            }}
-            role="menuitem"
-          >
-            Remove
-          </a>
+          {onRemove && (
+            <a
+              className={clsx('dropdown-item cypress-file-remove-button', {
+                'ob-files__menu-remove-hidden': element.readOnly,
+              })}
+              onClick={() => {
+                hideMore()
+                onRemove()
+              }}
+              role="menuitem"
+            >
+              Remove
+            </a>
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { FormElementBinaryStorageValue } from '../../types/attachments'
 import {
   CaptchaType,
   ExecutedLookups,
@@ -9,10 +8,8 @@ import validateSubmission from './validateSubmission'
 import {
   generateLookupValidationMessage,
   getInvalidAttachment,
-  validateAttachments,
 } from './validators'
 import { validators } from './validate-dot-js'
-import { Value as FormElementComplianceValue } from '../../form-elements/FormElementCompliance'
 
 const validationExtensions = {
   lookups({
@@ -72,20 +69,6 @@ const validationExtensions = {
       return [attachmentError.errorMessage]
     }
     return []
-  },
-
-  attachments(
-    value:
-      | FormElementBinaryStorageValue[]
-      | FormElementComplianceValue
-      | undefined,
-  ) {
-    if (Array.isArray(value)) {
-      return validateAttachments(value)
-    }
-    return validateAttachments(
-      value?.files as FormElementBinaryStorageValue[] | undefined,
-    )
   },
 
   numberRegex(value: unknown, formElement: FormTypes.NumberElement) {

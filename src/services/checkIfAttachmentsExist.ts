@@ -1,4 +1,4 @@
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { ArcGISTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
 import { v4 as uuid } from 'uuid'
 import { attachmentsService } from '@oneblink/apps'
 
@@ -128,6 +128,7 @@ function checkIfAttachmentsExistForFormElements(
         }
         break
       }
+      case 'arcGISWebMap':
       case 'camera':
       case 'draw':
       case 'compliance':
@@ -173,6 +174,22 @@ function checkIfAttachmentsExistForFormElements(
             if (newAttachments) {
               hasChanges = true
               result[formElement.name] = newAttachments
+            }
+            break
+          }
+          case 'arcGISWebMap': {
+            const arcGISWebMapElementValue =
+              value as ArcGISTypes.ArcGISWebMapElementValue
+            const snapshotImages = validateAttachmentsExists(
+              arcGISWebMapElementValue.snapshotImages,
+              attachmentRetentionInDays,
+            )
+            if (snapshotImages) {
+              hasChanges = true
+              result[formElement.name] = {
+                ...value,
+                snapshotImages,
+              }
             }
             break
           }
