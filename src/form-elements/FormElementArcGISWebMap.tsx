@@ -261,7 +261,7 @@ function FormElementArcGISWebMap({
                     value?.snapshotImages?.some(
                       (snapshotImage) =>
                         snapshotImage.fileName ===
-                        generateArcGISAutomatedSnapshotFileName(element),
+                        automatedSnapshotFileName,
                     )
                   }
                 >
