@@ -33,17 +33,12 @@ import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
 
-export function generateArcGISAutomatedSnapshotFileName(
-  element: FormTypes.ArcGISWebMapElement,
-) {
-  return `${element.name}_automated.png`
-}
-
 type Props = {
   element: FormTypes.ArcGISWebMapElement
   id: string
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
+  automatedSnapshotFileName: string
   'aria-describedby'?: string
   takeScreenShotRef: React.MutableRefObject<
     | ((view?: ArcGISTypes.ArcGISWebMapElementValue['view']) => Promise<{
@@ -120,6 +115,7 @@ function FormElementArcGISWebMap({
   value,
   onChange,
   takeScreenShotRef,
+  automatedSnapshotFileName,
   ...props
 }: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
@@ -149,7 +145,6 @@ function FormElementArcGISWebMap({
       .toArray()
       .map((graphic) => graphic.toJSON())
 
-    const fileName = generateArcGISAutomatedSnapshotFileName(element)
     onChange(element, {
       value: (existingValue) => ({
         ...(existingValue || {}),
@@ -157,11 +152,12 @@ function FormElementArcGISWebMap({
         userInput: updatedGraphics,
         // Remove automated snapshot images when drawing again
         snapshotImages: existingValue?.snapshotImages?.filter(
-          (snapshotImage) => snapshotImage.fileName !== fileName,
+          (snapshotImage) =>
+            snapshotImage.fileName !== automatedSnapshotFileName,
         ),
       }),
     })
-  }, [element, onChange])
+  }, [automatedSnapshotFileName, element, onChange])
 
   const updateMapViewSubmissionValue = React.useCallback(() => {
     const zoom = mapViewRef.current?.zoom

@@ -22,9 +22,11 @@ import { localisationService } from '@oneblink/apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { generateConfirmationFormElementName } from '../dynamic-elements'
 import { determineLookupButtonIsRequired } from './determineLookupButtonIsRequired'
-import { generateArcGISAutomatedSnapshotFileName } from '../../components/ArcGISWebMap'
 import { Value as FormElementComplianceValue } from '../../form-elements/FormElementCompliance'
-import { defaultAutoSnapshotButtonLabel } from '../../form-elements/FormElementArcGISWebMap'
+import {
+  defaultAutoSnapshotButtonLabel,
+  generateArcGISAutomatedSnapshotFileName,
+} from '../../form-elements/FormElementArcGISWebMap'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'

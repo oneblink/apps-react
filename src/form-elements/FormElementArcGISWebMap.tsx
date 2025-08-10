@@ -18,7 +18,6 @@ import { attachmentsService } from '@oneblink/apps'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../hooks/attachments/useAttachments'
 import CustomisableButtonInner from '../components/renderer/CustomisableButtonInner'
-import { generateArcGISAutomatedSnapshotFileName } from '../components/ArcGISWebMap'
 
 const ArcGISWebMap = React.lazy(() => import('../components/ArcGISWebMap'))
 export const defaultAutoSnapshotButtonLabel = 'Finish Drawing'
@@ -36,6 +35,12 @@ export function stringifyArcgisInput(
   value: ArcGISWebMapElementValue | undefined,
 ) {
   return JSON.stringify(value?.userInput)
+}
+
+export function generateArcGISAutomatedSnapshotFileName(
+  element: FormTypes.ArcGISWebMapElement,
+) {
+  return `${element.name}_automated.png`
 }
 
 function FormElementArcGISWebMap({
@@ -207,6 +212,7 @@ function FormElementArcGISWebMap({
                 value={value}
                 onChange={onChange}
                 takeScreenShotRef={takeScreenShotRef}
+                automatedSnapshotFileName={automatedSnapshotFileName}
               />
             </Suspense>
           </figure>
