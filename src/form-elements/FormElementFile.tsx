@@ -7,7 +7,8 @@ import { attachmentsService } from '@oneblink/apps'
 
 type Props = {
   element: FormTypes.FilesElement
-  onRemove: (id: string) => void
+  /** If set to `undefined`, the remove button will be hidden */
+  onRemove: ((id: string) => void) | undefined
   file: attachmentsService.Attachment
   disableUpload: boolean
   onChange: OnChange
@@ -24,11 +25,16 @@ const FormElementFile = ({
 }: Props) => {
   const attachmentResult = useAttachment(file, element, onChange, disableUpload)
 
-  const handleRemove = React.useCallback(() => {
-    if (!file.type) {
-      return onRemove(file.id)
+  const handleRemove = React.useMemo(() => {
+    if (!onRemove) {
+      return
     }
-    return onRemove(file._id)
+    return () => {
+      if (!file.type) {
+        return onRemove(file.id)
+      }
+      return onRemove(file._id)
+    }
   }, [file, onRemove])
 
   const handleDownload = React.useCallback(async () => {

@@ -22,6 +22,9 @@ import { localisationService } from '@oneblink/apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { generateConfirmationFormElementName } from '../dynamic-elements'
 import { determineLookupButtonIsRequired } from './determineLookupButtonIsRequired'
+import { generateArcGISAutomatedSnapshotFileName } from '../../components/ArcGISWebMap'
+import { Value as FormElementComplianceValue } from '../../form-elements/FormElementCompliance'
+import { defaultAutoSnapshotButtonLabel } from '../../form-elements/FormElementArcGISWebMap'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -141,7 +144,9 @@ export default function validateSubmission({
               formElement,
               executedLookups,
             }),
-            ...validationExtensions.attachments(value as undefined),
+            ...validateAttachments(
+              (value as FormElementComplianceValue | undefined)?.files,
+            ),
           ]
           if (errorMessages.length) {
             partialFormElementsValidation[formElement.name] = errorMessages[0]
@@ -545,9 +550,7 @@ export default function validateSubmission({
             )
           }
 
-          errorMessages.push(
-            ...validationExtensions.attachments(value as undefined),
-          )
+          errorMessages.push(...validateAttachments(value as undefined))
 
           const isValid =
             !Array.isArray(value) ||
@@ -701,22 +704,41 @@ export default function validateSubmission({
             formElement,
             'Required',
           )
+          const automatedSnapshotFileName =
+            generateArcGISAutomatedSnapshotFileName(formElement)
 
-          errorMessages.push(
-            ...validators.length(
-              arcGISWebMapElementValue?.snapshotImages || [],
-              {
-                minimum: formElement.minSnapshotImages,
-                maximum: formElement.maxSnapshotImages,
-                tooLong: 'Cannot capture more than %{count} image(s)',
-                tooShort: 'Must capture at least %{count} image(s)',
-              },
-            ),
-          )
+          if (formElement.manualSnapshotsEnabled) {
+            errorMessages.push(
+              ...validators.length(
+                (arcGISWebMapElementValue?.snapshotImages || []).filter(
+                  (snapshotImage) =>
+                    snapshotImage.fileName !== automatedSnapshotFileName,
+                ),
+                {
+                  minimum: formElement.minManualSnapshots,
+                  maximum: formElement.maxManualSnapshots,
+                  tooLong: 'Cannot capture more than %{count} image(s)',
+                  tooShort: 'Must capture at least %{count} image(s)',
+                },
+              ),
+            )
+          }
 
           errorMessages.push(
             ...validateAttachments(arcGISWebMapElementValue?.snapshotImages),
           )
+
+          if (
+            formElement.autoSnapshotViews?.length &&
+            arcGISWebMapElementValue?.snapshotImages?.filter(
+              (snapshotImage) =>
+                snapshotImage.fileName == automatedSnapshotFileName,
+            ).length !== formElement.autoSnapshotViews.length
+          ) {
+            errorMessages.push(
+              `Please press the "${formElement.autoSnapshotButton?.label || defaultAutoSnapshotButtonLabel}" button`,
+            )
+          }
 
           if (errorMessages.length) {
             partialFormElementsValidation[formElement.name] = errorMessages[0]
