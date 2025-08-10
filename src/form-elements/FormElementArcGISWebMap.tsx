@@ -81,7 +81,7 @@ function FormElementArcGISWebMap({
     [element, onChange],
   )
 
-  // Have a empty function to set is dirty because there are multiple ways
+  // An empty function to set is dirty because there are multiple ways
   // to provide input into this component and we don't want any of them
   // to trigger the validation message(s) for the other means of input.
   const fakeSetIsDirty = useCallback(() => undefined, [])
