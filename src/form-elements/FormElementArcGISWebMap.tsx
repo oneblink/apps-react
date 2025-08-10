@@ -260,8 +260,7 @@ function FormElementArcGISWebMap({
                     isTakingAutoSnapshots ||
                     value?.snapshotImages?.some(
                       (snapshotImage) =>
-                        snapshotImage.fileName ===
-                        automatedSnapshotFileName,
+                        snapshotImage.fileName === automatedSnapshotFileName,
                     )
                   }
                 >
