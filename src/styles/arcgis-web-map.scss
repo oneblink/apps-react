@@ -1,3 +1,7 @@
 .arcgis-web-map {
-    height: 500px;
+  height: 500px;
+
+  .esri-view-surface {
+    border-radius: $radius;
+  }
 }
