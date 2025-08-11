@@ -947,7 +947,6 @@ function OneBlinkFormBase({
         ...current,
         isDirty: true,
       }))
-
       if (element.type === 'section') {
         setFormSubmission((currentFormSubmission) => {
           const currentSectionState = currentFormSubmission.sectionState || []
