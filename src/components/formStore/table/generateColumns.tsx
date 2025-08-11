@@ -328,7 +328,6 @@ const generateColumns = <
         case 'html':
         case 'heading':
         case 'infoPage':
-        case 'arcGISWebMap':
         case 'image': {
           break
         }
