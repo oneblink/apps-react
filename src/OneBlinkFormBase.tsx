@@ -943,13 +943,10 @@ function OneBlinkFormBase({
         return
       }
 
-      // Do not mark changes as unsaved when collapsing or expanding sections
-      if (element.type !== 'section') {
-        setUnsavedChangesState((current) => ({
-          ...current,
-          isDirty: true,
-        }))
-      }
+      setUnsavedChangesState((current) => ({
+        ...current,
+        isDirty: true,
+      }))
 
       if (element.type === 'section') {
         setFormSubmission((currentFormSubmission) => {
