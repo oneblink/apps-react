@@ -13,7 +13,6 @@ import ErrorModal from './ErrorModal'
 import OnLoading from '../renderer/OnLoading'
 import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'
-import DownloadableFiles from '../../components/downloadable-files'
 
 function NylasBookingForm({
   submissionId,
@@ -216,13 +215,6 @@ function NylasBookingForm({
             className="ob-scheduling-receipt"
             containerClassName="ob-scheduling-receipt__container"
           >
-            {formSubmissionResult && (
-              <DownloadableFiles
-                formSubmissionResult={formSubmissionResult}
-                layout="LIST"
-              />
-            )}
-
             <div className="buttons">
               <button
                 type="button"
