@@ -19,6 +19,7 @@ import {
   ReceiptButton,
 } from './components/receipts'
 import MaterialIcon from './components/MaterialIcon'
+import DownloadableFiles from './components/downloadable-files'
 
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
@@ -303,17 +304,13 @@ function PaymentReceipt({
             />
           </ReceiptList>
 
+          {submissionResult && (
+            <DownloadableFiles
+              formSubmissionResult={submissionResult}
+              layout="LIST"
+            />
+          )}
           <div className="buttons">
-            {submissionResult && submissionResult.downloadSubmissionPdfUrl && (
-              <a
-                className="button ob-button ob-receipt__button ob-payment-receipt__button ob-button__download-pdf ob-payment-receipt__pdf-button cypress-receipt-download-pdf-button"
-                href={submissionResult.downloadSubmissionPdfUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Download PDF
-              </a>
-            )}
             {transaction.isSuccess ? (
               <ReceiptButton
                 className="is-primary ob-payment-receipt__button ob-payment-receipt__okay-button cypress-payment-receipt-okay-button"
