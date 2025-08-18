@@ -25,7 +25,7 @@
 }
 
 // Thumbnail image for image files
-.ob-downloadable-files__container .ob-downloadable-files__thumbnail {
+.ob-downloadable-files__thumbnail {
   width: $size-2;
   height: $size-2;
   object-fit: cover;
@@ -39,20 +39,20 @@
 }
 
 // Content area containing filename and type
-.ob-downloadable-files__container .ob-downloadable-files__content {
+.ob-downloadable-files__content {
   flex: 1;
   min-width: 0;
   text-align: left;
   white-space: nowrap;
 }
 
-.ob-downloadable-files__content .ob-downloadable-files__text {
+.ob-downloadable-files__text {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 // Filename text styling
-.ob-downloadable-files__container .ob-downloadable-files__filename {
+.ob-downloadable-files__filename {
   font-size: 0.9rem;
   color: $grey-dark;
   margin-bottom: $size-9;
@@ -60,7 +60,7 @@
 }
 
 // File type text styling
-.ob-downloadable-files__container .ob-downloadable-files__filetype {
+.ob-downloadable-files__filetype {
   color: $grey;
   font-size: $size-7;
   text-transform: uppercase;
