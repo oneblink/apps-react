@@ -64,4 +64,6 @@ export {
   useUserMeetsMfaRequirement,
 } from './hooks/useMfa'
 
+export { default as DownloadableFiles } from './components/downloadable-files'
+
 export * from './types/form'

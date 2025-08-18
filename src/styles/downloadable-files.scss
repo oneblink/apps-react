@@ -1,0 +1,83 @@
+.ob-downloadable-files__wrapper {
+  margin-bottom: $size-6;
+
+  pre {
+    background-color: $white;
+    border: 1px solid $grey-lighter;
+    border-radius: $size-9;
+  }
+}
+// Individual downloadable file item
+.ob-downloadable-files__item {
+  background-color: $white;
+  border: 1px solid $grey-lighter;
+  border-radius: $size-9;
+  padding: $size-5;
+  gap: $size-7;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-items: center;
+  display: flex;
+
+  &:hover {
+    background-color: $grey-lightest;
+  }
+}
+
+// Thumbnail image for image files
+.ob-downloadable-files__thumbnail {
+  width: $size-2;
+  height: $size-2;
+  object-fit: cover;
+  border-radius: $size-9;
+}
+
+// File type icon styling
+.ob-downloadable-files__container .ob-downloadable-files__icon {
+  color: $grey;
+  font-size: $size-2;
+}
+
+// Content area containing filename and type
+.ob-downloadable-files__content {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ob-downloadable-files__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Filename text styling
+.ob-downloadable-files__filename {
+  font-size: 0.9rem;
+  color: $grey-dark;
+  margin-bottom: $size-9;
+  font-weight: 500;
+}
+
+// File type text styling
+.ob-downloadable-files__filetype {
+  color: $grey;
+  font-size: $size-7;
+  text-transform: uppercase;
+}
+
+// Download icon styling
+.ob-downloadable-files__container .ob-downloadable-files__download-icon {
+  color: $grey;
+  font-size: $size-5;
+}
+
+.ob-progress__downloadable-files {
+  width: 70%;
+  margin: auto;
+  border-radius: $size-9;
+}
+
+.ob-downloadable-files__error-pdf {
+  padding-bottom: $size-4;
+}
