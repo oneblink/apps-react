@@ -304,12 +304,13 @@ function PaymentReceipt({
             />
           </ReceiptList>
 
-          {submissionResult && (
+          {submissionResult && transaction.isSuccess && (
             <DownloadableFiles
               formSubmissionResult={submissionResult}
               layout="LIST"
             />
           )}
+
           <div className="buttons">
             {transaction.isSuccess ? (
               <ReceiptButton
