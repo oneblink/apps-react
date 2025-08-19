@@ -26,7 +26,7 @@ export const LoadAndDisplayAttachments = ({
 
   return (
     <>
-      <Collapse in={attachmentsState.status === 'LOADING'}>
+      <Collapse in={attachmentsState.status === 'LOADING'} unmountOnExit>
         <div className="ob-downloadable-files__loading">
           <div className="ob-list__text-secondary mb-1 has-text-centered">
             Loading Attachments...
@@ -34,7 +34,7 @@ export const LoadAndDisplayAttachments = ({
           <LinearProgress className="ob-progress__downloadable-files" />
         </div>
       </Collapse>
-      <Collapse in={attachmentsState.status === 'ERROR'}>
+      <Collapse in={attachmentsState.status === 'ERROR'} unmountOnExit>
         {pdfFileNode && (
           <>
             <OnlyPDFDisplay className="ob-downloadable-files__error-pdf">
@@ -56,7 +56,7 @@ export const LoadAndDisplayAttachments = ({
           />
         </div>
       </Collapse>
-      <Collapse in={attachmentsState.status === 'SUCCESS'}>
+      <Collapse in={attachmentsState.status === 'SUCCESS'} unmountOnExit>
         <DownloadableFilesDisplay
           attachments={
             attachmentsState.status === 'SUCCESS' ? attachmentsState.result : []
