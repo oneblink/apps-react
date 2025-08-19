@@ -5,6 +5,7 @@ import ErrorSnackbar from '../../ErrorSnackbar'
 import { UnorderedList, ListItem } from '../../Lists'
 import { FormElementWithOptions } from '@oneblink/types/typescript/forms'
 import { getCognitoIdToken } from '@oneblink/apps/dist/services/cognito'
+import tenants from '@oneblink/apps/dist/tenants'
 import MaterialIcon from '../../MaterialIcon'
 
 async function fetchFile(url: string) {
@@ -25,11 +26,11 @@ async function fetchFile(url: string) {
 }
 
 export function FileChip({
-  file: { fileName, url, data },
+  file: { fileName, path, data },
 }: {
   file: {
     fileName: string
-    url?: string
+    path?: string
     isPrivate?: boolean
     data?: string
   }
@@ -51,8 +52,8 @@ export function FileChip({
         isDownloading: true,
       })
 
-      if (url) {
-        const blob = await fetchFile(url)
+      if (path) {
+        const blob = await fetchFile(tenants.current.apiOrigin + path)
         saveAs(blob, fileName)
       } else if (data) {
         saveAs(data, fileName)
@@ -67,7 +68,7 @@ export function FileChip({
         error: error as Error,
       })
     }
-  }, [data, fileName, url])
+  }, [data, fileName, path])
   return (
     <>
       <Chip

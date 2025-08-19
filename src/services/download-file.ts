@@ -2,6 +2,7 @@ import { Sentry, attachmentsService } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 import { urlToBlobAsync } from './blob-utils'
+import tenants from '@oneblink/apps/dist/tenants'
 
 async function downloadFile(data: Blob | string, fileName: string) {
   if (window.cordova) {
@@ -109,7 +110,9 @@ export default async function downloadAttachment(
       }
       return
     }
-    const blob = await urlToBlobAsync(attachment.url)
+    const blob = await urlToBlobAsync(
+      tenants.current.apiOrigin + attachment.path,
+    )
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
     handleError(error as Error)

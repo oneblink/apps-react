@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
 import useOnUploadAttachmentContext from '../useOnUploadAttachment'
+import tenants from '@oneblink/apps/dist/tenants'
 
 export type OnChange = (
   id: string,
@@ -177,7 +178,7 @@ export default function useAttachment(
 
     let ignore = false
     const abortController = new AbortController()
-    const privateAttachmentUrl = value.url
+    const privateAttachmentUrl = tenants.current.apiOrigin + value.path
 
     const effect = async () => {
       try {
