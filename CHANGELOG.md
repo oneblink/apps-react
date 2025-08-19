@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - unintended center alignment of ESRI map text
 
+### Changed
+
+- attachment downloads to use tenant origin with path instead of url
+
 ## [8.9.0] - 2025-08-11
 
 ### Added
