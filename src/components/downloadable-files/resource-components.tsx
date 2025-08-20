@@ -82,13 +82,6 @@ function DownloadableFilesDisplay({
     return attachments.length + (pdfFileNode ? 1 : 0)
   }, [attachments, pdfFileNode])
 
-  const largeBreakpointColumnWidth = React.useMemo(
-    () =>
-      // Don't use a 3 column layout (4) unless we have at least 3 attachments to show
-      totalToDisplay > 2 ? 4 : 6,
-    [totalToDisplay],
-  )
-
   return (
     <>
       <div className="ob-downloadable-files__container">
@@ -98,23 +91,12 @@ function DownloadableFilesDisplay({
           justifyContent={totalToDisplay === 1 ? 'center' : undefined}
         >
           {pdfFileNode && (
-            <Grid
-              item
-              xs={12}
-              sm={layout === 'GRID' ? 6 : 12}
-              lg={layout === 'GRID' ? largeBreakpointColumnWidth : 12}
-            >
+            <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12}>
               {pdfFileNode}
             </Grid>
           )}
           {attachments.map((attachment, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={layout === 'GRID' ? 6 : 12}
-              lg={layout === 'GRID' ? largeBreakpointColumnWidth : 12}
-              key={index}
-            >
+            <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={index}>
               <SingleFileDisplay attachment={attachment} />
             </Grid>
           ))}
