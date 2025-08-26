@@ -1,11 +1,25 @@
-.ob-camera__annotate-button {
+.ob-image-file__actions {
   position: absolute;
   top: $size-8;
   right: $size-8;
+  display: flex;
+  gap: $size-8;
 }
 
 .ob-camera__input-hidden {
   display: none;
+}
+
+.ob-crop {
+  z-index: inherit;
+  height: calc(100vh - #{$size-6});
+  width: calc(100vw - #{$size-6});
+  max-height: $desktop;
+  max-width: $desktop;
+  box-shadow: $elevation-2;
+  background: $white;
+  display: flex;
+  flex-direction: column;
 }
 
 .ob-annotation {
@@ -18,6 +32,15 @@
   background: $white;
   display: flex;
   flex-direction: column;
+}
+
+.ob-crop__content {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  padding: $size-4;
 }
 
 .ob-annotation__content {
@@ -82,4 +105,11 @@
     height: 60px;
     border-radius: 60px;
   }
+}
+
+.ob-cropper__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }

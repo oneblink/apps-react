@@ -111,8 +111,8 @@ function AnnotationModal({
   return (
     <div className="modal is-active">
       <div className="modal-background-faded"></div>
-      <div className="ob-annotation">
-        <div className="ob-annotation__buttons ob-annotation__buttons-colours">
+      <div className="ob-annotation ob-border-radius">
+        <div className="ob-annotation__buttons ob-annotation__buttons-colours ob-border-radius">
           {annotationButtonColours.map((colour, index) => {
             return (
               <button

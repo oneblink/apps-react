@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `crop` functionality to `camera` and `files` elements
+
 ### Fixed
 
 - unintended center alignment of ESRI map text
