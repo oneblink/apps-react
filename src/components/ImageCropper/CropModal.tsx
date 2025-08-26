@@ -1,6 +1,4 @@
 import * as React from 'react'
-// import clsx from 'clsx'
-
 import ImageCropper from '.'
 import { Area } from 'react-easy-crop'
 import scrollingService from '../../services/scrolling-service'
