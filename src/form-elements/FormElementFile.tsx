@@ -164,8 +164,8 @@ const FormElementFile = ({
         onRetry={handleRetry}
         progress={progress}
         index={index}
-        onAnnotate={setIsAnnotating}
-        onCrop={setIsCropping}
+        onAnnotate={isContentTypeImage ? setIsAnnotating : undefined}
+        onCrop={isContentTypeImage ? setIsCropping : undefined}
       />
       {isCropping && attachmentUrl && (
         <CropModal

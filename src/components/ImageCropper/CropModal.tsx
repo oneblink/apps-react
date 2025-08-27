@@ -3,7 +3,7 @@ import ImageCropper from '.'
 import { Area } from 'react-easy-crop'
 import scrollingService from '../../services/scrolling-service'
 
-function AnnotationModal({
+function CropModal({
   imageSrc,
   onClose,
   onSave,
@@ -67,4 +67,4 @@ function AnnotationModal({
   )
 }
 
-export default React.memo(AnnotationModal)
+export default React.memo(CropModal)
