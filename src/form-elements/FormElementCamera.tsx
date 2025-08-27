@@ -10,7 +10,9 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import drawTimestampOnCanvas from '../services/drawTimestampOnCanvas'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
-import AnnotationModal from '../components/renderer/AnnotationModal'
+import AnnotationModal, {
+  superimposeAnnotationOnImage,
+} from '../components/renderer/AnnotationModal'
 import Modal from '../components/renderer/Modal'
 import {
   checkIfContentTypeIsImage,
@@ -227,7 +229,7 @@ function FormElementCamera({
   }, [value, id])
 
   const handleSaveAnnotation = React.useCallback(
-    (annotationDataUri: string) => {
+    async (annotationDataUri: string) => {
       clearIsAnnotating()
 
       if (typeof attachmentUrl !== 'string') {
@@ -237,56 +239,26 @@ function FormElementCamera({
       setState({
         isLoading: true,
       })
-
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        return
-      }
-
-      const image = new Image()
-      image.onload = function () {
-        canvas.width = image.width
-        canvas.height = image.height
-
-        ctx.drawImage(image, 0, 0)
-
-        const annotationImage = new Image()
-        annotationImage.onload = function () {
-          ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
-
-          try {
-            canvasToBlob(canvas)
-              .then((blob) => {
-                const attachment = prepareNewAttachment(
-                  blob,
-                  'photo.png',
-                  element,
-                )
-                onChange(element, {
-                  value: attachment,
-                })
-                setState({
-                  isLoading: false,
-                })
-              })
-              .catch((error) => {
-                setState({
-                  cameraError: error,
-                  isLoading: false,
-                })
-              })
-          } catch (error) {
-            setState({
-              cameraError: error as Error,
-              isLoading: false,
-            })
-          }
+      try {
+        const blob = await superimposeAnnotationOnImage({
+          annotationDataUri,
+          attachmentUrl,
+        })
+        setState({
+          isLoading: false,
+        })
+        if (blob) {
+          const attachment = prepareNewAttachment(blob, 'photo.png', element)
+          onChange(element, {
+            value: attachment,
+          })
         }
-        annotationImage.src = annotationDataUri
+      } catch (err) {
+        setState({
+          cameraError: err as Error,
+          isLoading: false,
+        })
       }
-      image.setAttribute('crossorigin', 'anonymous')
-      image.src = attachmentUrl
     },
     [attachmentUrl, clearIsAnnotating, element, onChange],
   )

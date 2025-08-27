@@ -23,6 +23,8 @@ type Props = {
   onRemove: (() => void) | undefined
   onDownload?: () => void
   onRetry?: () => void
+  onAnnotate?: () => void
+  onCrop?: () => void
   progress: undefined | number
   index: number
 }
@@ -40,6 +42,8 @@ function FileCard({
   onDownload,
   onRemove,
   onRetry,
+  onAnnotate,
+  onCrop,
   progress,
   index,
 }: Props) {
@@ -79,6 +83,8 @@ function FileCard({
           onRetry={onRetry}
           onRemove={onRemove}
           attachmentUrl={attachmentUrl || ''}
+          onAnnotate={onAnnotate}
+          onCrop={onCrop}
         />
 
         <div className="ob-files__file-name is-size-6">

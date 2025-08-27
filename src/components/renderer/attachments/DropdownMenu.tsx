@@ -12,6 +12,8 @@ interface Props {
   onDownload?: () => void
   onRetry?: () => void
   attachmentUrl: string | null | undefined
+  onAnnotate?: () => void
+  onCrop?: () => void
 }
 
 const DropdownMenu = ({
@@ -20,6 +22,8 @@ const DropdownMenu = ({
   onDownload,
   onRetry,
   attachmentUrl,
+  onAnnotate,
+  onCrop,
 }: Props) => {
   const dropDownRef = React.useRef(null)
   const [isShowingMore, showMore, hideMore] = useBooleanState(false)
@@ -108,6 +112,34 @@ const DropdownMenu = ({
               role="menuitem"
             >
               Remove
+            </a>
+          )}
+          {onAnnotate && (
+            <a
+              className={clsx('dropdown-item cypress-file-annotate-button', {
+                'ob-files__menu-annotate-hidden': element.readOnly,
+              })}
+              onClick={() => {
+                hideMore()
+                onAnnotate()
+              }}
+              role="menuitem"
+            >
+              Annotate
+            </a>
+          )}
+          {onCrop && (
+            <a
+              className={clsx('dropdown-item cypress-file-crop-button', {
+                'ob-files__menu-crop-hidden': element.readOnly,
+              })}
+              onClick={() => {
+                hideMore()
+                onCrop()
+              }}
+              role="menuitem"
+            >
+              Crop
             </a>
           )}
         </div>

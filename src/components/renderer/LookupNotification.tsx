@@ -265,7 +265,7 @@ function LookupNotificationComponent({
 
         setHasLookupFailed(true)
         mergeLookupData({
-          newValue: model[element.name],
+          newValue: newValue,
           dataLookupResult: {},
           elementLookupResult: [],
           executedLookup: { [element.name]: false },
