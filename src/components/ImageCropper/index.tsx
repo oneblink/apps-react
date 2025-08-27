@@ -11,7 +11,6 @@ const defaultCrop = { x: 0, y: 0 }
 
 const emptyFn = () => {}
 
-// 2. Fix up styling and classes
 const ImageCropper = ({
   imgSrc,
   disabled,
