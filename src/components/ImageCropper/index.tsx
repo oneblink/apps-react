@@ -19,6 +19,7 @@ const ImageCropper = ({
   outputAspectRatio,
   zoomWithScroll,
   cropperStyles,
+  cropperHeight,
 }: {
   imgSrc: string
   disabled?: boolean
@@ -26,6 +27,7 @@ const ImageCropper = ({
   outputAspectRatio?: number
   zoomWithScroll?: boolean
   cropperStyles?: CropperProps['style']
+  cropperHeight?: number
 }) => {
   const [crop, setCrop] = React.useState<Point>(defaultCrop)
   const [zoom, setZoom] = React.useState(defaultZoom)
@@ -60,7 +62,10 @@ const ImageCropper = ({
 
   return (
     <div className="ob-cropper__container">
-      <CropContainer className="ob-cropper__cropper-wrapper">
+      <CropContainer
+        className="ob-cropper__cropper-wrapper"
+        height={cropperHeight}
+      >
         <Cropper
           image={imgSrc}
           crop={crop}
