@@ -120,14 +120,20 @@ const createImage = (url: string): Promise<HTMLImageElement> => {
 export const generateCroppedImageBlob = async ({
   croppedAreaPixels,
   imgSrc,
-  // width,
-  // height,
+  size,
   fileType,
 }: {
   croppedAreaPixels: Area
   imgSrc: string
-  // width: number
-  // height: number
+  /**
+   * If provided, the cropped image will be resized to the given size. If not
+   * provided, the cropped image will be the same size as the cropped portion of
+   * the source image.
+   */
+  size?: {
+    width: number
+    height: number
+  }
   fileType?: string
 }): Promise<Blob | null> => {
   if (!croppedAreaPixels || !imgSrc) {
@@ -150,8 +156,8 @@ export const generateCroppedImageBlob = async ({
   if (!croppedCtx) {
     return null
   }
-  croppedCanvas.width = croppedAreaPixels.width
-  croppedCanvas.height = croppedAreaPixels.height
+  croppedCanvas.width = size?.width ?? croppedAreaPixels.width
+  croppedCanvas.height = size?.height ?? croppedAreaPixels.height
 
   // Draw the cropped source image onto the destination canvas
   croppedCtx.drawImage(
@@ -169,9 +175,9 @@ export const generateCroppedImageBlob = async ({
     // destination y
     0,
     // destination width
-    croppedAreaPixels.width,
+    size?.width ?? croppedAreaPixels.width,
     // destination height
-    croppedAreaPixels.height,
+    size?.height ?? croppedAreaPixels.height,
   )
 
   return new Promise((resolve) => {
