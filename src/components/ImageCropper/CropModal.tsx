@@ -12,8 +12,6 @@ function CropModal({
   onClose: () => void
   onSave: (imageArea: Area) => void
 }) {
-  const annotationContentElementRef = React.useRef<HTMLDivElement>(null)
-
   const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<Area | null>(
     null,
   )
@@ -36,10 +34,7 @@ function CropModal({
     <div className="modal is-active">
       <div className="modal-background-faded"></div>
       <div className="ob-crop ob-border-radius">
-        <div
-          ref={annotationContentElementRef}
-          className="ob-crop__content ob-border-radius"
-        >
+        <div className="ob-crop__content ob-border-radius">
           <ImageCropper
             imgSrc={imageSrc}
             onCropComplete={setCroppedAreaPixels}
