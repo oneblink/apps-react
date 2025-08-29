@@ -66,4 +66,10 @@ export {
 
 export { default as DownloadableFiles } from './components/downloadable-files'
 
+export {
+  default as ImageCropper,
+  getAspectRatio,
+  generateCroppedImageBlob,
+} from './components/ImageCropper'
+
 export * from './types/form'

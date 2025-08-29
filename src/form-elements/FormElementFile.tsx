@@ -4,6 +4,15 @@ import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../hooks/attachments/useAttachment'
 import FileCard from '../components/renderer/attachments/FileCard'
 import { attachmentsService } from '@oneblink/apps'
+import useBooleanState from '../hooks/useBooleanState'
+import CropModal from '../components/ImageCropper/CropModal'
+import AnnotationModal, {
+  superimposeAnnotationOnImage,
+} from '../components/renderer/AnnotationModal'
+import { Area } from 'react-easy-crop'
+import { generateCroppedImageBlob } from '../components/ImageCropper'
+import { prepareNewAttachment } from '../services/attachments'
+import Modal from '../components/renderer/Modal'
 
 type Props = {
   element: FormTypes.FilesElement
@@ -23,7 +32,27 @@ const FormElementFile = ({
   disableUpload,
   index,
 }: Props) => {
-  const attachmentResult = useAttachment(file, element, onChange, disableUpload)
+  const [isAnnotating, setIsAnnotating, clearIsAnnotating] =
+    useBooleanState(false)
+  const [isCropping, setIsCropping, clearIsCropping] = useBooleanState(false)
+  const [state, setState] = React.useState<{
+    isLoading: boolean
+    error?: Error
+  }>({
+    isLoading: false,
+    error: undefined,
+  })
+  const {
+    attachmentUrl,
+    contentType,
+    isUploading,
+    uploadErrorMessage,
+    isLoadingAttachmentUrl,
+    loadAttachmentUrlError,
+    isContentTypeImage,
+    canDownload,
+    progress,
+  } = useAttachment(file, element, onChange, disableUpload)
 
   const handleRemove = React.useMemo(() => {
     if (!onRemove) {
@@ -41,6 +70,69 @@ const FormElementFile = ({
     await downloadAttachment(file)
   }, [file])
 
+  const handleAnnotate = React.useCallback(
+    async (annotationDataUri: string) => {
+      if (!attachmentUrl || file.type) return
+      clearIsAnnotating()
+
+      setState({
+        isLoading: true,
+      })
+
+      try {
+        const blob = await superimposeAnnotationOnImage({
+          annotationDataUri,
+          attachmentUrl,
+        })
+        setState({
+          isLoading: false,
+        })
+        if (!blob) return
+        const attachment = prepareNewAttachment(blob, file.fileName, element)
+        onChange(file.id, attachment)
+      } catch (error) {
+        setState({
+          error: error as Error,
+          isLoading: false,
+        })
+      }
+    },
+    [attachmentUrl, clearIsAnnotating, element, file, onChange],
+  )
+  const handleSaveCrop = React.useCallback(
+    async (croppedAreaPixels: Area) => {
+      if (!attachmentUrl || file.type) return
+      clearIsCropping()
+
+      setState({
+        isLoading: true,
+      })
+
+      try {
+        const croppedImage = await generateCroppedImageBlob({
+          croppedAreaPixels,
+          imgSrc: attachmentUrl,
+          fileType: contentType,
+        })
+        setState({
+          isLoading: false,
+        })
+        if (!croppedImage) return
+        const attachment = prepareNewAttachment(
+          croppedImage,
+          file.fileName,
+          element,
+        )
+        onChange(file.id, attachment)
+      } catch (error) {
+        setState({
+          error: error as Error,
+          isLoading: false,
+        })
+      }
+    },
+    [attachmentUrl, clearIsCropping, contentType, element, file, onChange],
+  )
   const handleRetry = React.useMemo(() => {
     if (file.type === 'ERROR' && file.data) {
       return () => {
@@ -56,22 +148,68 @@ const FormElementFile = ({
   }, [file, onChange])
 
   return (
-    <FileCard
-      element={element}
-      isUploading={attachmentResult.isUploading}
-      isUploadPaused={disableUpload}
-      uploadErrorMessage={attachmentResult.uploadErrorMessage}
-      loadAttachmentUrlError={attachmentResult.loadAttachmentUrlError}
-      isLoadingAttachmentUrl={attachmentResult.isLoadingAttachmentUrl}
-      attachmentUrl={attachmentResult.attachmentUrl}
-      isContentTypeImage={attachmentResult.isContentTypeImage}
-      fileName={file.fileName}
-      onDownload={attachmentResult.canDownload ? handleDownload : undefined}
-      onRemove={handleRemove}
-      onRetry={handleRetry}
-      progress={attachmentResult.progress}
-      index={index}
-    />
+    <>
+      <FileCard
+        element={element}
+        isUploading={isUploading}
+        isUploadPaused={disableUpload}
+        uploadErrorMessage={uploadErrorMessage}
+        loadAttachmentUrlError={loadAttachmentUrlError}
+        isLoadingAttachmentUrl={isLoadingAttachmentUrl || state.isLoading}
+        attachmentUrl={attachmentUrl}
+        isContentTypeImage={isContentTypeImage}
+        fileName={file.fileName}
+        onDownload={canDownload ? handleDownload : undefined}
+        onRemove={handleRemove}
+        onRetry={handleRetry}
+        progress={progress}
+        index={index}
+        onAnnotate={isContentTypeImage ? setIsAnnotating : undefined}
+        onCrop={isContentTypeImage ? setIsCropping : undefined}
+      />
+      {isCropping && attachmentUrl && (
+        <CropModal
+          imageSrc={attachmentUrl}
+          onClose={clearIsCropping}
+          onSave={handleSaveCrop}
+        />
+      )}
+      {isAnnotating && attachmentUrl && (
+        <AnnotationModal
+          imageSrc={attachmentUrl}
+          onClose={clearIsAnnotating}
+          onSave={handleAnnotate}
+        />
+      )}
+      {state.error && (
+        <Modal
+          isOpen
+          title="Whoops..."
+          className="cypress-error-modal"
+          titleClassName="cypress-error-title"
+          actions={
+            <button
+              type="button"
+              className="button ob-button is-primary cypress-close-error-button"
+              onClick={() => setState({ isLoading: false })}
+              autoFocus
+            >
+              Okay
+            </button>
+          }
+        >
+          <p>
+            An error occurred while attempting to edit an image. Please click{' '}
+            <b>Okay</b> below to try again. If the problem persists, please
+            contact support.
+          </p>
+
+          <div className="content has-margin-top-6">
+            <blockquote>{state.error.toString()}</blockquote>
+          </div>
+        </Modal>
+      )}
+    </>
   )
 }
 

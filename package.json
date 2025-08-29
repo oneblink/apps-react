@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "8.9.2",
+  "version": "8.10.0-alpha.3",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -32,6 +32,7 @@
     "morph-expressions": "^1.1.1",
     "qrcode.react": "^4.1.0",
     "query-string": "^8.1.0",
+    "react-easy-crop": "^5.5.0",
     "react-google-recaptcha": "^3.1.0",
     "react-input-mask": "^2.0.4",
     "react-signature-canvas": "^1.0.6",

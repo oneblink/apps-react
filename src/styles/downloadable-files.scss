@@ -4,14 +4,14 @@
   pre {
     background-color: $white;
     border: 1px solid $grey-lighter;
-    border-radius: $size-9;
+    border-radius: $radius;
   }
 }
 // Individual downloadable file item
 .ob-downloadable-files__item {
   background-color: $white;
   border: 1px solid $grey-lighter;
-  border-radius: $size-9;
+  border-radius: $radius;
   padding: $size-5;
   gap: $size-7;
   cursor: pointer;
@@ -29,7 +29,7 @@
   width: $size-2;
   height: $size-2;
   object-fit: cover;
-  border-radius: $size-9;
+  border-radius: $radius;
 }
 
 // File type icon styling
@@ -75,7 +75,7 @@
 .ob-progress__downloadable-files {
   width: 70%;
   margin: auto;
-  border-radius: $size-9;
+  border-radius: $radius;
 }
 
 .ob-downloadable-files__error-pdf {

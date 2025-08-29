@@ -284,5 +284,9 @@ export default function useAttachment(
     ...attachmentUrlState,
     canDownload,
     progress: progressState,
+    contentType:
+      typeof value !== 'string' && !value?.type
+        ? value?.contentType
+        : undefined,
   }
 }

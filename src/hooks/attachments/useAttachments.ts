@@ -94,13 +94,13 @@ const useAttachments = (
       onChange(element, {
         value: (currentAttachments) => {
           if (!currentAttachments) return
-          return currentAttachments.map((att) => {
-            // Can only change attachments that are not uploaded (have a type)
-            if (att.type && att._id === id) {
+          const newAttachments = currentAttachments.map((att) => {
+            if ((att.type && att._id === id) || (!att.type && att.id === id)) {
               return attachment
             }
             return att
           })
+          return newAttachments
         },
       })
       if (isMounted.current) {

@@ -10,7 +10,9 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import drawTimestampOnCanvas from '../services/drawTimestampOnCanvas'
 import { FormElementBinaryStorageValue } from '../types/attachments'
 import useAttachment from '../hooks/attachments/useAttachment'
-import AnnotationModal from '../components/renderer/AnnotationModal'
+import AnnotationModal, {
+  superimposeAnnotationOnImage,
+} from '../components/renderer/AnnotationModal'
 import Modal from '../components/renderer/Modal'
 import {
   checkIfContentTypeIsImage,
@@ -25,6 +27,9 @@ import ProgressBar from '../components/renderer/attachments/ProgressBar'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
+import CropModal from '../components/ImageCropper/CropModal'
+import { Area } from 'react-easy-crop'
+import { generateCroppedImageBlob } from '../components/ImageCropper'
 
 type Props = {
   id: string
@@ -54,6 +59,8 @@ function FormElementCamera({
   })
   const [isAnnotating, setIsAnnotating, clearIsAnnotating] =
     useBooleanState(false)
+  const [isCropping, setIsCropping, clearIsCropping] = useBooleanState(false)
+
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const clearImage = React.useCallback(() => {
@@ -181,6 +188,7 @@ function FormElementCamera({
     loadAttachmentUrlError,
     canDownload,
     progress,
+    contentType,
   } = useAttachment(
     value,
     element,
@@ -221,7 +229,7 @@ function FormElementCamera({
   }, [value, id])
 
   const handleSaveAnnotation = React.useCallback(
-    (annotationDataUri: string) => {
+    async (annotationDataUri: string) => {
       clearIsAnnotating()
 
       if (typeof attachmentUrl !== 'string') {
@@ -231,58 +239,66 @@ function FormElementCamera({
       setState({
         isLoading: true,
       })
-
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        return
-      }
-
-      const image = new Image()
-      image.onload = function () {
-        canvas.width = image.width
-        canvas.height = image.height
-
-        ctx.drawImage(image, 0, 0)
-
-        const annotationImage = new Image()
-        annotationImage.onload = function () {
-          ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
-
-          try {
-            canvasToBlob(canvas)
-              .then((blob) => {
-                const attachment = prepareNewAttachment(
-                  blob,
-                  'photo.png',
-                  element,
-                )
-                onChange(element, {
-                  value: attachment,
-                })
-                setState({
-                  isLoading: false,
-                })
-              })
-              .catch((error) => {
-                setState({
-                  cameraError: error,
-                  isLoading: false,
-                })
-              })
-          } catch (error) {
-            setState({
-              cameraError: error as Error,
-              isLoading: false,
-            })
-          }
+      try {
+        const blob = await superimposeAnnotationOnImage({
+          annotationDataUri,
+          attachmentUrl,
+        })
+        setState({
+          isLoading: false,
+        })
+        if (blob) {
+          const attachment = prepareNewAttachment(blob, 'photo.png', element)
+          onChange(element, {
+            value: attachment,
+          })
         }
-        annotationImage.src = annotationDataUri
+      } catch (err) {
+        setState({
+          cameraError: err as Error,
+          isLoading: false,
+        })
       }
-      image.setAttribute('crossorigin', 'anonymous')
-      image.src = attachmentUrl
     },
     [attachmentUrl, clearIsAnnotating, element, onChange],
+  )
+
+  const handleSaveCrop = React.useCallback(
+    async (croppedAreaPixels: Area) => {
+      clearIsCropping()
+      if (!attachmentUrl) return
+
+      setState({
+        isLoading: true,
+      })
+
+      try {
+        const croppedImage = await generateCroppedImageBlob({
+          croppedAreaPixels,
+          imgSrc: attachmentUrl,
+          fileType: contentType,
+        })
+
+        if (!croppedImage) throw new Error('Cropped image is null')
+        const attachment = prepareNewAttachment(
+          croppedImage,
+          'photo.png',
+          element,
+        )
+        onChange(element, {
+          value: attachment,
+        })
+        setState({
+          isLoading: false,
+        })
+      } catch (error) {
+        setState({
+          cameraError: error as Error,
+          isLoading: false,
+        })
+      }
+    },
+    [attachmentUrl, clearIsCropping, contentType, element, onChange],
   )
 
   const progressTooltipRef = React.useRef<HTMLDivElement>(null)
@@ -307,6 +323,7 @@ function FormElementCamera({
                   isLoading={isLoading}
                   element={element}
                   onAnnotate={setIsAnnotating}
+                  onCrop={setIsCropping}
                   canDownload={canDownload}
                   progress={progress}
                 />
@@ -388,6 +405,14 @@ function FormElementCamera({
         />
       )}
 
+      {isCropping && attachmentUrl && (
+        <CropModal
+          imageSrc={attachmentUrl}
+          onClose={clearIsCropping}
+          onSave={handleSaveCrop}
+        />
+      )}
+
       {cameraError && (
         <Modal
           isOpen
@@ -431,11 +456,13 @@ const DisplayImage = React.memo(function DisplayImage({
   isLoading,
   element,
   onAnnotate,
+  onCrop,
   progress,
-}: ReturnType<typeof useAttachment> & {
+}: Omit<ReturnType<typeof useAttachment>, 'contentType'> & {
   element: FormTypes.CameraElement
   isLoading: boolean
   onAnnotate: () => void
+  onCrop: () => void
   progress: number | undefined
 }) {
   if (uploadErrorMessage) {
@@ -485,16 +512,28 @@ const DisplayImage = React.memo(function DisplayImage({
           crossOrigin="anonymous"
           alt={`${element.label}: Attachment`}
         />
-        <button
-          type="button"
-          className="button is-primary ob-camera__annotate-button cypress-annotate-button"
-          onClick={onAnnotate}
-          disabled={element.readOnly}
-        >
-          <span className="icon">
-            <MaterialIcon>brush</MaterialIcon>
-          </span>
-        </button>
+        <div className="ob-image-file__actions">
+          <button
+            type="button"
+            className="button is-primary ob-camera__crop-button cypress-crop-button"
+            onClick={onCrop}
+            disabled={element.readOnly}
+          >
+            <span className="icon">
+              <MaterialIcon>crop</MaterialIcon>
+            </span>
+          </button>
+          <button
+            type="button"
+            className="button is-primary ob-camera__annotate-button cypress-annotate-button"
+            onClick={onAnnotate}
+            disabled={element.readOnly}
+          >
+            <span className="icon">
+              <MaterialIcon>brush</MaterialIcon>
+            </span>
+          </button>
+        </div>
       </>
     )
   }

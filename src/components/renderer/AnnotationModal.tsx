@@ -4,6 +4,7 @@ import SignatureCanvas from 'react-signature-canvas'
 
 import useBooleanState from '../../hooks/useBooleanState'
 import scrollingService from '../../services/scrolling-service'
+import { canvasToBlob } from '../../services/blob-utils'
 
 const annotationButtonColours = [
   '#000000',
@@ -111,8 +112,8 @@ function AnnotationModal({
   return (
     <div className="modal is-active">
       <div className="modal-background-faded"></div>
-      <div className="ob-annotation">
-        <div className="ob-annotation__buttons ob-annotation__buttons-colours">
+      <div className="ob-annotation ob-border-radius">
+        <div className="ob-annotation__buttons ob-annotation__buttons-colours ob-border-radius">
           {annotationButtonColours.map((colour, index) => {
             return (
               <button
@@ -169,3 +170,36 @@ function AnnotationModal({
 }
 
 export default React.memo(AnnotationModal)
+
+export const superimposeAnnotationOnImage = async ({
+  annotationDataUri,
+  attachmentUrl,
+}: {
+  annotationDataUri: string
+  attachmentUrl: string
+}): Promise<Blob | undefined> => {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    return
+  }
+
+  const image = new Image()
+  return new Promise<Blob>((resolve, reject) => {
+    image.onload = function () {
+      canvas.width = image.width
+      canvas.height = image.height
+
+      ctx.drawImage(image, 0, 0)
+
+      const annotationImage = new Image()
+      annotationImage.onload = function () {
+        ctx.drawImage(annotationImage, 0, 0, canvas.width, canvas.height)
+        canvasToBlob(canvas).then(resolve).catch(reject)
+      }
+      annotationImage.src = annotationDataUri
+    }
+    image.setAttribute('crossorigin', 'anonymous')
+    image.src = attachmentUrl
+  })
+}
