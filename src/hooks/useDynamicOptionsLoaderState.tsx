@@ -25,8 +25,10 @@ export const FreshdeskFieldsStateContext = React.createContext<
 >(undefined)
 
 export function FormElementOptionsContextProvider({
+  formIsReadOnly,
   children,
 }: {
+  formIsReadOnly: boolean
   children: React.ReactNode
 }) {
   const form = useFormDefinition()
@@ -47,7 +49,7 @@ export function FormElementOptionsContextProvider({
 
   const loadFreshdeskFields = React.useCallback(
     async (abortSignal): Promise<FreshdeskTypes.FreshdeskField[]> => {
-      if (hasFreshdeskFields) {
+      if (hasFreshdeskFields && !formIsReadOnly) {
         return await formService.getFreshdeskFields(form.id, abortSignal)
       }
       return []
@@ -73,7 +75,7 @@ export function FormElementOptionsContextProvider({
 
   const loadFormElementOptionsSets = React.useCallback(
     async (abortSignal): Promise<OptionsSetResult[]> => {
-      if (!hasOptionsSets) {
+      if (!hasOptionsSets || formIsReadOnly) {
         return []
       }
       const formElementOptionsSets =
