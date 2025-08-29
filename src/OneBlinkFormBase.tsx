@@ -1129,7 +1129,7 @@ function OneBlinkFormBase({
           value={replaceInjectablesOverrides}
         >
           <FormDefinitionContext.Provider value={definition}>
-            <FormElementOptionsContextProvider>
+            <FormElementOptionsContextProvider formIsReadOnly={isReadOnly}>
               <FormElementLookupsContextProvider>
                 <OneBlinkFormContainerContext.Provider
                   value={obFormContainerHTMLElementRef.current}
