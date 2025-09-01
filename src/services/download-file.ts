@@ -110,8 +110,10 @@ export default async function downloadAttachment(
       }
       return
     }
-    const url = new URL(attachment.url, tenants.current.apiOrigin)
-    const blob = await urlToBlobAsync(url.href)
+    const safeAttachmentUrl = new URL(tenants.current.apiOrigin)
+    const unsafeAttachmentUrl = new URL(attachment.url)
+    safeAttachmentUrl.pathname = unsafeAttachmentUrl.pathname
+    const blob = await urlToBlobAsync(safeAttachmentUrl.href)
     return await downloadFile(blob, attachment.fileName)
   } catch (error) {
     handleError(error as Error)
