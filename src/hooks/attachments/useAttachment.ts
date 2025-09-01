@@ -181,10 +181,11 @@ export default function useAttachment(
 
     const effect = async () => {
       try {
-        const url = new URL(value.url, tenants.current.apiOrigin)
-        const privateAttachmentUrl = url.href
+        const safeAttachmentUrl = new URL(tenants.current.apiOrigin)
+        const unsafeAttachmentUrl = new URL(value.url)
+        safeAttachmentUrl.pathname = unsafeAttachmentUrl.pathname
         const blob = await urlToBlobAsync(
-          privateAttachmentUrl,
+          safeAttachmentUrl.href,
           abortController.signal,
         )
         if (ignore) {

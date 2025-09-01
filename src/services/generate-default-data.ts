@@ -28,7 +28,7 @@ function parseAttachment(
     if (
       typeof record.id === 'string' &&
       typeof record.fileName === 'string' &&
-      (typeof record.url === 'string' || typeof record.path === 'string') &&
+      typeof record.url === 'string' &&
       typeof record.contentType === 'string' &&
       typeof record.isPrivate === 'boolean' &&
       parseUnknownAsRecord(
