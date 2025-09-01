@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.10.0] - 2025-09-01
+
 ### Added
 
 - `crop` functionality to `camera` and `files` elements
@@ -14,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - downloading attachments without a path
+
+### Dependencies
+
+- depend upon [react-easy-crop](https://www.npmjs.com/package/react-easy-crop) [5.5.0](https://github.com/ValentinH/react-easy-crop/releases/tag/v5.5.0)
 
 ## [8.9.2] - 2025-08-29
 
