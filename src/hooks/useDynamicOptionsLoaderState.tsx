@@ -54,7 +54,7 @@ export function FormElementOptionsContextProvider({
       }
       return []
     },
-    [form.id, hasFreshdeskFields],
+    [form.id, hasFreshdeskFields, formIsReadOnly],
   )
 
   const [freshdeskFieldsState] = useLoadDataState(loadFreshdeskFields)
@@ -89,7 +89,7 @@ export function FormElementOptionsContextProvider({
         }),
       )
     },
-    [form.organisationId, hasOptionsSets],
+    [form.organisationId, hasOptionsSets, formIsReadOnly],
   )
 
   const [optionsSetResultsState, , setOptionsSetResults] = useLoadDataState(
