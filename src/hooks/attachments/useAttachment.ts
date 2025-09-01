@@ -178,10 +178,11 @@ export default function useAttachment(
 
     let ignore = false
     const abortController = new AbortController()
-    const privateAttachmentUrl = tenants.current.apiOrigin + value.path
 
     const effect = async () => {
       try {
+        const url = new URL(value.url, tenants.current.apiOrigin)
+        const privateAttachmentUrl = url.href
         const blob = await urlToBlobAsync(
           privateAttachmentUrl,
           abortController.signal,
