@@ -52,18 +52,7 @@ function DownloadableFiles({
           formSubmissionResult.taskCompletion?.taskGroupInstance,
       },
     ).text
-  }, [
-    formSubmissionResult.definition.postSubmissionReceipt?.allowPDFDownload
-      ?.pdfFileName,
-    formSubmissionResult.previousFormSubmissionApprovalId,
-    formSubmissionResult.submission,
-    formSubmissionResult.submissionId,
-    formSubmissionResult.submissionTimestamp,
-    formSubmissionResult.externalId,
-    formSubmissionResult.taskCompletion?.task,
-    formSubmissionResult.taskCompletion?.taskGroup,
-    formSubmissionResult.taskCompletion?.taskGroupInstance,
-  ])
+  }, [formSubmissionResult])
 
   const pdfFileNode = React.useMemo(
     () =>
@@ -80,6 +69,7 @@ function DownloadableFiles({
     [
       formSubmissionResult.downloadSubmissionPdfUrl,
       formSubmissionResult.definition,
+      submissionPDFFileName,
     ],
   )
 
