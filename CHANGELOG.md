@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.10.1] - 2025-09-02
+
 ### Changed
 
 - no longer fetch dynamic options on read only forms
