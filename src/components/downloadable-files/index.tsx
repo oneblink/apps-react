@@ -1,5 +1,9 @@
 import * as React from 'react'
-import { submissionService } from '@oneblink/apps'
+import {
+  submissionService,
+  localisationService,
+  authService,
+} from '@oneblink/apps'
 import {
   OnlyPDFDisplay,
   LoadAndDisplayAttachments,
@@ -23,14 +27,39 @@ function DownloadableFiles({
    */
   layout?: LayoutType
 }) {
+  const submissionPDFFileName = React.useMemo(() => {
+    const customFileName =
+      formSubmissionResult.definition.postSubmissionReceipt?.allowPDFDownload
+        ?.pdfFileName
+    if (!customFileName) {
+      return 'Submission'
+    }
+
+    return localisationService.replaceInjectablesWithSubmissionValues(
+      customFileName,
+      {
+        previousApprovalId:
+          formSubmissionResult.previousFormSubmissionApprovalId,
+        form: formSubmissionResult.definition,
+        submission: formSubmissionResult.submission,
+        submissionId: formSubmissionResult.submissionId || '',
+        submissionTimestamp: formSubmissionResult.submissionTimestamp || '',
+        externalId: formSubmissionResult.externalId || undefined,
+        userProfile: authService.getUserProfile() || undefined,
+        task: formSubmissionResult.taskCompletion?.task,
+        taskGroup: formSubmissionResult.taskCompletion?.taskGroup,
+        taskGroupInstance:
+          formSubmissionResult.taskCompletion?.taskGroupInstance,
+      },
+    ).text
+  }, [formSubmissionResult])
+
   const pdfFileNode = React.useMemo(
     () =>
       !formSubmissionResult.downloadSubmissionPdfUrl ? undefined : (
         <SingleFileDisplay
           attachment={{
-            filename:
-              formSubmissionResult.definition.postSubmissionReceipt
-                ?.allowPDFDownload?.pdfFileName ?? 'Submission',
+            filename: submissionPDFFileName,
             signedUrl: formSubmissionResult.downloadSubmissionPdfUrl,
             contentType: 'application/pdf',
           }}
@@ -40,6 +69,7 @@ function DownloadableFiles({
     [
       formSubmissionResult.downloadSubmissionPdfUrl,
       formSubmissionResult.definition,
+      submissionPDFFileName,
     ],
   )
 
