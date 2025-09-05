@@ -83,7 +83,7 @@ export function DraftsContextProvider({
 }) {
   const isMounted = useIsMounted()
   const isOffline = useIsOffline()
-  const { isLoggedIn, isUsingFormsKey } = useAuth()
+  const { isUsingFormsKey } = useAuth()
 
   const [syncState, setSyncState] = React.useState<{
     lastSyncTime: Date | null
@@ -102,7 +102,7 @@ export function DraftsContextProvider({
   }, [])
   const syncDrafts = React.useCallback(
     async (abortSignal: AbortSignal | undefined) => {
-      if (!isDraftsEnabled || !isLoggedIn || isUsingFormsKey) {
+      if (!isDraftsEnabled || isUsingFormsKey) {
         return
       }
 
@@ -134,7 +134,7 @@ export function DraftsContextProvider({
         })
       }
     },
-    [formsAppId, isDraftsEnabled, isLoggedIn, isMounted, isUsingFormsKey],
+    [formsAppId, isDraftsEnabled, isMounted, isUsingFormsKey],
   )
 
   const [drafts, setDrafts] = React.useState<
