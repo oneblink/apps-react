@@ -66,7 +66,11 @@ export function HintTooltip({
       id={`${inputId}-hint`}
     >
       {/* Tooltip does not work with the MaterialIcon component - it must remain an i tag*/}
-      <i className="material-icons has-text-grey ob-label__hint" role="img">
+      <i
+        className="material-icons has-text-grey ob-label__hint"
+        role="tooltip"
+        aria-label="More information"
+      >
         info
       </i>
     </Tooltip>

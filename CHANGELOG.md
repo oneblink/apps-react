@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `useDrafts` to allow unauthenticated users
+- Aria role and label for hint tooltips
 
 ## [8.10.1] - 2025-09-02
 
