@@ -66,11 +66,7 @@ function DownloadableFiles({
           className="cypress-receipt-download-pdf-button"
         />
       ),
-    [
-      formSubmissionResult.downloadSubmissionPdfUrl,
-      formSubmissionResult.definition,
-      submissionPDFFileName,
-    ],
+    [formSubmissionResult.downloadSubmissionPdfUrl, submissionPDFFileName],
   )
 
   if (!formSubmissionResult.attachmentsAccessToken && !pdfFileNode) {
