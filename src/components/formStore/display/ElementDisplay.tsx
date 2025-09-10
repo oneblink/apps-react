@@ -10,7 +10,11 @@ import MaterialIcon from '../../MaterialIcon'
 
 async function fetchFile(url: string) {
   const idToken = await getCognitoIdToken()
-  const response = await fetch(url, {
+  const safeUrl = new URL(tenants.current.apiOrigin)
+  const unsafeUrl = new URL(url)
+  safeUrl.pathname = unsafeUrl.pathname
+  safeUrl.search = unsafeUrl.search
+  const response = await fetch(safeUrl.href, {
     headers: {
       Authorization: `Bearer ${idToken}`,
     },
@@ -26,11 +30,11 @@ async function fetchFile(url: string) {
 }
 
 export function FileChip({
-  file: { fileName, path, data },
+  file: { fileName, url, data },
 }: {
   file: {
     fileName: string
-    path?: string
+    url?: string
     isPrivate?: boolean
     data?: string
   }
@@ -52,8 +56,8 @@ export function FileChip({
         isDownloading: true,
       })
 
-      if (path) {
-        const blob = await fetchFile(tenants.current.apiOrigin + path)
+      if (url) {
+        const blob = await fetchFile(url)
         saveAs(blob, fileName)
       } else if (data) {
         saveAs(data, fileName)
@@ -68,7 +72,7 @@ export function FileChip({
         error: error as Error,
       })
     }
-  }, [data, fileName, path])
+  }, [data, fileName, url])
   return (
     <>
       <Chip
