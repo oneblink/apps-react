@@ -74,7 +74,6 @@ function FormElementFiles({
           ref={inputRef}
           type="file"
           name={element.name}
-          id={id}
           className="file-input ob-input"
           multiple={element.maxEntries !== 1}
           disabled={element.readOnly}
@@ -111,6 +110,7 @@ function FormElementFiles({
                   <button
                     type="button"
                     className="button ob-files__add-new-button"
+                    id={id}
                     onClick={handleAdd}
                     aria-describedby={ariaDescribedby}
                     onBlur={setIsDirty}
