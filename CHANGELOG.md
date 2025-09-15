@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- files button to read out label to hint of element when using a screen reader
+- files button to read out label and hint of element when using a screen reader
 
 ## [8.11.0] - 2025-09-15
 
