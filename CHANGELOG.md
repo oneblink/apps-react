@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - arcGIS element snapshots not being retained after saving draft
+- fix reCAPTCHA component in WestpacQuickStreamPaymentForm
 
 ## [8.11.0] - 2025-09-15
 

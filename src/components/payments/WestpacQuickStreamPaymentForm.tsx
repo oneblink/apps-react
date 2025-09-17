@@ -276,25 +276,13 @@ function WestpacQuickStreamPaymentForm({
       return
     }
 
-    const { recaptchaToken, displayCaptchaRequired } = await getRecaptchaToken()
-
-    if (!recaptchaToken) {
-      setCompleteTransactionState({
-        captchaToken: null,
-        displayCaptchaRequired,
-        isCompletingTransaction: false,
-        completeTransactionError: null,
-      })
-      return
-    }
-
     setCompleteTransactionState((currentState) => ({
       ...currentState,
       isCompletingTransaction: true,
       completeTransactionError: null,
     }))
 
-    trustedFrame.submitForm((errors, data) => {
+    trustedFrame.submitForm(async (errors, data) => {
       if (errors) {
         console.log('Invalid payment form submission', errors)
         setCompleteTransactionState((currentState) => ({
@@ -302,6 +290,19 @@ function WestpacQuickStreamPaymentForm({
           isCompletingTransaction: false,
           completeTransactionError: null,
         }))
+        return
+      }
+
+      const { recaptchaToken, displayCaptchaRequired } =
+        await getRecaptchaToken()
+
+      if (!recaptchaToken) {
+        setCompleteTransactionState({
+          captchaToken: null,
+          displayCaptchaRequired,
+          isCompletingTransaction: false,
+          completeTransactionError: null,
+        })
         return
       }
 
