@@ -664,17 +664,15 @@ function OneBlinkFormBase({
       }
     })
     // reset each captcha
-    if (captchaType === 'CHECKBOX') {
-      captchasRef.current.forEach((captcha) => {
-        captcha.reset()
-      })
-    }
+    captchasRef.current.forEach((captcha) => {
+      captcha.reset()
+    })
 
     setHasAttemptedSubmit(false)
     setFormSubmission((current) => {
       return { ...current, submission: updatedModel }
     })
-  }, [definition.elements, setFormSubmission, submission, captchaType])
+  }, [definition.elements, setFormSubmission, submission])
 
   const prepareSubmission = React.useCallback(
     async (
