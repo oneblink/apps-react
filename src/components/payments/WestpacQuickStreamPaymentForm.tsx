@@ -248,7 +248,12 @@ function WestpacQuickStreamPaymentForm({
   const getRecaptchaToken = React.useCallback(async () => {
     switch (captchaType) {
       case 'INVISIBLE': {
-        const token = await captchaRef.current?.executeAsync()
+        const token = await captchaRef.current
+          ?.executeAsync()
+          .catch((error) => {
+            console.log('Invisible captcha executeAsync failure', error)
+            return null
+          })
         if (!token) {
           console.log('Captcha token failure')
           bulmaToast.toast({
