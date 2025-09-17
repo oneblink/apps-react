@@ -246,6 +246,7 @@ function WestpacQuickStreamPaymentForm({
   })
 
   const getRecaptchaToken = React.useCallback(async () => {
+    captchaRef.current?.reset()
     switch (captchaType) {
       case 'INVISIBLE': {
         const token = await captchaRef.current
