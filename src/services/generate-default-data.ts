@@ -436,6 +436,7 @@ function parsePreFillData(
               return view
             }
           }),
+          snapshotImages: parseFiles(element, record.snapshotImages),
         }
       })
     }

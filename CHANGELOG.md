@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - files button to read out label and hint of element when using a screen reader
 
+### Fixed
+
+- arcGIS element snapshots not being retained after saving draft
+
 ## [8.11.0] - 2025-09-15
 
 ### Changed
