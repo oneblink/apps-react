@@ -192,7 +192,7 @@ function FormElementPointCadastralParcel({
         )}
       </FormElementLabelContainer>
 
-      <Collapse in={!!value}>
+      <Collapse in={!!value?.features}>
         <NotificationGrid
           className={`${pointCadastralParcelClass}__record-display has-margin-top-6`}
           gridClassName={`${pointCadastralParcelClass}__container`}
