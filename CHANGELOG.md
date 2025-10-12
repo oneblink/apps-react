@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- ArcGIS Web Map element removing layers from pre-configured web maps
+
 ## [8.11.1] - 2025-09-19
 
 ### Changed
