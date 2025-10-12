@@ -32,6 +32,7 @@ import useIsPageVisible from '../hooks/useIsPageVisible'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
 import '../styles/arcgis-external.css'
+import Layer from '@arcgis/core/layers/Layer'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
@@ -126,6 +127,7 @@ function FormElementArcGISWebMap({
   const selectedGraphicForUpdate = React.useRef<string>()
   const mapViewRef = React.useRef<MapView>()
   const measurementLayerRef = React.useRef<GraphicsLayer>()
+  const defaultLayersRef = React.useRef<Layer[]>()
 
   const [loadError, setLoadError] = React.useState<Error>()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
@@ -466,6 +468,12 @@ function FormElementArcGISWebMap({
       stringifedLayersRef.current = currentStringifedLayers
       // remove all layers and repaint
       map.layers.removeAll()
+      if (defaultLayersRef.current) {
+        // redraw default layers first
+        defaultLayersRef.current.forEach((layer) => {
+          map.add(layer)
+        })
+      }
 
       if (value?.layers) {
         for (const layer of value.layers) {
@@ -523,7 +531,7 @@ function FormElementArcGISWebMap({
         await map.load()
 
         const view = new MapView({
-          map: map,
+          map,
           container: ref.current || undefined,
           popup: new Popup({
             dockEnabled: true,
@@ -593,9 +601,12 @@ function FormElementArcGISWebMap({
 
         view.ui.add(mapGalleryPanelRef.current, 'top-left')
 
+        let drawingLayerId: string | undefined
+        let measurementLayerId: string | undefined
         if (!element.readOnly && element.allowedDrawingTools?.length) {
+          drawingLayerId = uuid()
           const drawingLayer = new GraphicsLayer({
-            id: uuid(),
+            id: drawingLayerId,
             title: 'Drawing',
           })
           drawingLayerRef.current = drawingLayer
@@ -603,8 +614,9 @@ function FormElementArcGISWebMap({
 
           // Add measurement layer above drawing layer
           if (element.measurementDimensionsEnabled) {
+            measurementLayerId = uuid()
             const measurementLayer = new GraphicsLayer({
-              id: uuid(),
+              id: measurementLayerId,
               title: 'Measurements',
               listMode: 'hide',
             })
@@ -647,6 +659,19 @@ function FormElementArcGISWebMap({
         // once the view has loaded
         view.when(() => {
           mapViewRef.current = view
+
+          // when updating the map on submission value change,
+          // we completely wipe all layers and redraw from scratch.
+          // The below caters for web maps that load in with pre-existing layers,
+          // which is usually the case when a web map id is provided.
+          // We will store these pre-existing layers and ensure they're passed
+          // to any redraw logic.
+          defaultLayersRef.current = map.allLayers
+            .toArray()
+            .filter(
+              (l) => l.id !== measurementLayerId && l.id !== drawingLayerId,
+            )
+
           takeScreenShotRef.current = async (
             viewToScreenShot?: ArcGISTypes.ArcGISWebMapElementValue['view'],
           ) => {
