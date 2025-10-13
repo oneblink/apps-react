@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Element injection into options nested in repeatable sets
+
 ### Fixed
 
 - ArcGIS Web Map element removing layers from pre-configured web maps

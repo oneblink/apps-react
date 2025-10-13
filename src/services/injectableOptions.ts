@@ -4,13 +4,14 @@ import { localisationService } from '@oneblink/apps'
 import { v4 as uuidv4 } from 'uuid'
 import { MiscTypes } from '@oneblink/types'
 import { TaskContext } from '../hooks/useTaskContext'
-
 type Option = Pick<FormTypes.ChoiceElementOption, 'value' | 'label'>
 
 function processInjectableDynamicOption({
   option: resource,
   submission: rootSubmission,
   formElements: rootFormElements,
+  contextElements,
+  contextSubmission,
   ...params
 }: {
   option: Option
@@ -18,18 +19,22 @@ function processInjectableDynamicOption({
   formElements: FormTypes.FormElement[]
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
+  contextElements?: FormTypes.FormElement[]
+  contextSubmission?: {
+    [name: string]: unknown
+  }
 }): Map<string, Option> {
   return submissionService.processInjectablesInCustomResource<Option>({
     resource,
     submission: rootSubmission,
-    formElements: rootFormElements,
+    formElements: [...rootFormElements, ...(contextElements || [])],
     replaceRootInjectables(option, submission, formElements) {
       // Replace root level form element values
       const replaceableParams: Parameters<
         typeof localisationService.replaceInjectablesWithElementValues
       >[1] = {
         ...params,
-        submission,
+        submission: { ...submission, ...contextSubmission },
         formElements,
         task: params.taskContext.task,
         taskGroup: params.taskContext.taskGroup,
@@ -80,12 +85,18 @@ export default function processInjectableOption({
   option,
   submission,
   formElements,
+  contextElements,
+  contextSubmission,
   taskContext,
   userProfile,
 }: {
   option: FormTypes.ChoiceElementOption
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElements: FormTypes.FormElement[]
+  contextElements?: FormTypes.FormElement[]
+  contextSubmission?: {
+    [name: string]: unknown
+  }
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
 }): FormTypes.ChoiceElementOption[] {
@@ -95,6 +106,8 @@ export default function processInjectableOption({
     formElements,
     taskContext,
     userProfile,
+    contextElements,
+    contextSubmission,
   })
 
   const generatedOptions: FormTypes.ChoiceElementOption[] = []
@@ -173,7 +186,7 @@ function injectOptionsAcrossEntriesElements({
           ...e,
           elements: injectOptionsAcrossEntriesElements({
             // repeatable set entries may only know about elements within entry
-            contextElements: e.elements,
+            contextElements,
             elements: e.elements,
             entries: entries.reduce<
               SubmissionTypes.S3SubmissionData['submission'][]
@@ -202,7 +215,8 @@ function injectOptionsAcrossEntriesElements({
                   const injected = processInjectableOption({
                     option: o,
                     submission,
-                    formElements: contextElements,
+                    formElements: elements,
+                    contextElements,
                     taskContext,
                     userProfile,
                   })
