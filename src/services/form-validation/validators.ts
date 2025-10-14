@@ -1,4 +1,5 @@
 import { EnvironmentTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
+import { fileUploadService } from '@oneblink/sdk-core'
 import getDateRangeConfiguration, {
   DateRangeConfigurationOptions,
 } from '../getDateRangeConfiguration'
@@ -52,11 +53,8 @@ export function checkFileNameIsValid(
 ) {
   const extension = fileName.split('.').pop()
   return (
-    !formElement.restrictedFileTypes ||
-    formElement.restrictedFileTypes.some(
-      (fileType) => fileType.toLowerCase() === extension?.toLowerCase(),
-    )
-  )
+    formElement.restrictedFileTypes || fileUploadService.restrictedFileTypes
+  ).some((fileType) => fileType.toLowerCase() === extension?.toLowerCase())
 }
 
 export function checkFileNameExtensionIsValid(
