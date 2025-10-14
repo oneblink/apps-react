@@ -31,7 +31,7 @@ export default function useFormElementOptions<T>({
   const taskContext = useTaskContext()
   const userProfileForInjectables = useUserProfileForInjectables()
 
-  const { formSubmissionModel, elements } = useFormSubmissionModel()
+  const { formSubmissionModel, elements, parent } = useFormSubmissionModel()
   const conditionallyShownOptions = conditionallyShownOptionsElement?.options
   //options that are shown due to conditional logic
   const shownOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
@@ -57,6 +57,8 @@ export default function useFormElementOptions<T>({
           option,
           submission: formSubmissionModel,
           formElements: elements,
+          contextElements: parent?.elements,
+          contextSubmission: parent?.formSubmissionModel,
           taskContext,
           userProfile: userProfileForInjectables,
         })
@@ -69,6 +71,7 @@ export default function useFormElementOptions<T>({
   }, [
     elements,
     formSubmissionModel,
+    parent,
     shownOptions,
     taskContext,
     userProfileForInjectables,
