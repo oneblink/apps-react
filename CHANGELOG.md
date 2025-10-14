@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Element injection into options nested in repeatable sets
-- 
+ - `$input-border-color` CSS override
+
 ### Changed
 
 - `pointCadastralParcel` to only show results grid if address has `features`
