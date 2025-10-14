@@ -27,6 +27,7 @@ import {
   defaultAutoSnapshotButtonLabel,
   generateArcGISAutomatedSnapshotFileName,
 } from '../../form-elements/FormElementArcGISWebMap'
+import { fileUploadService } from '@oneblink/sdk-core'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -547,7 +548,8 @@ export default function validateSubmission({
           ) {
             errorMessages.push(
               `Only the following file types are accepted: ${(
-                formElement.restrictedFileTypes || []
+                formElement.restrictedFileTypes ||
+                fileUploadService.restrictedFileTypes
               ).join(', ')}`,
             )
           }
