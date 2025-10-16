@@ -10,7 +10,6 @@ function processInjectableDynamicOption({
   option: resource,
   submission: rootSubmission,
   formElements: rootFormElements,
-  contextElements,
   contextSubmission,
   ...params
 }: {
@@ -19,22 +18,22 @@ function processInjectableDynamicOption({
   formElements: FormTypes.FormElement[]
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
-  contextElements?: FormTypes.FormElement[]
-  contextSubmission?: {
-    [name: string]: unknown
-  }
+  contextSubmission?: SubmissionTypes.S3SubmissionData['submission']
 }): Map<string, Option> {
   return submissionService.processInjectablesInCustomResource<Option>({
     resource,
-    submission: rootSubmission,
-    formElements: [...rootFormElements, ...(contextElements || [])],
+    submission:
+      JSON.stringify(contextSubmission) === JSON.stringify(rootSubmission)
+        ? rootSubmission
+        : { ...rootSubmission, ...contextSubmission },
+    formElements: rootFormElements,
     replaceRootInjectables(option, submission, formElements) {
       // Replace root level form element values
       const replaceableParams: Parameters<
         typeof localisationService.replaceInjectablesWithElementValues
       >[1] = {
         ...params,
-        submission: { ...submission, ...contextSubmission },
+        submission,
         formElements,
         task: params.taskContext.task,
         taskGroup: params.taskContext.taskGroup,
@@ -85,7 +84,6 @@ export default function processInjectableOption({
   option,
   submission,
   formElements,
-  contextElements,
   contextSubmission,
   taskContext,
   userProfile,
@@ -93,10 +91,7 @@ export default function processInjectableOption({
   option: FormTypes.ChoiceElementOption
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElements: FormTypes.FormElement[]
-  contextElements?: FormTypes.FormElement[]
-  contextSubmission?: {
-    [name: string]: unknown
-  }
+  contextSubmission?: SubmissionTypes.S3SubmissionData['submission']
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
 }): FormTypes.ChoiceElementOption[] {
@@ -106,7 +101,6 @@ export default function processInjectableOption({
     formElements,
     taskContext,
     userProfile,
-    contextElements,
     contextSubmission,
   })
 
@@ -216,7 +210,6 @@ function injectOptionsAcrossEntriesElements({
                     option: o,
                     submission,
                     formElements: elements,
-                    contextElements,
                     taskContext,
                     userProfile,
                   })
