@@ -1,4 +1,13 @@
-import { styled, Stack, IconButton, Slider } from '@mui/material'
+import {
+  styled,
+  Stack,
+  IconButton,
+  Slider,
+  Box,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material'
 import MaterialIcon from '../MaterialIcon'
 import * as React from 'react'
 
@@ -68,5 +77,146 @@ export const ZoomSlider = ({
         <MaterialIcon>add</MaterialIcon>
       </IconButton>
     </Stack>
+  )
+}
+
+export interface AspectRatio {
+  width: number
+  height: number
+}
+export const availableAspectRatios: AspectRatio[] = [
+  {
+    width: 21,
+    height: 9,
+  },
+  {
+    width: 16,
+    height: 9,
+  },
+  {
+    width: 16,
+    height: 10,
+  },
+  {
+    width: 3,
+    height: 2,
+  },
+  {
+    width: 4,
+    height: 3,
+  },
+  {
+    width: 5,
+    height: 4,
+  },
+  {
+    width: 1,
+    height: 1,
+  },
+  {
+    width: 4,
+    height: 5,
+  },
+  {
+    width: 9,
+    height: 16,
+  },
+]
+export const AspectRatioButton = ({
+  selectedAspectRatio,
+  onSelectAspectRatio,
+}: {
+  selectedAspectRatio: AspectRatio
+  onSelectAspectRatio: (aspectRatio: AspectRatio) => void
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+
+  // TODO: Don't just use MUI for everything here if Blake gives the ok for this implementation
+  // TODO: Put styling in css files if Blake gives the ok for this implementation
+  return (
+    <Box display="flex" alignItems="center" gap={1}>
+      <Typography variant="body1">Aspect Ratio</Typography>
+      <button
+        type="button"
+        className="button ob-button is-outlined"
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+      >
+        <span
+          style={{
+            marginRight: 8,
+          }}
+        >
+          {selectedAspectRatio.width}:{selectedAspectRatio.height}
+        </span>
+        <DrawAspectRatio {...selectedAspectRatio} />
+      </button>
+      <Menu
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={() => {
+          setAnchorEl(null)
+        }}
+      >
+        {availableAspectRatios.map((aspectRatio) => (
+          <MenuItem
+            key={`${aspectRatio.width}:${aspectRatio.height}`}
+            onClick={() => {
+              onSelectAspectRatio(aspectRatio)
+              setAnchorEl(null)
+            }}
+          >
+            {aspectRatio.width}:{aspectRatio.height}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
+  )
+}
+
+const DrawAspectRatio = ({ height, width }: AspectRatio) => {
+  const { displayWidth, displayHeight, iconSize } = React.useMemo(() => {
+    const coefficient = 30 / height
+
+    const iconSize = () => {
+      if (width === height) {
+        return 18
+      }
+      if (width === 9 && height === 16) {
+        return 16
+      }
+      if (width < height) {
+        return 16
+      }
+    }
+
+    return {
+      displayWidth: width * coefficient,
+      displayHeight: 30,
+      iconSize: iconSize(),
+    }
+  }, [height, width])
+
+  return (
+    <Box
+      sx={(theme) => ({
+        transition: 'width 0.3s ease-in-out',
+        width: displayWidth,
+        height: displayHeight,
+        backgroundColor: theme.palette.grey[300],
+        borderRadius: 1,
+      })}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <MaterialIcon
+        sx={{
+          fontSize: iconSize,
+          rotate: width === 9 && height === 16 ? '90deg' : undefined,
+        }}
+      >
+        aspect_ratio
+      </MaterialIcon>
+    </Box>
   )
 }

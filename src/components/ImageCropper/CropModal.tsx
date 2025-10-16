@@ -1,7 +1,12 @@
 import * as React from 'react'
-import ImageCropper from '.'
+import ImageCropper, { getAspectRatio } from '.'
 import { Area } from 'react-easy-crop'
 import scrollingService from '../../services/scrolling-service'
+import {
+  AspectRatioButton,
+  availableAspectRatios,
+  AspectRatio,
+} from './resource-components'
 
 function CropModal({
   imageSrc,
@@ -30,14 +35,34 @@ function CropModal({
     }
   }, [])
 
+  const [selectedAspectRatio, setSelectedAspectRatio] =
+    React.useState<AspectRatio>(availableAspectRatios[0])
+
+  const aspectRatio = React.useMemo(
+    () =>
+      getAspectRatio({
+        width: selectedAspectRatio.width,
+        height: selectedAspectRatio.height,
+      }),
+    [selectedAspectRatio],
+  )
   return (
     <div className="modal is-active">
       <div className="modal-background-faded"></div>
       <div className="ob-crop ob-border-radius">
-        <div className="ob-crop__content ob-border-radius">
+        <div
+          className="ob-crop__content ob-border-radius"
+          // TODO: Put in css file if Blake gives the ok for this implementation
+          style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+        >
           <ImageCropper
             imgSrc={imageSrc}
             onCropComplete={setCroppedAreaPixels}
+            outputAspectRatio={aspectRatio}
+          />
+          <AspectRatioButton
+            onSelectAspectRatio={setSelectedAspectRatio}
+            selectedAspectRatio={selectedAspectRatio}
           />
         </div>
         <div className="ob-annotation__buttons ob-annotation__buttons-actions">
