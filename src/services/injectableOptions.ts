@@ -22,10 +22,7 @@ function processInjectableDynamicOption({
 }): Map<string, Option> {
   return submissionService.processInjectablesInCustomResource<Option>({
     resource,
-    submission:
-      JSON.stringify(contextSubmission) === JSON.stringify(rootSubmission)
-        ? rootSubmission
-        : { ...rootSubmission, ...contextSubmission },
+    submission: { ...rootSubmission, ...contextSubmission },
     formElements: rootFormElements,
     replaceRootInjectables(option, submission, formElements) {
       // Replace root level form element values

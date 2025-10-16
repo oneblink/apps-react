@@ -1464,8 +1464,6 @@ describe('processInjectableOption()', () => {
       }),
     ]
 
-    console.log('options', options)
-
     const strippedOptions = options.map((o) => ({ ...o, id: undefined }))
 
     expect(strippedOptions).toEqual([
