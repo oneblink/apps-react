@@ -57,7 +57,6 @@ export default function useFormElementOptions<T>({
           option,
           submission: formSubmissionModel,
           formElements: elements,
-          contextElements: parent?.elements,
           contextSubmission: parent?.formSubmissionModel,
           taskContext,
           userProfile: userProfileForInjectables,
