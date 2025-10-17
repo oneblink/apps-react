@@ -10,12 +10,14 @@ function processInjectableDynamicOption({
   option: resource,
   submission: rootSubmission,
   formElements: rootFormElements,
+  contextElements,
   contextSubmission,
   ...params
 }: {
   option: Option
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElements: FormTypes.FormElement[]
+  contextElements: FormTypes.FormElement[]
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
   contextSubmission?: SubmissionTypes.S3SubmissionData['submission']
@@ -23,7 +25,7 @@ function processInjectableDynamicOption({
   return submissionService.processInjectablesInCustomResource<Option>({
     resource,
     submission: { ...rootSubmission, ...contextSubmission },
-    formElements: rootFormElements,
+    formElements: [...rootFormElements, ...contextElements],
     replaceRootInjectables(option, submission, formElements) {
       // Replace root level form element values
       const replaceableParams: Parameters<
@@ -81,6 +83,7 @@ export default function processInjectableOption({
   option,
   submission,
   formElements,
+  contextElements,
   contextSubmission,
   taskContext,
   userProfile,
@@ -88,7 +91,8 @@ export default function processInjectableOption({
   option: FormTypes.ChoiceElementOption
   submission: SubmissionTypes.S3SubmissionData['submission']
   formElements: FormTypes.FormElement[]
-  contextSubmission?: SubmissionTypes.S3SubmissionData['submission']
+  contextElements: FormTypes.FormElement[]
+  contextSubmission: SubmissionTypes.S3SubmissionData['submission']
   taskContext: TaskContext
   userProfile: MiscTypes.UserProfile | undefined
 }): FormTypes.ChoiceElementOption[] {
@@ -99,6 +103,7 @@ export default function processInjectableOption({
     taskContext,
     userProfile,
     contextSubmission,
+    contextElements,
   })
 
   const generatedOptions: FormTypes.ChoiceElementOption[] = []
@@ -111,18 +116,19 @@ export default function processInjectableOption({
       value,
     })
   })
-
   return generatedOptions
 }
 
 function injectOptionsAcrossEntriesElements({
   contextElements,
+  contextSubmission,
   elements,
   entries,
   taskContext,
   userProfile,
 }: {
   contextElements: FormTypes.FormElement[]
+  contextSubmission: SubmissionTypes.S3SubmissionData['submission']
   elements: FormTypes.FormElement[]
   entries: SubmissionTypes.S3SubmissionData['submission'][]
   taskContext: TaskContext
@@ -137,6 +143,7 @@ function injectOptionsAcrossEntriesElements({
           elements: injectOptionsAcrossEntriesElements({
             // info elements on other pages/sections will need the parent definition
             contextElements,
+            contextSubmission,
             elements: e.elements,
             entries,
             taskContext,
@@ -151,6 +158,7 @@ function injectOptionsAcrossEntriesElements({
             elements: injectOptionsAcrossEntriesElements({
               // sub-forms do not have context of parent elements
               contextElements: e.elements,
+              contextSubmission,
               elements: e.elements,
               entries: entries.reduce<
                 SubmissionTypes.S3SubmissionData['submission'][]
@@ -178,6 +186,7 @@ function injectOptionsAcrossEntriesElements({
           elements: injectOptionsAcrossEntriesElements({
             // repeatable set entries may only know about elements within entry
             contextElements,
+            contextSubmission,
             elements: e.elements,
             entries: entries.reduce<
               SubmissionTypes.S3SubmissionData['submission'][]
@@ -206,7 +215,9 @@ function injectOptionsAcrossEntriesElements({
                   const injected = processInjectableOption({
                     option: o,
                     submission,
+                    contextSubmission,
                     formElements: elements,
+                    contextElements,
                     taskContext,
                     userProfile,
                   })
@@ -249,6 +260,7 @@ export function injectOptionsAcrossAllElements({
   // labels for each available option to display the submission.
   return injectOptionsAcrossEntriesElements({
     ...params,
+    contextSubmission: submission,
     entries: [submission],
   })
 }
