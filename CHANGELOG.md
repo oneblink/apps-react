@@ -20,10 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `$danger` CSS property to meet accessibility requirements
 - `ImageCropper` component to use `react-image-crop` instead of `react-easy-crop`
 
-### Dependencies
-
-- Added [react-image-crop](https://www.npmjs.com/package/react-image-crop) version [11.0.10](https://github.com/DominicTobias/react-image-crop/releases/tag/v11.0.10)
-
 ## [8.11.2] - 2025-10-13
 
 ### Fixed
