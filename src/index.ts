@@ -70,6 +70,7 @@ export {
   default as ImageCropper,
   getAspectRatio,
   generateCroppedImageBlob,
+  PercentCrop,
 } from './components/ImageCropper'
 
 export * from './types/form'

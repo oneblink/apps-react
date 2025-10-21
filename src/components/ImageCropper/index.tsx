@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import ReactImageCrop, { Crop, PercentCrop } from 'react-image-crop'
 import { CropContainer } from './resource-components'
 import 'react-image-crop/src/ReactCrop.scss'
-
+export { PercentCrop }
 const defaultCrop: PercentCrop = {
   unit: '%',
   height: 100,
