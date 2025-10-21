@@ -1,9 +1,5 @@
 import React, { memo } from 'react'
-import ReactImageCrop, {
-  Crop,
-  PercentCrop,
-  ReactCropProps,
-} from 'react-image-crop'
+import ReactImageCrop, { Crop, PercentCrop } from 'react-image-crop'
 import { CropContainer } from './resource-components'
 import 'react-image-crop/src/ReactCrop.scss'
 
@@ -26,7 +22,6 @@ const ImageCropper = ({
   disabled?: boolean
   onCropComplete: (croppedAreaPixels: PercentCrop) => void
   outputAspectRatio?: number
-  cropperStyles?: ReactCropProps['style']
   cropperHeight?: number
 }) => {
   const [crop, setCrop] = React.useState<Crop>(defaultCrop)
