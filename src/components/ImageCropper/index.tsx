@@ -1,63 +1,46 @@
-import React, { memo, useMemo } from 'react'
-import Cropper, { Area, Point, CropperProps } from 'react-easy-crop'
-import {
-  CropContainer,
-  ZoomSlider,
-  SLIDER_WHEEL_INTERVAL_VALUE,
-} from './resource-components'
+import React, { memo } from 'react'
+import ReactImageCrop, {
+  Crop,
+  PercentCrop,
+  ReactCropProps,
+} from 'react-image-crop'
+import { CropContainer } from './resource-components'
+import 'react-image-crop/src/ReactCrop.scss'
 
-const defaultZoom = 1
-const defaultCrop = { x: 0, y: 0 }
-
-const emptyFn = () => {}
+const defaultCrop: PercentCrop = {
+  unit: '%',
+  height: 100,
+  width: 100,
+  x: 0,
+  y: 0,
+}
 
 const ImageCropper = ({
   imgSrc,
   disabled,
   onCropComplete,
   outputAspectRatio,
-  zoomWithScroll,
-  cropperStyles,
   cropperHeight,
 }: {
   imgSrc: string
   disabled?: boolean
-  onCropComplete: (croppedAreaPixels: Area) => void
+  onCropComplete: (croppedAreaPixels: PercentCrop) => void
   outputAspectRatio?: number
-  zoomWithScroll?: boolean
-  cropperStyles?: CropperProps['style']
+  cropperStyles?: ReactCropProps['style']
   cropperHeight?: number
 }) => {
-  const [crop, setCrop] = React.useState<Point>(defaultCrop)
-  const [zoom, setZoom] = React.useState(defaultZoom)
-  const [image, setImage] = React.useState<HTMLImageElement | null>(null)
+  const [crop, setCrop] = React.useState<Crop>(defaultCrop)
 
-  React.useEffect(() => {
-    if (outputAspectRatio) {
-      // If we have a desired aspect ratio, we dont need to get it from the current image
-      return
-    }
-    createImage(imgSrc)
-      .then(setImage)
-      .catch((error) => {
-        console.error(
-          'Error loading image to get aspect ratio for cropping',
-          error,
-        )
-      })
-  }, [outputAspectRatio, imgSrc])
+  const handleSetCrop = React.useCallback((_, c: PercentCrop) => {
+    setCrop(c)
+  }, [])
 
-  const calculatedAspectRatio = useMemo(() => {
-    if (outputAspectRatio) {
-      return outputAspectRatio
-    }
-    if (image) {
-      return getAspectRatio({
-        width: image.width,
-        height: image.height,
-      })
-    }
-  }, [outputAspectRatio, image])
+  const handleCropComplete = React.useCallback(
+    (_, c: PercentCrop) => {
+      onCropComplete(c)
+    },
+    [onCropComplete],
+  )
 
   return (
     <div className="ob-cropper__container">
@@ -65,30 +48,19 @@ const ImageCropper = ({
         className="ob-cropper__cropper-wrapper"
         height={cropperHeight}
       >
-        <Cropper
-          image={imgSrc}
+        <ReactImageCrop
           crop={crop}
-          zoom={zoom}
-          aspect={calculatedAspectRatio}
-          onCropChange={disabled ? emptyFn : setCrop}
-          onCropComplete={(...args) => {
-            if (disabled) {
-              return
-            }
-            onCropComplete(args[1])
-          }}
-          onZoomChange={setZoom}
-          zoomSpeed={SLIDER_WHEEL_INTERVAL_VALUE}
-          zoomWithScroll={zoomWithScroll}
-          classes={{
-            containerClassName: 'ob-border-radius',
-          }}
-          style={cropperStyles}
-        />
+          aspect={outputAspectRatio}
+          onChange={handleSetCrop}
+          onComplete={handleCropComplete}
+          disabled={disabled}
+          className="ob-cropper__cropper"
+          ruleOfThirds
+          keepSelection
+        >
+          <img src={imgSrc} className="ob-cropper__image" />
+        </ReactImageCrop>
       </CropContainer>
-      <div className="ob-cropper__zoom-slider-wrapper">
-        <ZoomSlider value={zoom} setValue={setZoom} disabled={disabled} />
-      </div>
     </div>
   )
 }
@@ -118,12 +90,12 @@ const createImage = (url: string): Promise<HTMLImageElement> => {
 }
 
 export const generateCroppedImageBlob = async ({
-  croppedAreaPixels,
+  croppedAreaPercent,
   imgSrc,
   size,
   fileType,
 }: {
-  croppedAreaPixels: Area
+  croppedAreaPercent: PercentCrop
   imgSrc: string
   /**
    * If provided, the cropped image will be resized to the given size. If not
@@ -136,7 +108,7 @@ export const generateCroppedImageBlob = async ({
   }
   fileType?: string
 }): Promise<Blob | null> => {
-  if (!croppedAreaPixels || !imgSrc) {
+  if (!croppedAreaPercent || !imgSrc) {
     return null
   }
   // Source image/canvas
@@ -156,28 +128,39 @@ export const generateCroppedImageBlob = async ({
   if (!croppedCtx) {
     return null
   }
-  croppedCanvas.width = size?.width ?? croppedAreaPixels.width
-  croppedCanvas.height = size?.height ?? croppedAreaPixels.height
+
+  const widthPercentAsPixels = () =>
+    (image.width / 100) * croppedAreaPercent.width
+  const heightPercentAsPixels = () =>
+    (image.height / 100) * croppedAreaPercent.height
+
+  const sourceXPercentAsPixels = () =>
+    (image.width / 100) * croppedAreaPercent.x
+  const sourceYPercentAsPixels = () =>
+    (image.height / 100) * croppedAreaPercent.y
+
+  croppedCanvas.width = size?.width ?? widthPercentAsPixels()
+  croppedCanvas.height = size?.height ?? heightPercentAsPixels()
 
   // Draw the cropped source image onto the destination canvas
   croppedCtx.drawImage(
     canvas,
     // source x
-    croppedAreaPixels.x,
+    sourceXPercentAsPixels(),
     // source y
-    croppedAreaPixels.y,
+    sourceYPercentAsPixels(),
     // source width
-    croppedAreaPixels.width,
+    widthPercentAsPixels(),
     // source height
-    croppedAreaPixels.height,
+    heightPercentAsPixels(),
     // destination x
     0,
     // destination y
     0,
     // destination width
-    size?.width ?? croppedAreaPixels.width,
+    croppedCanvas.width,
     // destination height
-    size?.height ?? croppedAreaPixels.height,
+    croppedCanvas.height,
   )
 
   return new Promise((resolve) => {

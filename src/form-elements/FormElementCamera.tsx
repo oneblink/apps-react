@@ -28,8 +28,8 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 import CropModal from '../components/ImageCropper/CropModal'
-import { Area } from 'react-easy-crop'
 import { generateCroppedImageBlob } from '../components/ImageCropper'
+import { PercentCrop } from 'react-image-crop'
 
 type Props = {
   id: string
@@ -264,7 +264,7 @@ function FormElementCamera({
   )
 
   const handleSaveCrop = React.useCallback(
-    async (croppedAreaPixels: Area) => {
+    async (croppedAreaPercent: PercentCrop) => {
       clearIsCropping()
       if (!attachmentUrl) return
 
@@ -274,7 +274,7 @@ function FormElementCamera({
 
       try {
         const croppedImage = await generateCroppedImageBlob({
-          croppedAreaPixels,
+          croppedAreaPercent,
           imgSrc: attachmentUrl,
           fileType: contentType,
         })

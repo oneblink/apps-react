@@ -1,12 +1,7 @@
 import * as React from 'react'
-import ImageCropper, { getAspectRatio } from '.'
-import { Area } from 'react-easy-crop'
+import ImageCropper from '.'
 import scrollingService from '../../services/scrolling-service'
-import {
-  AspectRatioButton,
-  availableAspectRatios,
-  AspectRatio,
-} from './resource-components'
+import { PercentCrop } from 'react-image-crop'
 
 function CropModal({
   imageSrc,
@@ -15,17 +10,16 @@ function CropModal({
 }: {
   imageSrc: string
   onClose: () => void
-  onSave: (imageArea: Area) => void
+  onSave: (imageArea: PercentCrop) => void
 }) {
-  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<Area | null>(
-    null,
-  )
+  const [croppedAreaPercent, setCroppedAreaPercent] =
+    React.useState<PercentCrop | null>(null)
 
   const handleSaveCrop = React.useCallback(async () => {
-    if (!croppedAreaPixels) return
+    if (!croppedAreaPercent) return
 
-    onSave(croppedAreaPixels)
-  }, [croppedAreaPixels, onSave])
+    onSave(croppedAreaPercent)
+  }, [croppedAreaPercent, onSave])
 
   React.useEffect(() => {
     scrollingService.disableScrolling()
@@ -35,34 +29,14 @@ function CropModal({
     }
   }, [])
 
-  const [selectedAspectRatio, setSelectedAspectRatio] =
-    React.useState<AspectRatio>(availableAspectRatios[0])
-
-  const aspectRatio = React.useMemo(
-    () =>
-      getAspectRatio({
-        width: selectedAspectRatio.width,
-        height: selectedAspectRatio.height,
-      }),
-    [selectedAspectRatio],
-  )
   return (
     <div className="modal is-active">
       <div className="modal-background-faded"></div>
       <div className="ob-crop ob-border-radius">
-        <div
-          className="ob-crop__content ob-border-radius"
-          // TODO: Put in css file if Blake gives the ok for this implementation
-          style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
-        >
+        <div className="ob-crop__content ob-border-radius">
           <ImageCropper
             imgSrc={imageSrc}
-            onCropComplete={setCroppedAreaPixels}
-            outputAspectRatio={aspectRatio}
-          />
-          <AspectRatioButton
-            onSelectAspectRatio={setSelectedAspectRatio}
-            selectedAspectRatio={selectedAspectRatio}
+            onCropComplete={setCroppedAreaPercent}
           />
         </div>
         <div className="ob-annotation__buttons ob-annotation__buttons-actions">
@@ -76,7 +50,7 @@ function CropModal({
           <button
             type="button"
             className="button is-primary ob-button ob-annotation__button ob-annotation__button-action cypress-crop-save-button"
-            disabled={!croppedAreaPixels}
+            disabled={!croppedAreaPercent}
             onClick={handleSaveCrop}
           >
             Save
