@@ -112,4 +112,16 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  .ob-cropper__cropper {
+    height: 100%;
+
+    .ReactCrop__child-wrapper {
+      height: 100%;
+
+      .ob-cropper__image {
+        max-height: 100%;
+      }
+    }
+  }
 }

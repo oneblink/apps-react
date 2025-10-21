@@ -9,10 +9,10 @@ import CropModal from '../components/ImageCropper/CropModal'
 import AnnotationModal, {
   superimposeAnnotationOnImage,
 } from '../components/renderer/AnnotationModal'
-import { Area } from 'react-easy-crop'
 import { generateCroppedImageBlob } from '../components/ImageCropper'
 import { prepareNewAttachment } from '../services/attachments'
 import Modal from '../components/renderer/Modal'
+import { PercentCrop } from 'react-image-crop'
 
 type Props = {
   element: FormTypes.FilesElement
@@ -100,7 +100,7 @@ const FormElementFile = ({
     [attachmentUrl, clearIsAnnotating, element, file, onChange],
   )
   const handleSaveCrop = React.useCallback(
-    async (croppedAreaPixels: Area) => {
+    async (croppedAreaPercent: PercentCrop) => {
       if (!attachmentUrl || file.type) return
       clearIsCropping()
 
@@ -110,7 +110,7 @@ const FormElementFile = ({
 
       try {
         const croppedImage = await generateCroppedImageBlob({
-          croppedAreaPixels,
+          croppedAreaPercent,
           imgSrc: attachmentUrl,
           fileType: contentType,
         })

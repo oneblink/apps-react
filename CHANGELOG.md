@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `pointCadastralParcel` to only show results grid if address has `features`
 - `$danger` CSS property to meet accessibility requirements
+- `ImageCropper` component to use `react-image-crop` instead of `react-easy-crop`
 
 ## [8.11.2] - 2025-10-13
 
