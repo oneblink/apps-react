@@ -11,6 +11,47 @@ const defaultCrop: PercentCrop = {
   y: 0,
 }
 
+const getDefaultCropFromAspectRatio = ({
+  outputAspectRatio,
+  imageWidth,
+  imageHeight,
+}: {
+  outputAspectRatio: number
+  imageWidth: number
+  imageHeight: number
+}): PercentCrop => {
+  const imageAspect = imageWidth / imageHeight
+
+  // Compute the largest rectangle that fits within the image and matches the aspect ratio
+  let width: number
+  let height: number
+  if (imageAspect >= outputAspectRatio) {
+    // Image is wider than desired aspect: constrain width by the height
+    height = 100
+    const widthInPixels = imageHeight * outputAspectRatio
+    // as percent
+    width = (widthInPixels / imageWidth) * 100
+  } else {
+    // Image is taller/narrower than desired aspect: constrain height by the width
+    width = 100
+    const heightInPixels = imageHeight * outputAspectRatio
+    // as percent
+    height = (heightInPixels / imageHeight) * 100
+  }
+
+  // Center the crop
+  const x = Math.round((100 - width) / 2)
+  const y = Math.round((100 - height) / 2)
+
+  return {
+    unit: '%',
+    width,
+    height,
+    x,
+    y,
+  }
+}
+
 const ImageCropper = ({
   imgSrc,
   disabled,
@@ -24,7 +65,9 @@ const ImageCropper = ({
   outputAspectRatio?: number
   cropperHeight?: number
 }) => {
-  const [crop, setCrop] = React.useState<Crop>(defaultCrop)
+  const [crop, setCrop] = React.useState<Crop | undefined>(() =>
+    outputAspectRatio ? undefined : defaultCrop,
+  )
 
   const handleSetCrop = React.useCallback((_, c: PercentCrop) => {
     setCrop(c)
@@ -35,6 +78,20 @@ const ImageCropper = ({
       onCropComplete(c)
     },
     [onCropComplete],
+  )
+
+  const handleLoadImage = React.useCallback(
+    ({ currentTarget }: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      if (!outputAspectRatio) return
+      setCrop(
+        getDefaultCropFromAspectRatio({
+          outputAspectRatio,
+          imageWidth: currentTarget.width,
+          imageHeight: currentTarget.height,
+        }),
+      )
+    },
+    [outputAspectRatio],
   )
 
   return (
@@ -53,7 +110,11 @@ const ImageCropper = ({
           ruleOfThirds
           keepSelection
         >
-          <img src={imgSrc} className="ob-cropper__image" />
+          <img
+            src={imgSrc}
+            className="ob-cropper__image"
+            onLoad={handleLoadImage}
+          />
         </ReactImageCrop>
       </CropContainer>
     </div>
