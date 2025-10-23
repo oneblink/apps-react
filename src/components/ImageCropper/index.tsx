@@ -1,7 +1,8 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import ReactImageCrop, { Crop, PercentCrop } from 'react-image-crop'
 import { CropContainer } from './resource-components'
 import 'react-image-crop/src/ReactCrop.scss'
+import clsx from 'clsx'
 export { PercentCrop }
 const defaultCrop: PercentCrop = {
   unit: '%',
@@ -65,6 +66,11 @@ const ImageCropper = ({
   outputAspectRatio?: number
   cropperHeight?: number
 }) => {
+  const cropperWrapperRef = React.useRef<HTMLDivElement>(null)
+  const imageRef = React.useRef<HTMLImageElement>(null)
+
+  const [fullHeight, setFullHeight] = React.useState(false)
+
   const [crop, setCrop] = React.useState<Crop | undefined>(() =>
     outputAspectRatio ? undefined : defaultCrop,
   )
@@ -94,11 +100,37 @@ const ImageCropper = ({
     [outputAspectRatio],
   )
 
+  // Resize magic to account for images that are larger than the dialog can hold
+  useEffect(() => {
+    if (imageRef.current && cropperWrapperRef.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          if (!cropperWrapperRef.current) continue
+
+          const imageElHeight = entry.contentRect.height
+          const cropperWrapperHeight = cropperWrapperRef.current.clientHeight
+
+          if (imageElHeight < cropperWrapperHeight) {
+            setFullHeight(false)
+          } else {
+            setFullHeight(true)
+          }
+        }
+      })
+      resizeObserver.observe(imageRef.current)
+
+      return () => {
+        resizeObserver.disconnect()
+      }
+    }
+  }, [imageRef])
+
   return (
     <div className="ob-cropper__container">
       <CropContainer
         className="ob-cropper__cropper-wrapper"
         height={cropperHeight}
+        ref={cropperWrapperRef}
       >
         <ReactImageCrop
           crop={crop}
@@ -106,7 +138,9 @@ const ImageCropper = ({
           onChange={handleSetCrop}
           onComplete={handleCropComplete}
           disabled={disabled}
-          className="ob-cropper__cropper"
+          className={clsx('ob-cropper__cropper', {
+            'ob-cropper__cropper-full-height': fullHeight,
+          })}
           ruleOfThirds
           keepSelection
         >
@@ -114,6 +148,7 @@ const ImageCropper = ({
             src={imgSrc}
             className="ob-cropper__image"
             onLoad={handleLoadImage}
+            ref={imageRef}
           />
         </ReactImageCrop>
       </CropContainer>

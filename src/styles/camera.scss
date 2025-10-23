@@ -41,6 +41,7 @@
   justify-content: center;
   background: $white;
   padding: $size-4;
+  min-height: 0%;
 }
 
 .ob-annotation__content {
@@ -113,9 +114,10 @@
   display: flex;
   flex-direction: column;
 
-  .ob-cropper__cropper {
+  .ob-cropper__cropper-full-height {
     height: 100%;
-
+  }
+  .ob-cropper__cropper {
     .ReactCrop__child-wrapper {
       height: 100%;
 

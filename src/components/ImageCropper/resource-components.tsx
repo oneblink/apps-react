@@ -10,5 +10,6 @@ export const CropContainer = styled('div', {
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: theme.shape.borderRadius,
+  maxHeight: '100%',
   ...(height ? { height } : { flex: 1 }),
 }))
