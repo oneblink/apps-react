@@ -35,7 +35,7 @@ const getDefaultCropFromAspectRatio = ({
   } else {
     // Image is taller/narrower than desired aspect: constrain height by the width
     width = 100
-    const heightInPixels = imageHeight * outputAspectRatio
+    const heightInPixels = imageWidth * outputAspectRatio
     // as percent
     height = (heightInPixels / imageHeight) * 100
   }
@@ -110,7 +110,7 @@ const ImageCropper = ({
           const imageElHeight = entry.contentRect.height
           const cropperWrapperHeight = cropperWrapperRef.current.clientHeight
 
-          if (imageElHeight < cropperWrapperHeight) {
+          if (Math.ceil(imageElHeight) < Math.ceil(cropperWrapperHeight)) {
             setFullHeight(false)
           } else {
             setFullHeight(true)
