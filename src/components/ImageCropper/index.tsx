@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from 'react'
 import ReactImageCrop, { Crop, PercentCrop } from 'react-image-crop'
 import { CropContainer } from './resource-components'
-import 'react-image-crop/src/ReactCrop.scss'
+
 import clsx from 'clsx'
 export { PercentCrop }
 const defaultCrop: PercentCrop = {
