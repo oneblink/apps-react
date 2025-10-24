@@ -10,18 +10,7 @@
   display: none;
 }
 
-.ob-crop {
-  z-index: inherit;
-  height: calc(100vh - #{$size-6});
-  width: calc(100vw - #{$size-6});
-  max-height: $desktop;
-  max-width: $desktop;
-  box-shadow: $elevation-2;
-  background: $white;
-  display: flex;
-  flex-direction: column;
-}
-
+.ob-crop,
 .ob-annotation {
   z-index: inherit;
   height: calc(100vh - #{$size-6});
@@ -34,16 +23,7 @@
   flex-direction: column;
 }
 
-.ob-crop__content {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $white;
-  padding: $size-4;
-  min-height: 0%;
-}
-
+.ob-crop__content,
 .ob-annotation__content {
   flex: 1 1 auto;
   display: flex;
@@ -52,20 +32,24 @@
   background: $white-ter;
 }
 
+.ob-crop__background,
 .ob-annotation__signature-pad {
   background: $white;
 }
 
+.ob-crop__buttons,
 .ob-annotation__buttons {
   display: flex;
   align-items: center;
   padding: $size-8;
 }
 
+.ob-crop__buttons-actions,
 .ob-annotation__buttons-actions {
   justify-content: flex-end;
 }
 
+.ob-crop__button-action,
 .ob-annotation__button-action {
   &:not(:last-child) {
     margin-right: $size-8;
@@ -105,25 +89,5 @@
     min-width: 60px;
     height: 60px;
     border-radius: 60px;
-  }
-}
-
-.ob-cropper__container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .ob-cropper__cropper-full-height {
-    height: 100%;
-  }
-  .ob-cropper__cropper {
-    .ReactCrop__child-wrapper {
-      height: 100%;
-
-      .ob-cropper__image {
-        max-height: 100%;
-      }
-    }
   }
 }

@@ -9,10 +9,12 @@ import CropModal from '../components/ImageCropper/CropModal'
 import AnnotationModal, {
   superimposeAnnotationOnImage,
 } from '../components/renderer/AnnotationModal'
-import { generateCroppedImageBlob } from '../components/ImageCropper'
+import {
+  generateCroppedImageBlob,
+  PercentCrop,
+} from '../components/ImageCropper'
 import { prepareNewAttachment } from '../services/attachments'
 import Modal from '../components/renderer/Modal'
-import { PercentCrop } from 'react-image-crop'
 
 type Props = {
   element: FormTypes.FilesElement

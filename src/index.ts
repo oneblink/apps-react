@@ -67,8 +67,6 @@ export {
 export { default as DownloadableFiles } from './components/downloadable-files'
 
 export {
-  default as ImageCropper,
-  getAspectRatio,
   generateCroppedImageBlob,
   PercentCrop,
 } from './components/ImageCropper'

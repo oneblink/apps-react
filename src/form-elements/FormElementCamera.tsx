@@ -28,8 +28,10 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import MaterialIcon from '../components/MaterialIcon'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 import CropModal from '../components/ImageCropper/CropModal'
-import { generateCroppedImageBlob } from '../components/ImageCropper'
-import { PercentCrop } from 'react-image-crop'
+import {
+  generateCroppedImageBlob,
+  PercentCrop,
+} from '../components/ImageCropper'
 
 type Props = {
   id: string
