@@ -1,0 +1,9 @@
+.ob-cropper__cropper {
+  .ReactCrop__child-wrapper {
+    height: 100%;
+
+    .ob-cropper__image {
+      max-height: 100%;
+    }
+  }
+}

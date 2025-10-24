@@ -1,8 +1,16 @@
 import React, { memo, useEffect } from 'react'
 import ReactImageCrop, { Crop, PercentCrop } from 'react-image-crop'
+import root from 'react-shadow'
+
 import { CropContainer } from './resource-components'
 
 import clsx from 'clsx'
+
+//@ts-expect-error - this is a valid import
+import styles from 'react-image-crop/dist/ReactCrop.css?inline'
+//@ts-expect-error - this is a valid import
+import obCropperStyles from '../../styles/image-cropper.module.css?inline'
+
 export { PercentCrop }
 const defaultCrop: PercentCrop = {
   unit: '%',
@@ -132,25 +140,31 @@ const ImageCropper = ({
         height={cropperHeight}
         ref={cropperWrapperRef}
       >
-        <ReactImageCrop
-          crop={crop}
-          aspect={outputAspectRatio}
-          onChange={handleSetCrop}
-          onComplete={handleCropComplete}
-          disabled={disabled}
-          className={clsx('ob-cropper__cropper', {
-            'ob-cropper__cropper-full-height': fullHeight,
-          })}
-          ruleOfThirds
-          keepSelection
-        >
-          <img
-            src={imgSrc}
-            className="ob-cropper__image"
-            onLoad={handleLoadImage}
-            ref={imageRef}
-          />
-        </ReactImageCrop>
+        <root.div>
+          <style>
+            {obCropperStyles}
+            {styles.replaceAll(':root', ':host')}
+          </style>
+          <ReactImageCrop
+            crop={crop}
+            aspect={outputAspectRatio}
+            onChange={handleSetCrop}
+            onComplete={handleCropComplete}
+            disabled={disabled}
+            className={clsx('ob-cropper__cropper', {
+              'ob-cropper__cropper-full-height': fullHeight,
+            })}
+            ruleOfThirds
+            keepSelection
+          >
+            <img
+              src={imgSrc}
+              className="ob-cropper__image"
+              onLoad={handleLoadImage}
+              ref={imageRef}
+            />
+          </ReactImageCrop>
+        </root.div>
       </CropContainer>
     </div>
   )
