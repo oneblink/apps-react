@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.12.0] - 2025-10-26
+
 ### Added
 
 - Element injection into options nested in repeatable sets
@@ -19,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pointCadastralParcel` to only show results grid if address has `features`
 - `$danger` CSS property to meet accessibility requirements
 - `ImageCropper` component to use `react-image-crop` instead of `react-easy-crop`
+
+### Dependencies
+
+- update @oneblink/sdk-core to [8.9.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [8.8.1-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- no longer depend upon react-easy-crop
+
+- depend upon react-image-crop [11.0.10](https://github.com/dominictobias/react-image-crop/releases/tag/11.0.10)
 
 ## [8.11.2] - 2025-10-13
 
