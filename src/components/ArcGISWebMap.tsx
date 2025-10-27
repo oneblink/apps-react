@@ -665,8 +665,10 @@ function FormElementArcGISWebMap({
           // The below caters for web maps that load in with pre-existing layers,
           // which is usually the case when a web map id is provided.
           // We will store these pre-existing layers and ensure they're passed
-          // to any redraw logic.
-          defaultLayersRef.current = map.allLayers
+          // to any redraw logic. We take layers from map.layers (as opposed to map.allLayers)
+          // as this omits system generated layers like the basemap, which aren't removed when
+          // we redraw regardless.
+          defaultLayersRef.current = map.layers
             .toArray()
             .filter(
               (l) => l.id !== measurementLayerId && l.id !== drawingLayerId,
