@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.12.1] - 2025-10-28
+
 ### Fixed
 
 - ArcGIS web map redraw logic not catering for basemap layers
