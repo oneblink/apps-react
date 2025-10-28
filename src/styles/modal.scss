@@ -1,7 +1,7 @@
 .modal {
   // Need this to make sure tool tips do not cover models
-
-  z-index: 400;
+  // Do not change this, it will break external usage.
+  z-index: 100000;
 
   @media only screen and (max-width: $tablet) {
     padding: 0 $size-8;

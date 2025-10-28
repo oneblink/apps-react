@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `z-index` of modal preventing modals from being visible
+
 ## [8.12.1] - 2025-10-28
 
 ### Fixed
