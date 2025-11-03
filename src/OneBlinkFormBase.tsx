@@ -190,6 +190,12 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
      */
     scrollableContainerId?: string
   }
+  /**
+   * Whether to scroll to the top of the page when the user navigates to a new
+   * page. If false the window will scroll to the top of the page stepper.
+   * Defaults to false.
+   */
+  scrollToTopOfPage?: boolean
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -244,6 +250,7 @@ function OneBlinkFormBase({
   navigableValidationErrorsNotificationSettings,
   replaceInjectablesOverrides,
   sectionState,
+  scrollToTopOfPage,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -526,6 +533,7 @@ function OneBlinkFormBase({
     pages,
     formElementsValidation,
     formElementsConditionallyShown,
+    scrollToTopOfPage,
   })
 
   // #endregion
