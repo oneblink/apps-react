@@ -15,11 +15,13 @@ export default function usePages({
   formElementsValidation,
   formElementsConditionallyShown,
   hasAttemptedSubmit,
+  scrollToTopOfPage,
 }: {
   pages: FormTypes.PageElement[]
   formElementsValidation: FormElementsValidation | undefined
   formElementsConditionallyShown: FormElementsConditionallyShown
   hasAttemptedSubmit: boolean
+  scrollToTopOfPage?: boolean
 }) {
   const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
@@ -80,31 +82,41 @@ export default function usePages({
       const scrollToTopOfPageHTMLElement =
         scrollToTopOfPageHTMLElementRef.current
       if (isShowingMultiplePages && scrollToTopOfPageHTMLElement) {
-        if (scrollToTopOfPageHTMLElement) {
+        if (scrollToTopOfPage) {
+          window.requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          })
+        } else if (scrollToTopOfPageHTMLElement) {
           window.requestAnimationFrame(() => {
             scrollToTopOfPageHTMLElement.scrollIntoView({
               block: 'start',
               behavior: 'smooth',
             })
           })
-        }
-        const stepItemHTMLElement = document.getElementById(
-          `steps-navigation-step-${pageId}`,
-        )
-        if (stepItemHTMLElement) {
-          window.requestAnimationFrame(() => {
-            stepItemHTMLElement.scrollIntoView({
-              block: 'start',
-              behavior: 'smooth',
+          const stepItemHTMLElement = document.getElementById(
+            `steps-navigation-step-${pageId}`,
+          )
+          if (stepItemHTMLElement) {
+            window.requestAnimationFrame(() => {
+              stepItemHTMLElement.scrollIntoView({
+                block: 'start',
+                behavior: 'smooth',
+              })
             })
-          })
+          }
         }
+
         //blur prev/next buttons after they've been clicked
         const activeElement = document?.activeElement as HTMLElement
         activeElement.blur()
       }
     },
-    [closeStepsNavigation, currentPageId, isShowingMultiplePages],
+    [
+      closeStepsNavigation,
+      currentPageId,
+      isShowingMultiplePages,
+      scrollToTopOfPage,
+    ],
   )
 
   const goToNextPage = React.useCallback(() => {
