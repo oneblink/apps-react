@@ -79,6 +79,7 @@ import ElementDOMId from '../../utils/elementDOMIds'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import FormElementPointCadastralParcel from '../../form-elements/FormElementPointCadastralParcel'
 import FormElementLookupButton from '../../form-elements/FormElementLookupButton'
+import FormElementPointAddressV3 from '../../form-elements/FormElementPointAddressV3'
 
 export type Props<T extends FormTypes._NestedElementsElement> = {
   formId: number
@@ -925,6 +926,32 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
             onChange={
               onChange as React.ComponentProps<
                 typeof FormElementPointAddress
+              >['onChange']
+            }
+            validationMessage={validationMessage}
+            displayValidationMessage={displayValidationMessage}
+            autocompleteAttributes={autocompleteAttributes}
+            {...dirtyProps}
+          />
+        </LookupNotification>
+      )
+    }
+    case 'pointAddressV3': {
+      const v = value as PointTypes.PointAddressV3GetAddressDetailsResponse | undefined
+      return (
+        <LookupNotification
+          autoLookupValue={value}
+          element={element}
+          onLookup={onLookup}
+        >
+          <FormElementPointAddressV3
+            id={id}
+            formId={formId}
+            element={element}
+            value={v}
+            onChange={
+              onChange as React.ComponentProps<
+                typeof FormElementPointAddressV3
               >['onChange']
             }
             validationMessage={validationMessage}
