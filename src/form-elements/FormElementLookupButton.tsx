@@ -308,6 +308,7 @@ const autoLookupElementMap: Record<
   compliance: true,
   geoscapeAddress: true,
   pointAddress: true,
+  pointAddressV3: true,
   googleAddress: false,
   civicaStreetName: true,
   civicaNameRecord: false,

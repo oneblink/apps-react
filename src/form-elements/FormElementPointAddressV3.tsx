@@ -8,27 +8,24 @@ import useIsMounted from '../hooks/useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { Collapse } from '@mui/material'
-import {
-  NotificationGrid,
-  NotificationGridItem,
-} from '../components/NotificationGrid'
+import { NotificationGrid } from '../components/NotificationGrid'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
+import { PointAddressGridItem } from './FormElementPointAddress'
 
 type Props = {
   formId: number
   id: string
-  element: FormTypes.PointAddressElement
-  value: PointTypes.PointAddress | undefined
+  element: FormTypes.PointAddressV3Element
+  value: PointTypes.PointAddressV3GetAddressDetailsResponse | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
-  onChange: FormElementValueChangeHandler<PointTypes.PointAddress>
+  onChange: FormElementValueChangeHandler<PointTypes.PointAddressV3GetAddressDetailsResponse>
   autocompleteAttributes?: string
 } & IsDirtyProps
 
-type AddressType = 'all' | 'physical' | 'mailing'
-const pointAddressClass = 'ob-point-address'
+const pointAddressClass = 'ob-point-address-v3'
 
-function FormElementPointAddress({
+function FormElementPointAddressV3({
   formId,
   id,
   element,
@@ -54,36 +51,32 @@ function FormElementPointAddress({
       const params: {
         address: string
         maxNumberOfResults?: number
-        stateTerritory?: string
-        addressType?: AddressType
+        stateFilter?: string
+        excludeAliases?: boolean
       } = {
         address,
         maxNumberOfResults: 10,
       }
 
-      if (element.stateTerritoryFilter) {
-        params.stateTerritory = element.stateTerritoryFilter.join(',')
+      if (element.stateFilter) {
+        params.stateFilter = element.stateFilter.join(',')
       }
-      if (element.addressTypeFilter) {
-        let addressType: AddressType = 'all'
-        if (element.addressTypeFilter.length === 1) {
-          addressType = element.addressTypeFilter[0] as AddressType
-        }
-        params.addressType = addressType
+      if (element.excludeAliases) {
+        params.excludeAliases = true
       }
 
-      const result = await formService.searchPointAddresses(
+      const { suggest } = await formService.searchPointV3Addresses(
         formId,
         params,
         abortSignal,
       )
 
-      return result.map((suggestion, index) => ({
+      return (suggest || []).map((suggestion, index) => ({
         value: suggestion.id || index.toString(),
         label: suggestion.address || index.toString(),
       }))
     },
-    [element.addressTypeFilter, element.stateTerritoryFilter, formId],
+    [element.excludeAliases, element.stateFilter, formId],
   )
 
   const handleChange = React.useCallback(
@@ -95,7 +88,9 @@ function FormElementPointAddress({
 
       setIsLoadingAddressDetails(true)
       try {
-        const result = await formService.getPointAddress(formId, addressId)
+        const result = await formService.getPointV3Address(formId, {
+          addressId,
+        })
         onChange(element, { value: result })
       } catch (newError) {
         if (isMounted.current) {
@@ -112,7 +107,8 @@ function FormElementPointAddress({
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {
     if (value) {
-      const newLabel = value.addressDetails?.formattedAddress || value.addressId
+      const newLabel =
+        value.properties?.formattedAddress || value.properties?.addressId
       if (label !== newLabel) {
         setLabel(newLabel || '')
       }
@@ -122,7 +118,7 @@ function FormElementPointAddress({
   }, [value])
 
   return (
-    <div className="cypress-point-address-element">
+    <div className="cypress-point-address-v3-element">
       <FormElementLabelContainer
         className={`${pointAddressClass} ob-autocomplete`}
         element={element}
@@ -155,7 +151,7 @@ function FormElementPointAddress({
       {error && (
         <FormElementValidationMessage
           message={error.toString()}
-          className="cypress-point-address-details-error-message"
+          className="cypress-point-address-v3-details-error-message"
         />
       )}
 
@@ -166,19 +162,19 @@ function FormElementPointAddress({
         >
           <PointAddressGridItem
             label="Local Government Area"
-            value={value?.localGovernmentArea?.lgaName}
+            value={value?.properties?.localGovernmentArea?.lgaName}
             classNameSuffix="local-government-area-name"
           />
           <PointAddressGridItem
             label="Lot / Section / Plan No."
-            value={value?.addressDetails?.cadastralIdentifier}
+            value={value?.properties?.cadastralIdentifier}
             classNameSuffix="cadastral-identifier"
           />
-          {value?.cadastralParcels?.map((cadastralParcel, index) => (
+          {value?.properties?.parcelBundle?.map((parcel, index) => (
             <PointAddressGridItem
-              key={cadastralParcel.propId || index}
+              key={parcel.parcelId || index}
               label="Lot / DP Numbers"
-              value={cadastralParcel?.parcelId?.join(', ')}
+              value={`${parcel.lot}//${parcel.plan}`}
               classNameSuffix="cadastral-parcel"
             />
           ))}
@@ -188,24 +184,4 @@ function FormElementPointAddress({
   )
 }
 
-export function PointAddressGridItem({
-  label,
-  classNameSuffix,
-  value,
-}: {
-  label: string
-  classNameSuffix: string
-  value: string | undefined
-}) {
-  return (
-    <NotificationGridItem
-      className={`${pointAddressClass}__container-${classNameSuffix}`}
-      value={value}
-      label={label}
-      labelClassName={`${pointAddressClass}__detail-label`}
-      valueClassName={`${pointAddressClass}__detail-value`}
-    />
-  )
-}
-
-export default React.memo(FormElementPointAddress)
+export default React.memo(FormElementPointAddressV3)

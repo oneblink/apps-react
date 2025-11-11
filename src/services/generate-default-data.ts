@@ -318,6 +318,15 @@ function parsePreFillData(
         }
       })
     }
+    case 'pointAddressV3': {
+      return parseUnknownAsRecord(value, (record) => {
+        return parseUnknownAsRecord(record.properties, (properties) => {
+          if (parseStringValue(properties.addressId)) {
+            return record
+          }
+        })
+      })
+    }
     case 'googleAddress': {
       return parseUnknownAsRecord(value, (record) => {
         if (parseStringValue(record.place_id)) {
@@ -558,6 +567,7 @@ export default function generateDefaultData(
         case 'geoscapeAddress':
         case 'pointCadastralParcel':
         case 'pointAddress':
+        case 'pointAddressV3':
         case 'googleAddress':
         case 'civicaStreetName':
         case 'abn':

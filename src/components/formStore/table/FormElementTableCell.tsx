@@ -407,6 +407,28 @@ function FormElementTableCell({ formElement, submission, allowCopy }: Props) {
       )
     }
 
+    case 'pointAddressV3': {
+      const value =
+        unknown as PointTypes.PointAddressV3GetAddressDetailsResponse
+      if (typeof value.properties?.addressId !== 'string') {
+        break
+      }
+      const fullAddress = value?.properties?.formattedAddress || (
+        <>
+          NSW Point Address ID: <i>{value.properties?.addressId}</i>
+        </>
+      )
+      return (
+        <>
+          {fullAddress}
+          <TableCellCopyButton
+            isHidden={!allowCopy}
+            text={fullAddress as string}
+          />
+        </>
+      )
+    }
+
     case 'googleAddress': {
       const value = unknown as GoogleTypes.GoogleMapsAddress
       const fullAddress = value?.formatted_address || (

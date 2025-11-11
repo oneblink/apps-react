@@ -197,6 +197,7 @@ export default function validateSubmission({
         case 'geoscapeAddress':
         case 'pointCadastralParcel':
         case 'pointAddress':
+        case 'pointAddressV3':
         case 'googleAddress':
         case 'civicaStreetName':
         case 'autocomplete':
