@@ -25,7 +25,8 @@
 .ob-quill-content ul > li {
   list-style-type: none;
 }
-.ob-quill-content ul > li::before {
+.ob-quill-content ul > li::before,
+.ob-quill-content ol ul > li::before {
   content: '\2022';
 }
 .ob-quill-content ul[data-checked='true'],

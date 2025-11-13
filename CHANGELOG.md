@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- unordered list styles not being applied when nested in ordered lists
+
 ### Changed
 
 - added `scrollToTopOfPage` to `OneBlinkFormBaseProps`
