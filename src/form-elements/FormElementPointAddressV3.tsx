@@ -23,6 +23,7 @@ type Props = {
   autocompleteAttributes?: string
 } & IsDirtyProps
 
+type AddressType = 'all' | 'physical' | 'mailing'
 const pointAddressClass = 'ob-point-address-v3'
 
 function FormElementPointAddressV3({
@@ -53,13 +54,25 @@ function FormElementPointAddressV3({
         maxNumberOfResults?: number
         stateFilter?: string
         excludeAliases?: boolean
+        addressType?: AddressType
+        dataset?: string
       } = {
         address,
         maxNumberOfResults: 10,
       }
 
-      if (element.stateFilter) {
-        params.stateFilter = element.stateFilter.join(',')
+      if (element.stateTerritoryFilter) {
+        params.stateFilter = element.stateTerritoryFilter.join(',')
+      }
+      if (element.addressTypeFilter) {
+        let addressType: AddressType = 'all'
+        if (element.addressTypeFilter.length === 1) {
+          addressType = element.addressTypeFilter[0] as AddressType
+        }
+        params.addressType = addressType
+      }
+      if (element.datasetFilter?.length) {
+        params.dataset = element.datasetFilter.join(',')
       }
       if (element.excludeAliases) {
         params.excludeAliases = true
@@ -76,7 +89,13 @@ function FormElementPointAddressV3({
         label: suggestion.address || index.toString(),
       }))
     },
-    [element.excludeAliases, element.stateFilter, formId],
+    [
+      element.addressTypeFilter,
+      element.datasetFilter,
+      element.excludeAliases,
+      element.stateTerritoryFilter,
+      formId,
+    ],
   )
 
   const handleChange = React.useCallback(
