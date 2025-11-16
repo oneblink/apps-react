@@ -10,7 +10,8 @@ export default function QuillHTML({
 }) {
   const [__html, includesLegacyLists] = React.useMemo(() => {
     const sanitizedHtml = sanitizeHtml(html)
-    return [sanitizedHtml, sanitizedHtml.includes('ql-indent-')]
+    const quillLegacyListsIndicator = 'ql-indent-'
+    return [sanitizedHtml, sanitizedHtml.includes(quillLegacyListsIndicator)]
   }, [html])
   return (
     <div
