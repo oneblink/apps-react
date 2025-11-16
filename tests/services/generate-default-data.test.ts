@@ -1,9 +1,10 @@
+import { vi, expect, test, describe } from 'vitest'
 import { FormTypes } from '@oneblink/types'
 import generateDefaultData, {
   ENTRY_ID_PROPERTY_NAME,
 } from '../../src/services/generate-default-data'
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'my-uuid',
 }))
 
@@ -2275,6 +2276,7 @@ describe('generateDefaultData()', () => {
         [
           {
             ...element,
+            type: 'arcGISWebMap',
             defaultValue: {
               view: {
                 zoom: 15,
@@ -2283,7 +2285,7 @@ describe('generateDefaultData()', () => {
               },
               userInput: [],
               drawingLayer: [],
-              layers: [{ title: 'perimeter', graphics: [] }],
+              layers: [{ id: '', title: 'perimeter', graphics: [] }],
             },
           },
         ],
@@ -2299,7 +2301,7 @@ describe('generateDefaultData()', () => {
           },
           userInput: [],
           drawingLayer: [],
-          layers: [{ title: 'perimeter', graphics: [] }],
+          layers: [{ id: '', title: 'perimeter', graphics: [] }],
         },
       })
     })

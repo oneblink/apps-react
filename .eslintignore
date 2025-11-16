@@ -9,3 +9,4 @@ dist
 www
 
 flow-typed
+vite.config.ts
