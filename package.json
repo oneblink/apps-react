@@ -135,6 +135,6 @@
     "test": "vitest",
     "types": "npm i -D github:oneblink/types",
     "typescript": "tsc --noEmit",
-    "update-dependents": "oneblink-release update-dependents"
+    "update-dependents": "oneblink-release update-dependents --force"
   }
 }
