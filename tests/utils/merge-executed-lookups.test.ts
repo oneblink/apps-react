@@ -1,3 +1,4 @@
+import { expect, it, describe } from 'vitest'
 import mergeExecutedLookups from '../../src/utils/merge-executed-lookups'
 
 describe('mergeExecutedLookups', () => {
