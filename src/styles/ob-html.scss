@@ -9,22 +9,6 @@
   margin-left: 2.9rem;
 }
 
-/* Sub list 2 levels deep */
-.ob-quill-content ol.ql-list-no-margin > li > ol.ql-list-no-margin > li {
-  list-style: lower-alpha;
-}
-
-/* Sub list 3 levels deep */
-.ob-quill-content
-  ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li {
-  list-style: lower-roman;
-}
-
 /* Sub list 4 levels deep */
 .ob-quill-content
   ol.ql-list-no-margin
@@ -34,42 +18,7 @@
   > ol.ql-list-no-margin
   > li
   > ol.ql-list-no-margin
-  > li {
-  list-style: decimal;
-}
-
-/* Sub list 5 levels deep */
-.ob-quill-content
-  ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li {
-  list-style: lower-alpha;
-}
-
-/* Sub list 6 levels deep */
-.ob-quill-content
-  ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li
-  > ol.ql-list-no-margin
-  > li {
-  list-style: lower-roman;
-}
-
+  > li,
 /* Sub list 7 levels deep */
 .ob-quill-content
   ol.ql-list-no-margin
@@ -89,6 +38,20 @@
   list-style: decimal;
 }
 
+/* Sub list 2 levels deep */
+.ob-quill-content ol.ql-list-no-margin > li > ol.ql-list-no-margin > li,
+/* Sub list 5 levels deep */
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li,
 /* Sub list 8 levels deep */
 .ob-quill-content
   ol.ql-list-no-margin
@@ -110,6 +73,28 @@
   list-style: lower-alpha;
 }
 
+/* Sub list 3 levels deep */
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li,
+/* Sub list 6 levels deep */
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li,
 /* The Quill editor does not allow more than 9 levels of nested lists 
 so we are safe to stop here for lists created with Quill */
 .ob-quill-content
