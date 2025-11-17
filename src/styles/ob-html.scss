@@ -2,363 +2,268 @@
 .ob-quill-content > * {
   cursor: text;
 }
-.ob-quill-content p,
-.ob-quill-content ol,
-.ob-quill-content ul,
-.ob-quill-content pre,
-.ob-quill-content blockquote,
-.ob-quill-content h1,
-.ob-quill-content h2,
-.ob-quill-content h3,
-.ob-quill-content h4,
-.ob-quill-content h5,
-.ob-quill-content h6 {
+.ob-quill-content.content .ql-list-no-margin {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.ob-quill-legacy-content p,
+.ob-quill-legacy-content ol,
+.ob-quill-legacy-content ul,
+.ob-quill-legacy-content pre,
+.ob-quill-legacy-content blockquote,
+.ob-quill-legacy-content h1,
+.ob-quill-legacy-content h2,
+.ob-quill-legacy-content h3,
+.ob-quill-legacy-content h4,
+.ob-quill-legacy-content h5,
+.ob-quill-legacy-content h6 {
   margin: 0;
   padding: 0;
   counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol,
-.ob-quill-content ul {
+.ob-quill-legacy-content ol,
+.ob-quill-legacy-content ul {
   padding-left: 1.5em;
 }
-.ob-quill-content ol > li,
-.ob-quill-content ul > li {
+.ob-quill-legacy-content ol > li,
+.ob-quill-legacy-content ul > li {
   list-style-type: none;
 }
-.ob-quill-content ul > li::before,
-.ob-quill-content ol ul > li::before {
+.ob-quill-legacy-content ul > li::before {
   content: '\2022';
 }
-.ob-quill-content ul[data-checked='true'],
-.ob-quill-content ul[data-checked='false'] {
+.ob-quill-legacy-content ul[data-checked='true'],
+.ob-quill-legacy-content ul[data-checked='false'] {
   pointer-events: none;
 }
-.ob-quill-content ul[data-checked='true'] > li *,
-.ob-quill-content ul[data-checked='false'] > li * {
+.ob-quill-legacy-content ul[data-checked='true'] > li *,
+.ob-quill-legacy-content ul[data-checked='false'] > li * {
   pointer-events: all;
 }
-.ob-quill-content ul[data-checked='true'] > li::before,
-.ob-quill-content ul[data-checked='false'] > li::before {
+.ob-quill-legacy-content ul[data-checked='true'] > li::before,
+.ob-quill-legacy-content ul[data-checked='false'] > li::before {
   color: #777;
   cursor: pointer;
   pointer-events: all;
 }
-.ob-quill-content ul[data-checked='true'] > li::before {
+.ob-quill-legacy-content ul[data-checked='true'] > li::before {
   content: '\2611';
 }
-.ob-quill-content ul[data-checked='false'] > li::before {
+.ob-quill-legacy-content ul[data-checked='false'] > li::before {
   content: '\2610';
 }
-.ob-quill-content li::before {
+.ob-quill-legacy-content li::before {
   display: inline-block;
   white-space: nowrap;
   width: 1.2em;
 }
-.ob-quill-content li:not(.ql-direction-rtl)::before {
+.ob-quill-legacy-content li:not(.ql-direction-rtl)::before {
   margin-left: -1.5em;
   margin-right: 0.3em;
   text-align: right;
 }
-.ob-quill-content li.ql-direction-rtl::before {
+.ob-quill-legacy-content li.ql-direction-rtl::before {
   margin-left: 0.3em;
   margin-right: -1.5em;
 }
-.ob-quill-content ol li:not(.ql-direction-rtl),
-.ob-quill-content ul li:not(.ql-direction-rtl) {
+.ob-quill-legacy-content ol li:not(.ql-direction-rtl),
+.ob-quill-legacy-content ul li:not(.ql-direction-rtl) {
   padding-left: 1.5em;
 }
-.ob-quill-content ol li.ql-direction-rtl,
-.ob-quill-content ul li.ql-direction-rtl {
+.ob-quill-legacy-content ol li.ql-direction-rtl,
+.ob-quill-legacy-content ul li.ql-direction-rtl {
   padding-right: 1.5em;
 }
-.ob-quill-content ol li {
+.ob-quill-legacy-content ol li {
   counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
   counter-increment: list-0;
 }
-.ob-quill-content ol li:before {
+.ob-quill-legacy-content ol li:before {
   content: counter(list-0, decimal) '. ';
 }
-.ob-quill-content ol li.ql-indent-1 {
+.ob-quill-legacy-content ol li.ql-indent-1 {
   counter-increment: list-1;
 }
-.ob-quill-content ol li.ql-indent-1:before {
+.ob-quill-legacy-content ol li.ql-indent-1:before {
   content: counter(list-1, lower-alpha) '. ';
 }
-.ob-quill-content ol li.ql-indent-1 {
+.ob-quill-legacy-content ol li.ql-indent-1 {
   counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-2 {
+.ob-quill-legacy-content ol li.ql-indent-2 {
   counter-increment: list-2;
 }
-.ob-quill-content ol li.ql-indent-2:before {
+.ob-quill-legacy-content ol li.ql-indent-2:before {
   content: counter(list-2, lower-roman) '. ';
 }
-.ob-quill-content ol li.ql-indent-2 {
+.ob-quill-legacy-content ol li.ql-indent-2 {
   counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-3 {
+.ob-quill-legacy-content ol li.ql-indent-3 {
   counter-increment: list-3;
 }
-.ob-quill-content ol li.ql-indent-3:before {
+.ob-quill-legacy-content ol li.ql-indent-3:before {
   content: counter(list-3, decimal) '. ';
 }
-.ob-quill-content ol li.ql-indent-3 {
+.ob-quill-legacy-content ol li.ql-indent-3 {
   counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-4 {
+.ob-quill-legacy-content ol li.ql-indent-4 {
   counter-increment: list-4;
 }
-.ob-quill-content ol li.ql-indent-4:before {
+.ob-quill-legacy-content ol li.ql-indent-4:before {
   content: counter(list-4, lower-alpha) '. ';
 }
-.ob-quill-content ol li.ql-indent-4 {
+.ob-quill-legacy-content ol li.ql-indent-4 {
   counter-reset: list-5 list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-5 {
+.ob-quill-legacy-content ol li.ql-indent-5 {
   counter-increment: list-5;
 }
-.ob-quill-content ol li.ql-indent-5:before {
+.ob-quill-legacy-content ol li.ql-indent-5:before {
   content: counter(list-5, lower-roman) '. ';
 }
-.ob-quill-content ol li.ql-indent-5 {
+.ob-quill-legacy-content ol li.ql-indent-5 {
   counter-reset: list-6 list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-6 {
+.ob-quill-legacy-content ol li.ql-indent-6 {
   counter-increment: list-6;
 }
-.ob-quill-content ol li.ql-indent-6:before {
+.ob-quill-legacy-content ol li.ql-indent-6:before {
   content: counter(list-6, decimal) '. ';
 }
-.ob-quill-content ol li.ql-indent-6 {
+.ob-quill-legacy-content ol li.ql-indent-6 {
   counter-reset: list-7 list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-7 {
+.ob-quill-legacy-content ol li.ql-indent-7 {
   counter-increment: list-7;
 }
-.ob-quill-content ol li.ql-indent-7:before {
+.ob-quill-legacy-content ol li.ql-indent-7:before {
   content: counter(list-7, lower-alpha) '. ';
 }
-.ob-quill-content ol li.ql-indent-7 {
+.ob-quill-legacy-content ol li.ql-indent-7 {
   counter-reset: list-8 list-9;
 }
-.ob-quill-content ol li.ql-indent-8 {
+.ob-quill-legacy-content ol li.ql-indent-8 {
   counter-increment: list-8;
 }
-.ob-quill-content ol li.ql-indent-8:before {
+.ob-quill-legacy-content ol li.ql-indent-8:before {
   content: counter(list-8, lower-roman) '. ';
 }
-.ob-quill-content ol li.ql-indent-8 {
+.ob-quill-legacy-content ol li.ql-indent-8 {
   counter-reset: list-9;
 }
-.ob-quill-content ol li.ql-indent-9 {
+.ob-quill-legacy-content ol li.ql-indent-9 {
   counter-increment: list-9;
 }
-.ob-quill-content ol li.ql-indent-9:before {
+.ob-quill-legacy-content ol li.ql-indent-9:before {
   content: counter(list-9, decimal) '. ';
 }
-.ob-quill-content .ql-indent-1:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-1:not(.ql-direction-rtl) {
   padding-left: 3em;
 }
-.ob-quill-content li.ql-indent-1:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-1:not(.ql-direction-rtl) {
   padding-left: 4.5em;
 }
-.ob-quill-content .ql-indent-1.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-1.ql-direction-rtl.ql-align-right {
   padding-right: 3em;
 }
-.ob-quill-content li.ql-indent-1.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-1.ql-direction-rtl.ql-align-right {
   padding-right: 4.5em;
 }
-.ob-quill-content .ql-indent-2:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-2:not(.ql-direction-rtl) {
   padding-left: 6em;
 }
-.ob-quill-content li.ql-indent-2:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-2:not(.ql-direction-rtl) {
   padding-left: 7.5em;
 }
-.ob-quill-content .ql-indent-2.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-2.ql-direction-rtl.ql-align-right {
   padding-right: 6em;
 }
-.ob-quill-content li.ql-indent-2.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-2.ql-direction-rtl.ql-align-right {
   padding-right: 7.5em;
 }
-.ob-quill-content .ql-indent-3:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-3:not(.ql-direction-rtl) {
   padding-left: 9em;
 }
-.ob-quill-content li.ql-indent-3:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-3:not(.ql-direction-rtl) {
   padding-left: 10.5em;
 }
-.ob-quill-content .ql-indent-3.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-3.ql-direction-rtl.ql-align-right {
   padding-right: 9em;
 }
-.ob-quill-content li.ql-indent-3.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-3.ql-direction-rtl.ql-align-right {
   padding-right: 10.5em;
 }
-.ob-quill-content .ql-indent-4:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-4:not(.ql-direction-rtl) {
   padding-left: 12em;
 }
-.ob-quill-content li.ql-indent-4:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-4:not(.ql-direction-rtl) {
   padding-left: 13.5em;
 }
-.ob-quill-content .ql-indent-4.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-4.ql-direction-rtl.ql-align-right {
   padding-right: 12em;
 }
-.ob-quill-content li.ql-indent-4.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-4.ql-direction-rtl.ql-align-right {
   padding-right: 13.5em;
 }
-.ob-quill-content .ql-indent-5:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-5:not(.ql-direction-rtl) {
   padding-left: 15em;
 }
-.ob-quill-content li.ql-indent-5:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-5:not(.ql-direction-rtl) {
   padding-left: 16.5em;
 }
-.ob-quill-content .ql-indent-5.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-5.ql-direction-rtl.ql-align-right {
   padding-right: 15em;
 }
-.ob-quill-content li.ql-indent-5.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-5.ql-direction-rtl.ql-align-right {
   padding-right: 16.5em;
 }
-.ob-quill-content .ql-indent-6:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-6:not(.ql-direction-rtl) {
   padding-left: 18em;
 }
-.ob-quill-content li.ql-indent-6:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-6:not(.ql-direction-rtl) {
   padding-left: 19.5em;
 }
-.ob-quill-content .ql-indent-6.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-6.ql-direction-rtl.ql-align-right {
   padding-right: 18em;
 }
-.ob-quill-content li.ql-indent-6.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-6.ql-direction-rtl.ql-align-right {
   padding-right: 19.5em;
 }
-.ob-quill-content .ql-indent-7:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-7:not(.ql-direction-rtl) {
   padding-left: 21em;
 }
-.ob-quill-content li.ql-indent-7:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-7:not(.ql-direction-rtl) {
   padding-left: 22.5em;
 }
-.ob-quill-content .ql-indent-7.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-7.ql-direction-rtl.ql-align-right {
   padding-right: 21em;
 }
-.ob-quill-content li.ql-indent-7.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-7.ql-direction-rtl.ql-align-right {
   padding-right: 22.5em;
 }
-.ob-quill-content .ql-indent-8:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-8:not(.ql-direction-rtl) {
   padding-left: 24em;
 }
-.ob-quill-content li.ql-indent-8:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-8:not(.ql-direction-rtl) {
   padding-left: 25.5em;
 }
-.ob-quill-content .ql-indent-8.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-8.ql-direction-rtl.ql-align-right {
   padding-right: 24em;
 }
-.ob-quill-content li.ql-indent-8.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-8.ql-direction-rtl.ql-align-right {
   padding-right: 25.5em;
 }
-.ob-quill-content .ql-indent-9:not(.ql-direction-rtl) {
+.ob-quill-legacy-content .ql-indent-9:not(.ql-direction-rtl) {
   padding-left: 27em;
 }
-.ob-quill-content li.ql-indent-9:not(.ql-direction-rtl) {
+.ob-quill-legacy-content li.ql-indent-9:not(.ql-direction-rtl) {
   padding-left: 28.5em;
 }
-.ob-quill-content .ql-indent-9.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content .ql-indent-9.ql-direction-rtl.ql-align-right {
   padding-right: 27em;
 }
-.ob-quill-content li.ql-indent-9.ql-direction-rtl.ql-align-right {
+.ob-quill-legacy-content li.ql-indent-9.ql-direction-rtl.ql-align-right {
   padding-right: 28.5em;
-}
-.ob-quill-content .ql-video {
-  display: block;
-  max-width: 100%;
-}
-.ob-quill-content .ql-video.ql-align-center {
-  margin: 0 auto;
-}
-.ob-quill-content .ql-video.ql-align-right {
-  margin: 0 0 0 auto;
-}
-.ob-quill-content .ql-bg-black {
-  background-color: #000;
-}
-.ob-quill-content .ql-bg-red {
-  background-color: #e60000;
-}
-.ob-quill-content .ql-bg-orange {
-  background-color: #f90;
-}
-.ob-quill-content .ql-bg-yellow {
-  background-color: #ff0;
-}
-.ob-quill-content .ql-bg-green {
-  background-color: #008a00;
-}
-.ob-quill-content .ql-bg-blue {
-  background-color: #06c;
-}
-.ob-quill-content .ql-bg-purple {
-  background-color: #93f;
-}
-.ob-quill-content .ql-color-white {
-  color: #fff;
-}
-.ob-quill-content .ql-color-red {
-  color: #e60000;
-}
-.ob-quill-content .ql-color-orange {
-  color: #f90;
-}
-.ob-quill-content .ql-color-yellow {
-  color: #ff0;
-}
-.ob-quill-content .ql-color-green {
-  color: #008a00;
-}
-.ob-quill-content .ql-color-blue {
-  color: #06c;
-}
-.ob-quill-content .ql-color-purple {
-  color: #93f;
-}
-.ob-quill-content .ql-font-serif {
-  font-family:
-    Georgia,
-    Times New Roman,
-    serif;
-}
-.ob-quill-content .ql-font-monospace {
-  font-family:
-    Monaco,
-    Courier New,
-    monospace;
-}
-.ob-quill-content .ql-size-small {
-  font-size: 0.75em;
-}
-.ob-quill-content .ql-size-large {
-  font-size: 1.5em;
-}
-.ob-quill-content .ql-size-huge {
-  font-size: 2.5em;
-}
-.ob-quill-content .ql-direction-rtl {
-  direction: rtl;
-  text-align: inherit;
-}
-.ob-quill-content .ql-align-center {
-  text-align: center;
-}
-.ob-quill-content .ql-align-justify {
-  text-align: justify;
-}
-.ob-quill-content .ql-align-right {
-  text-align: right;
-}
-.ob-quill-content.ql-blank::before {
-  color: rgba(0, 0, 0, 0.6);
-  content: attr(data-placeholder);
-  font-style: italic;
-  left: 15px;
-  pointer-events: none;
-  position: absolute;
-  right: 15px;
-}
-.ob-quill-content strong {
-  color: inherit;
 }
