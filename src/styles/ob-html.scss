@@ -5,6 +5,8 @@
 .ob-quill-content.content .ql-list-no-margin {
   margin-top: 0;
   margin-bottom: 0;
+  // to match indent of legacy lists.
+  margin-left: 2.9rem;
 }
 .ob-quill-legacy-content p,
 .ob-quill-legacy-content ol,
@@ -87,6 +89,9 @@
 .ob-quill-legacy-content ol li.ql-indent-1:before {
   content: counter(list-1, lower-alpha) '. ';
 }
+.ob-quill-content ol.ql-list-no-margin > li > ol.ql-list-no-margin > li {
+  list-style: lower-alpha;
+}
 .ob-quill-legacy-content ol li.ql-indent-1 {
   counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
 }
@@ -95,6 +100,15 @@
 }
 .ob-quill-legacy-content ol li.ql-indent-2:before {
   content: counter(list-2, lower-roman) '. ';
+}
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: lower-roman;
 }
 .ob-quill-legacy-content ol li.ql-indent-2 {
   counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
@@ -105,6 +119,17 @@
 .ob-quill-legacy-content ol li.ql-indent-3:before {
   content: counter(list-3, decimal) '. ';
 }
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: decimal;
+}
 .ob-quill-legacy-content ol li.ql-indent-3 {
   counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
 }
@@ -113,6 +138,19 @@
 }
 .ob-quill-legacy-content ol li.ql-indent-4:before {
   content: counter(list-4, lower-alpha) '. ';
+}
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: lower-alpha;
 }
 .ob-quill-legacy-content ol li.ql-indent-4 {
   counter-reset: list-5 list-6 list-7 list-8 list-9;
@@ -123,6 +161,21 @@
 .ob-quill-legacy-content ol li.ql-indent-5:before {
   content: counter(list-5, lower-roman) '. ';
 }
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: lower-roman;
+}
 .ob-quill-legacy-content ol li.ql-indent-5 {
   counter-reset: list-6 list-7 list-8 list-9;
 }
@@ -131,6 +184,23 @@
 }
 .ob-quill-legacy-content ol li.ql-indent-6:before {
   content: counter(list-6, decimal) '. ';
+}
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: decimal;
 }
 .ob-quill-legacy-content ol li.ql-indent-6 {
   counter-reset: list-7 list-8 list-9;
@@ -141,6 +211,25 @@
 .ob-quill-legacy-content ol li.ql-indent-7:before {
   content: counter(list-7, lower-alpha) '. ';
 }
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: lower-alpha;
+}
 .ob-quill-legacy-content ol li.ql-indent-7 {
   counter-reset: list-8 list-9;
 }
@@ -149,6 +238,29 @@
 }
 .ob-quill-legacy-content ol li.ql-indent-8:before {
   content: counter(list-8, lower-roman) '. ';
+}
+/* The Quill editor does not allow more than 9 levels of nested lists 
+so we are safe to stop here for lists created with Quill */
+.ob-quill-content
+  ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li
+  > ol.ql-list-no-margin
+  > li {
+  list-style: lower-roman;
 }
 .ob-quill-legacy-content ol li.ql-indent-8 {
   counter-reset: list-9;
