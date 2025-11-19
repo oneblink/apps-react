@@ -12,10 +12,6 @@
       font-size: $size-7;
       cursor: pointer;
 
-      &:focus {
-        outline: none;
-      }
-
       &.is-disabled {
         .step-marker {
           opacity: 0.2;
@@ -149,10 +145,6 @@
     -moz-transition: box-shadow 0.2s ease;
     -o-transition: box-shadow 0.2s ease;
     transition: box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-    }
 
     &.is-active {
       box-shadow: none;
