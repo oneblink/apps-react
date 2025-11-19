@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.13.1] - 2025-11-19
+
 ### Fixed
 
 - unordered list styles not being applied when nested in ordered lists
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - added `scrollToTopOfPage` to `OneBlinkFormBaseProps`
 - `pointAddressV3` element
+
+### Dependencies
+
+- update @oneblink/sdk-core to [8.10.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [8.9.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [8.12.2] - 2025-10-28
 
