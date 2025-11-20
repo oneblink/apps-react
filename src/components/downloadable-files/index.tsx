@@ -65,54 +65,29 @@ function DownloadableFiles({
       return
     }
 
-    if (Array.isArray(allowPDFDownload)) {
-      return allowPDFDownload.reduce<
+    if (formSubmissionResult.downloadSubmissionPdfs) {
+      return formSubmissionResult.downloadSubmissionPdfs.reduce<
         Array<{
           key: string
           node: React.ReactNode
         }>
-      >((memo, pdfConfiguration) => {
-        // This check must be inside the iterate function to appease TS
-        if (formSubmissionResult.getDownloadSubmissionPdfUrl) {
-          memo.push({
-            key: `pdf-file-node-${pdfConfiguration.id}`,
-            node: (
-              <SingleFileDisplay
-                attachment={{
-                  filename: getSubmissionPDFFileName(
-                    pdfConfiguration.configuration,
-                  ),
-                  signedUrl: formSubmissionResult.getDownloadSubmissionPdfUrl(
-                    pdfConfiguration.id,
-                  ),
-                  contentType: 'application/pdf',
-                }}
-                className={`cypress-receipt-download-pdf-button-${pdfConfiguration.id}`}
-              />
-            ),
-          })
-        }
-        return memo
-      }, [])
-    }
-
-    if (formSubmissionResult.downloadSubmissionPdfUrl) {
-      // Support legacy configuration for PDF download
-      return [
-        {
-          key: 'pdf-file-node',
+      >((memo, { id, configuration, url }) => {
+        memo.push({
+          key: `pdf-file-node-${id}`,
           node: (
             <SingleFileDisplay
               attachment={{
-                filename: getSubmissionPDFFileName(allowPDFDownload),
-                signedUrl: formSubmissionResult.downloadSubmissionPdfUrl,
+                filename: getSubmissionPDFFileName(configuration),
+                signedUrl: url,
                 contentType: 'application/pdf',
               }}
-              className="cypress-receipt-download-pdf-button"
+              className={`cypress-receipt-download-pdf-button-${id}`}
             />
           ),
-        },
-      ]
+        })
+
+        return memo
+      }, [])
     }
   }, [formSubmissionResult, getSubmissionPDFFileName])
 
