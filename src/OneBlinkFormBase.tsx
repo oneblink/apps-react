@@ -66,6 +66,7 @@ import ValidationErrorsCard from './components/ValidationErrorsCard'
 import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
+import { Clickable } from './components/Clickable'
 
 export type OneBlinkReadOnlyFormProps = {
   /**
@@ -1162,7 +1163,7 @@ function OneBlinkFormBase({
                               'is-active': isStepsHeaderActive,
                             })}
                           >
-                            <div
+                            <Clickable
                               className={clsx('ob-steps-navigation__header', {
                                 'is-active': isStepsHeaderActive,
                               })}
@@ -1190,9 +1191,10 @@ function OneBlinkFormBase({
                               <span className="dropdown icon">
                                 <MaterialIcon>keyboard_arrow_down</MaterialIcon>
                               </span>
-                            </div>
+                            </Clickable>
 
                             <div
+                              role="navigation"
                               className={clsx('ob-steps-navigation__steps', {
                                 'is-active': isStepsHeaderActive,
                               })}
@@ -1206,7 +1208,7 @@ function OneBlinkFormBase({
                                     const hasErrors =
                                       checkDisplayPageError(page)
                                     return (
-                                      <div
+                                      <Clickable
                                         key={page.id}
                                         id={`steps-navigation-step-${page.id}`}
                                         className={clsx(
@@ -1252,7 +1254,7 @@ function OneBlinkFormBase({
                                             {page.label}
                                           </p>
                                         </div>
-                                      </div>
+                                      </Clickable>
                                     )
                                   },
                                 )}
