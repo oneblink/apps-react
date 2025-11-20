@@ -10,6 +10,8 @@ import {
   SingleFileDisplay,
 } from './resource-components'
 import { LayoutProvider, LayoutType } from './LayoutProvider'
+import { useCallback } from 'react'
+import { PDFConfiguration } from '@oneblink/types/typescript/submissionEvents'
 
 function DownloadableFiles({
   formSubmissionResult,
@@ -27,49 +29,94 @@ function DownloadableFiles({
    */
   layout?: LayoutType
 }) {
-  const submissionPDFFileName = React.useMemo(() => {
-    const customFileName =
-      formSubmissionResult.definition.postSubmissionReceipt?.allowPDFDownload
-        ?.pdfFileName
-    if (!customFileName) {
-      return 'Submission'
-    }
+  const getSubmissionPDFFileName = useCallback(
+    (pdfConfiguration: PDFConfiguration) => {
+      const customFileName = pdfConfiguration?.pdfFileName
+      if (!customFileName) {
+        return 'Submission'
+      }
 
-    return localisationService.replaceInjectablesWithSubmissionValues(
-      customFileName,
-      {
-        previousApprovalId:
-          formSubmissionResult.previousFormSubmissionApprovalId,
-        form: formSubmissionResult.definition,
-        submission: formSubmissionResult.submission,
-        submissionId: formSubmissionResult.submissionId || '',
-        submissionTimestamp: formSubmissionResult.submissionTimestamp || '',
-        externalId: formSubmissionResult.externalId || undefined,
-        userProfile: authService.getUserProfile() || undefined,
-        task: formSubmissionResult.taskCompletion?.task,
-        taskGroup: formSubmissionResult.taskCompletion?.taskGroup,
-        taskGroupInstance:
-          formSubmissionResult.taskCompletion?.taskGroupInstance,
-      },
-    ).text
-  }, [formSubmissionResult])
-
-  const pdfFileNode = React.useMemo(
-    () =>
-      !formSubmissionResult.downloadSubmissionPdfUrl ? undefined : (
-        <SingleFileDisplay
-          attachment={{
-            filename: submissionPDFFileName,
-            signedUrl: formSubmissionResult.downloadSubmissionPdfUrl,
-            contentType: 'application/pdf',
-          }}
-          className="cypress-receipt-download-pdf-button"
-        />
-      ),
-    [formSubmissionResult.downloadSubmissionPdfUrl, submissionPDFFileName],
+      return localisationService.replaceInjectablesWithSubmissionValues(
+        customFileName,
+        {
+          previousApprovalId:
+            formSubmissionResult.previousFormSubmissionApprovalId,
+          form: formSubmissionResult.definition,
+          submission: formSubmissionResult.submission,
+          submissionId: formSubmissionResult.submissionId || '',
+          submissionTimestamp: formSubmissionResult.submissionTimestamp || '',
+          externalId: formSubmissionResult.externalId || undefined,
+          userProfile: authService.getUserProfile() || undefined,
+          task: formSubmissionResult.taskCompletion?.task,
+          taskGroup: formSubmissionResult.taskCompletion?.taskGroup,
+          taskGroupInstance:
+            formSubmissionResult.taskCompletion?.taskGroupInstance,
+        },
+      ).text
+    },
+    [formSubmissionResult],
   )
 
-  if (!formSubmissionResult.attachmentsAccessToken && !pdfFileNode) {
+  const pdfFileNodes = React.useMemo(() => {
+    const allowPDFDownload =
+      formSubmissionResult.definition.postSubmissionReceipt?.allowPDFDownload
+
+    if (!allowPDFDownload) {
+      return
+    }
+
+    if (Array.isArray(allowPDFDownload)) {
+      return allowPDFDownload.reduce<
+        Array<{
+          key: string
+          node: React.ReactNode
+        }>
+      >((memo, pdfConfiguration) => {
+        // This check must be inside the iterate function to appease TS
+        if (formSubmissionResult.getDownloadSubmissionPdfUrl) {
+          memo.push({
+            key: `pdf-file-node-${pdfConfiguration.id}`,
+            node: (
+              <SingleFileDisplay
+                attachment={{
+                  filename: getSubmissionPDFFileName(
+                    pdfConfiguration.configuration,
+                  ),
+                  signedUrl: formSubmissionResult.getDownloadSubmissionPdfUrl(
+                    pdfConfiguration.id,
+                  ),
+                  contentType: 'application/pdf',
+                }}
+                className={`cypress-receipt-download-pdf-button-${pdfConfiguration.id}`}
+              />
+            ),
+          })
+        }
+        return memo
+      }, [])
+    }
+
+    if (formSubmissionResult.downloadSubmissionPdfUrl) {
+      // Support legacy configuration for PDF download
+      return [
+        {
+          key: 'pdf-file-node',
+          node: (
+            <SingleFileDisplay
+              attachment={{
+                filename: getSubmissionPDFFileName(allowPDFDownload),
+                signedUrl: formSubmissionResult.downloadSubmissionPdfUrl,
+                contentType: 'application/pdf',
+              }}
+              className="cypress-receipt-download-pdf-button"
+            />
+          ),
+        },
+      ]
+    }
+  }, [formSubmissionResult, getSubmissionPDFFileName])
+
+  if (!formSubmissionResult.attachmentsAccessToken && !pdfFileNodes) {
     return null
   }
 
@@ -77,12 +124,12 @@ function DownloadableFiles({
     <div className="ob-downloadable-files__wrapper">
       <LayoutProvider layout={layout ?? 'GRID'}>
         {divider && <hr className="divider" />}
-        {pdfFileNode && !formSubmissionResult.attachmentsAccessToken ? (
-          <OnlyPDFDisplay>{pdfFileNode}</OnlyPDFDisplay>
+        {pdfFileNodes && !formSubmissionResult.attachmentsAccessToken ? (
+          <OnlyPDFDisplay>{pdfFileNodes}</OnlyPDFDisplay>
         ) : (
           <LoadAndDisplayAttachments
             formSubmissionResult={formSubmissionResult}
-            pdfFileNode={pdfFileNode}
+            pdfFileNodes={pdfFileNodes}
           />
         )}
       </LayoutProvider>

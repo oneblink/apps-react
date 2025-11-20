@@ -12,10 +12,10 @@ type Attachment = Awaited<
 >[number]
 
 export const LoadAndDisplayAttachments = ({
-  pdfFileNode,
+  pdfFileNodes,
   formSubmissionResult,
 }: {
-  pdfFileNode: React.ReactNode
+  pdfFileNodes?: PDFFileNode[]
   formSubmissionResult: submissionService.FormSubmissionResult
 }) => {
   const loadAttachments = React.useCallback(
@@ -35,10 +35,10 @@ export const LoadAndDisplayAttachments = ({
         </div>
       </Collapse>
       <Collapse in={attachmentsState.status === 'ERROR'} unmountOnExit>
-        {pdfFileNode && (
+        {!!pdfFileNodes?.length && (
           <>
             <OnlyPDFDisplay className="ob-downloadable-files__error-pdf">
-              {pdfFileNode}
+              {pdfFileNodes}
             </OnlyPDFDisplay>
           </>
         )}
@@ -61,26 +61,31 @@ export const LoadAndDisplayAttachments = ({
           attachments={
             attachmentsState.status === 'SUCCESS' ? attachmentsState.result : []
           }
-          pdfFileNode={pdfFileNode}
+          pdfFileNodes={pdfFileNodes}
         />
       </Collapse>
     </>
   )
 }
 
+export type PDFFileNode = {
+  key: string
+  node: React.ReactNode
+}
+
 type DownloadableFilesDisplayProps = {
   attachments: Attachment[]
-  pdfFileNode?: React.ReactNode
+  pdfFileNodes?: PDFFileNode[]
 }
 function DownloadableFilesDisplay({
   attachments,
-  pdfFileNode,
+  pdfFileNodes,
 }: DownloadableFilesDisplayProps) {
   const layout = useLayout()
 
   const totalToDisplay = React.useMemo(() => {
-    return attachments.length + (pdfFileNode ? 1 : 0)
-  }, [attachments, pdfFileNode])
+    return attachments.length + (pdfFileNodes?.length ?? 0)
+  }, [attachments, pdfFileNodes])
 
   return (
     <>
@@ -90,11 +95,12 @@ function DownloadableFilesDisplay({
           spacing={2}
           justifyContent={totalToDisplay === 1 ? 'center' : undefined}
         >
-          {pdfFileNode && (
-            <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12}>
-              {pdfFileNode}
-            </Grid>
-          )}
+          {pdfFileNodes &&
+            pdfFileNodes.map(({ node, key }) => (
+              <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={key}>
+                {node}
+              </Grid>
+            ))}
           {attachments.map((attachment, index) => (
             <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={index}>
               <SingleFileDisplay attachment={attachment} />
@@ -170,17 +176,23 @@ export const OnlyPDFDisplay = ({
   children,
   className,
 }: {
-  children: React.ReactNode
+  children: PDFFileNode[]
   className?: string
 }) => {
   const layout = useLayout()
 
   return (
     <div className={clsx('ob-downloadable-files__container', className)}>
-      <Grid container spacing={2} justifyContent="center">
-        <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12}>
-          {children}
-        </Grid>
+      <Grid
+        container
+        spacing={2}
+        justifyContent={children.length === 1 ? 'center' : undefined}
+      >
+        {children.map(({ node, key }) => (
+          <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={key}>
+            {node}
+          </Grid>
+        ))}
       </Grid>
     </div>
   )
