@@ -84,7 +84,12 @@
 }
 
 @media only screen and (max-width: $tablet) {
+  .ob-steps-navigation__steps.is-active .steps.is-horizontal-tablet {
+    display: flex;
+  }
+
   .steps.is-horizontal-tablet {
+    display: none;
     flex-direction: column;
 
     .step-item {
