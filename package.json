@@ -50,7 +50,7 @@
     "@mui/x-date-pickers": "^6.20.2",
     "@oneblink/apps": "^23.6.0-beta.2",
     "@oneblink/release-cli": "^3.4.0-beta.1",
-    "@oneblink/types": "github:oneblink/types",
+    "@oneblink/types": "github:oneblink/types#11e0c0c91045d30c262e47192b92dfa08485ecba",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
     "@types/file-saver": "^2.0.7",
