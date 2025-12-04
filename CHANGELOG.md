@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.13.2] - 2025-12-04
+
 ### Fixed
 
 - page navigation not appearing as buttons
