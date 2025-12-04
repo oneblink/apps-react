@@ -12,6 +12,11 @@ function FormElementImage({ element }: Props) {
         className="ob-image__content cypress-image-element-content"
         src={element.defaultValue}
         alt={!element.decorativeImage ? element.label : ''}
+        style={{
+          maxWidth: element?.maxWidthPixels
+            ? `${element.maxWidthPixels}px`
+            : undefined,
+        }}
       />
     </div>
   )
