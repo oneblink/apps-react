@@ -3,8 +3,13 @@ import _throttle from 'lodash.throttle'
 import { autoSaveService, submissionService, Sentry } from '@oneblink/apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
+import useFormSubmissionDuration from './useFormSubmissionDuration'
 import { FormElement } from '@oneblink/types/typescript/forms'
 import { SectionState } from '../types/form'
+import {
+  getElementDisplayNameForAnalyticsEvent,
+  sendGoogleAnalyticsEvent,
+} from '../utils/sendGoogleAnalyticsEvent'
 
 /**
  * Use this if you want to implement a controlled auto saving form. See
@@ -28,6 +33,7 @@ export default function useFormSubmissionAutoSaveState({
   onSubmit,
   onSaveDraft,
   resumeSectionState,
+  resumePreviousElapsedDurationSeconds,
 }: {
   form: FormTypes.Form
   removeAutoSaveDataBeforeSubmit?: boolean
@@ -42,6 +48,7 @@ export default function useFormSubmissionAutoSaveState({
     newDraftSubmission: submissionService.NewDraftSubmission,
   ) => unknown
   resumeSectionState?: SectionState
+  resumePreviousElapsedDurationSeconds?: number
 }) {
   const [
     {
@@ -59,12 +66,16 @@ export default function useFormSubmissionAutoSaveState({
     resumeSectionState,
   )
 
+  const [getCurrentSubmissionDuration, resetCurrentSubmissionDuration] =
+    useFormSubmissionDuration(resumePreviousElapsedDurationSeconds)
+
   const [
     {
       isLoadingAutoSaveSubmission,
       autoSaveSubmission,
       autoSaveElement,
       autoSaveSectionState,
+      autoSavePreviousElapsedDurationSeconds,
     },
     setAutoSaveState,
   ] = React.useState<{
@@ -72,11 +83,13 @@ export default function useFormSubmissionAutoSaveState({
     autoSaveSubmission: SubmissionTypes.S3SubmissionData['submission'] | null
     autoSaveElement: FormElement | null
     autoSaveSectionState: SectionState | null
+    autoSavePreviousElapsedDurationSeconds: number
   }>({
     isLoadingAutoSaveSubmission: true,
     autoSaveSubmission: null,
     autoSaveElement: null,
     autoSaveSectionState: null,
+    autoSavePreviousElapsedDurationSeconds: 0,
   })
 
   const throttledAutoSave = React.useMemo(() => {
@@ -115,6 +128,13 @@ export default function useFormSubmissionAutoSaveState({
                 })
               }
             })
+            .then(() => {
+              return autoSaveService.upsertAutoSaveData<{
+                previousElapsedDurationSeconds: number
+              }>(definition.id, `PREVIOUS_ELAPSED_DURATION_${autoSaveKey}`, {
+                previousElapsedDurationSeconds: getCurrentSubmissionDuration(),
+              })
+            })
             .catch((error) => {
               console.warn('Error while auto saving', error)
               Sentry.captureException(error)
@@ -124,7 +144,7 @@ export default function useFormSubmissionAutoSaveState({
       9580, // https://en.wikipedia.org/wiki/100_metres
       { trailing: true, leading: false },
     )
-  }, [autoSaveKey, definition.id, formIsDisabled])
+  }, [autoSaveKey, definition.id, formIsDisabled, getCurrentSubmissionDuration])
 
   const cancelAutoSave = React.useCallback(() => {
     if (throttledAutoSave) {
@@ -202,6 +222,11 @@ export default function useFormSubmissionAutoSaveState({
         const autoSaveSectionStateData = await autoSaveService.getAutoSaveData<{
           sectionState: SectionState
         }>(definition.id, `SECTION_STATE_${autoSaveKey}`)
+        const autoSavePreviousElapsedDurationSeconds =
+          await autoSaveService.getAutoSaveData<{
+            previousElapsedDurationSeconds: number
+          }>(definition.id, `PREVIOUS_ELAPSED_DURATION_${autoSaveKey}`)
+
         if (!ignore) {
           setAutoSaveState({
             isLoadingAutoSaveSubmission: false,
@@ -209,6 +234,9 @@ export default function useFormSubmissionAutoSaveState({
             autoSaveElement,
             autoSaveSectionState:
               autoSaveSectionStateData?.sectionState || null,
+            autoSavePreviousElapsedDurationSeconds:
+              autoSavePreviousElapsedDurationSeconds?.previousElapsedDurationSeconds ||
+              0,
           })
         }
       } catch (error) {
@@ -220,6 +248,7 @@ export default function useFormSubmissionAutoSaveState({
             autoSaveSubmission: null,
             autoSaveElement: null,
             autoSaveSectionState: null,
+            autoSavePreviousElapsedDurationSeconds: 0,
           })
         }
       }
@@ -258,14 +287,30 @@ export default function useFormSubmissionAutoSaveState({
   )
 
   const startNewSubmission = React.useCallback(() => {
+    sendGoogleAnalyticsEvent('oneblink_form_abandon', {
+      formId: definition.id,
+      formName: definition.name,
+      lastElementUpdated:
+        getElementDisplayNameForAnalyticsEvent(autoSaveElement),
+      durationUntilAbandon: autoSavePreviousElapsedDurationSeconds,
+    })
     deleteAutoSaveSubmission()
+    resetCurrentSubmissionDuration()
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
       autoSaveElement: null,
       autoSaveSectionState: null,
+      autoSavePreviousElapsedDurationSeconds: 0,
     })
-  }, [deleteAutoSaveSubmission])
+  }, [
+    autoSaveElement,
+    autoSavePreviousElapsedDurationSeconds,
+    definition.id,
+    definition.name,
+    deleteAutoSaveSubmission,
+    resetCurrentSubmissionDuration,
+  ])
 
   const continueAutoSaveSubmission = React.useCallback(() => {
     if (autoSaveSubmission) {
@@ -276,14 +321,18 @@ export default function useFormSubmissionAutoSaveState({
         sectionState: autoSaveSectionState || [],
       }))
     }
+    resetCurrentSubmissionDuration(autoSavePreviousElapsedDurationSeconds)
     setAutoSaveState({
       isLoadingAutoSaveSubmission: false,
       autoSaveSubmission: null,
       autoSaveElement: null,
       autoSaveSectionState: null,
+      autoSavePreviousElapsedDurationSeconds: 0,
     })
   }, [
     autoSaveSubmission,
+    resetCurrentSubmissionDuration,
+    autoSavePreviousElapsedDurationSeconds,
     setFormSubmission,
     autoSaveElement,
     autoSaveSectionState,
@@ -311,5 +360,6 @@ export default function useFormSubmissionAutoSaveState({
     handleSaveDraft,
     handleNavigateAway,
     setFormSubmission: setFormSubmissionAutoSave,
+    getCurrentSubmissionDuration,
   }
 }

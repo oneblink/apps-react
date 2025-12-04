@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `maxWidthPixels` prop to image element
+- `useFormSubmissionDuration` hook
 
 ## [8.13.2] - 2025-12-04
 
