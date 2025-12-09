@@ -14,6 +14,7 @@ import {
   FormTypes,
   FormsAppsTypes,
   ScheduledTasksTypes,
+  StylingEngineTypes,
   SubmissionTypes,
 } from '@oneblink/types'
 import * as H from 'history'
@@ -67,7 +68,7 @@ import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
 import { Clickable } from './components/Clickable'
-
+import useApplyUserDefinedFormStyling from './hooks/useApplyUserDefinedFormStyling'
 export type OneBlinkReadOnlyFormProps = {
   /**
    * A [Google Maps API
@@ -97,6 +98,9 @@ export type OneBlinkReadOnlyFormProps = {
    * element or a default value.
    */
   replaceInjectablesOverrides?: ReplaceInjectablesOverrides
+
+  /** Pass a form styling object to override the default styling of the form. */
+  formStyling?: StylingEngineTypes.FormStyle
 }
 
 export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
@@ -252,7 +256,10 @@ function OneBlinkFormBase({
   replaceInjectablesOverrides,
   sectionState,
   scrollToTopOfPage,
+  formStyling,
 }: Props) {
+  useApplyUserDefinedFormStyling(formStyling)
+
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
   const userProfileForInjectables = useUserProfileForInjectablesOutsideContext(

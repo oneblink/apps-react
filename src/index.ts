@@ -73,4 +73,10 @@ export {
   PercentCrop,
 } from './components/ImageCropper'
 
+export { default as useApplyUserDefinedStyling } from './hooks/useApplyUserDefinedStyling'
+export {
+  CssMappings,
+  objectEntriesAsKeyValuePairs,
+} from './services/styling-engine'
+
 export * from './types/form'
