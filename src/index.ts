@@ -77,7 +77,7 @@ export {
 export { default as useApplyUserDefinedStyling } from './hooks/useApplyUserDefinedStyling'
 export {
   CssMappings,
-  objectEntriesAsKeyValuePairs,
+  objectEntriesAsTypedKeyValuePairs,
 } from './services/styling-engine'
 
 export * from './types/form'
