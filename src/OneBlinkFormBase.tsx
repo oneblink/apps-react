@@ -64,7 +64,10 @@ import { injectOptionsAcrossAllElements } from './services/injectableOptions'
 import MaterialIcon from './components/MaterialIcon'
 import ReCAPTCHA from 'react-google-recaptcha'
 import ValidationErrorsCard from './components/ValidationErrorsCard'
-import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
+import {
+  getElementDisplayNameForAnalyticsEvent,
+  sendGoogleAnalyticsEvent,
+} from './utils/sendGoogleAnalyticsEvent'
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
 import { Clickable } from './components/Clickable'
@@ -201,6 +204,15 @@ export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
    * Defaults to false.
    */
   scrollToTopOfPage?: boolean
+  /** The function to call when determining the current submission duration. */
+  getCurrentSubmissionDuration?: () => number
+  /** The function to call when the window.beforeunload event occurs. */
+  onBeforeUnload?: (props: {
+    submission: SubmissionTypes.S3SubmissionData['submission']
+    definition: FormTypes.Form
+    lastElementUpdated: FormTypes.FormElement | undefined
+    submissionDuration: number | undefined
+  }) => void
 }
 
 export type OneBlinkFormUncontrolledProps = {
@@ -257,6 +269,8 @@ function OneBlinkFormBase({
   sectionState,
   scrollToTopOfPage,
   formStyling,
+  getCurrentSubmissionDuration,
+  onBeforeUnload,
 }: Props) {
   useApplyUserDefinedFormStyling(formStyling)
 
@@ -281,6 +295,27 @@ function OneBlinkFormBase({
       }),
     [primaryColour],
   )
+
+  React.useEffect(() => {
+    const beforeUnload = () => {
+      onBeforeUnload?.({
+        submission,
+        definition,
+        lastElementUpdated,
+        submissionDuration: getCurrentSubmissionDuration?.(),
+      })
+    }
+    window.addEventListener('beforeunload', beforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnload)
+    }
+  }, [
+    lastElementUpdated,
+    getCurrentSubmissionDuration,
+    onBeforeUnload,
+    submission,
+    definition,
+  ])
 
   const isInfoPage = React.useMemo(() => {
     if (!!isInfoPageProp && isInfoPageProp !== 'CALCULATED') {
@@ -398,8 +433,16 @@ function OneBlinkFormBase({
     sendGoogleAnalyticsEvent('oneblink_form_abandon', {
       formId: definition.id,
       formName: definition.name,
+      lastElementUpdated:
+        getElementDisplayNameForAnalyticsEvent(lastElementUpdated),
+      durationUntilAbandon: getCurrentSubmissionDuration?.(),
     })
-  }, [definition.id, definition.name])
+  }, [
+    definition.id,
+    definition.name,
+    getCurrentSubmissionDuration,
+    lastElementUpdated,
+  ])
 
   React.useEffect(() => {
     if (hasConfirmedNavigation) {
@@ -431,10 +474,20 @@ function OneBlinkFormBase({
       sendGoogleAnalyticsEvent('oneblink_form_abandon', {
         formId: definition.id,
         formName: definition.name,
+        lastElementUpdated:
+          getElementDisplayNameForAnalyticsEvent(lastElementUpdated),
+        durationUntilAbandon: getCurrentSubmissionDuration?.(),
       })
       onCancel()
     }
-  }, [definition.id, definition.name, isDirty, onCancel])
+  }, [
+    isDirty,
+    definition.id,
+    definition.name,
+    lastElementUpdated,
+    getCurrentSubmissionDuration,
+    onCancel,
+  ])
 
   const allowNavigation = React.useCallback(() => {
     setUnsavedChangesState((current) => ({
@@ -850,6 +903,9 @@ function OneBlinkFormBase({
       sendGoogleAnalyticsEvent('oneblink_form_submit', {
         formId: definition.id,
         formName: definition.name,
+        lastElementUpdated:
+          getElementDisplayNameForAnalyticsEvent(lastElementUpdated),
+        durationUntilSubmission: getCurrentSubmissionDuration?.(),
       })
     },
     [
@@ -862,6 +918,8 @@ function OneBlinkFormBase({
       userProfileForInjectables,
       resetRecaptchas,
       onSubmit,
+      lastElementUpdated,
+      getCurrentSubmissionDuration,
       captchaSiteKey,
     ],
   )
@@ -890,19 +948,21 @@ function OneBlinkFormBase({
           backgroundUpload: continueWhilstAttachmentsAreUploading,
           lastElementUpdated,
           sectionState,
+          previousElapsedDurationSeconds: getCurrentSubmissionDuration?.(),
         })
       }
     },
     [
+      disabled,
+      onSaveDraft,
       allowNavigation,
+      getCurrentSubmissionData,
+      checkBsbAreValidating,
       checkAttachmentsCanBeSubmitted,
       definition,
-      disabled,
-      getCurrentSubmissionData,
-      onSaveDraft,
-      checkBsbAreValidating,
       lastElementUpdated,
       sectionState,
+      getCurrentSubmissionDuration,
     ],
   )
 

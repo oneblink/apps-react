@@ -1,4 +1,5 @@
-import { Sentry } from "@oneblink/apps"
+import { Sentry } from '@oneblink/apps'
+import { FormTypes } from '@oneblink/types'
 
 export const sendGoogleAnalyticsEvent = (
   eventName: string,
@@ -13,4 +14,13 @@ export const sendGoogleAnalyticsEvent = (
       Sentry.captureException(e)
     }
   }
+}
+
+export const getElementDisplayNameForAnalyticsEvent = (
+  lastElementUpdated?: FormTypes.FormElement | null,
+) => {
+  if (!lastElementUpdated) return
+  return lastElementUpdated && 'label' in lastElementUpdated
+    ? lastElementUpdated.label
+    : lastElementUpdated?.name || lastElementUpdated?.id
 }

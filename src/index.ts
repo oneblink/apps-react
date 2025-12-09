@@ -47,6 +47,7 @@ export { default as useLoadDataEffect } from './hooks/useLoadDataEffect'
 export { default as useFormSubmissionState } from './hooks/useFormSubmissionState'
 export { default as useFormSubmissionAutoSaveState } from './hooks/useFormSubmissionAutoSaveState'
 export { default as useGoogleJsApiLoader } from './hooks/useGoogleJsApiLoader'
+export { default as useFormSubmissionDuration } from './hooks/useFormSubmissionDuration'
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as PaymentReceipt } from './PaymentReceipt'

@@ -4,7 +4,6 @@ import Modal from './components/renderer/Modal'
 import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
-import { sendGoogleAnalyticsEvent } from './utils/sendGoogleAnalyticsEvent'
 
 function OneBlinkAutoSaveForm({
   form,
@@ -18,6 +17,7 @@ function OneBlinkAutoSaveForm({
   onSubmit,
   onSaveDraft,
   resumeSectionState,
+  resumePreviousElapsedDurationSeconds,
   ...props
 }: React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
   /** Pass a unique key for this submission e.g. the `externalId` the parameter */
@@ -50,6 +50,7 @@ function OneBlinkAutoSaveForm({
     lastElementUpdated,
     executedLookups,
     sectionState,
+    getCurrentSubmissionDuration,
   } = useFormSubmissionAutoSaveState({
     form,
     initialSubmission,
@@ -62,6 +63,7 @@ function OneBlinkAutoSaveForm({
     onSaveDraft,
     formIsDisabled: disabled,
     resumeSectionState,
+    resumePreviousElapsedDurationSeconds,
   })
 
   if (isLoadingAutoSaveSubmission) {
@@ -85,10 +87,6 @@ function OneBlinkAutoSaveForm({
               className="button ob-button is-light cypress-continue-auto-save-start-again-button"
               onClick={() => {
                 startNewSubmission()
-                sendGoogleAnalyticsEvent('oneblink_form_abandon', {
-                  formId: definition.id,
-                  formName: definition.name,
-                })
               }}
             >
               Start Again
@@ -123,6 +121,7 @@ function OneBlinkAutoSaveForm({
       lastElementUpdated={lastElementUpdated}
       executedLookups={executedLookups}
       sectionState={sectionState}
+      getCurrentSubmissionDuration={getCurrentSubmissionDuration}
     />
   )
 }
