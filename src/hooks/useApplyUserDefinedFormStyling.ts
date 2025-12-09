@@ -1,6 +1,6 @@
 import { StylingEngineTypes } from '@oneblink/types'
 import {
-  objectEntriesAsKeyValuePairs,
+  objectEntriesAsTypedKeyValuePairs,
   cssMappingsNeverKeyLog as neverKey,
   CssMappings,
 } from '../services/styling-engine'
@@ -42,10 +42,9 @@ const useApplyUserDefinedFormStyling = (
 export default useApplyUserDefinedFormStyling
 
 const applyCssMappings = (formStyling: StylingEngineTypes.FormStyle) => {
-  return objectEntriesAsKeyValuePairs(formStyling).reduce<
+  return objectEntriesAsTypedKeyValuePairs(formStyling).reduce<
     CssMappings<typeof stylingTargets>
-  >((memo, { key, value }) => {
-    // if (keyVal.value === undefined) return memo
+  >((memo, [key, value]) => {
     switch (key) {
       case 'backgroundColour':
         {
@@ -57,7 +56,7 @@ const applyCssMappings = (formStyling: StylingEngineTypes.FormStyle) => {
         }
         break
       case 'formContainer': {
-        objectEntriesAsKeyValuePairs(value).forEach(({ key, value }) => {
+        objectEntriesAsTypedKeyValuePairs(value).forEach(([key, value]) => {
           switch (key) {
             case 'backgroundColour': {
               memo['.ob-form-container'][cssKeys[key]] = value
@@ -81,68 +80,70 @@ const applyCssMappings = (formStyling: StylingEngineTypes.FormStyle) => {
               break
             }
             case 'elementContainer': {
-              objectEntriesAsKeyValuePairs(value).forEach(({ key, value }) => {
-                switch (key) {
-                  case 'marginBottom': {
-                    memo['.ob-element:not(:last-child)'][cssKeys[key]] =
-                      `${value}rem`
-                    break
-                  }
-                  case 'label': {
-                    objectEntriesAsKeyValuePairs(value).forEach(
-                      ({ key, value }) => {
-                        switch (key) {
-                          case 'fontColor': {
-                            memo['.ob-label'][cssKeys[key]] = value
-                            break
+              objectEntriesAsTypedKeyValuePairs(value).forEach(
+                ([key, value]) => {
+                  switch (key) {
+                    case 'marginBottom': {
+                      memo['.ob-element:not(:last-child)'][cssKeys[key]] =
+                        `${value}rem`
+                      break
+                    }
+                    case 'label': {
+                      objectEntriesAsTypedKeyValuePairs(value).forEach(
+                        ([key, value]) => {
+                          switch (key) {
+                            case 'fontColor': {
+                              memo['.ob-label'][cssKeys[key]] = value
+                              break
+                            }
+                            case 'fontSize': {
+                              memo['.ob-label'][cssKeys[key]] = `${value}rem`
+                              break
+                            }
+                            case 'fontWeight': {
+                              memo['.ob-label'][cssKeys[key]] = value
+                              break
+                            }
+                            default: {
+                              neverKey(key)
+                            }
                           }
-                          case 'fontSize': {
-                            memo['.ob-label'][cssKeys[key]] = `${value}rem`
-                            break
-                          }
-                          case 'fontWeight': {
-                            memo['.ob-label'][cssKeys[key]] = value
-                            break
-                          }
-                          default: {
-                            neverKey(key)
-                          }
-                        }
-                      },
-                    )
-                    break
-                  }
-                  case 'heading': {
-                    objectEntriesAsKeyValuePairs(value).forEach(
-                      ({ key, value }) => {
-                        switch (key) {
-                          case 'backgroundColour': {
-                            memo['.ob-heading'][cssKeys[key]] = value
-                            break
-                          }
-                          case 'padding': {
-                            memo['.ob-heading'][cssKeys[key]] = `${value}rem`
-                            break
-                          }
-                          case 'borderColour': {
-                            memo['.ob-heading'][cssKeys[key]] = value
-                            break
-                          }
-                          case 'borderRadius': {
-                            memo['.ob-heading'][cssKeys[key]] = `${value}px`
-                            break
-                          }
-                          case 'borderWidth': {
-                            memo['.ob-heading'][cssKeys[key]] = `${value}px`
+                        },
+                      )
+                      break
+                    }
+                    case 'heading': {
+                      objectEntriesAsTypedKeyValuePairs(value).forEach(
+                        ([key, value]) => {
+                          switch (key) {
+                            case 'backgroundColour': {
+                              memo['.ob-heading'][cssKeys[key]] = value
+                              break
+                            }
+                            case 'padding': {
+                              memo['.ob-heading'][cssKeys[key]] = `${value}rem`
+                              break
+                            }
+                            case 'borderColour': {
+                              memo['.ob-heading'][cssKeys[key]] = value
+                              break
+                            }
+                            case 'borderRadius': {
+                              memo['.ob-heading'][cssKeys[key]] = `${value}px`
+                              break
+                            }
+                            case 'borderWidth': {
+                              memo['.ob-heading'][cssKeys[key]] = `${value}px`
 
-                            memo['.ob-heading']['border-style'] = 'solid'
-                            break
-                          }
-                          case 'headingSize': {
-                            objectEntriesAsKeyValuePairs(value).forEach(
-                              ({ key: sizeKey, value }) => {
-                                objectEntriesAsKeyValuePairs(value).forEach(
-                                  ({ key, value }) => {
+                              memo['.ob-heading']['border-style'] = 'solid'
+                              break
+                            }
+                            case 'headingSize': {
+                              objectEntriesAsTypedKeyValuePairs(value).forEach(
+                                ([sizeKey, value]) => {
+                                  objectEntriesAsTypedKeyValuePairs(
+                                    value,
+                                  ).forEach(([key, value]) => {
                                     switch (key) {
                                       case 'fontColor': {
                                         memo[
@@ -166,26 +167,26 @@ const applyCssMappings = (formStyling: StylingEngineTypes.FormStyle) => {
                                         neverKey(key)
                                       }
                                     }
-                                  },
-                                )
-                              },
-                            )
-                            break
+                                  })
+                                },
+                              )
+                              break
+                            }
+                            default: {
+                              neverKey(key)
+                            }
                           }
-                          default: {
-                            neverKey(key)
-                          }
-                        }
-                      },
-                    )
-                    break
-                  }
+                        },
+                      )
+                      break
+                    }
 
-                  default: {
-                    neverKey(key)
+                    default: {
+                      neverKey(key)
+                    }
                   }
-                }
-              })
+                },
+              )
               break
             }
 

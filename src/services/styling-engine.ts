@@ -1,11 +1,7 @@
-type TypedObjectEntries<T, K extends keyof T = keyof T> = (K extends unknown
-  ? [K, T[K]]
-  : never)[]
-
-type RequiredKeyValuePair<
+export type RequiredKeyValuePair<
   T extends object,
   K extends keyof T = keyof T,
-> = K extends unknown ? { key: K; value: NonNullable<T[K]> } : never
+> = K extends unknown ? [K, NonNullable<T[K]>] : never
 
 export type CssMappings<T extends object> = Record<
   keyof T,
@@ -14,12 +10,10 @@ export type CssMappings<T extends object> = Record<
 
 export type GenericCssMappings = Record<string, Record<string, string | number>>
 
-export const objectEntriesAsKeyValuePairs = <T extends object>(obj: T) => {
-  return (Object.entries(obj) as TypedObjectEntries<T>).reduce<
-    RequiredKeyValuePair<T>[]
-  >((memo, item) => {
+export const objectEntriesAsTypedKeyValuePairs = <T extends object>(obj: T) => {
+  return Object.entries(obj).reduce<RequiredKeyValuePair<T>[]>((memo, item) => {
     if (item[1] !== undefined) {
-      memo.push({ key: item[0], value: item[1] } as RequiredKeyValuePair<T>)
+      memo.push(item as RequiredKeyValuePair<T>)
     }
     return memo
   }, [])
