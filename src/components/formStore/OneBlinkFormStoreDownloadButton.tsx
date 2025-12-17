@@ -8,7 +8,6 @@ import {
   DialogActions,
   Button,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import ErrorSnackbar from '../ErrorSnackbar'
 import { ColumnInstance } from 'react-table'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
@@ -17,7 +16,7 @@ import useFormStoreTableContext from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
 
 function OneBlinkFormStoreDownloadButton(
-  props: React.ComponentProps<typeof LoadingButton>,
+  props: React.ComponentProps<typeof Button>,
 ) {
   const { visibleColumns, parameters, form } = useFormStoreTableContext()
   const [
@@ -93,7 +92,7 @@ function OneBlinkFormStoreDownloadButton(
   return (
     <>
       <Tooltip title="Download submission data as a CSV file">
-        <LoadingButton
+        <Button
           className="ob-form-store-download-csv-button"
           type="button"
           loading={isDownloadingCsv}

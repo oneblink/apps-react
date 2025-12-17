@@ -111,7 +111,7 @@ export function FilesElementDataTableCellContent({
     <Grid container spacing={1}>
       {value.map((file, index) => {
         return (
-          <Grid item key={index} xs={12}>
+          <Grid size={{ xs: 12 }} key={index}>
             <FileChip file={file} />
           </Grid>
         )

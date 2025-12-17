@@ -39,7 +39,6 @@ export function NotificationGridItem({
 
   return (
     <Grid
-      item
       className={className}
       sx={(theme) => ({
         flexBasis: '100%',

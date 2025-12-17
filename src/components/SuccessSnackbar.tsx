@@ -30,12 +30,10 @@ function SuccessSnackbar({
         sx={{ bgcolor: 'success.main' }}
         message={
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs="auto">
+            <Grid size={{ xs: 'auto' }}>
               <Icon>check_circle</Icon>
             </Grid>
-            <Grid item xs>
-              {children}
-            </Grid>
+            <Grid size={{ xs: 'grow' }}>{children}</Grid>
           </Grid>
         }
       />

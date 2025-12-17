@@ -1,6 +1,6 @@
 import * as React from 'react'
 import SignatureCanvas from 'react-signature-canvas'
-import useResizeObserver, { ObservedSize } from 'use-resize-observer'
+import { useResizeObserver } from 'usehooks-ts'
 import { FormTypes } from '@oneblink/types'
 
 import scrollingService from '../services/scrolling-service'
@@ -89,7 +89,9 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
   const canvasRef = React.useRef<SignatureCanvas>(null)
 
   const [isEmpty, setIsEmpty] = React.useState(true)
-  const [canvasDimensions, setCanvasDimensions] = React.useState<ObservedSize>({
+  const [canvasDimensions, setCanvasDimensions] = React.useState<
+    React.CanvasHTMLAttributes<HTMLCanvasElement>
+  >({
     width: undefined,
     height: undefined,
   })
@@ -123,7 +125,10 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
     }
   }, [isEmpty])
 
-  const { ref } = useResizeObserver<HTMLDivElement>({
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  useResizeObserver<HTMLDivElement>({
+    ref,
     onResize: setCanvasDimensions,
   })
 
