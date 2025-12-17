@@ -6,7 +6,6 @@ import { formStoreService } from '@oneblink/apps'
 import useInfiniteScrollDataLoad from '../../hooks/useInfiniteScrollDataLoad'
 import useFormStoreTable from './table/useFormStoreTable'
 import { Box, Button, Grid } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import { FormTypes } from '@oneblink/types'
 import useSubmissionIdValidationMessage, {
   validateIsUUID,
@@ -203,7 +202,7 @@ export function FormStoreTableProvider({
       {!!nextOffset && !loadError && isLoading !== 'INITIAL' && (
         <Box padding={4} className="ob-form-store-load-more-button-container">
           <Grid container justifyContent="center">
-            <LoadingButton
+            <Button
               className="ob-form-store-load-more-button"
               variant="outlined"
               color="primary"
@@ -217,7 +216,7 @@ export function FormStoreTableProvider({
               }}
             >
               Load More
-            </LoadingButton>
+            </Button>
           </Grid>
         </Box>
       )}

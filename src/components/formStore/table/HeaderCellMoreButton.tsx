@@ -84,7 +84,7 @@ function HeaderCellMoreButton({
         <Box paddingX={2} paddingY={1}>
           <Grid container justifyContent="flex-end" spacing={1}>
             {headerGroup.filter && (
-              <Grid item>
+              <Grid>
                 <Button
                   variant="outlined"
                   disabled={headerGroup.filter.value === undefined}
@@ -96,7 +96,7 @@ function HeaderCellMoreButton({
                 </Button>
               </Grid>
             )}
-            <Grid item>
+            <Grid>
               <Button
                 variant="outlined"
                 onClick={onHide}

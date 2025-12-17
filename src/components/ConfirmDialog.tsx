@@ -8,7 +8,6 @@ import {
   Portal,
   DialogProps,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import useIsMounted from '../hooks/useIsMounted'
 import ErrorSnackbar from './ErrorSnackbar'
 
@@ -87,7 +86,7 @@ export default function ConfirmDialog({
             Cancel
           </Button>
 
-          <LoadingButton
+          <Button
             variant="contained"
             loading={isConfirming}
             autoFocus
@@ -98,7 +97,7 @@ export default function ConfirmDialog({
             disabled={disabled}
           >
             {confirmButtonText}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
       <Portal>
