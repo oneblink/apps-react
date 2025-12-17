@@ -68,7 +68,7 @@ function OneBlinkFormStoreColumnsButton(
           {hasRepeatableSets && (
             <>
               <Grid container>
-                <Grid item>
+                <Grid>
                   <FormGroup>
                     <FormControlLabel
                       control={
@@ -95,7 +95,7 @@ function OneBlinkFormStoreColumnsButton(
                     />
                   </FormGroup>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <IconButton onClick={toggleHelp}>
                     <MaterialIcon>help</MaterialIcon>
                   </IconButton>

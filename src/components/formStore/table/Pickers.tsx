@@ -77,15 +77,15 @@ const useCommonPickerProps = <T,>({
   const [errorType, setErrorType] = useNullableState<T>(null)
 
   const valueMemo = React.useMemo(() => {
-    return value ? new Date(value) : null
+    return value ? new Date(value) : undefined
   }, [value])
 
   const maxDateMemo = React.useMemo(
-    () => (maxDate ? new Date(maxDate) : null),
+    () => (maxDate ? new Date(maxDate) : undefined),
     [maxDate],
   )
   const minDateMemo = React.useMemo(
-    () => (minDate ? new Date(minDate) : null),
+    () => (minDate ? new Date(minDate) : undefined),
     [minDate],
   )
 
