@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.14.0] - 2025-12-17
+
 ### Added
 
 - `maxWidthPixels` prop to image element
 - `useFormSubmissionDuration` hook
+
+### Dependencies
+
+- update @oneblink/sdk-core to [8.11.1-beta.4](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [8.10.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
 
 ## [8.13.2] - 2025-12-04
 
