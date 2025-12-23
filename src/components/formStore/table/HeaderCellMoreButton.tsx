@@ -1,9 +1,8 @@
 import * as React from 'react'
-import { HeaderGroup } from 'react-table'
+import { Header } from '@tanstack/react-table'
 import {
   Box,
   Button,
-  Divider,
   Grid,
   IconButton,
   Popover,
@@ -25,10 +24,11 @@ const paperStyles: SxProps = {
 }
 
 function HeaderCellMoreButton({
-  headerGroup,
+  header,
   onHide,
 }: {
-  headerGroup: HeaderGroup<FormStoreRecord>
+  // TODO refine this type a little
+  header: Header<FormStoreRecord, unknown>
   onHide: () => void
 }) {
   const isHovering = useIsHovering()
@@ -39,7 +39,7 @@ function HeaderCellMoreButton({
     <span>
       <StyledIconButton
         color="inherit"
-        onClick={(event) => {
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
           event.stopPropagation()
           setAnchorEl(event.currentTarget)
         }}
@@ -66,29 +66,36 @@ function HeaderCellMoreButton({
           vertical: 'top',
           horizontal: 'right',
         }}
-        PaperProps={{
-          sx: paperStyles,
+        slotProps={{
+          paper: {
+            sx: paperStyles,
+          },
         }}
         onClick={(event) => {
           event.stopPropagation()
         }}
       >
-        {headerGroup.filter && (
-          <>
-            <Box padding={2}>
-              <ColumnFilters filter={headerGroup.filter} />
-            </Box>
-            <Divider />
-          </>
+        {header.column.columnDef.meta?.filter && (
+          <Box padding={2}>
+            <ColumnFilters filter={header.column.columnDef.meta?.filter} />
+          </Box>
         )}
+
         <Box paddingX={2} paddingY={1}>
           <Grid container justifyContent="flex-end" spacing={1}>
-            {headerGroup.filter && (
+            {header.column.columnDef.meta?.filter && (
               <Grid>
                 <Button
                   variant="outlined"
-                  disabled={headerGroup.filter.value === undefined}
-                  onClick={() => headerGroup.filter?.onChange(undefined, false)}
+                  disabled={
+                    header.column.columnDef.meta?.filter.value === undefined
+                  }
+                  onClick={() =>
+                    header.column.columnDef.meta?.filter?.onChange(
+                      undefined,
+                      false,
+                    )
+                  }
                   size="small"
                   startIcon={<MaterialIcon>filter_list</MaterialIcon>}
                 >
@@ -103,7 +110,7 @@ function HeaderCellMoreButton({
                 size="small"
                 startIcon={<MaterialIcon>visibility_off</MaterialIcon>}
               >
-                Hide
+                Hidealins
               </Button>
             </Grid>
           </Grid>

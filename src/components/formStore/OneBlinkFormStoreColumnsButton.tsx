@@ -26,10 +26,12 @@ function OneBlinkFormStoreColumnsButton(
   props: React.ComponentProps<typeof Button>,
 ) {
   const {
-    getToggleHideAllColumnsProps,
-    allColumns,
+    getAllFlatColumns,
     parameters,
     onChangeParameters,
+    getToggleAllColumnsVisibilityHandler,
+    getIsAllColumnsVisible,
+    getVisibleFlatColumns,
   } = useFormStoreTableContext()
   const [
     isConfiguringColumns,
@@ -38,13 +40,15 @@ function OneBlinkFormStoreColumnsButton(
   ] = useBooleanState(false)
   const [isHelpOpen, , , toggleHelp] = useBooleanState(false)
 
-  const toggleHideAllColumnsProps = getToggleHideAllColumnsProps()
+  const allColumns = getAllFlatColumns()
 
   const hasRepeatableSets = React.useMemo(
     () =>
       parameters.unwindRepeatableSets ||
-      allColumns.some((c) => c.formElementType === 'repeatableSet'),
-    [allColumns, parameters.unwindRepeatableSets],
+      allColumns.some(
+        (c) => c.columnDef.meta?.formElementType === 'repeatableSet',
+      ),
+    [parameters.unwindRepeatableSets, allColumns],
   )
 
   return (
@@ -53,10 +57,10 @@ function OneBlinkFormStoreColumnsButton(
         className="ob-form-store-columns-button"
         startIcon={<MaterialIcon>settings</MaterialIcon>}
         onClick={showColumnConfiguration}
-        // eslint-disable-next-line react/no-children-prop
-        children={<>Columns</>}
         {...props}
-      />
+      >
+        Columns
+      </Button>
       <Dialog
         open={isConfiguringColumns}
         maxWidth="sm"
@@ -129,8 +133,9 @@ function OneBlinkFormStoreColumnsButton(
             <FormControlLabel
               control={
                 <Checkbox
-                  {...toggleHideAllColumnsProps}
-                  indeterminate={!!toggleHideAllColumnsProps.indeterminate}
+                  onChange={getToggleAllColumnsVisibilityHandler()}
+                  checked={getIsAllColumnsVisible()}
+                  indeterminate={getVisibleFlatColumns().length > 0}
                 />
               }
               label={<b>Toggle All</b>}
@@ -139,14 +144,19 @@ function OneBlinkFormStoreColumnsButton(
               return (
                 <React.Fragment key={column.id}>
                   <FormControlLabel
-                    control={<Checkbox {...column.getToggleHiddenProps()} />}
+                    control={
+                      <Checkbox
+                        checked={column.getIsVisible()}
+                        onChange={column.getToggleVisibilityHandler()}
+                      />
+                    }
                     label={
                       <>
-                        {column.headerText}
-                        {column.tooltip && (
+                        {column.columnDef.header}
+                        {column.columnDef.meta?.tooltip && (
                           <Typography component="span" color="textSecondary">
                             {' '}
-                            ({column.tooltip})
+                            ({column.columnDef.meta?.tooltip})
                           </Typography>
                         )}
                       </>

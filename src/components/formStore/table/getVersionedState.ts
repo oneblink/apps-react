@@ -1,5 +1,4 @@
-import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
-import { TableState } from 'react-table'
+import { TableState, VisibilityState } from '@tanstack/react-table'
 
 const defaultHiddenColumns = [
   {
@@ -19,7 +18,7 @@ const defaultHiddenColumns = [
 export const latestStateVersion =
   defaultHiddenColumns[defaultHiddenColumns.length - 1].version
 
-export type FormTableState = Partial<TableState<FormStoreRecord>> & {
+export type FormTableState = Partial<TableState> & {
   defaultHiddenColumnsVersion?: string
   formId: number
 }
@@ -28,20 +27,25 @@ export const getVersionedFormTableState = (
   initialState: FormTableState,
 ): FormTableState => {
   const state = { ...initialState }
+
   // If there are no hidden columns yet, meaning it is a
   // brand new state, hide all default columns.
-  if (!Array.isArray(state.hiddenColumns)) {
-    state.hiddenColumns = defaultHiddenColumns.reduce<string[]>(
+  if (!state.columnVisibility) {
+    state.columnVisibility = defaultHiddenColumns.reduce<VisibilityState>(
       (memo, defaultHiddenColumn) => {
-        return [...memo, ...defaultHiddenColumn.hiddenColumns]
+        defaultHiddenColumn.hiddenColumns.forEach((column) => {
+          memo[column] = false
+        })
+        return memo
       },
-      [],
+      {},
     )
   } else if (state.defaultHiddenColumnsVersion !== latestStateVersion) {
     // If the state is not up to the latest version, find the next version
     // and add the new defaults
     let foundVersion = false
-    const columnsSet = new Set<string>(state.hiddenColumns)
+    // const columnsSet = new Set<string>(state.hiddenColumns)
+    const columnsSet = new Set<string>(Object.keys(state.columnVisibility))
     for (const defaultHiddenColumn of defaultHiddenColumns) {
       if (defaultHiddenColumn.version === state.defaultHiddenColumnsVersion) {
         foundVersion = true
@@ -55,7 +59,15 @@ export const getVersionedFormTableState = (
       }
     }
 
-    state.hiddenColumns = Array.from(columnsSet)
+    state.columnVisibility = Array.from(columnsSet).reduce<VisibilityState>(
+      (memo, column) => {
+        return {
+          ...memo,
+          [column]: true,
+        }
+      },
+      {},
+    )
   }
 
   state.defaultHiddenColumnsVersion = latestStateVersion

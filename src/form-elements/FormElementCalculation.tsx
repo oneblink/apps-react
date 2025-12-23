@@ -285,7 +285,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   }, [element, registerProperty])
 
   const calculateContent = React.useCallback(
-    (formSubmissionModel) => {
+    (formSubmissionModel: SubmissionTypes.S3SubmissionData['submission']) => {
       if (!calculation) {
         return
       }

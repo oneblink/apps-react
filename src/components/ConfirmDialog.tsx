@@ -26,7 +26,7 @@ type Props = {
     error?: string
     title?: string
   }
-  TransitionProps?: DialogProps['TransitionProps']
+  TransitionProps?: NonNullable<DialogProps['slotProps']>['transition']
   disabled?: boolean
 }
 
@@ -70,9 +70,11 @@ export default function ConfirmDialog({
         fullWidth
         onClose={!isConfirming ? onClose : undefined}
         data-cypress={cypress?.dialog}
-        TransitionProps={{
-          onExiting: () => setError(null),
-          ...(TransitionProps ? TransitionProps : {}),
+        slotProps={{
+          transition: {
+            onExiting: () => setError(null),
+            ...(TransitionProps ? TransitionProps : {}),
+          },
         }}
       >
         <DialogTitle data-cypress={cypress?.title}>{title}</DialogTitle>

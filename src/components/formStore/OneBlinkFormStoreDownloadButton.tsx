@@ -9,8 +9,6 @@ import {
   Button,
 } from '@mui/material'
 import ErrorSnackbar from '../ErrorSnackbar'
-import { ColumnInstance } from 'react-table'
-import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
 import { formStoreService } from '@oneblink/apps'
 import useFormStoreTableContext from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
@@ -18,7 +16,7 @@ import MaterialIcon from '../MaterialIcon'
 function OneBlinkFormStoreDownloadButton(
   props: React.ComponentProps<typeof Button>,
 ) {
-  const { visibleColumns, parameters, form } = useFormStoreTableContext()
+  const { getVisibleFlatColumns, parameters, form } = useFormStoreTableContext()
   const [
     { isDownloadingCsv, isPromptingDownloadCsv, downloadingCsvError },
     setState,
@@ -48,8 +46,8 @@ function OneBlinkFormStoreDownloadButton(
     try {
       await formStoreService.exportFormStoreRecords(form.name, {
         formId: form.id,
-        includeColumns: visibleColumns.map(
-          (visibleColumn: ColumnInstance<FormStoreRecord>) => visibleColumn.id,
+        includeColumns: getVisibleFlatColumns().map(
+          (visibleColumn) => visibleColumn.id,
         ),
         ...parameters,
       })
@@ -65,12 +63,14 @@ function OneBlinkFormStoreDownloadButton(
         downloadingCsvError: error as Error,
       }))
     }
-  }, [form, parameters, visibleColumns])
+  }, [form, parameters, getVisibleFlatColumns])
 
   const promptDownloadCsv = React.useCallback(() => {
     if (
       !parameters.unwindRepeatableSets &&
-      visibleColumns.some((c) => c.formElementType === 'repeatableSet')
+      getVisibleFlatColumns().some(
+        (c) => c.columnDef.meta?.formElementType === 'repeatableSet',
+      )
     ) {
       setState((currentState) => ({
         ...currentState,
@@ -80,7 +80,7 @@ function OneBlinkFormStoreDownloadButton(
       return
     }
     downloadCsv()
-  }, [downloadCsv, parameters.unwindRepeatableSets, visibleColumns])
+  }, [downloadCsv, parameters.unwindRepeatableSets, getVisibleFlatColumns])
 
   const cancelPromptDownloadCsv = React.useCallback(() => {
     setState((currentState) => ({
@@ -99,10 +99,10 @@ function OneBlinkFormStoreDownloadButton(
           loadingPosition="start"
           startIcon={<MaterialIcon>download</MaterialIcon>}
           onClick={promptDownloadCsv}
-          // eslint-disable-next-line react/no-children-prop
-          children={<>Download</>}
           {...props}
-        />
+        >
+          Download
+        </Button>
       </Tooltip>
 
       <ErrorSnackbar open={!!downloadingCsvError} onClose={clearError}>

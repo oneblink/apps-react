@@ -14,7 +14,7 @@ type Props = {
 }
 
 export const ModalContainerContext =
-  React.createContext<React.RefObject<HTMLDivElement> | null>(null)
+  React.createContext<React.RefObject<HTMLDivElement | null> | null>(null)
 
 export function ModalContainerProvider({
   children,

@@ -3,10 +3,10 @@ import useBooleanState from './useBooleanState'
 
 const IsHoveringContext = React.createContext<boolean>(false)
 
-export const IsHoveringProvider = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<'div'>
->(function IsHoveringProvider(props: React.ComponentProps<'div'>, ref) {
+export function IsHoveringProvider({
+  ref,
+  ...props
+}: React.ComponentProps<'div'>) {
   const [isHovering, startHovering, stopHovering] = useBooleanState(false)
 
   return (
@@ -19,7 +19,7 @@ export const IsHoveringProvider = React.forwardRef<
       />
     </IsHoveringContext.Provider>
   )
-})
+}
 
 export function useIsHovering() {
   return React.useContext(IsHoveringContext)

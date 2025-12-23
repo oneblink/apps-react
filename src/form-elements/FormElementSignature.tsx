@@ -128,6 +128,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
   const ref = React.useRef<HTMLDivElement>(null)
 
   useResizeObserver<HTMLDivElement>({
+    // @ts-expect-error https://github.com/juliencrn/usehooks-ts/issues/663
     ref,
     onResize: setCanvasDimensions,
   })

@@ -1,9 +1,7 @@
-import { IconButton, TextField, TextFieldProps } from '@mui/material'
 import {
   MobileDatePicker,
   DateValidationError,
   DateTimeValidationError,
-  CalendarIcon,
   MobileDateTimePicker,
   PickersActionBarAction,
 } from '@mui/x-date-pickers'
@@ -20,7 +18,7 @@ type DatePickersProps = {
   label: string
   value: string | undefined
   onChange: (newDate: string | undefined) => void
-  renderHelperText: (errorType: DateValidationError) => void
+  renderHelperText: (errorType: DateValidationError) => React.ReactNode
   maxDate?: string
   minDate?: string
 }
@@ -44,7 +42,7 @@ export const FiltersDatePicker = (props: DatePickersProps) => {
 }
 
 type DateTimePickersProps = DatePickersProps & {
-  renderHelperText: (errorType: DateTimeValidationError) => void
+  renderHelperText: (errorType: DateTimeValidationError) => React.ReactNode
 }
 export const FiltersDateTimePicker = (props: DateTimePickersProps) => {
   const { label, onChange } = props
@@ -63,13 +61,13 @@ export const FiltersDateTimePicker = (props: DateTimePickersProps) => {
   )
 }
 
-const useCommonPickerProps = <T,>({
+const useCommonPickerProps = <T extends DateTimeValidationError>({
   renderHelperText,
   value,
   maxDate,
   minDate,
 }: {
-  renderHelperText: (errorType: T | null) => void
+  renderHelperText: (errorType: T | null) => React.ReactNode
   value: string | undefined
   maxDate?: string
   minDate?: string
@@ -90,25 +88,13 @@ const useCommonPickerProps = <T,>({
   )
 
   return {
-    slots: {
-      textField: (params: React.PropsWithChildren<TextFieldProps>) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          margin="dense"
-          size="small"
-          helperText={renderHelperText(errorType)}
-          InputProps={{
-            endAdornment: (
-              <IconButton edge="end">
-                <CalendarIcon />
-              </IconButton>
-            ),
-          }}
-        />
-      ),
-    },
     slotProps: {
+      textField: {
+        variant: 'outlined' as const,
+        margin: 'dense' as const,
+        size: 'small' as const,
+        helperText: renderHelperText(errorType),
+      },
       actionBar: {
         actions: [
           'clear',
@@ -122,5 +108,6 @@ const useCommonPickerProps = <T,>({
     minDate: minDateMemo,
     value: valueMemo,
     onError: setErrorType,
+    enableAccessibleFieldDOMStructure: false,
   }
 }

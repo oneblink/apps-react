@@ -1,6 +1,8 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import { styled, Tooltip } from '@mui/material'
+import { flexRender } from '@tanstack/react-table'
+import { formStoreService } from '@oneblink/apps'
 import { IsHoveringProvider } from '../../hooks/useIsHovering'
 import HeaderCellMoreButton from './table/HeaderCellMoreButton'
 import useFormStoreTableContext from './useFormStoreTableContext'
@@ -93,15 +95,52 @@ const Table = styled('div')(({ theme }) => ({
   },
 }))
 
+const HeaderRow = styled('div')(() => ({
+  display: 'flex',
+}))
+
+const CellRow = styled('div')(() => ({
+  display: 'flex',
+}))
+
 function OneBlinkFormStoreTable() {
   const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups: [parentHeaderGroup],
-    rows,
-    prepareRow,
+    getHeaderGroups,
+    getCoreRowModel,
+    getFlatHeaders,
+    getState,
     onChangeParameters,
   } = useFormStoreTableContext()
+
+  //TODO memo these
+  const [parentHeaderGroup] = getHeaderGroups()
+  const rows = getCoreRowModel().rows
+
+  const columnSizingInfo = getState().columnSizingInfo
+  const columnSizing = getState().columnSizing
+
+  /**
+   * Pinched from
+   * https://tanstack.com/table/latest/docs/framework/react/examples/column-resizing-performant
+   * Instead of calling `column.getSize()` on every render for every header and
+   * especially every data cell (very expensive), we will calculate all column
+   * sizes at once at the root table level in a useMemo and pass the column
+   * sizes down as CSS variables to the <table> element.
+   */
+
+  const columnSizeVars = React.useMemo(() => {
+    // we want the memo to recalculate if these change, dropping them here so the linter doesn't complain about unused dependencies
+    columnSizingInfo
+    columnSizing
+    const headers = getFlatHeaders()
+    const colSizes: { [key: string]: number } = {}
+    for (let i = 0; i < headers.length; i++) {
+      const header = headers[i]!
+      colSizes[`--header-${header.id}-size`] = header.getSize()
+      colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
+    }
+    return colSizes
+  }, [getFlatHeaders, columnSizingInfo, columnSizing])
 
   if (!parentHeaderGroup) {
     return null
@@ -111,26 +150,30 @@ function OneBlinkFormStoreTable() {
 
   return (
     <>
-      <Table {...getTableProps()} className="ob-form-store-table">
+      <Table className="ob-form-store-table" style={{ ...columnSizeVars }}>
         <div className="thead">
-          <div
-            {...parentHeaderGroup.getHeaderGroupProps()}
-            className="tr ob-form-store-table-header-row"
-          >
+          <HeaderRow className="tr ob-form-store-table-header-row">
             {
               // Loop over the headers in each row
-              parentHeaderGroup.headers.map((headerGroup) => {
-                const sortingProperty = headerGroup.sorting?.property
-                const sortingDirection = headerGroup.sorting?.direction
+              parentHeaderGroup.headers.map((header) => {
+                const sortingProperty =
+                  header.column.columnDef.meta?.sorting?.property
+                const sortingDirection = header.column.getIsSorted()
+
+                if (!header.column.getIsVisible()) {
+                  return null
+                }
 
                 return (
                   <Tooltip
-                    title={headerGroup.tooltip || ''}
+                    title={header.column.columnDef?.meta?.tooltip || ''}
                     arrow
-                    key={headerGroup.id}
-                    PopperProps={{
-                      sx: {
-                        zIndex: 'drawer',
+                    key={header.id}
+                    slotProps={{
+                      popper: {
+                        sx: {
+                          zIndex: 'drawer',
+                        },
                       },
                     }}
                   >
@@ -141,53 +184,69 @@ function OneBlinkFormStoreTable() {
                       onClick={
                         sortingProperty
                           ? () => {
-                              onChangeParameters((currentParameters) => {
-                                switch (sortingDirection) {
-                                  case 'ascending': {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: [
-                                        {
-                                          property: sortingProperty,
-                                          direction: 'descending',
-                                        },
-                                      ],
+                              onChangeParameters(
+                                (
+                                  currentParameters: formStoreService.FormStoreParameters,
+                                ) => {
+                                  const sortingMeta =
+                                    header.column.columnDef.meta?.sorting
+                                      ?.property
+                                  if (!sortingMeta) {
+                                    return currentParameters
+                                  }
+                                  switch (sortingDirection) {
+                                    case 'asc': {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: [
+                                          {
+                                            property: sortingMeta,
+                                            direction: 'descending',
+                                          },
+                                        ],
+                                      }
+                                    }
+                                    case 'desc': {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: undefined,
+                                      }
+                                    }
+                                    default: {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: [
+                                          {
+                                            property: sortingMeta,
+                                            direction: 'ascending',
+                                          },
+                                        ],
+                                      }
                                     }
                                   }
-                                  case 'descending': {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: undefined,
-                                    }
-                                  }
-                                  default: {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: [
-                                        {
-                                          property: sortingProperty,
-                                          direction: 'ascending',
-                                        },
-                                      ],
-                                    }
-                                  }
-                                }
-                              }, false)
+                                },
+                                false,
+                              )
                             }
                           : undefined
                       }
-                      // Apply the header cell props
-                      {...headerGroup.getHeaderProps()}
+                      style={{
+                        width: `calc(var(--header-${header?.id}-size) * 1px)`,
+                      }}
                     >
                       <IsHoveringProvider className="th-content">
                         <div className="th-label">
-                          <span>{headerGroup.headerText}</span>
+                          <span>
+                            {typeof header.column.columnDef?.header === 'string'
+                              ? header.column.columnDef?.header
+                              : ''}
+                          </span>
                           {sortingDirection && (
                             <SortingIcon
                               fontSize="small"
                               color="primary"
                               sx={
-                                sortingDirection === 'ascending'
+                                sortingDirection === 'asc'
                                   ? {
                                       transform: 'rotate(180deg)',
                                     }
@@ -198,10 +257,12 @@ function OneBlinkFormStoreTable() {
                               arrow_downward
                             </SortingIcon>
                           )}
-                          {headerGroup.filter?.isInvalid ? (
+
+                          {header.column.columnDef.meta?.filter?.isInvalid ? (
                             <Tooltip
                               title={
-                                headerGroup.filter?.validationMessage || ''
+                                header.column.columnDef.meta?.filter
+                                  ?.validationMessage || ''
                               }
                             >
                               <MaterialIcon
@@ -212,7 +273,7 @@ function OneBlinkFormStoreTable() {
                                 warning
                               </MaterialIcon>
                             </Tooltip>
-                          ) : headerGroup.filter?.value ? (
+                          ) : header.column.columnDef.meta?.filter?.value ? (
                             <MaterialIcon
                               fontSize="small"
                               color="primary"
@@ -223,17 +284,21 @@ function OneBlinkFormStoreTable() {
                           ) : null}
                         </div>
                         <HeaderCellMoreButton
-                          headerGroup={headerGroup}
-                          onHide={headerGroup.toggleHidden}
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          // @ts-ignore gar
+                          header={header}
+                          onHide={() => header.column.toggleVisibility()}
                         />
                         <div
-                          {...headerGroup.getResizerProps()}
                           className={clsx('resizer', {
-                            'is-resizing': headerGroup.isResizing,
+                            'is-resizing': header.column.getIsResizing(),
                           })}
                           onClick={(event) => {
                             event.stopPropagation()
                           }}
+                          onDoubleClick={() => header.column.resetSize()}
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
                         />
                       </IsHoveringProvider>
                     </div>
@@ -241,9 +306,9 @@ function OneBlinkFormStoreTable() {
                 )
               })
             }
-          </div>
+          </HeaderRow>
         </div>
-        <div {...getTableBodyProps()} className="tbody">
+        <div className="tbody">
           {
             // Loop over the table rows
             rows.map((row, index) => {
@@ -253,12 +318,9 @@ function OneBlinkFormStoreTable() {
               ) {
                 alternateBackground = !alternateBackground
               }
-              // Prepare the row for display
-              prepareRow(row)
               return (
                 // Apply the row props
-                <div
-                  {...row.getRowProps()}
+                <CellRow
                   key={row.id}
                   className={clsx('tr ob-form-store-table-row', {
                     'ob-form-store-table-row__alternate': alternateBackground,
@@ -266,28 +328,31 @@ function OneBlinkFormStoreTable() {
                 >
                   {
                     // Loop over the rows cells
-                    row.cells.map((cell) => {
+                    row.getAllCells().map((cell) => {
                       // Apply the cell props
                       return (
                         <IsHoveringProvider
-                          {...cell.getCellProps()}
                           key={cell.column.id}
                           className={clsx(
                             'td tc ob-form-store-table-row-cell',
                             {
-                              'is-resizing': cell.column.isResizing,
+                              'is-resizing': cell.column.getIsResizing(),
                             },
                           )}
+                          style={{ width: cell.column.getSize() }}
                         >
                           {
                             // Render the cell contents
-                            cell.render('Cell')
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )
                           }
                         </IsHoveringProvider>
                       )
                     })
                   }
-                </div>
+                </CellRow>
               )
             })
           }

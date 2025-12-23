@@ -126,12 +126,14 @@ function MfaDialog({
                   label="Setup Key"
                   value={mfaSetup?.secretCode || ''}
                   fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <CopyToClipBoardIconButton
-                        text={mfaSetup?.secretCode || ''}
-                      />
-                    ),
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <CopyToClipBoardIconButton
+                          text={mfaSetup?.secretCode || ''}
+                        />
+                      ),
+                    },
                   }}
                   helperText={
                     <>

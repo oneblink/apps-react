@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useMemo } from 'react'
+import { memo, useCallback, useContext, useEffect, useMemo } from 'react'
 import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'

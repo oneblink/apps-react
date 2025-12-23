@@ -937,7 +937,9 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       )
     }
     case 'pointAddressV3': {
-      const v = value as PointTypes.PointAddressV3GetAddressDetailsResponse | undefined
+      const v = value as
+        | PointTypes.PointAddressV3GetAddressDetailsResponse
+        | undefined
       return (
         <LookupNotification
           autoLookupValue={value}

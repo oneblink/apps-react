@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { TextField } from '@mui/material'
+import { TextField, TextFieldProps } from '@mui/material'
 import InputClear from './InputClear'
 
-type Props = React.ComponentProps<typeof TextField> & {
+type Props = TextFieldProps & {
   onClear?: () => void
+  InputProps?: NonNullable<TextFieldProps['slotProps']>['input']
 }
 
 const InputField = ({
@@ -33,7 +34,9 @@ const InputField = ({
     <TextField
       variant={variant}
       margin={margin}
-      InputProps={inputProps}
+      slotProps={{
+        input: inputProps,
+      }}
       size={size}
       {...props}
     />
