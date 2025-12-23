@@ -1,27 +1,10 @@
 import * as React from 'react'
-import {
-  PickersActionBarAction,
-  UseDateFieldProps,
-  BaseSingleInputFieldProps,
-  unstable_useDateField as useDateField,
-} from '@mui/x-date-pickers'
+import { PickersActionBarAction } from '@mui/x-date-pickers'
 import clsx from 'clsx'
 import useBooleanState from '../useBooleanState'
-import { useMediaQuery } from '@mui/material'
-import { unstable_useForkRef as useForkRef } from '@mui/utils'
-import { DateValidationError, FieldSection } from '@mui/x-date-pickers/models'
+import { PopperProps, TextFieldProps, useMediaQuery } from '@mui/material'
 import Tooltip from '../../components/renderer/Tooltip'
 import MaterialIcon from '../../components/MaterialIcon'
-
-interface DatePickerInputProps
-  extends UseDateFieldProps<Date, false>,
-    BaseSingleInputFieldProps<
-      Date | null,
-      Date,
-      FieldSection,
-      false,
-      DateValidationError
-    > {}
 
 export const PickerInputButton = React.memo(function PickerInputButton({
   icon,
@@ -49,55 +32,41 @@ export const PickerInputButton = React.memo(function PickerInputButton({
   )
 })
 
-// from https://v7.mui.com/x/react-date-pickers/custom-field/#usage-with-an-unstyled-input
-function DatePickerInput(props: DatePickerInputProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { slots, slotProps, ref, ...textFieldProps } = props
-
-  const fieldProps = useDateField<Date, false, typeof textFieldProps>({
-    ...textFieldProps,
-    enableAccessibleFieldDOMStructure: false,
-  })
-
-  const {
-    // These props cannot be passed to the input
+const Input = React.forwardRef<
+  HTMLDivElement,
+  TextFieldProps & {
+    ownerState?: unknown
+  }
+>(function Input(
+  {
     /* eslint-disable @typescript-eslint/no-unused-vars */
-    enableAccessibleFieldDOMStructure,
-    label,
-    error,
     focused,
     sx,
-    inputProps,
-    // @ts-expect-error exists despite type not saying so
+    label,
+    size,
     ownerState,
-    /* @ts-expect-error exists despite type not saying so */
-    ampm,
-    /* @ts-expect-error exists despite type not saying so */
-    minTime,
-    /* @ts-expect-error exists despite type not saying so */
-    maxTime,
-    /* @ts-expect-error exists despite type not saying so */
-    disableIgnoringDatePartForTimeValidation,
+    defaultValue,
+    InputProps,
+    error,
     /* eslint-enable @typescript-eslint/no-unused-vars */
-
-    disabled,
+    inputProps,
     inputRef,
-    InputProps: { ref: containerRef } = {},
-    ...rest
-  } = fieldProps
-
-  const handleRef = useForkRef(containerRef, ref)
-
+    value,
+    ...props
+  },
+  ref,
+) {
   return (
-    <div className="control is-expanded has-icons-right" ref={handleRef}>
+    <div className="control is-expanded has-icons-right" ref={ref}>
       <input
-        disabled={disabled}
-        ref={inputRef as React.Ref<HTMLInputElement>}
-        {...rest}
+        ref={inputRef}
+        value={value as string}
+        {...props}
+        {...inputProps}
       />
     </div>
   )
-}
+})
 
 export default function useFormDatePickerProps({
   id,
@@ -125,7 +94,6 @@ export default function useFormDatePickerProps({
   onChange: (newDate: Date | undefined) => void
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
-  // we need a controlled picker state because we do our own calendar icon
   const [isPickerOpen, openPicker, closePicker] = useBooleanState(false)
 
   const valueMemo = React.useMemo(() => {
@@ -155,7 +123,7 @@ export default function useFormDatePickerProps({
   return [
     {
       slots: {
-        field: DatePickerInput,
+        textField: Input,
       },
       slotProps: {
         actionBar: {
@@ -166,7 +134,19 @@ export default function useFormDatePickerProps({
             'accept',
           ] as PickersActionBarAction[],
         },
-        field: {
+        popper: {
+          container: ref.current,
+          anchorEl: ref.current,
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              options: {
+                altAxis: false,
+              },
+            },
+          ],
+        } as Partial<PopperProps>,
+        textField: {
           id,
           placeholder: placeholder,
           'aria-describedby': ariaDescribedby,
@@ -174,7 +154,7 @@ export default function useFormDatePickerProps({
           onBlur,
           className: clsx('input ob-input', className),
           onClick: openPickerOnMobile,
-        },
+        } as TextFieldProps,
       },
       ref,
       open: isPickerOpen,
