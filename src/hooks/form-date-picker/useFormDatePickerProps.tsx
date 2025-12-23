@@ -4,7 +4,6 @@ import {
   UseDateFieldProps,
   BaseSingleInputFieldProps,
   unstable_useDateField as useDateField,
-  useClearableField,
 } from '@mui/x-date-pickers'
 import clsx from 'clsx'
 import useBooleanState from '../useBooleanState'
@@ -55,12 +54,10 @@ function DatePickerInput(props: DatePickerInputProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { slots, slotProps, ref, ...textFieldProps } = props
 
-  const _fieldProps = useDateField<Date, false, typeof textFieldProps>({
+  const fieldProps = useDateField<Date, false, typeof textFieldProps>({
     ...textFieldProps,
     enableAccessibleFieldDOMStructure: false,
   })
-
-  const fieldProps = useClearableField({ ..._fieldProps, slots, slotProps })
 
   const {
     // These props cannot be passed to the input
