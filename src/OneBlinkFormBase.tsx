@@ -18,7 +18,7 @@ import {
 } from '@oneblink/types'
 import * as H from 'history'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2'
 
 import Modal from './components/renderer/Modal'
 import cleanFormSubmissionModel from './services/cleanFormSubmissionModel'

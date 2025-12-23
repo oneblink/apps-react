@@ -46,7 +46,7 @@
     "@babel/preset-env": "^7.23.9",
     "@microsoft/eslint-plugin-sdl": "^0.2.2",
     "@mui/material": "^7.3.6",
-    "@mui/x-date-pickers": "^7.29.4",
+    "@mui/x-date-pickers": "^8.22.1",
     "@oneblink/apps": "^23.7.0-beta.1",
     "@oneblink/release-cli": "^3.4.0-beta.1",
     "@oneblink/types": "github:oneblink/types",
@@ -102,7 +102,7 @@
   "module": "./dist/index.js",
   "peerDependencies": {
     "@mui/material": "^7.3.6",
-    "@mui/x-date-pickers": "^7.29.4",
+    "@mui/x-date-pickers": "^8.22.1",
     "@oneblink/apps": "*",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
