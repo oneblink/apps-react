@@ -9,7 +9,10 @@ function Tooltip({
   const container = useOneBlinkFormContainer()
 
   return (
-    <MuiTooltip {...props} PopperProps={{ container, ...props.PopperProps }}>
+    <MuiTooltip
+      {...props}
+      slotProps={{ popper: { container, ...props.slotProps?.popper } }}
+    >
       {children}
     </MuiTooltip>
   )

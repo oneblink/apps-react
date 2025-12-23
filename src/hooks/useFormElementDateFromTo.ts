@@ -19,6 +19,7 @@ export default function useFormElementDateFromTo(
       formSubmissionModel,
     )
   }, [
+    // prettier-ignore
     element.fromDate,
     element.fromDateDaysOffset,
     element.fromDateElementId,

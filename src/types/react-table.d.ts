@@ -1,18 +1,11 @@
 import { FormTypes } from '@oneblink/types'
-import {
-  UseResizeColumnsColumnProps,
-  UseResizeColumnsOptions,
-  UseResizeColumnsState,
-} from 'react-table'
 import { formStoreService } from '@oneblink/apps'
 
-declare module 'react-table' {
-  export interface UseTableColumnOptions<
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    D extends Record<string, unknown> = Record<string, unknown>,
-  > {
-    headerText: string
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
     tooltip?: string
+    formElementType?: FormTypes.FormElementType
     sorting:
       | {
           property: string
@@ -77,18 +70,11 @@ declare module 'react-table' {
           }
         }
     )
-    formElementType?: FormTypes.FormElementType
   }
 
-  export interface ColumnInstance<
-    D extends Record<string, unknown> = Record<string, unknown>,
-  > extends UseResizeColumnsColumnProps<D> {}
-
-  export interface TableState<
-    D extends Record<string, unknown> = Record<string, unknown>,
-  > extends UseResizeColumnsState<D> {}
-
-  export interface TableOptions<
-    D extends Record<string, unknown> = Record<string, unknown>,
-  > extends UseResizeColumnsOptions<D> {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    defaultHiddenColumnsVersion?: string
+    formId
+  }
 }

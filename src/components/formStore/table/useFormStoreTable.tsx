@@ -1,24 +1,24 @@
 import * as React from 'react'
-import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { formStoreService, localisationService } from '@oneblink/apps'
 import {
-  CellProps,
-  useFlexLayout,
-  useResizeColumns,
-  useTable,
-} from 'react-table'
+  useReactTable,
+  getCoreRowModel,
+  OnChangeFn,
+  SortingState,
+  VisibilityState,
+} from '@tanstack/react-table'
 import { format } from 'date-fns'
 import generateColumns from './generateColumns'
 import ActionedByTableCell from './ActionedByTableCell'
 import TableCellCopyButton from './TableCellCopyButton'
-import { FormTypes } from '@oneblink/types'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
-import { formStoreService, localisationService } from '@oneblink/apps'
 import { FormStoreElementsContext } from '../OneBlinkFormStoreProvider'
 import getVersionedFormTableState, { FormTableState } from './getVersionedState'
 
 const defaultColumn = {
-  minWidth: 150,
-  width: 225,
+  minSize: 150,
+  size: 225,
 }
 
 const localStorageKey = (formId: number) =>
@@ -32,7 +32,7 @@ export default function useFormStoreTable({
   onRefresh,
   submissionIdValidationMessage,
 }: {
-  formStoreRecords: FormStoreRecord[]
+  formStoreRecords: SubmissionTypes.FormStoreRecord[]
   form: FormTypes.Form
   parameters: formStoreService.FormStoreParameters
   onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
@@ -58,7 +58,7 @@ export default function useFormStoreTable({
 
   const formElements = React.useContext(FormStoreElementsContext)
   const columns = React.useMemo(() => {
-    return generateColumns({
+    return generateColumns<SubmissionTypes.FormStoreRecord>({
       sorting: parameters.sorting,
       filters: parameters.filters,
       unwindRepeatableSets: parameters.unwindRepeatableSets,
@@ -69,34 +69,35 @@ export default function useFormStoreTable({
       initialColumns: [
         {
           id: 'COMPLETED_AT',
-          headerText: 'Completion Date Time',
-          sorting: {
-            property: 'dateTimeCompleted',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'dateTimeCompleted',
-            )?.direction,
-          },
-          filter: {
-            type: 'DATETIME',
-            value: parameters.filters?.dateTimeCompleted as
-              | { $gte?: string; $lte?: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    dateTimeCompleted: newValue,
-                  },
-                }),
-                false,
-              )
+          header: 'Completion Date Time',
+          meta: {
+            sorting: {
+              property: 'dateTimeCompleted',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'dateTimeCompleted',
+              )?.direction,
+            },
+            filter: {
+              type: 'DATETIME',
+              value: parameters.filters?.dateTimeCompleted as
+                | { $gte?: string; $lte?: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      dateTimeCompleted: newValue,
+                    },
+                  }),
+                  false,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => {
+
+          cell: ({ row: { original: formStoreRecord } }) => {
             if (!formStoreRecord.dateTimeCompleted) {
               return null
             }
@@ -114,34 +115,35 @@ export default function useFormStoreTable({
         },
         {
           id: 'SUBMITTED_AT',
-          headerText: 'Submission Date Time',
-          sorting: {
-            property: 'dateTimeSubmitted',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'dateTimeSubmitted',
-            )?.direction,
-          },
-          filter: {
-            type: 'DATETIME',
-            value: parameters.filters?.dateTimeSubmitted as
-              | { $gte?: string; $lte?: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    dateTimeSubmitted: newValue,
-                  },
-                }),
-                false,
-              )
+          header: 'Submission Date Time',
+          meta: {
+            sorting: {
+              property: 'dateTimeSubmitted',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'dateTimeSubmitted',
+              )?.direction,
+            },
+            filter: {
+              type: 'DATETIME',
+              value: parameters.filters?.dateTimeSubmitted as
+                | { $gte?: string; $lte?: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      dateTimeSubmitted: newValue,
+                    },
+                  }),
+                  false,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => {
+          // TODO filter
+          cell: ({ row: { original: formStoreRecord } }) => {
             const text = format(
               new Date(formStoreRecord.dateTimeSubmitted),
               localisationService.getDateFnsFormats().longDateTime,
@@ -156,29 +158,29 @@ export default function useFormStoreTable({
         },
         {
           id: 'SUBMITTED_BY',
-          headerText: 'Submitted By',
-          sorting: undefined,
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.submittedBy as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    submittedBy: newValue,
-                  },
-                }),
-                true,
-              )
+          header: 'Submitted By',
+          meta: {
+            sorting: undefined,
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.submittedBy as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      submittedBy: newValue,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <ActionedByTableCell
               userProfile={formStoreRecord.user}
               developerKey={formStoreRecord.key}
@@ -188,31 +190,31 @@ export default function useFormStoreTable({
         },
         {
           id: 'SUBMISSION_ID',
-          headerText: 'Submission Id',
-          sorting: undefined,
-          filter: {
-            type: 'SUBMISSION_ID',
-            value: parameters.filters?.submissionId as
-              | { $eq: string }
-              | undefined,
-            validationMessage: submissionIdValidationMessage,
-            isInvalid: !!submissionIdValidationMessage,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    submissionId: newValue,
-                  },
-                }),
-                true,
-              )
+          header: 'Submission Id',
+          meta: {
+            sorting: undefined,
+            filter: {
+              type: 'SUBMISSION_ID',
+              value: parameters.filters?.submissionId as
+                | { $eq: string }
+                | undefined,
+              validationMessage: submissionIdValidationMessage,
+              isInvalid: !!submissionIdValidationMessage,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      submissionId: newValue,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.submissionId}
               <TableCellCopyButton text={formStoreRecord.submissionId} />
@@ -221,34 +223,34 @@ export default function useFormStoreTable({
         },
         {
           id: 'EXTERNAL_ID',
-          headerText: 'External Id',
-          sorting: {
-            property: 'externalId',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'externalId',
-            )?.direction,
-          },
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.externalId as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    externalId: newValue,
-                  },
-                }),
-                true,
-              )
+          header: 'External Id',
+          meta: {
+            sorting: {
+              property: 'externalId',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'externalId',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.externalId as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      externalId: newValue,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.externalId}
               {formStoreRecord.externalId && (
@@ -259,38 +261,38 @@ export default function useFormStoreTable({
         },
         {
           id: 'TASK_GROUP',
-          headerText: 'Task Group',
-          sorting: {
-            property: 'taskGroup.name',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'taskGroup.name',
-            )?.direction,
-          },
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.taskGroup?.name as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    taskGroup: newValue
-                      ? {
-                          name: newValue,
-                        }
-                      : undefined,
-                  },
-                }),
-                true,
-              )
+          header: 'Task Group',
+          meta: {
+            sorting: {
+              property: 'taskGroup.name',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'taskGroup.name',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.taskGroup?.name as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      taskGroup: newValue
+                        ? {
+                            name: newValue,
+                          }
+                        : undefined,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.taskGroup?.name}
               {formStoreRecord.taskGroup?.name && (
@@ -301,38 +303,38 @@ export default function useFormStoreTable({
         },
         {
           id: 'TASK_GROUP_INSTANCE',
-          headerText: 'Task Group Instance',
-          sorting: {
-            property: 'taskGroupInstance.label',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'taskGroupInstance.label',
-            )?.direction,
-          },
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.taskGroupInstance?.label as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    taskGroupInstance: newValue
-                      ? {
-                          label: newValue,
-                        }
-                      : undefined,
-                  },
-                }),
-                true,
-              )
+          header: 'Task Group Instance',
+          meta: {
+            sorting: {
+              property: 'taskGroupInstance.label',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'taskGroupInstance.label',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.taskGroupInstance?.label as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      taskGroupInstance: newValue
+                        ? {
+                            label: newValue,
+                          }
+                        : undefined,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.taskGroupInstance?.label}
               {formStoreRecord.taskGroupInstance?.label && (
@@ -345,38 +347,38 @@ export default function useFormStoreTable({
         },
         {
           id: 'TASK',
-          headerText: 'Task',
-          sorting: {
-            property: 'task.name',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'task.name',
-            )?.direction,
-          },
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.task?.name as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    task: newValue
-                      ? {
-                          name: newValue,
-                        }
-                      : undefined,
-                  },
-                }),
-                true,
-              )
+          header: 'Task',
+          meta: {
+            sorting: {
+              property: 'task.name',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'task.name',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.task?.name as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      task: newValue
+                        ? {
+                            name: newValue,
+                          }
+                        : undefined,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.task?.name}
               {formStoreRecord.task?.name && (
@@ -387,38 +389,38 @@ export default function useFormStoreTable({
         },
         {
           id: 'TASK_ACTION',
-          headerText: 'Task Action',
-          sorting: {
-            property: 'taskAction.label',
-            direction: parameters.sorting?.find(
-              ({ property }) => property === 'taskAction.label',
-            )?.direction,
-          },
-          filter: {
-            type: 'TEXT',
-            value: parameters.filters?.taskAction?.label as
-              | { $regex: string }
-              | undefined,
-            onChange: (newValue) => {
-              onChangeParameters(
-                (currentParameters) => ({
-                  ...currentParameters,
-                  filters: {
-                    ...currentParameters.filters,
-                    taskAction: newValue
-                      ? {
-                          label: newValue,
-                        }
-                      : undefined,
-                  },
-                }),
-                true,
-              )
+          header: 'Task Action',
+          meta: {
+            sorting: {
+              property: 'taskAction.label',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'taskAction.label',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.taskAction?.label as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      taskAction: newValue
+                        ? {
+                            label: newValue,
+                          }
+                        : undefined,
+                    },
+                  }),
+                  true,
+                )
+              },
             },
           },
-          Cell: ({
-            row: { original: formStoreRecord },
-          }: CellProps<FormStoreRecord>) => (
+          cell: ({ row: { original: formStoreRecord } }) => (
             <>
               {formStoreRecord.taskAction?.label}
               {formStoreRecord.taskAction?.label && (
@@ -447,29 +449,113 @@ export default function useFormStoreTable({
     )
   })
 
-  const table = useTable(
-    {
-      columns,
-      data: formStoreRecords,
-      defaultColumn,
-      autoResetHiddenColumns: false,
-      autoResetResize: false,
-      initialState,
+  const transformedSorting = React.useMemo(() => {
+    return parameters.sorting?.reduce<SortingState>(
+      (memo, { property, direction }) => {
+        const column = columns.find(
+          (column) => column.meta?.sorting?.property === property,
+        )
+        if (column?.id) {
+          memo.push({
+            id: column.id,
+            desc: direction === 'descending',
+          })
+        }
+        return memo
+      },
+      [],
+    )
+  }, [parameters.sorting, columns])
+
+  const onSortingChange: OnChangeFn<SortingState> = React.useCallback(
+    (updaterOrValue) => {
+      const sortingState =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(
+              // transform the parameters sorting state to the tanstack sorting state
+              parameters.sorting?.reduce<SortingState>(
+                (memo, { property, direction }) => {
+                  const column = columns.find(
+                    (column) => column.meta?.sorting?.property === property,
+                  )
+                  if (column?.id) {
+                    memo.push({
+                      id: column.id,
+                      desc: direction === 'descending',
+                    })
+                  }
+                  return memo
+                },
+                [],
+              ) ?? [],
+            )
+          : updaterOrValue
+      onChangeParameters(
+        (currentParameters) => ({
+          ...currentParameters,
+          // transform the tanstack sorting state to the parameters sorting state
+          sorting: sortingState.reduce<
+            NonNullable<formStoreService.FormStoreParameters['sorting']>
+          >((memo, { id, desc }) => {
+            const column = columns.find((column) => column.id === id)
+            if (column?.meta?.sorting?.property) {
+              memo.push({
+                property: column.meta.sorting.property,
+                direction: desc ? 'descending' : 'ascending',
+              })
+            }
+            return memo
+          }, []),
+        }),
+        false,
+      )
     },
-    useFlexLayout,
-    useResizeColumns,
+    [onChangeParameters, parameters.sorting, columns],
   )
 
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>(initialState?.columnVisibility || {})
+
+  const table = useReactTable({
+    meta: {
+      defaultHiddenColumnsVersion: initialState?.defaultHiddenColumnsVersion,
+      formId: form.id,
+    },
+    columns,
+    data: formStoreRecords,
+    defaultColumn,
+    state: {
+      sorting: transformedSorting,
+      columnVisibility,
+    },
+    onColumnVisibilityChange: setColumnVisibility,
+    onSortingChange,
+    manualFiltering: true,
+    // autoResetHiddenColumns: false,
+    // autoResetResize: false,
+    initialState,
+    // flexLayout: true,
+    // resizeColumns: true,
+    getCoreRowModel: getCoreRowModel<SubmissionTypes.FormStoreRecord>(),
+  })
+
+  const state = table.getState()
+
   React.useEffect(() => {
-    if ((table.state as FormTableState).formId !== form.id) {
+    if (table.options.meta?.formId !== form.id) {
       // If the form id changes, do not save the state from the previous form over the that of the new form
       return
     }
-    if (!table.state.columnResizing.isResizingColumn) {
+    if (!state.columnSizing.isResizingColumn) {
       const storageKey = localStorageKey(form.id)
-      localStorage.setItem(storageKey, JSON.stringify(table.state))
+      const augmentedState = {
+        ...state,
+        hiddenColumns: Object.keys(state.columnVisibility),
+        formId: table.options.meta?.formId,
+      }
+      localStorage.setItem(storageKey, JSON.stringify(augmentedState))
     }
-  }, [form.id, table.state])
+  }, [form.id, state, table.options.meta?.formId])
 
   return {
     ...table,

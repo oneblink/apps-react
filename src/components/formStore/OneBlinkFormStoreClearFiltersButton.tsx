@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Button } from '@mui/material'
 import useFormStoreTableContext from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
+import { formStoreService } from '@oneblink/apps'
 
 function OneBlinkFormStoreClearFiltersButton(
   props: React.ComponentProps<typeof Button>,
@@ -17,7 +18,7 @@ function OneBlinkFormStoreClearFiltersButton(
       disabled={isDisabled}
       onClick={() => {
         onChangeParameters(
-          (currentParameters) => ({
+          (currentParameters: formStoreService.FormStoreParameters) => ({
             ...currentParameters,
             filters: undefined,
           }),

@@ -148,7 +148,7 @@ const ValidationErrorsCard = ({
   setPageId: ReturnType<typeof usePages>['setPageId']
   navigationTopOffset: number | 'CALCULATE'
   scrollableContainerId?: string
-  validationErrorToastFocusElementRef: React.RefObject<HTMLButtonElement>
+  validationErrorToastFocusElementRef: React.RefObject<HTMLButtonElement | null>
 }) => {
   const [isExpanded, expand, contract] = useBooleanState(false)
 

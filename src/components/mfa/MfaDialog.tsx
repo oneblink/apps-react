@@ -16,7 +16,6 @@ import useBooleanState from '../../hooks/useBooleanState'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import SuccessSnackbar from '../SuccessSnackbar'
 import InputField from '../InputField'
-import { LoadingButton } from '@mui/lab'
 
 function MfaDialog({
   onClose,
@@ -97,7 +96,7 @@ function MfaDialog({
 
             <Box marginBottom={2}>
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={false}>
+                <Grid>
                   <Box
                     border={1}
                     padding={2}
@@ -108,7 +107,7 @@ function MfaDialog({
                     <QRCodeSVG value={qrcodeValue || ''} />
                   </Box>
                 </Grid>
-                <Grid item xs>
+                <Grid size={{ xs: 'grow' }}>
                   <Typography variant="caption" color="text.secondary">
                     Having trouble scanning the QR code?{' '}
                     <Link onClick={showSecretCode} component="button">
@@ -127,12 +126,14 @@ function MfaDialog({
                   label="Setup Key"
                   value={mfaSetup?.secretCode || ''}
                   fullWidth
-                  InputProps={{
-                    endAdornment: (
-                      <CopyToClipBoardIconButton
-                        text={mfaSetup?.secretCode || ''}
-                      />
-                    ),
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <CopyToClipBoardIconButton
+                          text={mfaSetup?.secretCode || ''}
+                        />
+                      ),
+                    },
                   }}
                   helperText={
                     <>
@@ -175,14 +176,14 @@ function MfaDialog({
           <Button onClick={onClose} disabled={isSaving}>
             Cancel
           </Button>
-          <LoadingButton
+          <Button
             variant="contained"
             color="primary"
             loading={isSaving}
             onClick={handleSave}
           >
             Save
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
 

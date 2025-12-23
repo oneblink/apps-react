@@ -100,7 +100,7 @@ function FormElementArcGISWebMap({
     (view?: ArcGISTypes.ArcGISWebMapElementValue['view']) => Promise<{
       dataUrl: string
     }>
-  >()
+  >(null)
 
   const takeSnapshot = useCallback(
     async (

@@ -174,6 +174,7 @@ export default function useFormDatePickerProps({
       value: valueMemo,
       disabled,
       desktopMediaQuery,
+      enableAccessibleFieldDOMStructure: false,
     },
     openPicker,
   ] as const
