@@ -112,7 +112,6 @@ function OneBlinkFormStoreTable() {
     onChangeParameters,
   } = useFormStoreTableContext()
 
-  //TODO memo these
   const [parentHeaderGroup] = getHeaderGroups()
   const rows = getCoreRowModel().rows
 
@@ -284,8 +283,6 @@ function OneBlinkFormStoreTable() {
                           ) : null}
                         </div>
                         <HeaderCellMoreButton
-                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                          // @ts-ignore gar
                           header={header}
                           onHide={() => header.column.toggleVisibility()}
                         />

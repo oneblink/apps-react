@@ -27,7 +27,6 @@ function HeaderCellMoreButton({
   header,
   onHide,
 }: {
-  // TODO refine this type a little
   header: Header<FormStoreRecord, unknown>
   onHide: () => void
 }) {
@@ -110,7 +109,7 @@ function HeaderCellMoreButton({
                 size="small"
                 startIcon={<MaterialIcon>visibility_off</MaterialIcon>}
               >
-                Hidealins
+                Hide
               </Button>
             </Grid>
           </Grid>
