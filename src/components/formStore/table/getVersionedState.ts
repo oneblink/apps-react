@@ -44,7 +44,6 @@ export const getVersionedFormTableState = (
     // If the state is not up to the latest version, find the next version
     // and add the new defaults
     let foundVersion = false
-    // const columnsSet = new Set<string>(state.hiddenColumns)
     const columnsSet = new Set<string>(Object.keys(state.columnVisibility))
     for (const defaultHiddenColumn of defaultHiddenColumns) {
       if (defaultHiddenColumn.version === state.defaultHiddenColumnsVersion) {
