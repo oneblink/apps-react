@@ -2,10 +2,11 @@ import * as React from 'react'
 import { Icon } from '@mui/material'
 import clsx from 'clsx'
 
-export default React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentProps<typeof Icon>
->(function MaterialIcon({ className, ...props }, ref) {
+export default function MaterialIcon({
+  className,
+  ref,
+  ...props
+}: React.ComponentProps<typeof Icon>) {
   return (
     <Icon
       ref={ref}
@@ -15,4 +16,4 @@ export default React.forwardRef<
       {...props}
     />
   )
-})
+}

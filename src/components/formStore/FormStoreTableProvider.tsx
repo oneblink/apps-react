@@ -144,10 +144,12 @@ export function FormStoreTableProvider({
     onRefresh,
   })
 
+  const visibleColumns = formStoreTable.getVisibleFlatColumns()
+
   return (
     <FormStoreTableContext.Provider value={formStoreTable}>
       {children}
-      {formStoreTable.visibleColumns.length ? (
+      {visibleColumns?.length ? (
         <>
           {!formStoreRecords.length && !isLoading && !loadError && (
             <NoResourcesYet

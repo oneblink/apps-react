@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
-import { HeaderGroup } from 'react-table'
+import { ColumnMeta } from '@tanstack/react-table'
 import {
   Checkbox,
   FormControl,
@@ -23,7 +23,7 @@ const StyledTextField = styled(TextField)(() => ({
 }))
 
 type Props = {
-  filter: NonNullable<HeaderGroup<FormStoreRecord>['filter']>
+  filter: NonNullable<ColumnMeta<FormStoreRecord, unknown>['filter']>
 }
 
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
@@ -41,7 +41,7 @@ function ColumnFilters({ filter }: Props) {
           type="text"
           fullWidth
           value={filter.value?.$eq || ''}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             filter.onChange(
               e.target.value
                 ? {
@@ -65,7 +65,7 @@ function ColumnFilters({ filter }: Props) {
           type="text"
           fullWidth
           value={filter.value?.$regex || ''}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             filter.onChange(
               e.target.value
                 ? {
@@ -341,7 +341,7 @@ function OptionsTextField({
       select
       SelectProps={{
         multiple: true,
-        renderValue: (selectedIds) => {
+        renderValue: (selectedIds: unknown) => {
           return options
             .reduce<string[]>((selectedLabels, option) => {
               if ((selectedIds as string[]).includes(option.value)) {
@@ -354,7 +354,7 @@ function OptionsTextField({
       }}
       fullWidth
       value={value || []}
-      onChange={(e) => {
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value as unknown as string[]
         onChange(newValue)
       }}

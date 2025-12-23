@@ -1,6 +1,9 @@
-import * as React from 'react'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
-import { Column as ColumnWithCell, CellProps } from 'react-table'
+import {
+  ColumnDef,
+  ColumnMeta,
+  createColumnHelper,
+} from '@tanstack/react-table'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementTableCell from './FormElementTableCell'
 import { formStoreService } from '@oneblink/apps'
@@ -51,7 +54,7 @@ function generateFilter({
   onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   rootSubmissionFilters: formStoreService.FormStoreFilters['submission']
   parentElementNames: string[]
-}): ColumnWithCell<Record<string, unknown>>['filter'] {
+}): ColumnMeta<unknown, unknown>['filter'] {
   function onChange<T>(
     newValue: formStoreService.FormStoreFilter<T> | undefined,
     shouldDebounce: boolean,
@@ -193,7 +196,7 @@ function generateFilter({
 }
 
 const generateColumns = <
-  T extends { submission: FormStoreRecord['submission'] },
+  T extends { submission: SubmissionTypes.S3SubmissionData['submission'] },
 >({
   formElements,
   onChangeParameters,
@@ -207,19 +210,85 @@ const generateColumns = <
   formElements: (FormTypes.FormElement & { tooltip?: string })[]
   onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   parentElementNames: string[]
-  initialColumns: Array<ColumnWithCell<T>>
+  initialColumns: Array<ColumnDef<T>>
   allowCopy: boolean
 } & {
   [P in keyof Required<formStoreService.FormStoreParameters>]:
     | formStoreService.FormStoreParameters[P]
     | undefined
 }) => {
-  return formElements.reduce<Array<ColumnWithCell<T>>>(
-    (columns, formElement) => {
-      if (unwindRepeatableSets && formElement.type === 'repeatableSet') {
+  const columnHelper = createColumnHelper<T>()
+  return formElements.reduce<Array<ColumnDef<T>>>((columns, formElement) => {
+    if (unwindRepeatableSets && formElement.type === 'repeatableSet') {
+      generateColumns({
+        onChangeParameters,
+        formElements: formElement.elements,
+        parentElementNames: [...parentElementNames, formElement.name],
+        initialColumns: columns,
+        filters,
+        allowCopy,
+        sorting,
+        unwindRepeatableSets,
+      })
+      return columns
+    }
+    switch (formElement.type) {
+      case 'page':
+      case 'section': {
         generateColumns({
           onChangeParameters,
           formElements: formElement.elements,
+          parentElementNames,
+          filters,
+          initialColumns: columns,
+          allowCopy,
+          sorting,
+          unwindRepeatableSets,
+        })
+        break
+      }
+      case 'form': {
+        if (formElement.elements) {
+          generateColumns({
+            onChangeParameters,
+            formElements: formElement.elements,
+            parentElementNames: [...parentElementNames, formElement.name],
+            initialColumns: columns,
+            filters,
+            allowCopy,
+            sorting,
+            unwindRepeatableSets,
+          })
+        }
+        break
+      }
+      case 'compliance': {
+        generateColumns({
+          onChangeParameters,
+          formElements: [
+            {
+              ...formElement,
+              tooltip: formElement.name,
+              type: 'radio',
+              name: 'value',
+              buttons: false,
+            },
+            {
+              ...formElement,
+              tooltip: `${formElement.name}_notes`,
+              type: 'textarea',
+              name: 'notes',
+              label: `${formElement.label} (Notes)`,
+            },
+            {
+              ...formElement,
+              tooltip: `${formElement.name}_media`,
+              type: 'files',
+              restrictFileTypes: false,
+              name: 'files',
+              label: `${formElement.label} (Media)`,
+            },
+          ],
           parentElementNames: [...parentElementNames, formElement.name],
           initialColumns: columns,
           filters,
@@ -227,153 +296,88 @@ const generateColumns = <
           sorting,
           unwindRepeatableSets,
         })
-        return columns
+        break
       }
-      switch (formElement.type) {
-        case 'page':
-        case 'section': {
-          generateColumns({
-            onChangeParameters,
-            formElements: formElement.elements,
-            parentElementNames,
-            filters,
-            initialColumns: columns,
-            allowCopy,
-            sorting,
-            unwindRepeatableSets,
-          })
-          break
-        }
-        case 'form': {
-          if (formElement.elements) {
-            generateColumns({
-              onChangeParameters,
-              formElements: formElement.elements,
-              parentElementNames: [...parentElementNames, formElement.name],
-              initialColumns: columns,
-              filters,
-              allowCopy,
-              sorting,
-              unwindRepeatableSets,
-            })
-          }
-          break
-        }
-        case 'compliance': {
-          generateColumns({
-            onChangeParameters,
-            formElements: [
-              {
-                ...formElement,
-                tooltip: formElement.name,
-                type: 'radio',
-                name: 'value',
-                buttons: false,
-              },
-              {
-                ...formElement,
-                tooltip: `${formElement.name}_notes`,
-                type: 'textarea',
-                name: 'notes',
-                label: `${formElement.label} (Notes)`,
-              },
-              {
-                ...formElement,
-                tooltip: `${formElement.name}_media`,
-                type: 'files',
-                restrictFileTypes: false,
-                name: 'files',
-                label: `${formElement.label} (Media)`,
-              },
-            ],
-            parentElementNames: [...parentElementNames, formElement.name],
-            initialColumns: columns,
-            filters,
-            allowCopy,
-            sorting,
-            unwindRepeatableSets,
-          })
-          break
-        }
-        case 'freshdeskDependentField': {
-          const [categoryFormElement, subCategoryFormElement, itemFormElement] =
-            generateFreshdeskDependentFieldElements(formElement)
-          generateColumns({
-            onChangeParameters,
-            formElements: [
-              {
-                ...categoryFormElement,
-                tooltip: `${formElement.name}_category`,
-              },
-              {
-                ...subCategoryFormElement,
-                tooltip: `${formElement.name}_sub_category`,
-              },
-              {
-                ...itemFormElement,
-                tooltip: `${formElement.name}_item`,
-              },
-            ],
-            parentElementNames: [...parentElementNames, formElement.name],
-            initialColumns: columns,
-            filters,
-            allowCopy,
-            sorting,
-            unwindRepeatableSets,
-          })
-          break
-        }
-        case 'summary':
-        case 'captcha':
-        case 'html':
-        case 'heading':
-        case 'infoPage':
-        case 'image': {
-          break
-        }
-        default: {
-          columns.push({
-            formElementType: formElement.type,
-            id: ['FORM_ELEMENT', ...parentElementNames, formElement.name].join(
-              '_',
-            ),
+      case 'freshdeskDependentField': {
+        const [categoryFormElement, subCategoryFormElement, itemFormElement] =
+          generateFreshdeskDependentFieldElements(formElement)
+        generateColumns({
+          onChangeParameters,
+          formElements: [
+            {
+              ...categoryFormElement,
+              tooltip: `${formElement.name}_category`,
+            },
+            {
+              ...subCategoryFormElement,
+              tooltip: `${formElement.name}_sub_category`,
+            },
+            {
+              ...itemFormElement,
+              tooltip: `${formElement.name}_item`,
+            },
+          ],
+          parentElementNames: [...parentElementNames, formElement.name],
+          initialColumns: columns,
+          filters,
+          allowCopy,
+          sorting,
+          unwindRepeatableSets,
+        })
+        break
+      }
+      case 'summary':
+      case 'captcha':
+      case 'html':
+      case 'heading':
+      case 'infoPage':
+      case 'image': {
+        break
+      }
+      default: {
+        const col = columnHelper.display({
+          id: ['FORM_ELEMENT', ...parentElementNames, formElement.name].join(
+            '_',
+          ),
+          header: formElement.label,
+          meta: {
             sorting: generateSorting({
               formElement,
               sorting,
               parentElementNames,
             }),
-            headerText: formElement.label,
             tooltip: formElement.tooltip || formElement.name,
+            formElementType: formElement.type,
             filter: generateFilter({
-              parentElementNames,
               formElement,
               onChangeParameters,
               rootSubmissionFilters: filters?.submission,
+              parentElementNames,
             }),
-            Cell: ({ row: { original: formStoreRecord } }: CellProps<T>) => {
-              const submission = parentElementNames.reduce<
-                SubmissionTypes.S3SubmissionData['submission']
-              >(
-                (memo, elementName) =>
-                  memo?.[elementName] as FormStoreRecord['submission'],
-                formStoreRecord.submission,
-              )
-              return (
-                <FormElementTableCell
-                  formElement={formElement}
-                  submission={submission}
-                  allowCopy={allowCopy}
-                />
-              )
-            },
-          })
-          break
-        }
+          },
+          cell: ({ row: { original: formStoreRecord } }) => {
+            const submission = parentElementNames.reduce<
+              SubmissionTypes.S3SubmissionData['submission']
+            >(
+              (memo, elementName) =>
+                memo?.[elementName] as FormStoreRecord['submission'],
+              formStoreRecord.submission,
+            )
+            return (
+              <FormElementTableCell
+                formElement={formElement}
+                submission={submission}
+                allowCopy={allowCopy}
+              />
+            )
+          },
+        })
+        columns.push(col)
+        break
       }
-      return columns
-    },
-    initialColumns,
-  )
+    }
+    return columns
+  }, initialColumns)
 }
 
 export default generateColumns

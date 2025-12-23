@@ -1,6 +1,9 @@
-declare namespace JSX {
-  interface IntrinsicElements {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    'on-loading': any
+import type { HTMLAttributes } from 'react'
+
+declare module 'react/jsx-runtime' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'on-loading': HTMLAttributes<HTMLElement>
+    }
   }
 }

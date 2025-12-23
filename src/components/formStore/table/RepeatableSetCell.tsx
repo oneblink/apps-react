@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Typography, Divider as MuiDivider, styled } from '@mui/material'
-import { FormTypes } from '@oneblink/types'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useBooleanState from '../../../hooks/useBooleanState'
 import generateColumns from './generateColumns'
-import { useTable } from 'react-table'
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import RepeatableSetCellAccordion from './RepeatableSetCellAccordion'
 
 const Wrapper = styled('div')({
@@ -50,10 +50,13 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
       }),
     [formElement.elements],
   )
-  const { rows, prepareRow } = useTable({
-    columns,
+  const { getRowModel } = useReactTable({
+    columns: columns,
     data: value.map((entry) => ({ submission: entry })),
+    getCoreRowModel: getCoreRowModel<SubmissionTypes.FormStoreRecord>(),
   })
+
+  const rows = React.useMemo(() => getRowModel().rows, [getRowModel])
 
   return (
     <RepeatableSetCellAccordion
@@ -62,22 +65,21 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
       onChange={toggleVisibility}
     >
       <Wrapper>
-        {rows.map((row, i) => {
+        {getRowModel().rows.map((row, i) => {
           const isLast = i === rows.length - 1
-          prepareRow(row)
           return (
             <React.Fragment key={row.id}>
-              {row.cells.map((cell) => {
-                const cellValue = cell.render('Cell')
+              {row.getAllCells().map((cell) => {
+                const cellValue = cell.getValue()
                 if (!cellValue) return null
                 return (
                   <CellRow key={cell.column.id}>
                     <span>
                       <Typography color="textSecondary" variant="body2">
-                        {cell.column.headerText}:
+                        {cell.column.columnDef.header?.toString() || ''}:
                       </Typography>
                     </span>
-                    <CellValue>{cellValue}</CellValue>
+                    <CellValue>{cellValue as string}</CellValue>
                   </CellRow>
                 )
               })}

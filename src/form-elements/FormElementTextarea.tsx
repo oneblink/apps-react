@@ -61,7 +61,7 @@ function FormElementTextarea({
             name={element.name}
             className="input ob-input cypress-textarea-control"
             value={text}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               onChange(element, {
                 value: e.target.value || undefined,
               })

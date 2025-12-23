@@ -1,5 +1,5 @@
 import * as React from 'react'
-import InputMask from 'react-input-mask'
+import { InputMask } from '@react-input/mask'
 import clsx from 'clsx'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import LookupButton from '../components/renderer/LookupButton'
@@ -147,8 +147,8 @@ function FormElementBSB({
             })}
           >
             <InputMask
-              mask="999-999"
-              maskChar="x"
+              mask="ddd-ddd"
+              replacement={{ d: /\d/ }}
               type="text"
               placeholder={element.placeholderValue}
               id={id}

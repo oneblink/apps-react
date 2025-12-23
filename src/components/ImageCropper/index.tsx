@@ -75,12 +75,12 @@ const ImageCropper = ({
     outputAspectRatio ? undefined : defaultCrop,
   )
 
-  const handleSetCrop = React.useCallback((_, c: PercentCrop) => {
+  const handleSetCrop = React.useCallback((_: unknown, c: PercentCrop) => {
     setCrop(c)
   }, [])
 
   const handleCropComplete = React.useCallback(
-    (_, c: PercentCrop) => {
+    (_: unknown, c: PercentCrop) => {
       onCropComplete(c)
     },
     [onCropComplete],

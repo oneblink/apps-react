@@ -516,7 +516,7 @@ function OneBlinkFormBase({
   // #region Validation
 
   const validationErrorToastFocusElementRef =
-    React.useRef<HTMLButtonElement>(null)
+    React.useRef<HTMLButtonElement | null>(null)
   const [isShowingValidationErrorsCard, setIsShowingValidationErrorsCard] =
     React.useState(false)
   const { validate } = useFormValidation(pages)

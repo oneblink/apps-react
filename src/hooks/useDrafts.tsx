@@ -142,7 +142,7 @@ export function DraftsContextProvider({
   >(null)
 
   const deleteDraft = React.useCallback(
-    (draftId) => {
+    (draftId: string) => {
       return draftService.deleteDraft(draftId, formsAppId)
     },
     [formsAppId],

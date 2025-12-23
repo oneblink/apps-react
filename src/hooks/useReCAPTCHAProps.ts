@@ -9,7 +9,7 @@ export default function useReCAPTCHAProps({
   onCaptchaChange,
 }: {
   captchaSiteKey: string | undefined
-  captchaRef: RefObject<ReCAPTCHA>
+  captchaRef: RefObject<ReCAPTCHA | null>
   captchaType: CaptchaType | undefined
   onCaptchaChange: (token: string | null) => void
 }) {
