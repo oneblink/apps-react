@@ -19,6 +19,8 @@ export const latestStateVersion =
   defaultHiddenColumns[defaultHiddenColumns.length - 1].version
 
 export type FormTableState = Partial<TableState> & {
+  /** @deprecated The table state now uses columnVisibility instead */
+  hiddenColumns?: string[]
   defaultHiddenColumnsVersion?: string
   formId: number
 }
@@ -27,6 +29,15 @@ export const getVersionedFormTableState = (
   initialState: FormTableState,
 ): FormTableState => {
   const state = { ...initialState }
+
+  // carry over deprecated hiddenColumns to columnVisibility
+  if (state.hiddenColumns?.length) {
+    const columnVisibility: Record<string, boolean> = {}
+    state.hiddenColumns.forEach((column) => {
+      columnVisibility[column] = false
+    })
+    state.columnVisibility = columnVisibility
+  }
 
   // If there are no hidden columns yet, meaning it is a
   // brand new state, hide all default columns.
@@ -62,7 +73,7 @@ export const getVersionedFormTableState = (
       (memo, column) => {
         return {
           ...memo,
-          [column]: true,
+          [column]: false,
         }
       },
       {},

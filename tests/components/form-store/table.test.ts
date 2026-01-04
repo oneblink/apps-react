@@ -12,7 +12,10 @@ describe('getVersionedFormTableState', () => {
       defaultHiddenColumnsVersion: latestStateVersion,
     }
     const updatedState = getVersionedFormTableState(initialState)
-    expect(updatedState).toEqual(initialState)
+    expect(updatedState).toEqual({
+      ...initialState,
+      columnVisibility: { FORM_COLUMN: false },
+    })
   })
 
   it('should update state to latest version if hiddenColumns is undefined by adding all hidden columns', () => {
@@ -22,15 +25,15 @@ describe('getVersionedFormTableState', () => {
     const updatedState = getVersionedFormTableState(initialState)
     expect(updatedState).toEqual({
       ...initialState,
-      hiddenColumns: [
-        'SUBMISSION_ID',
-        'EXTERNAL_ID',
-        'TASK',
-        'TASK_ACTION',
-        'TASK_GROUP',
-        'TASK_GROUP_INSTANCE',
-        'COMPLETED_AT',
-      ],
+      columnVisibility: {
+        SUBMISSION_ID: false,
+        EXTERNAL_ID: false,
+        TASK: false,
+        TASK_ACTION: false,
+        TASK_GROUP: false,
+        TASK_GROUP_INSTANCE: false,
+        COMPLETED_AT: false,
+      },
       defaultHiddenColumnsVersion: latestStateVersion,
     })
   })
@@ -43,15 +46,16 @@ describe('getVersionedFormTableState', () => {
     const updatedState = getVersionedFormTableState(initialState)
     expect(updatedState).toEqual({
       ...initialState,
-      hiddenColumns: [
-        'EXTERNAL_ID',
-        'TASK',
-        'TASK_ACTION',
-        'TASK_GROUP',
-        'TASK_GROUP_INSTANCE',
-        'COMPLETED_AT',
-      ],
+      hiddenColumns: ['EXTERNAL_ID'],
       defaultHiddenColumnsVersion: latestStateVersion,
+      columnVisibility: {
+        EXTERNAL_ID: false,
+        TASK: false,
+        TASK_ACTION: false,
+        TASK_GROUP: false,
+        TASK_GROUP_INSTANCE: false,
+        COMPLETED_AT: false,
+      },
     })
   })
 
@@ -64,14 +68,15 @@ describe('getVersionedFormTableState', () => {
     const updatedState = getVersionedFormTableState(initialState)
     expect(updatedState).toEqual({
       ...initialState,
-      hiddenColumns: [
-        'SUBMISSION_ID',
-        'EXTERNAL_ID',
-        'TASK',
-        'FORM_COLUMN',
-        'COMPLETED_AT',
-      ],
+      hiddenColumns: ['SUBMISSION_ID', 'EXTERNAL_ID', 'TASK', 'FORM_COLUMN'],
       defaultHiddenColumnsVersion: latestStateVersion,
+      columnVisibility: {
+        SUBMISSION_ID: false,
+        EXTERNAL_ID: false,
+        TASK: false,
+        FORM_COLUMN: false,
+        COMPLETED_AT: false,
+      },
     })
   })
 })

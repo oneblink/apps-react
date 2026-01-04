@@ -1,4 +1,4 @@
-import { vi, expect, test, describe } from 'vitest'
+import { vi, expect, test, describe, beforeEach, afterEach } from 'vitest'
 import { FormTypes } from '@oneblink/types'
 import generateDefaultData, {
   ENTRY_ID_PROPERTY_NAME,
@@ -1425,6 +1425,14 @@ describe('generateDefaultData()', () => {
   })
 
   describe('"datetime" element type', () => {
+    beforeEach(() => {
+      vi.stubEnv('TZ', 'UTC')
+    })
+
+    afterEach(() => {
+      vi.unstubAllEnvs()
+    })
+
     const element: FormTypes.DateTimeElement = {
       name: 'datetime',
       label: 'datetime',

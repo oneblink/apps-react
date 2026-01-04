@@ -142,7 +142,6 @@ export default function useFormStoreTable({
               },
             },
           },
-          // TODO filter
           cell: ({ row: { original: formStoreRecord } }) => {
             const text = format(
               new Date(formStoreRecord.dateTimeSubmitted),
@@ -531,11 +530,7 @@ export default function useFormStoreTable({
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange,
     manualFiltering: true,
-    // autoResetHiddenColumns: false,
-    // autoResetResize: false,
     initialState,
-    // flexLayout: true,
-    // resizeColumns: true,
     getCoreRowModel: getCoreRowModel<SubmissionTypes.FormStoreRecord>(),
   })
 
