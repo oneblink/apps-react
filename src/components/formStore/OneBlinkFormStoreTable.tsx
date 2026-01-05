@@ -129,8 +129,10 @@ function OneBlinkFormStoreTable() {
 
   const columnSizeVars = React.useMemo(() => {
     // we want the memo to recalculate if these change, dropping them here so the linter doesn't complain about unused dependencies
+    /* eslint-disable @typescript-eslint/no-unused-expressions */
     columnSizingInfo
     columnSizing
+    /* eslint-enable @typescript-eslint/no-unused-expressions */
     const headers = getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
     for (let i = 0; i < headers.length; i++) {
