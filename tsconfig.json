@@ -4,7 +4,7 @@
     "module": "ES2020",
     "moduleResolution": "Node",
     "lib": ["ES2021", "webworker", "dom", "DOM.Iterable"],
-    "jsx": "react",
+    "jsx": "react-jsx",
     "allowJs": true,
     "declaration": true,
     "outDir": "./dist",

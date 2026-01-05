@@ -32,30 +32,24 @@ export const PickerInputButton = React.memo(function PickerInputButton({
   )
 })
 
-const Input = React.forwardRef<
-  HTMLDivElement,
-  TextFieldProps & {
-    ownerState?: unknown
-  }
->(function Input(
-  {
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    focused,
-    sx,
-    label,
-    size,
-    ownerState,
-    defaultValue,
-    InputProps,
-    error,
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-    inputProps,
-    inputRef,
-    value,
-    ...props
-  },
+function Input({
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  focused,
+  sx,
+  label,
+  size,
+  ownerState,
+  defaultValue,
+  InputProps,
+  error,
+  /* eslint-enable @typescript-eslint/no-unused-vars */
+  // need to use the deprecated inputProps because slotProps are not currently passed down
+  inputProps,
+  inputRef,
+  value,
   ref,
-) {
+  ...props
+}: TextFieldProps & { ownerState?: unknown }) {
   return (
     <div className="control is-expanded has-icons-right" ref={ref}>
       <input
@@ -66,7 +60,7 @@ const Input = React.forwardRef<
       />
     </div>
   )
-})
+}
 
 export default function useFormDatePickerProps({
   id,
@@ -174,6 +168,7 @@ export default function useFormDatePickerProps({
       value: valueMemo,
       disabled,
       desktopMediaQuery,
+      enableAccessibleFieldDOMStructure: false,
     },
     openPicker,
   ] as const

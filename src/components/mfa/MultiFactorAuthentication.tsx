@@ -1,4 +1,3 @@
-import * as React from 'react'
 import {
   Box,
   Button,
@@ -12,7 +11,6 @@ import {
   Typography,
   styled,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import ConfirmDialog from '../ConfirmDialog'
 import MfaDialog from './MfaDialog'
 import ErrorSnackbar from '../ErrorSnackbar'
@@ -104,7 +102,7 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
 
   if (ssoSetupUrl) {
     return (
-      <Grid item>
+      <Grid>
         <Button
           variant="outlined"
           size="small"
@@ -122,7 +120,7 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
 
   if (isExternalIdentityProviderUser) {
     return (
-      <Grid item>
+      <Grid>
         <Tooltip title="MFA must be configured in your login provider.">
           <span>
             <Button
@@ -141,7 +139,7 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
 
   return (
     <>
-      <Grid item>
+      <Grid>
         <Button
           variant="outlined"
           size="small"
@@ -171,8 +169,8 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
         </ConfirmDialog>
       </Grid>
 
-      <Grid item>
-        <LoadingButton
+      <Grid>
+        <Button
           variant="contained"
           size="small"
           loading={isSettingUpMfa}
@@ -181,7 +179,7 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
           data-cypress="setup-mfa-button"
         >
           Setup MFA
-        </LoadingButton>
+        </Button>
         <MfaDialog
           mfaSetup={mfaSetup}
           onClose={cancelMfaSetup}
@@ -242,12 +240,12 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
   } = useMfa()
 
   return (
-    <Grid item xs={true} lg={8}>
+    <Grid size={{ xs: 'grow', lg: 8 }}>
       <Box padding={3}>
         <Paper>
           <Box padding={3}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs>
+              <Grid size={{ xs: 'grow' }}>
                 <Typography variant="h4" fontWeight="light">
                   Multi Factor Authentication{' '}
                   <MfaStatus
