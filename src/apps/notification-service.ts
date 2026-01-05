@@ -137,7 +137,7 @@ async function subscribe(formsAppId: number): Promise<boolean> {
 
     const subscription = await swRegistration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: key,
+      applicationServerKey: key as BufferSource,
     })
     console.log('Subscribed to Service Worker Push:', subscription)
     try {
