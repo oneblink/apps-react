@@ -48,7 +48,9 @@ export function FormElementOptionsContextProvider({
   }, [form.elements])
 
   const loadFreshdeskFields = React.useCallback(
-    async (abortSignal): Promise<FreshdeskTypes.FreshdeskField[]> => {
+    async (
+      abortSignal: AbortSignal,
+    ): Promise<FreshdeskTypes.FreshdeskField[]> => {
       if (hasFreshdeskFields && !formIsReadOnly) {
         return await formService.getFreshdeskFields(form.id, abortSignal)
       }
@@ -74,7 +76,7 @@ export function FormElementOptionsContextProvider({
   }, [form.elements])
 
   const loadFormElementOptionsSets = React.useCallback(
-    async (abortSignal): Promise<OptionsSetResult[]> => {
+    async (abortSignal: AbortSignal): Promise<OptionsSetResult[]> => {
       if (!hasOptionsSets || formIsReadOnly) {
         return []
       }

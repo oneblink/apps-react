@@ -41,11 +41,11 @@ type Props = {
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   automatedSnapshotFileName: string
   'aria-describedby'?: string
-  takeScreenShotRef: React.MutableRefObject<
+  takeScreenShotRef: React.RefObject<
     | ((view?: ArcGISTypes.ArcGISWebMapElementValue['view']) => Promise<{
         dataUrl: string
       }>)
-    | undefined
+    | null
   >
 }
 
@@ -120,14 +120,14 @@ function FormElementArcGISWebMap({
   ...props
 }: Props) {
   const ref = React.useRef<HTMLDivElement | null>(null)
-  const layerPanelRef = React.useRef<Expand>()
-  const mapGalleryPanelRef = React.useRef<Expand>()
-  const sketchToolRef = React.useRef<Sketch>()
-  const drawingLayerRef = React.useRef<GraphicsLayer>()
-  const selectedGraphicForUpdate = React.useRef<string>()
-  const mapViewRef = React.useRef<MapView>()
-  const measurementLayerRef = React.useRef<GraphicsLayer>()
-  const defaultLayersRef = React.useRef<Layer[]>()
+  const layerPanelRef = React.useRef<Expand>(null)
+  const mapGalleryPanelRef = React.useRef<Expand>(null)
+  const sketchToolRef = React.useRef<Sketch>(null)
+  const drawingLayerRef = React.useRef<GraphicsLayer>(null)
+  const selectedGraphicForUpdate = React.useRef<string | undefined>(undefined)
+  const mapViewRef = React.useRef<MapView>(null)
+  const measurementLayerRef = React.useRef<GraphicsLayer>(null)
+  const defaultLayersRef = React.useRef<Layer[]>(null)
 
   const [loadError, setLoadError] = React.useState<Error>()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)

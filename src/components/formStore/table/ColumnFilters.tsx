@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
 import { FormStoreRecord } from '@oneblink/types/typescript/submissions'
-import { HeaderGroup } from 'react-table'
+import { ColumnMeta } from '@tanstack/react-table'
 import {
   Checkbox,
   FormControl,
@@ -23,7 +23,7 @@ const StyledTextField = styled(TextField)(() => ({
 }))
 
 type Props = {
-  filter: NonNullable<HeaderGroup<FormStoreRecord>['filter']>
+  filter: NonNullable<ColumnMeta<FormStoreRecord, unknown>['filter']>
 }
 
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
@@ -41,7 +41,7 @@ function ColumnFilters({ filter }: Props) {
           type="text"
           fullWidth
           value={filter.value?.$eq || ''}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             filter.onChange(
               e.target.value
                 ? {
@@ -65,7 +65,7 @@ function ColumnFilters({ filter }: Props) {
           type="text"
           fullWidth
           value={filter.value?.$regex || ''}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             filter.onChange(
               e.target.value
                 ? {
@@ -83,7 +83,7 @@ function ColumnFilters({ filter }: Props) {
     case 'NUMBER': {
       return (
         <Grid container spacing={1}>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <TextField
               autoFocus
               variant="outlined"
@@ -110,7 +110,7 @@ function ColumnFilters({ filter }: Props) {
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <TextField
               variant="outlined"
               margin="dense"
@@ -142,7 +142,7 @@ function ColumnFilters({ filter }: Props) {
     case 'DATE': {
       return (
         <Grid container spacing={1}>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <FiltersDatePicker
               label="After"
               maxDate={filter.value?.$lte}
@@ -168,7 +168,7 @@ function ColumnFilters({ filter }: Props) {
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <FiltersDatePicker
               label="Before"
               value={filter.value?.$lte}
@@ -200,7 +200,7 @@ function ColumnFilters({ filter }: Props) {
     case 'DATETIME': {
       return (
         <Grid container spacing={1}>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <FiltersDateTimePicker
               label="After"
               maxDate={filter.value?.$lte}
@@ -226,7 +226,7 @@ function ColumnFilters({ filter }: Props) {
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <FiltersDateTimePicker
               label="Before"
               minDate={filter.value?.$gte}
@@ -341,7 +341,7 @@ function OptionsTextField({
       select
       SelectProps={{
         multiple: true,
-        renderValue: (selectedIds) => {
+        renderValue: (selectedIds: unknown) => {
           return options
             .reduce<string[]>((selectedLabels, option) => {
               if ((selectedIds as string[]).includes(option.value)) {
@@ -354,7 +354,7 @@ function OptionsTextField({
       }}
       fullWidth
       value={value || []}
-      onChange={(e) => {
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value as unknown as string[]
         onChange(newValue)
       }}

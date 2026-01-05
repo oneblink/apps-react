@@ -6,7 +6,7 @@ import { ExecutedLookups, SectionState } from '../types/form'
 /**
  * This function is a simple wrapper around the react hook `useState()`. The
  * results can be passed to the [`<OneBlinkForm
- * />`](https://oneblink.github.io/apps-react/somewhere) //TODO: Fix link
+ * />`](https://oneblink.github.io/apps-react/functions/OneBlinkForm.html)
  * component.
  *
  * ## Example

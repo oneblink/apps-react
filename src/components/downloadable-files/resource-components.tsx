@@ -97,12 +97,12 @@ function DownloadableFilesDisplay({
         >
           {pdfFileNodes &&
             pdfFileNodes.map(({ node, key }) => (
-              <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={key}>
+              <Grid size={{ xs: 12, sm: layout === 'GRID' ? 6 : 12 }} key={key}>
                 {node}
               </Grid>
             ))}
           {attachments.map((attachment, index) => (
-            <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={index}>
+            <Grid size={{ xs: 12, sm: layout === 'GRID' ? 6 : 12 }} key={index}>
               <SingleFileDisplay attachment={attachment} />
             </Grid>
           ))}
@@ -189,7 +189,7 @@ export const OnlyPDFDisplay = ({
         justifyContent={children.length === 1 ? 'center' : undefined}
       >
         {children.map(({ node, key }) => (
-          <Grid item xs={12} sm={layout === 'GRID' ? 6 : 12} key={key}>
+          <Grid size={{ xs: 12, sm: layout === 'GRID' ? 6 : 12 }} key={key}>
             {node}
           </Grid>
         ))}

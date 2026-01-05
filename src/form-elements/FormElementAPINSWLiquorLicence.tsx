@@ -164,8 +164,7 @@ function FormElementAPINSWLiquorLicence({
         >
           {value?.licenceDetail?.licenceName && (
             <Grid
-              item
-              xs={12}
+              size={{ xs: 12 }}
               className={`${liquorLicenceClassPrefix}licenceName`}
             >
               <h6

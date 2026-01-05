@@ -8,7 +8,6 @@ import {
   Portal,
   DialogProps,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import useIsMounted from '../hooks/useIsMounted'
 import ErrorSnackbar from './ErrorSnackbar'
 
@@ -27,7 +26,7 @@ type Props = {
     error?: string
     title?: string
   }
-  TransitionProps?: DialogProps['TransitionProps']
+  TransitionProps?: NonNullable<DialogProps['slotProps']>['transition']
   disabled?: boolean
 }
 
@@ -71,9 +70,11 @@ export default function ConfirmDialog({
         fullWidth
         onClose={!isConfirming ? onClose : undefined}
         data-cypress={cypress?.dialog}
-        TransitionProps={{
-          onExiting: () => setError(null),
-          ...(TransitionProps ? TransitionProps : {}),
+        slotProps={{
+          transition: {
+            onExiting: () => setError(null),
+            ...(TransitionProps ? TransitionProps : {}),
+          },
         }}
       >
         <DialogTitle data-cypress={cypress?.title}>{title}</DialogTitle>
@@ -87,7 +88,7 @@ export default function ConfirmDialog({
             Cancel
           </Button>
 
-          <LoadingButton
+          <Button
             variant="contained"
             loading={isConfirming}
             autoFocus
@@ -98,7 +99,7 @@ export default function ConfirmDialog({
             disabled={disabled}
           >
             {confirmButtonText}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       </Dialog>
       <Portal>

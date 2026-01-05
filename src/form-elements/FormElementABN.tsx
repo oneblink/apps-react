@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import InputMask from 'react-input-mask'
+import { InputMask } from '@react-input/mask'
 import { parseString } from 'xml2js'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
@@ -225,8 +225,8 @@ function FormElementABN({
             })}
           >
             <InputMask
-              mask={isFocused || value ? '99 999 999 999' : '999 999 999'}
-              maskChar=" "
+              mask={isFocused || value ? 'dd ddd ddd ddd' : 'ddd ddd ddd'}
+              replacement={{ d: /\d/ }}
               type="text"
               id={id}
               name={element.name}
