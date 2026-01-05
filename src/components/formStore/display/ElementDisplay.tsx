@@ -4,8 +4,8 @@ import { Chip, CircularProgress, Grid } from '@mui/material'
 import ErrorSnackbar from '../../ErrorSnackbar'
 import { UnorderedList, ListItem } from '../../Lists'
 import { FormElementWithOptions } from '@oneblink/types/typescript/forms'
-import { getCognitoIdToken } from '@oneblink/apps/dist/services/cognito'
-import tenants from '@oneblink/apps/dist/tenants'
+import { getCognitoIdToken } from '@oneblink/apps/services/cognito'
+import tenants from '@oneblink/apps/tenants'
 import MaterialIcon from '../../MaterialIcon'
 
 async function fetchFile(url: string) {

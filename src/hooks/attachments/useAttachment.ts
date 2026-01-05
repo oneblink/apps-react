@@ -9,7 +9,7 @@ import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
 import useOnUploadAttachmentContext from '../useOnUploadAttachment'
-import tenants from '@oneblink/apps/dist/tenants'
+import tenants from '@oneblink/apps/tenants'
 
 export type OnChange = (
   id: string,

@@ -75,3 +75,5 @@ export {
 } from './components/ImageCropper'
 
 export * from './types/form'
+// Former apps package now exported through here
+export * from './apps'

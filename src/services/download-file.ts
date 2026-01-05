@@ -2,7 +2,7 @@ import { Sentry, attachmentsService } from '@oneblink/apps'
 import * as bulmaToast from 'bulma-toast'
 import fileSaver from 'file-saver'
 import { urlToBlobAsync } from './blob-utils'
-import tenants from '@oneblink/apps/dist/tenants'
+import tenants from '@oneblink/apps/tenants'
 
 async function downloadFile(data: Blob | string, fileName: string) {
   if (window.cordova) {

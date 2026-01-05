@@ -3,7 +3,7 @@
     "target": "ES2019",
     "module": "ES2020",
     "moduleResolution": "Node",
-    "lib": ["ES2021", "webworker", "dom"],
+    "lib": ["ES2021", "webworker", "dom", "DOM.Iterable"],
     "jsx": "react",
     "allowJs": true,
     "declaration": true,
@@ -17,6 +17,11 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "inlineSources": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@oneblink/apps": ["apps"],
+      "@oneblink/apps/*": ["apps/*"],
+    },
   },
   "include": ["./src"],
   "typedocOptions": {
