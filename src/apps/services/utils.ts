@@ -65,7 +65,6 @@ async function getLocalForageItem<T>(key: string): Promise<T | null> {
 
 function generateKeyValuesReducer(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/ban-types
   data: object,
   initialKeyValues: {
     keys: string[]
@@ -101,7 +100,6 @@ function generateKeyValuesReducer(
   }, initialKeyValues)
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 async function setLocalForageItem<T extends object>(
   key: string,
   originalData: T,

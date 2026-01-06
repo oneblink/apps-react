@@ -129,7 +129,7 @@
     "copy:sass": "copyfiles -u 1 ./src/styles.scss ./dist",
     "copy:styles": "copyfiles -u 1 ./src/styles/* ./dist",
     "docs": "typedoc",
-    "eslint": "eslint src/**/*.{ts,tsx} --fix --cache",
+    "eslint": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
     "fixpack": "fixpack",
     "format": "prettier --write .",
     "prepare": "npm run build",

@@ -35,7 +35,7 @@ export default async function serverValidateForm(
     let json: ReturnType<typeof JSON.parse>
     try {
       json = JSON.parse(data)
-    } catch (err) {
+    } catch {
       // Nothing
     }
     if (response.status === 400 && json && json.message) {

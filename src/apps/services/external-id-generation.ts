@@ -62,7 +62,7 @@ export default async function externalIdGeneration(
     let json: ReturnType<typeof JSON.parse>
     try {
       json = JSON.parse(data)
-    } catch (err) {
+    } catch {
       // Nothing
     }
     if (response.status === 400 && json && json.message) {
