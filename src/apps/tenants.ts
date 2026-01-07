@@ -131,7 +131,7 @@ const tenants: Record<
       awsRegion: 'us-east-1',
       loginDomain: 'login.us.oneblink.io',
       apiOrigin: 'https://auth-api.us.oneblink.io',
-      vapidPublicKey: 'TODO',
+      vapidPublicKey: 'BKL8Vk_U46_To07_fkVOAExQp8Zi_XjEDunLqCz8cYEXcX3Em0qMdMdROfT6MYb7EKIkUK1Ymgvf3tFnkYrKCfc',
       intlFormats: generateFormatters('en-US'),
       name: 'OneBlink',
       productShortName: 'OneBlink LcS',
