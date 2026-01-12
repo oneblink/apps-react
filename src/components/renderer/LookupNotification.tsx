@@ -1,7 +1,7 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { generateHeaders } from '@oneblink/apps/services/fetch'
-import { Sentry, formService } from '@oneblink/apps'
+import { generateHeaders } from '../../apps/services/fetch'
+import { Sentry, formService } from '../../apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 import useIsOffline from '../../hooks/useIsOffline'

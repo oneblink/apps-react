@@ -16,7 +16,7 @@ import {
   IsDirtyProps,
   UpdateFormElementsHandler,
 } from '../types/form'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 

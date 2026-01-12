@@ -1,4 +1,4 @@
-import { paymentService } from '@oneblink/apps'
+import { paymentService } from '../../apps'
 import { SubmissionTypes } from '@oneblink/types'
 import React from 'react'
 import WestpacQuickStreamPaymentForm from './WestpacQuickStreamPaymentForm'

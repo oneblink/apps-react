@@ -3,7 +3,7 @@ import {
   paymentService,
   submissionService,
   localisationService,
-} from '@oneblink/apps'
+} from '../../apps'
 import { SubmissionTypes, SubmissionEventTypes } from '@oneblink/types'
 import clsx from 'clsx'
 import React from 'react'

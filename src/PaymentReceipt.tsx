@@ -6,7 +6,7 @@ import {
   OneBlinkAppsError,
   schedulingService,
   localisationService,
-} from '@oneblink/apps'
+} from './apps'
 import useIsMounted from './hooks/useIsMounted'
 
 import useQuery from './hooks/useQuery'

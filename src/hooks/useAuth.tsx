@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService } from '@oneblink/apps'
+import { authService } from '../apps'
 import { UserProfile } from '@oneblink/types/typescript/misc'
 
 export type AuthContextValue = {

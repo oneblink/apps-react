@@ -25,8 +25,6 @@ export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
  *   OneBlinkAppsError,
  *   draftService,
  *   submissionService,
- * } from '@oneblink/apps'
- * import {
  *   IsOfflineContextProvider,
  *   OneBlinkFormControlled,
  *   useIsMounted,
@@ -364,8 +362,6 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
  *   OneBlinkAppsError,
  *   draftService,
  *   submissionService,
- * } from '@oneblink/apps'
- * import {
  *   IsOfflineContextProvider,
  *   OneBlinkForm,
  *   useIsMounted,

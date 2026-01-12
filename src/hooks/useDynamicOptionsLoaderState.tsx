@@ -1,10 +1,6 @@
 import * as React from 'react'
 import { formElementsService, typeCastService } from '@oneblink/sdk-core'
-import {
-  formService,
-  localisationService,
-  OneBlinkAppsError,
-} from '@oneblink/apps'
+import { formService, localisationService, OneBlinkAppsError } from '../apps'
 import { FormTypes, FreshdeskTypes } from '@oneblink/types'
 import useLoadDataState, { LoadDataState } from './useLoadDataState'
 import OneBlinkAppsErrorOriginalMessage from '../components/renderer/OneBlinkAppsErrorOriginalMessage'

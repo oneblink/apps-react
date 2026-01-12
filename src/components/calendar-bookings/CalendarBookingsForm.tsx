@@ -6,7 +6,7 @@ import {
   schedulingService,
   submissionService,
   OneBlinkAppsError,
-} from '@oneblink/apps'
+} from '../../apps'
 import clsx from 'clsx'
 import { Receipt } from '../receipts'
 import ErrorModal from './ErrorModal'

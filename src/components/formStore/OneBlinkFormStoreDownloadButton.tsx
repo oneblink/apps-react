@@ -9,7 +9,7 @@ import {
   Button,
 } from '@mui/material'
 import ErrorSnackbar from '../ErrorSnackbar'
-import { formStoreService } from '@oneblink/apps'
+import { formStoreService } from '../../apps'
 import useFormStoreTableContext from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
 

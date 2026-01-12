@@ -1,6 +1,6 @@
 import * as React from 'react'
 import _throttle from 'lodash.throttle'
-import { autoSaveService, submissionService, Sentry } from '@oneblink/apps'
+import { autoSaveService, submissionService, Sentry } from '../apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
 import useFormSubmissionDuration from './useFormSubmissionDuration'

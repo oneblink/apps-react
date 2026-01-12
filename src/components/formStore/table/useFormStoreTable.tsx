@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { formStoreService, localisationService } from '@oneblink/apps'
+import { formStoreService, localisationService } from '../../../apps'
 import {
   useReactTable,
   getCoreRowModel,

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-table'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import FormElementTableCell from './FormElementTableCell'
-import { formStoreService } from '@oneblink/apps'
+import { formStoreService } from '../../../apps'
 import { OnChangeFilters } from '../../../hooks/useInfiniteScrollDataLoad'
 import generateFreshdeskDependentFieldElements from '../../../services/generateFreshdeskDependentFieldElements'
 

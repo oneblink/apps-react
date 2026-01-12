@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 
 export const OnUploadAttachmentContext = React.createContext<
   typeof attachmentsService.uploadAttachment | undefined

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { formService } from '@oneblink/apps'
+import { formService } from '../apps'
 import { FormTypes } from '@oneblink/types'
 import FormElementForm, { Props } from './FormElementForm'
 import generateCivicaNameRecordElements from '../services/generateCivicaNameRecordElements'

@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { offlineService } from '@oneblink/apps'
+import { offlineService } from '../apps'
 import useBooleanState from '../hooks/useBooleanState'
 
 const defaultValue = offlineService.isOffline()

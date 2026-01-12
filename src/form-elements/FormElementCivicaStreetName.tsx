@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { formService } from '@oneblink/apps'
+import { formService } from '../apps'
 
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'

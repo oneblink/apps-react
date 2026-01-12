@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Collapse, Grid, LinearProgress, Tooltip } from '@mui/material'
 import MaterialIcon from '../MaterialIcon'
-import { submissionService } from '@oneblink/apps'
+import { submissionService } from '../../apps'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import clsx from 'clsx'

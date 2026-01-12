@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 import { FormTypes } from '@oneblink/types'
 import { TimePicker } from '@mui/x-date-pickers'
 
