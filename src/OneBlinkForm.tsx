@@ -21,8 +21,10 @@ export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
  * import React from 'react'
  * import ReactDOM from 'react-dom'
  * import { FormTypes } from '@oneblink/types'
- * import { OneBlinkAppsError, draftService, submissionService } from 'apps'
  * import {
+ *   OneBlinkAppsError,
+ *   draftService,
+ *   submissionService,
  *   IsOfflineContextProvider,
  *   OneBlinkFormControlled,
  *   useIsMounted,
@@ -356,8 +358,10 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
  * import React from 'react'
  * import ReactDOM from 'react-dom'
  * import { FormTypes } from '@oneblink/types'
- * import { OneBlinkAppsError, draftService, submissionService } from 'apps'
  * import {
+ *   OneBlinkAppsError,
+ *   draftService,
+ *   submissionService,
  *   IsOfflineContextProvider,
  *   OneBlinkForm,
  *   useIsMounted,
