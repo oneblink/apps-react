@@ -18,7 +18,7 @@ import {
 import generateCivicaNameRecordElements from '../generateCivicaNameRecordElements'
 import generateFreshdeskDependentFieldElements from '../generateFreshdeskDependentFieldElements'
 import { parseDateValue } from '../generate-default-data'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../../apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { generateConfirmationFormElementName } from '../dynamic-elements'
 import { determineLookupButtonIsRequired } from './determineLookupButtonIsRequired'

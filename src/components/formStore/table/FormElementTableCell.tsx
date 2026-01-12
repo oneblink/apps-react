@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Typography } from '@mui/material'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../../../apps'
 import {
   APINSWTypes,
   ArcGISTypes,

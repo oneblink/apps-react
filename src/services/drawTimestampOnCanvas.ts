@@ -1,4 +1,4 @@
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 
 export default function (file: File, canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d')

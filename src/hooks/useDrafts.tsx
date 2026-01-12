@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { draftService, submissionService } from '@oneblink/apps'
+import { draftService, submissionService } from '../apps'
 import useAuth from './useAuth'
 import useIsMounted from './useIsMounted'
 import useIsOffline from './useIsOffline'

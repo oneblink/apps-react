@@ -1,4 +1,4 @@
-import { Sentry } from '@oneblink/apps'
+import { Sentry } from '../apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import { conditionalLogicService } from '@oneblink/sdk-core'

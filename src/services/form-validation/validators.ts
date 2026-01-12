@@ -9,7 +9,7 @@ import {
 } from '../../types/form'
 import cleanFormSubmissionModel from '../cleanFormSubmissionModel'
 import getRepeatableSetEntriesConfiguration from '../getRepeatableSetEntriesConfiguration'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../../apps'
 import { FormElementBinaryStorageValue } from '../../types/attachments'
 
 export function getCleanDateRangeConfiguration(

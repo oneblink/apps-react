@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { OneBlinkAppsError } from '@oneblink/apps'
+import { OneBlinkAppsError } from '../../apps'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import sanitizeHtml from '../../services/sanitize-html'
 import Modal from '../renderer/Modal'

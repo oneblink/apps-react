@@ -1,6 +1,6 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { submissionService, typeCastService } from '@oneblink/sdk-core'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 import { v4 as uuidv4 } from 'uuid'
 import { MiscTypes } from '@oneblink/types'
 import { TaskContext } from '../hooks/useTaskContext'

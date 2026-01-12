@@ -1,9 +1,5 @@
 import * as React from 'react'
-import {
-  submissionService,
-  localisationService,
-  authService,
-} from '@oneblink/apps'
+import { submissionService, localisationService, authService } from '../../apps'
 import {
   OnlyPDFDisplay,
   LoadAndDisplayAttachments,

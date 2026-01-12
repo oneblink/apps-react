@@ -1,6 +1,6 @@
 import { ArcGISTypes, FormTypes, SubmissionTypes } from '@oneblink/types'
 import { v4 as uuid } from 'uuid'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 
 import { Value as FormElementComplianceValue } from '../form-elements/FormElementCompliance'
 

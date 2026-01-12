@@ -11,7 +11,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material'
-import { authService } from '@oneblink/apps'
+import { authService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import SuccessSnackbar from '../SuccessSnackbar'

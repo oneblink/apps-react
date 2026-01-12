@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Sentry } from '@oneblink/apps'
+import { Sentry } from '../../apps'
 
 import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'

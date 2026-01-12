@@ -4,7 +4,7 @@
  * Helper functions for offline handling
  *
  * ```js
- * import { offlineService } from '@oneblink/apps'
+ * import { offlineService } from 'apps'
  * ```
  */
 export * as offlineService from './offline-service'
@@ -17,7 +17,7 @@ export * as offlineService from './offline-service'
  * service.**
  *
  * ```js
- * import { authService } from '@oneblink/apps'
+ * import { authService } from 'apps'
  * ```
  */
 export * as authService from './auth-service'
@@ -27,7 +27,7 @@ export * as authService from './auth-service'
  * Helper functions for handling drafts.
  *
  * ```js
- * import { draftService } from '@oneblink/apps'
+ * import { draftService } from 'apps'
  * ```
  */
 export * as draftService from './draft-service'
@@ -37,7 +37,7 @@ export * as draftService from './draft-service'
  * Helper functions for offline handling
  *
  * ```js
- * import { prefillService } from '@oneblink/apps'
+ * import { prefillService } from 'apps'
  * ```
  */
 export * as prefillService from './prefill-service'
@@ -47,7 +47,7 @@ export * as prefillService from './prefill-service'
  * Helper functions for payment handling
  *
  * ```js
- * import { paymentService } from '@oneblink/apps'
+ * import { paymentService } from 'apps'
  * ```
  */
 export * as paymentService from './payment-service'
@@ -57,7 +57,7 @@ export * as paymentService from './payment-service'
  * Helper functions for scheduling booking handling
  *
  * ```js
- * import { schedulingService } from '@oneblink/apps'
+ * import { schedulingService } from 'apps'
  * ```
  */
 export * as schedulingService from './scheduling-service'
@@ -67,7 +67,7 @@ export * as schedulingService from './scheduling-service'
  * Helper functions for job handling
  *
  * ```js
- * import { jobService } from '@oneblink/apps'
+ * import { jobService } from 'apps'
  * ```
  */
 export * as jobService from './job-service'
@@ -77,7 +77,7 @@ export * as jobService from './job-service'
  * Helper functions for handling form submissions
  *
  * ```js
- * import { submissionService } from '@oneblink/apps'
+ * import { submissionService } from 'apps'
  * ```
  */
 export * as submissionService from './submission-service'
@@ -87,7 +87,7 @@ export * as submissionService from './submission-service'
  * Helper functions for handling data while user is completing form.
  *
  * ```js
- * import { autoSaveService } from '@oneblink/apps'
+ * import { autoSaveService } from 'apps'
  * ```
  */
 export * as autoSaveService from './auto-save-service'
@@ -97,7 +97,7 @@ export * as autoSaveService from './auto-save-service'
  * Helper functions for notification handling
  *
  * ```js
- * import { notificationService } from '@oneblink/apps'
+ * import { notificationService } from 'apps'
  * ```
  *
  * ### Service Worker
@@ -172,7 +172,7 @@ export * as notificationService from './notification-service'
  * Helper functions for form handling
  *
  * ```js
- * import { formService } from '@oneblink/apps'
+ * import { formService } from 'apps'
  * ```
  */
 export * as formService from './form-service'
@@ -182,7 +182,7 @@ export * as formService from './form-service'
  * Helper functions for handling approvals
  *
  * ```js
- * import { approvalsService } from '@oneblink/apps'
+ * import { approvalsService } from 'apps'
  * ```
  */
 export * as approvalsService from './approvals-service'
@@ -192,7 +192,7 @@ export * as approvalsService from './approvals-service'
  * Helper functions for forms apps
  *
  * ```js
- * import { formsAppService } from '@oneblink/apps'
+ * import { formsAppService } from 'apps'
  * ```
  */
 export * as formsAppService from './forms-app-service'
@@ -202,7 +202,7 @@ export * as formsAppService from './forms-app-service'
  * Helper functions for handling Form Store Records
  *
  * ```js
- * import { formStoreService } from '@oneblink/apps'
+ * import { formStoreService } from 'apps'
  * ```
  */
 export * as formStoreService from './form-store-service'
@@ -212,7 +212,7 @@ export * as formStoreService from './form-store-service'
  * Helper functions for handling all things locale.
  *
  * ```js
- * import { localisationService } from '@oneblink/apps'
+ * import { localisationService } from 'apps'
  * ```
  */
 export * as localisationService from './localisation-service'
@@ -222,7 +222,7 @@ export * as localisationService from './localisation-service'
  * Helper functions for attachment handling
  *
  * ```js
- * import { attachmentsService } from '@oneblink/apps'
+ * import { attachmentsService } from 'apps'
  * ```
  */
 export * as attachmentsService from './attachments-service'
@@ -232,7 +232,7 @@ export * as attachmentsService from './attachments-service'
  * Helper functions for scheduled tasks
  *
  * ```js
- * import { scheduledTasksService } from '@oneblink/apps'
+ * import { scheduledTasksService } from 'apps'
  * ```
  */
 export * as scheduledTasksService from './scheduled-tasks-service'
@@ -242,7 +242,7 @@ export * as scheduledTasksService from './scheduled-tasks-service'
  * Helper functions for forms app environments
  *
  * ```js
- * import { formsAppEnvironmentService } from '@oneblink/apps'
+ * import { formsAppEnvironmentService } from 'apps'
  * ```
  */
 export * as formsAppEnvironmentService from './forms-app-environment-service'

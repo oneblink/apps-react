@@ -1,4 +1,4 @@
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 import { useMemo } from 'react'
 import useFormSubmissionModel from './useFormSubmissionModelContext'
 import { useRepeatableSetIndexText } from '../form-elements/FormElementRepeatableSet'

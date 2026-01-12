@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { format } from 'date-fns'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../../../apps'
 import { FiltersDatePicker, FiltersDateTimePicker } from './Pickers'
 
 const StyledTextField = styled(TextField)(() => ({

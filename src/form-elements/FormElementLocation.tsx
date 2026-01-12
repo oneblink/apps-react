@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes } from '@oneblink/types'
-import { Sentry } from '@oneblink/apps'
+import { Sentry } from '../apps'
 import clsx from 'clsx'
 import { GoogleMap, Marker } from '@react-google-maps/api'
 import queryString from 'query-string'

@@ -1,4 +1,4 @@
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 
 export type FormElementBinaryStorageValue =
   | attachmentsService.Attachment

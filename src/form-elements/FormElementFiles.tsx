@@ -7,7 +7,7 @@ import {
   checkFileNameIsValid,
   checkFileNameExtensionIsValid,
 } from '../services/form-validation/validators'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'

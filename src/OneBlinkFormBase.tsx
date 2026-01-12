@@ -8,7 +8,7 @@ import {
   localisationService,
   submissionService,
   attachmentsService,
-} from '@oneblink/apps'
+} from './apps'
 import {
   EnvironmentTypes,
   FormTypes,

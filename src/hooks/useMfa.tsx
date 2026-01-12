@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService } from '@oneblink/apps'
+import { authService } from '../apps'
 
 type MfaState = {
   isExternalIdentityProviderUser: boolean
