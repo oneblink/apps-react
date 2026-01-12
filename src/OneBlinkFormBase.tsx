@@ -626,6 +626,7 @@ function OneBlinkFormBase({
         position: 'bottom-right',
         opacity: 0.95,
         appendTo: obFormContainerHTMLElement,
+        message: '',
       })
     }
     return () => {
