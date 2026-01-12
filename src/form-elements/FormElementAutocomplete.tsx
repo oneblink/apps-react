@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { formElementsService } from '@oneblink/sdk-core'
-import { generateHeaders } from '@oneblink/apps/dist/services/fetch'
+import { generateHeaders } from '@oneblink/apps/services/fetch'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'

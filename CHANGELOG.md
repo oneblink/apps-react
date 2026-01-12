@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- All code that previously lived in `@oneblink/apps` is now exported from this package
+
 ### Changed
 
 - **[BREAKING]** updated to React 19
