@@ -149,7 +149,7 @@ function FormElementBSB({
             <InputMask
               mask="xxx-xxx"
               replacement={{ x: /\d/ }}
-              showMask={true}
+              showMask
               type="text"
               placeholder={element.placeholderValue}
               id={id}
