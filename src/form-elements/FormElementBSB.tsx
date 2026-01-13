@@ -147,8 +147,9 @@ function FormElementBSB({
             })}
           >
             <InputMask
-              mask="ddd-ddd"
-              replacement={{ d: /\d/ }}
+              mask="xxx-xxx"
+              replacement={{ x: /\d/ }}
+              showMask={true}
               type="text"
               placeholder={element.placeholderValue}
               id={id}
