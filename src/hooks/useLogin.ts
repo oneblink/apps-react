@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService, Sentry } from '@oneblink/apps'
+import { authService, Sentry } from '../apps'
 
 import useIsMounted from './useIsMounted'
 import useBooleanState from './useBooleanState'

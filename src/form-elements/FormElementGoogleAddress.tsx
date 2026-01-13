@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes, GoogleTypes } from '@oneblink/types'
-import { OneBlinkAppsError, Sentry } from '@oneblink/apps'
+import { OneBlinkAppsError, Sentry } from '../apps'
 
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'

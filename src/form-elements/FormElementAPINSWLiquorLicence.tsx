@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { FormTypes, APINSWTypes } from '@oneblink/types'
-import { formService } from '@oneblink/apps'
+import { formService } from '../apps'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import AutocompleteDropdown from '../components/renderer/AutocompleteDropdown'

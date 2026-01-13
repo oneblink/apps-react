@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-import { formStoreService } from '@oneblink/apps'
+import { formStoreService } from 'apps'
 
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

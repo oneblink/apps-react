@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { formElementsService, typeCastService } from '@oneblink/sdk-core'
-import { formService } from '@oneblink/apps'
+import { formService } from '../apps'
 import useFormDefinition from './useFormDefinition'
 import useLoadResourcesState from './useLoadResourcesState'
 

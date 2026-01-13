@@ -1,5 +1,5 @@
 import { FormTypes } from '@oneblink/types'
-import { Sentry, attachmentsService } from '@oneblink/apps'
+import { Sentry, attachmentsService } from '../apps'
 import { v4 as uuid } from 'uuid'
 import { blobToCanvas, getBlobOrientation } from './blob-utils'
 

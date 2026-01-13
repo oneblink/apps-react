@@ -8,7 +8,7 @@ import {
 import * as React from 'react'
 import useNullableState from '../../../hooks/useNullableState'
 import { format } from 'date-fns'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../../../apps'
 
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 const shortDateTimeFormat =

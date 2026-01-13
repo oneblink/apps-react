@@ -1,4 +1,4 @@
-import { authService } from '@oneblink/apps'
+import { authService } from '../apps'
 import loadImage from 'blueimp-load-image'
 
 // Copied from https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript

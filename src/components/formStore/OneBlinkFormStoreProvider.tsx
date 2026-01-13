@@ -1,7 +1,7 @@
 import * as React from 'react'
 import LoadingWithMessage from '../LoadingWithMessage'
 import ErrorMessage from '../messages/ErrorMessage'
-import { formStoreService } from '@oneblink/apps'
+import { formStoreService } from '../../apps'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import { FormTypes } from '@oneblink/types'
 import { FormStoreTableProvider } from './FormStoreTableProvider'

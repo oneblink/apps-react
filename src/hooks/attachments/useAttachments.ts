@@ -5,7 +5,7 @@ import {
   generateErrorAttachment,
   correctFileOrientation,
 } from '../../services/attachments'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../../apps'
 import { canvasToBlob } from '../../services/blob-utils'
 import useIsMounted from '../useIsMounted'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../../types/form'

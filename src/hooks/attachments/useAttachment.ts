@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../../apps'
 import { FormTypes } from '@oneblink/types'
 import useFormDefinition from '../useFormDefinition'
 import useIsOffline from '../useIsOffline'
@@ -9,7 +9,7 @@ import useAuth from '../../hooks/useAuth'
 import { urlToBlobAsync } from '../../services/blob-utils'
 import useAttachmentBlobs from '../../hooks/attachments/useAttachmentBlobs'
 import useOnUploadAttachmentContext from '../useOnUploadAttachment'
-import tenants from '@oneblink/apps/tenants'
+import tenants from '../../apps/tenants'
 
 export type OnChange = (
   id: string,

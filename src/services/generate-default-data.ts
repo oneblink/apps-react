@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { attachmentsService, localisationService } from '@oneblink/apps'
+import { attachmentsService, localisationService } from '../apps'
 import { prepareNewAttachment } from './attachments'
 import { dataUriToBlobSync } from './blob-utils'
 import generateCivicaNameRecordElements from './generateCivicaNameRecordElements'

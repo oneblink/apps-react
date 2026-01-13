@@ -100,8 +100,8 @@ function OneBlinkReadOnlyForm({
  * ```tsx
  * import React from 'react'
  * import ReactDOM from 'react-dom'
- * import { FormTypes } from '@oneblink/apps'
  * import {
+ * FormTypes
  *   IsOfflineContextProvider,
  *   OneBlinkReadOnlyForm,
  *   useIsMounted,

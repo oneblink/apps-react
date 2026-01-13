@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 
 import { useFormSubmissionModelParent } from '../hooks/useFormSubmissionModelContext'
 import useFlattenElements from '../hooks/useFlattenElementsContext'

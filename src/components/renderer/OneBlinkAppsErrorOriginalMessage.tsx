@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { OneBlinkAppsError } from '@oneblink/apps'
+import { OneBlinkAppsError } from '../../apps'
 
 type Props = {
   error?: Error

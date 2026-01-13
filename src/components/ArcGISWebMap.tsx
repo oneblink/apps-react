@@ -22,7 +22,7 @@ import TextSymbol from '@arcgis/core/symbols/TextSymbol'
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine'
 import { Box, Divider, IconButton } from '@mui/material'
 import throttle from 'lodash.throttle'
-import { localisationService } from '@oneblink/apps'
+import { localisationService } from '../apps'
 import { v4 as uuid } from 'uuid'
 
 import OnLoading from '../components/renderer/OnLoading'

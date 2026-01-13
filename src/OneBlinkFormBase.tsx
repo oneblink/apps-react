@@ -8,7 +8,7 @@ import {
   localisationService,
   submissionService,
   attachmentsService,
-} from '@oneblink/apps'
+} from './apps'
 import {
   EnvironmentTypes,
   FormTypes,
@@ -626,6 +626,7 @@ function OneBlinkFormBase({
         position: 'bottom-right',
         opacity: 0.95,
         appendTo: obFormContainerHTMLElement,
+        message: '',
       })
     }
     return () => {

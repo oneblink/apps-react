@@ -6,7 +6,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
-import { formService } from '@oneblink/apps'
+import { formService } from '../apps'
 import { Collapse } from '@mui/material'
 import {
   NotificationGrid,

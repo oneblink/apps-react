@@ -3,7 +3,7 @@ import downloadAttachment from '../services/download-file'
 import { FormTypes } from '@oneblink/types'
 import useAttachment, { OnChange } from '../hooks/attachments/useAttachment'
 import FileCard from '../components/renderer/attachments/FileCard'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 import useBooleanState from '../hooks/useBooleanState'
 import CropModal from '../components/ImageCropper/CropModal'
 import AnnotationModal, {

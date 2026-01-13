@@ -14,7 +14,7 @@ import {
   prepareNewAttachment,
 } from '../services/attachments'
 import clsx from 'clsx'
-import { attachmentsService } from '@oneblink/apps'
+import { attachmentsService } from '../apps'
 import FormElementFile from './FormElementFile'
 import useAttachments from '../hooks/attachments/useAttachments'
 import CustomisableButtonInner from '../components/renderer/CustomisableButtonInner'

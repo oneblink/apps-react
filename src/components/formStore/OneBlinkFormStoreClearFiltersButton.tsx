@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Button } from '@mui/material'
 import useFormStoreTableContext from './useFormStoreTableContext'
 import MaterialIcon from '../MaterialIcon'
-import { formStoreService } from '@oneblink/apps'
+import { formStoreService } from '../../apps'
 
 function OneBlinkFormStoreClearFiltersButton(
   props: React.ComponentProps<typeof Button>,

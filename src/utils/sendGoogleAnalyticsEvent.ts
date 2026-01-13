@@ -1,4 +1,4 @@
-import { Sentry } from '@oneblink/apps'
+import { Sentry } from '../apps'
 import { FormTypes } from '@oneblink/types'
 
 export const sendGoogleAnalyticsEvent = (

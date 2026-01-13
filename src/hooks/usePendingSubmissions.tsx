@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { submissionService } from '@oneblink/apps'
+import { submissionService } from '../apps'
 import useBooleanState from './useBooleanState'
 import useIsMounted from './useIsMounted'
 import useIsOffline from './useIsOffline'

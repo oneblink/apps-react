@@ -1,6 +1,6 @@
 import React from 'react'
 import { NylasScheduling } from '@nylas/react'
-import { schedulingService } from '@oneblink/apps'
+import { schedulingService } from '../../apps'
 import ErrorMessage from '../messages/ErrorMessage'
 import CalendarBookingsContainer from './CalendarBookingsContainer'
 import useCalendarBookings from './CalendarBookingsProvider'

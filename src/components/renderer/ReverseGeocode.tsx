@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { FormTypes, GeoscapeTypes } from '@oneblink/types'
-import { formService, OneBlinkAppsError } from '@oneblink/apps'
+import { formService, OneBlinkAppsError } from '../../apps'
 import { formElementsService } from '@oneblink/sdk-core'
 
 import { parseLocationValue } from '../../form-elements/FormElementLocation'
