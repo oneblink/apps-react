@@ -57,7 +57,14 @@ const generateFormatters = (locale: Locale) => {
   }
 }
 
-const tenants = {
+const tenants: Record<
+  'test' | 'prod',
+  {
+    oneblink: OneBlinkAppsTenant
+    civicplus: OneBlinkAppsTenant
+    oneblinkUS: OneBlinkAppsTenant
+  }
+> = {
   test: {
     oneblink: {
       awsRegion: 'ap-southeast-2',
@@ -80,6 +87,17 @@ const tenants = {
       intlFormats: generateFormatters('en-US'),
       name: 'CivicPlus',
       productShortName: 'CivicOptimize',
+      distanceUnit: 'feet',
+      distanceUnitShortName: 'ft',
+    },
+    oneblinkUS: {
+      awsRegion: 'us-east-1',
+      loginDomain: 'login.test.us.oneblink.io',
+      apiOrigin: 'https://auth-api.test.us.oneblink.io',
+      vapidPublicKey: 'BF-WeCKYxp6R55nN5SX7L0_dVRAXlMdVRdsuvbiv0T7zP-yXTGTMw4F1O45pC0UdTk2m6DaOkZRzTJ1XWh2ByZw',
+      intlFormats: generateFormatters('en-US'),
+      name: 'OneBlink',
+      productShortName: 'OneBlink LcS',
       distanceUnit: 'feet',
       distanceUnitShortName: 'ft',
     },
@@ -109,11 +127,22 @@ const tenants = {
       distanceUnit: 'feet',
       distanceUnitShortName: 'ft',
     },
+    oneblinkUS: {
+      awsRegion: 'us-east-1',
+      loginDomain: 'login.us.oneblink.io',
+      apiOrigin: 'https://auth-api.us.oneblink.io',
+      vapidPublicKey: 'BKL8Vk_U46_To07_fkVOAExQp8Zi_XjEDunLqCz8cYEXcX3Em0qMdMdROfT6MYb7EKIkUK1Ymgvf3tFnkYrKCfc',
+      intlFormats: generateFormatters('en-US'),
+      name: 'OneBlink',
+      productShortName: 'OneBlink LcS',
+      distanceUnit: 'feet',
+      distanceUnitShortName: 'ft',
+    },
   },
 }
 
 class Tenants {
-  tenant: 'oneblink' | 'civicplus'
+  tenant: 'oneblink' | 'civicplus' | 'oneblinkUS'
 
   constructor() {
     this.tenant = 'oneblink'
@@ -152,8 +181,11 @@ class Tenants {
     this.tenant = 'oneblink'
   }
 
+  useOneBlinkUS() {
+    this.tenant = 'oneblinkUS'
+  }
+
   useCivicPlus() {
-    console.log('triggered')
     this.tenant = 'civicplus'
   }
 }
