@@ -50,6 +50,7 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
       }),
     [formElement.elements],
   )
+  // eslint-disable-next-line react-hooks/incompatible-library
   const { getRowModel } = useReactTable({
     columns: columns,
     data: value.map((entry) => ({ submission: entry })),

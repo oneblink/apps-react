@@ -119,6 +119,7 @@ export default function useFormDatePickerProps({
       slots: {
         textField: Input,
       },
+      /* eslint-disable react-hooks/refs */
       slotProps: {
         actionBar: {
           actions: [
@@ -150,6 +151,7 @@ export default function useFormDatePickerProps({
           onClick: openPickerOnMobile,
         } as TextFieldProps,
       },
+      /* eslint-enable react-hooks/refs */
       ref,
       open: isPickerOpen,
       onClose: () => {

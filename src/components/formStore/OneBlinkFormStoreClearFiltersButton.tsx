@@ -25,7 +25,7 @@ function OneBlinkFormStoreClearFiltersButton(
           false,
         )
       }}
-      // eslint-disable-next-line react/no-children-prop
+       
       children={<>Clear Filters</>}
       {...props}
     />

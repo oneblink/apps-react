@@ -31,25 +31,19 @@ function FormElementFreshdeskDependentField({
         element.options,
         value?.category,
       )
-      subcategoryElement.options = subCategoryOptions
-      elements.push(subcategoryElement)
+
+      elements.push({ ...subcategoryElement, options: subCategoryOptions })
 
       if (value?.subCategory) {
         const itemOptions = getNestedOptions(
           subCategoryOptions,
           value?.subCategory,
         )
-        itemElement.options = itemOptions
-        elements.push(itemElement)
+        elements.push({ ...itemElement, options: itemOptions })
       }
     }
 
-    return {
-      ...element,
-      type: 'form',
-      formId: NaN,
-      elements,
-    }
+    return { ...element, type: 'form', formId: NaN, elements }
   }, [element, props.value, freshdeskElements])
 
   const handleUpdateNestedFormElements =

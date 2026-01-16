@@ -515,6 +515,7 @@ export default function useFormStoreTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(initialState?.columnVisibility || {})
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     meta: {
       defaultHiddenColumnsVersion: initialState?.defaultHiddenColumnsVersion,

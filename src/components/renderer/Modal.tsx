@@ -54,6 +54,7 @@ function Modal({
       slots={{
         backdrop: () => <div className="modal-background-faded"></div>,
       }}
+      // eslint-disable-next-line react-hooks/refs
       container={ref?.current}
       disableScrollLock={true}
     >

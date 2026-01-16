@@ -451,6 +451,7 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
       mapContainerStyle={{
         height: 300,
       }}
+      // eslint-disable-next-line react-hooks/refs
       center={originalCenter.current}
       zoom={location.zoom}
       onZoomChanged={onZoomChanged}
@@ -461,6 +462,7 @@ const GoogleLocationPicker = React.memo(function GoogleLocationPicker({
         onLoad={(marker) => setMarker(marker)}
         onUnmount={() => setMarker(null)}
         animation={markerAnimation}
+        // eslint-disable-next-line react-hooks/refs
         position={originalCenter.current}
         draggable
         onDragEnd={handleDragEnd}

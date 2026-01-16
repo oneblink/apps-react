@@ -45,7 +45,9 @@ export default function ConfirmDialog({
   const isMounted = useIsMounted()
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
-  const handleConfirm = React.useCallback(async () => {
+  
+  // uses React Compiler
+  const handleConfirm =async () => {
     setIsConfirming(true)
     setError(null)
     let newError = null
@@ -61,7 +63,7 @@ export default function ConfirmDialog({
       setIsConfirming(false)
       setError(newError)
     }
-  }, [isMounted, onConfirm])
+  }
   return (
     <React.Fragment>
       <Dialog

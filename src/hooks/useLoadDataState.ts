@@ -70,7 +70,7 @@ export default function useLoadDataState<T>(
     status: 'LOADING',
   })
 
-  const handleLoad = React.useCallback(
+  const handleLoad = 
     async (abortSignal: AbortSignal) => {
       setState({
         status: 'LOADING',
@@ -91,9 +91,7 @@ export default function useLoadDataState<T>(
           })
         }
       }
-    },
-    [isMounted, onLoad],
-  )
+    }
 
   const setResult: React.Dispatch<React.SetStateAction<T>> = React.useCallback(
     (setter) => {

@@ -11,7 +11,9 @@ function Tooltip({
   return (
     <MuiTooltip
       {...props}
-      slotProps={{ popper: { container, ...props.slotProps?.popper } }}
+      slotProps={{
+        popper: { container: container.current, ...props.slotProps?.popper },
+      }}
     >
       {children}
     </MuiTooltip>
