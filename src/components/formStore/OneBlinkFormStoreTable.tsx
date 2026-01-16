@@ -147,7 +147,7 @@ function OneBlinkFormStoreTable() {
     return null
   }
 
-  let alternateBackground = false
+  const rowBackground = {alternate: false}
 
   return (
     <>
@@ -315,14 +315,14 @@ function OneBlinkFormStoreTable() {
                 rows[index - 1]?.original.submissionId !==
                 row.original.submissionId
               ) {
-                alternateBackground = !alternateBackground
+                rowBackground.alternate = !rowBackground.alternate
               }
               return (
                 // Apply the row props
                 <CellRow
                   key={row.id}
                   className={clsx('tr ob-form-store-table-row', {
-                    'ob-form-store-table-row__alternate': alternateBackground,
+                    'ob-form-store-table-row__alternate': rowBackground.alternate,
                   })}
                 >
                   {

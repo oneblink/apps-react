@@ -64,6 +64,7 @@ function FormElementSummary({ element, onChange, value }: Props) {
                 partialSummary: FormElementSummaryResults,
                 formElement: FormTypes.FormElement,
               ) =>
+                // eslint-disable-next-line react-hooks/immutability
                 reducer(
                   partialSummary,
                   formElement,

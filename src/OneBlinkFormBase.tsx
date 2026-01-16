@@ -1200,7 +1200,7 @@ function OneBlinkFormBase({
             <FormElementOptionsContextProvider formIsReadOnly={isReadOnly}>
               <FormElementLookupsContextProvider>
                 <OneBlinkFormContainerContext.Provider
-                  value={obFormContainerHTMLElementRef.current}
+                  value={obFormContainerHTMLElementRef}
                 >
                   <div
                     className={clsx('ob-form-container', {

@@ -60,7 +60,7 @@ function DrawingOptionsList({
 }: {
   options: { id: string; label: string; value: string; description?: string }[]
   onClose: () => void
-  sketchTool: Sketch
+  sketchTool: React.RefObject<Sketch | null>
   sketchToolType: SketchCreateTool
   setSelectedGraphicAttributes: (opt: {
     label: string
@@ -68,6 +68,7 @@ function DrawingOptionsList({
     description?: string
   }) => void
 }) {
+  if (!sketchTool.current) return null
   return (
     <div className="esri-widget">
       <Box
@@ -98,7 +99,7 @@ function DrawingOptionsList({
             style={{ alignItems: 'center' }}
             onClick={() => {
               onClose()
-              sketchTool?.create(sketchToolType)
+              sketchTool?.current?.create(sketchToolType)
               setSelectedGraphicAttributes({ value, label, description })
             }}
           >
@@ -772,7 +773,7 @@ function FormElementArcGISWebMap({
         aria-describedby={props['aria-describedby']}
       />
       <div id={drawingOptionsContainerId}>
-        {!!activeSketchToolMenu && sketchToolRef.current && (
+        {!!activeSketchToolMenu && sketchToolRef && (
           <DrawingOptionsList
             options={
               element.allowedDrawingTools?.find(
@@ -784,7 +785,7 @@ function FormElementArcGISWebMap({
               setSelectedGraphicAttributes(opt)
             }}
             sketchToolType={activeSketchToolMenu}
-            sketchTool={sketchToolRef.current}
+            sketchTool={sketchToolRef}
           />
         )}
       </div>

@@ -198,14 +198,14 @@ function PaymentReceipt({
 
     let newError = null
     try {
-      submissionResult.payment = await handlePaymentSubmissionEvent({
+      const payment = await handlePaymentSubmissionEvent({
         amount: submissionResult.payment.amount,
         formSubmissionResult: submissionResult,
         paymentSubmissionEvent,
         paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
         paymentFormUrl: submissionResult.payment.paymentFormUrl,
       })
-      await submissionService.executePostSubmissionAction(submissionResult, {
+      await submissionService.executePostSubmissionAction({ ...submissionResult, payment }, {
         onRedirectToRelativeUrl: (url) => history.push(url),
         onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
       })

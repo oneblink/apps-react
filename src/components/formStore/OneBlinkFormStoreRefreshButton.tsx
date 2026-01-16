@@ -16,7 +16,7 @@ function OneBlinkFormStoreRefreshButton(
       color="primary"
       variant="contained"
       disabled={!!submissionIdValidationMessage}
-      // eslint-disable-next-line react/no-children-prop
+       
       children={<>Refresh</>}
       {...props}
     />

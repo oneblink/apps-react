@@ -65,7 +65,10 @@ export default function useLoadDataState<T>(
   handleRefresh: () => void,
   setResult: React.Dispatch<React.SetStateAction<T>>,
 ] {
-  const isMounted = useIsMounted()
+  const isMountedRef = useIsMounted()
+
+  const isMounted = isMountedRef.current
+
   const [state, setState] = React.useState<LoadDataState<T>>({
     status: 'LOADING',
   })
@@ -77,14 +80,14 @@ export default function useLoadDataState<T>(
       })
       try {
         const result = await onLoad(abortSignal)
-        if (isMounted.current && !abortSignal.aborted) {
+        if (isMounted && !abortSignal.aborted) {
           setState({
             status: 'SUCCESS',
             result,
           })
         }
       } catch (err) {
-        if (isMounted.current && !abortSignal.aborted) {
+        if (isMounted && !abortSignal.aborted) {
           setState({
             status: 'ERROR',
             error: err as Error,

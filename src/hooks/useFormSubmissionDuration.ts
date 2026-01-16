@@ -7,6 +7,8 @@ export default function useFormSubmissionDuration(
   // a "seconds" value indicating the previous time spent on this form submission
   const [previousElapsedDurationSeconds, setPreviousElapsedDurationSeconds] =
     React.useState<number | undefined>(initialPreviousElapsedDurationSeconds)
+  // purity not required given we're after the time
+  // eslint-disable-next-line react-hooks/purity
   const startTime = React.useRef(Date.now())
 
   // return the current submission duration in seconds

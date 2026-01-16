@@ -28,7 +28,7 @@ function stringifyLookupButtonValue(v: unknown): string {
 }
 
 const FormElementLookupButtonValidationMessage = memo(
-  function _FormElementLookupButtonValidationMessage({
+  function FormElementLookupButtonValidationMessageComponent({
     validationMessage,
     displayValidationMessage,
     isDirty,
