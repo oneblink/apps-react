@@ -42,12 +42,14 @@ export default function ConfirmDialog({
   TransitionProps,
   disabled,
 }: Props) {
-  const isMounted = useIsMounted()
+  const isMountedRef = useIsMounted()
+
+  const isMounted = isMountedRef.current
+
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
-  
-  // uses React Compiler
-  const handleConfirm =async () => {
+
+  const handleConfirm = React.useCallback(async () => {
     setIsConfirming(true)
     setError(null)
     let newError = null
@@ -59,11 +61,12 @@ export default function ConfirmDialog({
       newError = error as Error
     }
 
-    if (isMounted.current && !abortController.signal.aborted) {
+    if (isMounted && !abortController.signal.aborted) {
       setIsConfirming(false)
       setError(newError)
     }
-  }
+  }, [isMounted, onConfirm])
+
   return (
     <React.Fragment>
       <Dialog
