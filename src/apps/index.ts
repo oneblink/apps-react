@@ -253,3 +253,4 @@ export { default as Sentry } from './Sentry'
 
 export const useTenantCivicPlus = () => tenants.useCivicPlus()
 export const useTenantOneBlink = () => tenants.useOneBlink()
+export const useTenantOneBlinkUS = () => tenants.useOneBlinkUS()
