@@ -9,19 +9,14 @@ on:
 
 jobs:
   Test:
-    name: Test Node.js ${{ matrix.node }} on ${{ matrix.os }}
+    name: Test Node.js
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        node: ['20']
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 24
       - run: npm ci
       - run: npm test

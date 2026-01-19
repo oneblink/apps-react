@@ -8,8 +8,8 @@ jobs:
     name: Github Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: docker://antonyurchenko/git-release:v5
+      - uses: actions/checkout@v6
+      - uses: docker://antonyurchenko/git-release:v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRAFT_RELEASE: 'false'
@@ -20,14 +20,14 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
-      - run: npm install --global npm@10
+          node-version: '24'
+      - run: npm install --global npm@11
       - run: npm ci
       - run: npm run docs
-      - uses: devops-infra/action-commit-push@v0.9.2
+      - uses: devops-infra/action-commit-push@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_prefix: '[DOCS] '
@@ -38,13 +38,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
-      - run: npm install --global npm@10
+          node-version: '24'
+      - run: npm install --global npm@11
       - run: npm ci
       - run: npm test
-      - uses: JS-DevTools/npm-publish@v3
+      - uses: JS-DevTools/npm-publish@v4
         with:
           token: ${{ secrets.NPM_TOKEN }}
           access: 'public'
