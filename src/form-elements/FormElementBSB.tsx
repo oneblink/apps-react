@@ -38,6 +38,7 @@ function FormElementBSB({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
+  const [hasFocus, setHasFocus] = React.useState(false)
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
   const [{ isLoading, errorMessage, bsbRecord }, setState] = React.useState<{
@@ -149,7 +150,7 @@ function FormElementBSB({
             <InputMask
               mask="xxx-xxx"
               replacement={{ x: /\d/ }}
-              showMask
+              showMask={hasFocus}
               type="text"
               placeholder={element.placeholderValue}
               id={id}
@@ -161,11 +162,15 @@ function FormElementBSB({
               }}
               required={element.required}
               disabled={element.readOnly}
+              onFocus={() => {setHasFocus(true)
+              }}
               onBlur={() => {
+                setHasFocus(false)
                 if (text === 'xxx-xxx') {
                   onChange(element, {
                     value: undefined,
                   })
+                  setText("")
                 }
                 setIsDirty()
               }}
