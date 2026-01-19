@@ -10,6 +10,7 @@ import { formService } from '../apps'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
+import useBooleanState from '../hooks/useBooleanState'
 
 type Props = {
   id: string
@@ -38,6 +39,7 @@ function FormElementBSB({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
+  const [hasFocus, setHasFocus, removeFocus] = useBooleanState(false)
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
   const [{ isLoading, errorMessage, bsbRecord }, setState] = React.useState<{
@@ -149,7 +151,7 @@ function FormElementBSB({
             <InputMask
               mask="xxx-xxx"
               replacement={{ x: /\d/ }}
-              showMask
+              showMask={hasFocus}
               type="text"
               placeholder={element.placeholderValue}
               id={id}
@@ -161,11 +163,14 @@ function FormElementBSB({
               }}
               required={element.required}
               disabled={element.readOnly}
+              onFocus={setHasFocus}
               onBlur={() => {
+                removeFocus()
                 if (text === 'xxx-xxx') {
                   onChange(element, {
                     value: undefined,
                   })
+                  setText("")
                 }
                 setIsDirty()
               }}
