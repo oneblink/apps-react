@@ -59,7 +59,7 @@
     "@microsoft/eslint-plugin-sdl": "^1.1.0",
     "@mui/material": "^7.3.7",
     "@mui/x-date-pickers": "^8.24.0",
-    "@oneblink/release-cli": "^3.4.0",
+    "@oneblink/release-cli": "^4.0.0-beta.2",
     "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
