@@ -42,13 +42,12 @@ export default function ConfirmDialog({
   TransitionProps,
   disabled,
 }: Props) {
-  const isMountedRef = useIsMounted()
-
-  const isMounted = isMountedRef.current
+  const isMounted = useIsMounted()
 
   const [isConfirming, setIsConfirming] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const handleConfirm = React.useCallback(async () => {
     setIsConfirming(true)
     setError(null)
@@ -61,7 +60,7 @@ export default function ConfirmDialog({
       newError = error as Error
     }
 
-    if (isMounted && !abortController.signal.aborted) {
+    if (isMounted.current && !abortController.signal.aborted) {
       setIsConfirming(false)
       setError(newError)
     }
