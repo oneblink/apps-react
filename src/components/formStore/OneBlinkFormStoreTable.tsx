@@ -81,6 +81,7 @@ const Table = styled('div')(({ theme }) => ({
       top: theme.spacing(0.5),
       bottom: theme.spacing(0.5),
       transform: `translateX(calc(${theme.spacing(0.5)} + 1px))`,
+      cursor: 'col-resize',
       zIndex: 1,
       // prevents from scrolling while dragging on touch devices
       touchAction: 'none',

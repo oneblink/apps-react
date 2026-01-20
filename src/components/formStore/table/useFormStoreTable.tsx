@@ -522,6 +522,7 @@ export default function useFormStoreTable({
       formId: form.id,
     },
     columns,
+    columnResizeMode: 'onChange',
     data: formStoreRecords,
     defaultColumn,
     state: {
