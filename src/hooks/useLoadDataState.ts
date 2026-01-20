@@ -65,29 +65,28 @@ export default function useLoadDataState<T>(
   handleRefresh: () => void,
   setResult: React.Dispatch<React.SetStateAction<T>>,
 ] {
-  const isMountedRef = useIsMounted()
-
-  const isMounted = isMountedRef.current
+  const isMounted = useIsMounted()
 
   const [state, setState] = React.useState<LoadDataState<T>>({
     status: 'LOADING',
   })
 
   const handleLoad = React.useCallback(
+    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     async (abortSignal: AbortSignal) => {
       setState({
         status: 'LOADING',
       })
       try {
         const result = await onLoad(abortSignal)
-        if (isMounted && !abortSignal.aborted) {
+        if (isMounted.current && !abortSignal.aborted) {
           setState({
             status: 'SUCCESS',
             result,
           })
         }
       } catch (err) {
-        if (isMounted && !abortSignal.aborted) {
+        if (isMounted.current && !abortSignal.aborted) {
           setState({
             status: 'ERROR',
             error: err as Error,
