@@ -136,8 +136,7 @@ function OneBlinkFormStoreTable() {
     /* eslint-enable @typescript-eslint/no-unused-expressions */
     const headers = getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
-    for (let i = 0; i < headers.length; i++) {
-      const header = headers[i]!
+    for (const header of headers) {
       colSizes[`--header-${header.id}-size`] = header.getSize()
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
@@ -328,7 +327,7 @@ function OneBlinkFormStoreTable() {
                 >
                   {
                     // Loop over the rows cells
-                    row.getAllCells().map((cell) => {
+                    row.getVisibleCells().map((cell) => {
                       // Apply the cell props
                       return (
                         <IsHoveringProvider
@@ -339,7 +338,7 @@ function OneBlinkFormStoreTable() {
                               'is-resizing': cell.column.getIsResizing(),
                             },
                           )}
-                          style={{ width: cell.column.getSize() }}
+                          style={{ width: `calc(var(--col-${cell.column.id}-size) * 1px)` }}
                         >
                           {
                             // Render the cell contents
