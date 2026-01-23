@@ -159,6 +159,10 @@ class Tenants {
         return this.isTestEnvironment
           ? tenants.test.civicplus
           : tenants.prod.civicplus
+      case 'oneblinkUS':
+        return this.isTestEnvironment
+          ? tenants.test.oneblinkUS
+          : tenants.prod.oneblinkUS
       case 'oneblink':
       default:
         return this.isTestEnvironment
