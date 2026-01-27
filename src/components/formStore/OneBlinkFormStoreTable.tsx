@@ -138,12 +138,16 @@ function OneBlinkFormStoreTable() {
     const headers = getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
     for (const header of headers) {
+      // This check isn't actually necessary, but `visibleColumns` is required as a dependency
+      // to force a re-calculation of the memo when the columns are hidden/show, 
+      // so we use it here do get around having to ignore eslint dep reules
+      if (visibleColumns[header.column.id] === false) {
+        continue
+      }
       colSizes[`--header-${header.id}-size`] = header.getSize()
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
     return colSizes
-    // `visibleColumns` is not actually used here, but is required as a dependency
-    // to force a re-calculation of the memo when the columns are hidden/shown
   }, [getFlatHeaders, columnSizingInfo, columnSizing, visibleColumns])
 
   if (!parentHeaderGroup) {
