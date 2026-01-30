@@ -214,7 +214,6 @@ function ColumnFilters({ filter }: Props) {
                 }
               }}
               onChange={(newDate) => {
-                console.log('newDate', newDate)
                 filter.onChange(
                   filter.value?.$lte || !!newDate
                     ? {
