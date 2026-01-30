@@ -106,7 +106,7 @@ const useCommonPickerProps = <T extends DateTimeValidationError>({
     },
     maxDate: maxDateMemo,
     minDate: minDateMemo,
-    value: valueMemo,
+    defaultValue: valueMemo,
     onError: setErrorType,
     enableAccessibleFieldDOMStructure: false,
   }

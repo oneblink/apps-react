@@ -29,6 +29,7 @@ type Props = {
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 
 function ColumnFilters({ filter }: Props) {
+
   switch (filter.type) {
     case 'SUBMISSION_ID': {
       return (
@@ -45,8 +46,8 @@ function ColumnFilters({ filter }: Props) {
             filter.onChange(
               e.target.value
                 ? {
-                    $eq: e.target.value,
-                  }
+                  $eq: e.target.value,
+                }
                 : undefined,
               true,
             )
@@ -69,10 +70,10 @@ function ColumnFilters({ filter }: Props) {
             filter.onChange(
               e.target.value
                 ? {
-                    $regex: e.target.value,
-                    // hard code case in-sensitive and multi-line searching
-                    $options: 'im',
-                  }
+                  $regex: e.target.value,
+                  // hard code case in-sensitive and multi-line searching
+                  $options: 'im',
+                }
                 : undefined,
               true,
             )
@@ -101,9 +102,9 @@ function ColumnFilters({ filter }: Props) {
                   typeof filter.value?.$lte === 'number' ||
                     newValue !== undefined
                     ? {
-                        ...filter.value,
-                        $gte: newValue,
-                      }
+                      ...filter.value,
+                      $gte: newValue,
+                    }
                     : undefined,
                   true,
                 )
@@ -127,9 +128,9 @@ function ColumnFilters({ filter }: Props) {
                   typeof filter.value?.$gte === 'number' ||
                     newValue !== undefined
                     ? {
-                        ...filter.value,
-                        $lte: newValue,
-                      }
+                      ...filter.value,
+                      $lte: newValue,
+                    }
                     : undefined,
                   true,
                 )
@@ -159,9 +160,9 @@ function ColumnFilters({ filter }: Props) {
                 filter.onChange(
                   filter.value?.$lte || !!newDate
                     ? {
-                        ...filter.value,
-                        $gte: newDate,
-                      }
+                      ...filter.value,
+                      $gte: newDate,
+                    }
                     : undefined,
                   false,
                 )
@@ -185,9 +186,9 @@ function ColumnFilters({ filter }: Props) {
                 filter.onChange(
                   filter.value?.$gte || !!newDate
                     ? {
-                        ...filter.value,
-                        $lte: newDate,
-                      }
+                      ...filter.value,
+                      $lte: newDate,
+                    }
                     : undefined,
                   false,
                 )
@@ -205,6 +206,7 @@ function ColumnFilters({ filter }: Props) {
               label="After"
               maxDate={filter.value?.$lte}
               value={filter.value?.$gte}
+
               renderHelperText={(errorType) => {
                 if (errorType === 'maxDate' && filter.value?.$lte) {
                   return `Must be before "${format(
@@ -213,16 +215,18 @@ function ColumnFilters({ filter }: Props) {
                   )}"`
                 }
               }}
-              onChange={(newDate) =>
+              onChange={(newDate) => {
+                console.log('newDate', newDate)
                 filter.onChange(
                   filter.value?.$lte || !!newDate
                     ? {
-                        ...filter.value,
-                        $gte: newDate,
-                      }
+                      ...filter.value,
+                      $gte: newDate,
+                    }
                     : undefined,
                   false,
                 )
+              }
               }
             />
           </Grid>
@@ -243,9 +247,9 @@ function ColumnFilters({ filter }: Props) {
                 filter.onChange(
                   filter.value?.$gte || !!newDate
                     ? {
-                        ...filter.value,
-                        $lte: newDate,
-                      }
+                      ...filter.value,
+                      $lte: newDate,
+                    }
                     : undefined,
                   false,
                 )
@@ -286,8 +290,8 @@ function ColumnFilters({ filter }: Props) {
             filter.onChange(
               newValue.length
                 ? {
-                    $in: newValue,
-                  }
+                  $in: newValue,
+                }
                 : undefined,
               false,
             )
@@ -304,10 +308,10 @@ function ColumnFilters({ filter }: Props) {
             filter.onChange(
               newValue.length
                 ? {
-                    $elemMatch: {
-                      $in: newValue,
-                    },
-                  }
+                  $elemMatch: {
+                    $in: newValue,
+                  },
+                }
                 : undefined,
               false,
             )
