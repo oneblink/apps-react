@@ -29,7 +29,6 @@ type Props = {
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 
 function ColumnFilters({ filter }: Props) {
-
   switch (filter.type) {
     case 'SUBMISSION_ID': {
       return (
@@ -206,7 +205,6 @@ function ColumnFilters({ filter }: Props) {
               label="After"
               maxDate={filter.value?.$lte}
               value={filter.value?.$gte}
-
               renderHelperText={(errorType) => {
                 if (errorType === 'maxDate' && filter.value?.$lte) {
                   return `Must be before "${format(
