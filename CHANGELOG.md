@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-02-02
+
 ### Added
 
 - All code that previously lived in `@oneblink/apps` is now exported from this package
@@ -14,6 +16,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **[BREAKING]** updated to React 19
+
+### Dependencies
+
+- update @emotion/react to [11.14.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.11.3](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update @emotion/styled to [11.14.1](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md) (from [11.11.0](https://github.com/emotion-js/emotion/blob/master/CHANGELOG.md))
+
+- update @nylas/react to 3.1.0 (from 1.3.1)
+
+- update @oneblink/sdk-core to [9.0.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [8.11.1-beta.4](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @react-google-maps/api to 2.20.8 (from 2.19.2)
+
+- update bulma-toast to [2.4.4](https://github.com/rfoel/bulma-toast/releases/tag/v2.4.4) (from [2.4.3](https://github.com/rfoel/bulma-toast/releases/tag/v2.4.3))
+
+- update clsx to [2.1.1](https://github.com/lukeed/clsx/releases/tag/v2.1.1) (from [2.1.0](https://github.com/lukeed/clsx/releases/tag/v2.1.0))
+
+- update qrcode.react to [4.2.0](https://github.com/zpao/qrcode.react/releases/tag/v4.2.0) (from [4.1.0](https://github.com/zpao/qrcode.react/releases/tag/v4.1.0))
+
+- update query-string to [8.2.0](https://github.com/sindresorhus/query-string/releases/tag/v8.2.0) (from [8.1.0](https://github.com/sindresorhus/query-string/releases/tag/v8.1.0))
+
+- no longer depend upon react-input-mask
+
+- update react-signature-canvas to [1.1.0-alpha.2](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.1.0-alpha.2) (from [1.0.6](https://github.com/agilgur5/react-signature-canvas/releases/tag/v1.0.6))
+
+- no longer depend upon react-table
+
+- update sanitize-html to [2.17.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md) (from [2.11.0](https://github.com/apostrophecms/sanitize-html/blob/master/CHANGELOG.md))
+
+- no longer depend upon use-resize-observer
+
+- depend upon @aws-sdk/client-cognito-identity-provider [3.966.0](https://github.com/aws/aws-sdk-js-v3/releases/tag/v3.966.0)
+
+- depend upon @oneblink/storage [4.0.0-beta.3](https://github.com/oneblink/storage/blob/master/CHANGELOG.md)
+
+- depend upon @react-input/mask 2.0.4
+
+- depend upon @sentry/browser [10.32.1](https://github.com/getsentry/sentry-javascript/releases/tag/10.32.1)
+
+- depend upon @sentry/tracing [7.120.4](https://github.com/getsentry/sentry-javascript/releases/tag/7.120.4)
+
+- depend upon @tanstack/react-table [8.21.3](https://github.com/TanStack/table/releases/tag/v8.21.3)
+
+- depend upon file-type-checker [1.1.6](https://github.com/nir11/file-type-checker/releases/tag/v1.1.6)
+
+- depend upon jwt-decode [4.0.0](https://github.com/auth0/jwt-decode/releases/tag/v4.0.0)
+
+- depend upon localforage [1.10.0](https://github.com/localForage/localForage/releases/tag/1.10.0)
+
+- depend upon lodash.orderby 4.6.0
+
+- depend upon ua-parser-js [1.0.41](https://github.com/faisalman/ua-parser-js/releases/tag/1.0.41)
+
+- depend upon usehooks-ts 3.1.1
 
 ## [8.14.0] - 2025-12-17
 
