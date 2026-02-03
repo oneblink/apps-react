@@ -119,6 +119,7 @@ function OneBlinkFormStoreTable() {
   const columnSizingInfo = getState().columnSizingInfo
   const columnSizing = getState().columnSizing
   const visibleColumns = getState().columnVisibility
+  const flatHeaders = getFlatHeaders()
 
   /**
    * Pinched from
@@ -135,11 +136,10 @@ function OneBlinkFormStoreTable() {
     columnSizingInfo
     columnSizing
     /* eslint-enable @typescript-eslint/no-unused-expressions */
-    const headers = getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
-    for (const header of headers) {
+    for (const header of flatHeaders) {
       // This check isn't actually necessary, but `visibleColumns` is required as a dependency
-      // to force a re-calculation of the memo when the columns are hidden/show, 
+      // to force a re-calculation of the memo when the columns are hidden/show,
       // so we use it here do get around having to ignore eslint dep reules
       if (visibleColumns[header.column.id] === false) {
         continue
@@ -148,7 +148,7 @@ function OneBlinkFormStoreTable() {
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
     return colSizes
-  }, [getFlatHeaders, columnSizingInfo, columnSizing, visibleColumns])
+  }, [flatHeaders, columnSizingInfo, columnSizing, visibleColumns])
 
   if (!parentHeaderGroup) {
     return null
@@ -192,50 +192,50 @@ function OneBlinkFormStoreTable() {
                       onClick={
                         sortingProperty
                           ? () => {
-                            onChangeParameters(
-                              (
-                                currentParameters: formStoreService.FormStoreParameters,
-                              ) => {
-                                const sortingMeta =
-                                  header.column.columnDef.meta?.sorting
-                                    ?.property
-                                if (!sortingMeta) {
-                                  return currentParameters
-                                }
-                                switch (sortingDirection) {
-                                  case 'asc': {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: [
-                                        {
-                                          property: sortingMeta,
-                                          direction: 'descending',
-                                        },
-                                      ],
+                              onChangeParameters(
+                                (
+                                  currentParameters: formStoreService.FormStoreParameters,
+                                ) => {
+                                  const sortingMeta =
+                                    header.column.columnDef.meta?.sorting
+                                      ?.property
+                                  if (!sortingMeta) {
+                                    return currentParameters
+                                  }
+                                  switch (sortingDirection) {
+                                    case 'asc': {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: [
+                                          {
+                                            property: sortingMeta,
+                                            direction: 'descending',
+                                          },
+                                        ],
+                                      }
+                                    }
+                                    case 'desc': {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: undefined,
+                                      }
+                                    }
+                                    default: {
+                                      return {
+                                        ...currentParameters,
+                                        sorting: [
+                                          {
+                                            property: sortingMeta,
+                                            direction: 'ascending',
+                                          },
+                                        ],
+                                      }
                                     }
                                   }
-                                  case 'desc': {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: undefined,
-                                    }
-                                  }
-                                  default: {
-                                    return {
-                                      ...currentParameters,
-                                      sorting: [
-                                        {
-                                          property: sortingMeta,
-                                          direction: 'ascending',
-                                        },
-                                      ],
-                                    }
-                                  }
-                                }
-                              },
-                              false,
-                            )
-                          }
+                                },
+                                false,
+                              )
+                            }
                           : undefined
                       }
                       style={{
@@ -256,8 +256,8 @@ function OneBlinkFormStoreTable() {
                               sx={
                                 sortingDirection === 'asc'
                                   ? {
-                                    transform: 'rotate(180deg)',
-                                  }
+                                      transform: 'rotate(180deg)',
+                                    }
                                   : undefined
                               }
                               className="th-icon"
@@ -329,7 +329,8 @@ function OneBlinkFormStoreTable() {
                 <CellRow
                   key={row.id}
                   className={clsx('tr ob-form-store-table-row', {
-                    'ob-form-store-table-row__alternate': rowBackground.alternate,
+                    'ob-form-store-table-row__alternate':
+                      rowBackground.alternate,
                   })}
                 >
                   {
@@ -345,7 +346,9 @@ function OneBlinkFormStoreTable() {
                               'is-resizing': cell.column.getIsResizing(),
                             },
                           )}
-                          style={{ width: `calc(var(--col-${cell.column.id}-size) * 1px)` }}
+                          style={{
+                            width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
+                          }}
                         >
                           {
                             // Render the cell contents
