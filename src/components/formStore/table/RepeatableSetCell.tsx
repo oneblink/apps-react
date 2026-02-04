@@ -66,7 +66,7 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
       onChange={toggleVisibility}
     >
       <Wrapper>
-        {getRowModel().rows.map((row, i) => {
+        {rows.map((row, i) => {
           const isLast = i === rows.length - 1
           return (
             <React.Fragment key={row.id}>

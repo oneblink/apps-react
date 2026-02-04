@@ -335,43 +335,46 @@ const generateColumns = <
         break
       }
       default: {
-        const col = columnHelper.display({
-          id: ['FORM_ELEMENT', ...parentElementNames, formElement.name].join(
-            '_',
-          ),
-          header: formElement.label,
-          meta: {
-            sorting: generateSorting({
-              formElement,
-              sorting,
-              parentElementNames,
-            }),
-            tooltip: formElement.tooltip || formElement.name,
-            formElementType: formElement.type,
-            filter: generateFilter({
-              formElement,
-              onChangeParameters,
-              rootSubmissionFilters: filters?.submission,
-              parentElementNames,
-            }),
+        const col = columnHelper.accessor(
+          (row) => row.submission[formElement.name],
+          {
+            id: ['FORM_ELEMENT', ...parentElementNames, formElement.name].join(
+              '_',
+            ),
+            header: formElement.label,
+            meta: {
+              sorting: generateSorting({
+                formElement,
+                sorting,
+                parentElementNames,
+              }),
+              tooltip: formElement.tooltip || formElement.name,
+              formElementType: formElement.type,
+              filter: generateFilter({
+                formElement,
+                onChangeParameters,
+                rootSubmissionFilters: filters?.submission,
+                parentElementNames,
+              }),
+            },
+            cell: ({ row: { original: formStoreRecord } }) => {
+              const submission = parentElementNames.reduce<
+                SubmissionTypes.S3SubmissionData['submission']
+              >(
+                (memo, elementName) =>
+                  memo?.[elementName] as FormStoreRecord['submission'],
+                formStoreRecord.submission,
+              )
+              return (
+                <FormElementTableCell
+                  formElement={formElement}
+                  submission={submission}
+                  allowCopy={allowCopy}
+                />
+              )
+            },
           },
-          cell: ({ row: { original: formStoreRecord } }) => {
-            const submission = parentElementNames.reduce<
-              SubmissionTypes.S3SubmissionData['submission']
-            >(
-              (memo, elementName) =>
-                memo?.[elementName] as FormStoreRecord['submission'],
-              formStoreRecord.submission,
-            )
-            return (
-              <FormElementTableCell
-                formElement={formElement}
-                submission={submission}
-                allowCopy={allowCopy}
-              />
-            )
-          },
-        })
+        )
         columns.push(col)
         break
       }
