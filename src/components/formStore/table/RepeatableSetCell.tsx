@@ -3,7 +3,11 @@ import { Typography, Divider as MuiDivider, styled } from '@mui/material'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useBooleanState from '../../../hooks/useBooleanState'
 import generateColumns from './generateColumns'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 import RepeatableSetCellAccordion from './RepeatableSetCellAccordion'
 
 const Wrapper = styled('div')({
@@ -71,7 +75,10 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
           return (
             <React.Fragment key={row.id}>
               {row.getAllCells().map((cell) => {
-                const cellValue = cell.getValue()
+                const cellValue = flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext(),
+                )
                 if (!cellValue) return null
                 return (
                   <CellRow key={cell.column.id}>
@@ -80,7 +87,7 @@ const RepeatableSetCell = ({ formElement, value }: Props) => {
                         {cell.column.columnDef.header?.toString() || ''}:
                       </Typography>
                     </span>
-                    <CellValue>{cellValue as string}</CellValue>
+                    <CellValue>{cellValue}</CellValue>
                   </CellRow>
                 )
               })}
