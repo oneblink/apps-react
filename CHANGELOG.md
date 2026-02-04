@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Columns not sizing correctly when headers change
+- Not displaying repeatable set values
 
 ## [9.0.0] - 2026-02-02
 
