@@ -7,7 +7,7 @@
     "url": "https://github.com/oneblink/apps-react/issues"
   },
   "dependencies": {
-    "@arcgis/core": "~4.29.10",
+    "@arcgis/core": "~4.34.8",
     "@aws-sdk/client-cognito-identity-provider": "^3.987.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
