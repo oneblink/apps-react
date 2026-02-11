@@ -236,10 +236,20 @@ function FormElementArcGISWebMap({
         const graphics: Graphic[] = []
 
         for (let i = 1; i < points.length; i++) {
-          const x1 = points[i].x
-          const x2 = points[i - 1].x
-          const y1 = points[i].y
-          const y2 = points[i - 1].y
+          const point = points[i]
+          const previousPoint = points[i - 1]
+          if (
+            typeof point.latitude !== 'number' ||
+            typeof point.longitude !== 'number' ||
+            typeof previousPoint.latitude !== 'number' ||
+            typeof previousPoint.longitude !== 'number'
+          ) {
+            continue
+          }
+          const x1 = point.x
+          const x2 = previousPoint.x
+          const y1 = point.y
+          const y2 = previousPoint.y
 
           const midpoint = new Point({
             x: (x1 + x2) / 2,
@@ -263,6 +273,9 @@ function FormElementArcGISWebMap({
           const offsetScreenY = pixelOffset * Math.sin(normalAngle)
 
           const screenPoint = mapView.toScreen(midpoint)
+          if (!screenPoint) {
+            continue
+          }
           screenPoint.x += offsetScreenX
           screenPoint.y -= offsetScreenY
           const offsetMapPoint = mapView.toMap(screenPoint)
@@ -270,8 +283,8 @@ function FormElementArcGISWebMap({
           const polyline = new Polyline({
             paths: [
               [
-                [points[i].longitude, points[i].latitude],
-                [points[i - 1].longitude, points[i - 1].latitude],
+                [point.longitude, point.latitude],
+                [previousPoint.longitude, previousPoint.latitude],
               ],
             ],
             spatialReference: { wkid: 4326 },
@@ -292,9 +305,9 @@ function FormElementArcGISWebMap({
         }
 
         measurementLayer.addMany(graphics)
-        mapViewRef.current?.map.reorder(
+        mapViewRef.current?.map?.reorder(
           measurementLayer,
-          mapViewRef.current?.map.layers.length,
+          mapViewRef.current?.map?.layers.length,
         )
       }
     },
@@ -346,7 +359,7 @@ function FormElementArcGISWebMap({
         if (sketchEvent.state === 'complete') {
           // only update the submission value if the graphic's geometry was actually changed
           if (
-            JSON.stringify(sketchEvent.graphics[0].geometry.toJSON()) !==
+            JSON.stringify(sketchEvent.graphics[0].geometry?.toJSON()) !==
             selectedGraphicForUpdate.current
           ) {
             updateDrawingInputSubmissionValue()
@@ -356,7 +369,7 @@ function FormElementArcGISWebMap({
         }
         if (sketchEvent.state === 'start') {
           selectedGraphicForUpdate.current = JSON.stringify(
-            sketchEvent.graphics[0].geometry.clone().toJSON(),
+            sketchEvent.graphics[0].geometry?.clone().toJSON(),
           )
           addMeasurementLabels(sketchEvent.graphics)
         }
@@ -630,13 +643,9 @@ function FormElementArcGISWebMap({
             layer: drawingLayer,
             creationMode: 'single',
             layout: 'vertical',
-            availableCreateTools: [
-              'point',
-              'polyline',
-              'polygon',
-              'rectangle',
-              'circle',
-            ].filter((createTool) =>
+            availableCreateTools: (
+              ['point', 'polyline', 'polygon', 'rectangle', 'circle'] as const
+            ).filter((createTool) =>
               element.allowedDrawingTools?.find(
                 (tool) => tool.type === createTool,
               ),
