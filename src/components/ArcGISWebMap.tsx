@@ -31,7 +31,7 @@ import MaterialIcon from './MaterialIcon'
 import useIsPageVisible from '../hooks/useIsPageVisible'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { FormElementValueChangeHandler } from '../types/form'
-import '../styles/arcgis-external.css'
+import '@arcgis/core/assets/esri/themes/light/main.css'
 import Layer from '@arcgis/core/layers/Layer'
 
 type Props = {
