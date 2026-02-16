@@ -620,6 +620,78 @@ async function getFormElementOptionsSetOptions(
         }
       }
     }
+    case 'SALESFORCE_PICKLIST': {
+      const formElementOptionSetEnvironmentSalesforcePicklist =
+        formElementOptionsSet.environments.find(
+          (environment) =>
+            environment.formsAppEnvironmentId === formsAppEnvironmentId,
+        )
+      if (!formElementOptionSetEnvironmentSalesforcePicklist) {
+        return {
+          type: 'ERROR',
+          error: new OneBlinkAppsError(
+            `Dynamic list configuration has not been completed yet. Please contact your administrator to rectify the issue.`,
+            {
+              title: 'Misconfigured Dynamic List',
+              originalError: new Error(
+                JSON.stringify(
+                  {
+                    formElementOptionsSetId: formElementOptionsSet.id,
+                    formElementOptionsSetName: formElementOptionsSet.name,
+                    formsAppEnvironmentId,
+                  },
+                  null,
+                  2,
+                ),
+              ),
+            },
+          ),
+        }
+      }
+
+      try {
+        const { options } = await getRequest<{ options: unknown }>(
+          `${tenants.current.apiOrigin}/forms/${formId}/salesforce-picklist-options?formElementOptionsSetId=${formElementOptionsSet.id}`,
+          abortSignal,
+        )
+        return {
+          type: 'OPTIONS',
+          options,
+        }
+      } catch (error) {
+        Sentry.captureException(error)
+        return {
+          type: 'ERROR',
+          error: new OneBlinkAppsError(
+            `Options could not be loaded. Please contact your administrator to rectify the issue.`,
+            {
+              title: 'Invalid List Response',
+              httpStatusCode: (error as HTTPError).status,
+              originalError: new OneBlinkAppsError(
+                JSON.stringify(
+                  {
+                    formsAppEnvironmentId,
+                    formElementOptionsSetId: formElementOptionsSet.id,
+                    formElementOptionsSetName: formElementOptionsSet.name,
+                    salesforceObject:
+                      formElementOptionSetEnvironmentSalesforcePicklist.object
+                        .label,
+                    salesforceField:
+                      formElementOptionSetEnvironmentSalesforcePicklist.field
+                        .label,
+                  },
+                  null,
+                  2,
+                ),
+                {
+                  originalError: error as HTTPError,
+                },
+              ),
+            },
+          ),
+        }
+      }
+    }
     case 'GOOD_TO_GO_CUSTOM_FIELD': {
       const formElementOptionSetEnvironmentGoodToGoCustomField =
         formElementOptionsSet.environments.find(
