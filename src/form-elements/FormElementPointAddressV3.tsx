@@ -189,11 +189,11 @@ function FormElementPointAddressV3({
             value={value?.properties?.cadastralIdentifier}
             classNameSuffix="cadastral-identifier"
           />
-          {value?.properties?.parcelBundle?.map((parcel, index) => (
+          {value?.properties?.propertyBundle?.map((property) => (
             <PointAddressGridItem
-              key={parcel.parcelId || index}
+              key={property.propertyPid}
               label="Lot / DP Numbers"
-              value={`${parcel.lot}//${parcel.plan}`}
+              value={property.parcelIds?.join(', ')}
               classNameSuffix="cadastral-parcel"
             />
           ))}

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Lot / DP Numbers display for NSW Point V3 form element
+
 ## [9.1.0] - 2026-02-23
 
 ### Added
