@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.1.0] - 2026-02-23
+
 ### Added
 
 - salesforce picklist dynamic options
@@ -14,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - github action permissions to allow docs and github release jobs
+
+### Dependencies
+
+- update @arcgis/core to 4.34.8 (from 4.29.10)
+
+- update @aws-sdk/client-cognito-identity-provider to [3.987.0](https://github.com/aws/aws-sdk-js-v3/releases/tag/v3.987.0) (from [3.966.0](https://github.com/aws/aws-sdk-js-v3/releases/tag/v3.966.0))
+
+- update @nylas/react to 3.1.2 (from 3.1.0)
+
+- update @oneblink/sdk-core to [9.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [9.0.0-beta.2](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [5.0.0-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [4.0.0-beta.3](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
+
+- update @sentry/browser to [10.38.0](https://github.com/getsentry/sentry-javascript/releases/tag/10.38.0) (from [10.32.1](https://github.com/getsentry/sentry-javascript/releases/tag/10.32.1))
 
 ## [9.0.1] - 2026-02-04
 
