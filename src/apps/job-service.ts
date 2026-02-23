@@ -24,7 +24,7 @@ async function removePendingSubmissions(
 }
 
 async function tagDrafts(jobList: SubmissionTypes.FormsAppJob[]) {
-  return getDrafts().then((drafts) =>
+  return getDrafts(true).then((drafts) =>
     jobList.map((job) => {
       const draft = drafts.find((draft) => draft.jobId === job.id)
       return {

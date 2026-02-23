@@ -18,7 +18,10 @@ export type DraftsContextValue = {
    */
   lastSyncTime: Date | null
   /** A function to trigger syncing of the drafts */
-  syncDrafts: (abortSignal: AbortSignal | undefined) => Promise<void>
+  syncDrafts: (
+    abortSignal: AbortSignal | undefined,
+    metaOnly?: boolean,
+  ) => Promise<void>
   /** An Error object if syncing drafts fails */
   syncError: Error | null
   /** A function to clear Error object from syncing drafts */
@@ -101,7 +104,7 @@ export function DraftsContextProvider({
     }))
   }, [])
   const syncDrafts = React.useCallback(
-    async (abortSignal: AbortSignal | undefined) => {
+    async (abortSignal: AbortSignal | undefined, metaOnly?: boolean) => {
       if (!isDraftsEnabled || isUsingFormsKey) {
         return
       }
@@ -121,6 +124,7 @@ export function DraftsContextProvider({
           formsAppId,
           throwError: true,
           abortSignal,
+          metaOnly,
         })
       } catch (error) {
         newError = error as Error

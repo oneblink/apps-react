@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- individual draft data can be optionally downloaded during a sync
+
 ## [9.1.0] - 2026-02-23
 
 ### Added
