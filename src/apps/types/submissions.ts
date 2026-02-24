@@ -111,6 +111,8 @@ export type LocalFormSubmissionDraft = Omit<
   draftSubmission: DraftSubmission | undefined
   /** `true` if the draft was created by a public user (not logged in). */
   isPublic?: boolean
+  /** The status of the draft download */
+  downloadStatus?: 'PENDING' | 'DOWNLOADING' | 'ERROR' | 'SUCCESS'
 }
 
 export type FormSubmission = NewFormSubmission &

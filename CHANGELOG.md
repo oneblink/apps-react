@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **[BREAKING]** `draftService.syncDrafts` to download draft data in the background
+
 ### Fixed
 
 - Lot / DP Numbers display for NSW Point V3 form element
