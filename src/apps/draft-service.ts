@@ -165,16 +165,6 @@ async function generateLocalFormSubmissionDraftsFromStorage(
   }
 
   // At this point we need to store the state of the drafts in localForage
-  const username = getUsername()
-  if (!username) {
-    throw new OneBlinkAppsError(
-      'You cannot download drafts until you have logged in. Please login and try again.',
-      {
-        requiresLogin: true,
-      },
-    )
-  }
-
   const draftsToDownload: SubmissionTypes.FormSubmissionDraft[] = []
 
   for (const formSubmissionDraft of localDraftsStorage.syncedFormSubmissionDrafts) {
