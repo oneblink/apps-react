@@ -96,6 +96,7 @@ function generateLocalFormSubmissionDraftsFromDraftSubmissions(
         taskActionId: draftSubmission.taskCompletion?.taskAction.taskActionId,
         draftSubmission,
         versions: undefined,
+        downloadStatus: 'SUCCESS',
       })
     }
   }
@@ -129,7 +130,9 @@ async function generatePublicLocalFormSubmissionDraftsFromStorage(
   )
 
   return _orderBy(localFormSubmissionDrafts, (localFormSubmissionDraft) => {
-    return localFormSubmissionDraft.draftSubmission?.createdAt
+    return localFormSubmissionDraft.downloadStatus === 'SUCCESS'
+      ? localFormSubmissionDraft.draftSubmission?.createdAt
+      : undefined
   })
 }
 
@@ -176,14 +179,10 @@ async function generateLocalFormSubmissionDraftsFromStorage(
       // Remove any drafts deleted while offline
       !deletedDraftIds.has(formSubmissionDraft.id)
     ) {
-      const localDraftSubmission = await getLocalDraftSubmission(
-        formSubmissionDraft.id,
-      )
       draftsToDownload.push(formSubmissionDraft)
       localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
         ...formSubmissionDraft,
         downloadStatus: 'PENDING',
-        draftSubmission: localDraftSubmission ?? undefined,
       })
     }
   }
@@ -203,7 +202,7 @@ async function generateLocalFormSubmissionDraftsFromStorage(
         })
       }
       await broadcastUpdate()
-      let errorOrNotAvaialable: 'ERROR' | 'NOT_AVAILABLE' = 'ERROR'
+
       const draftSubmission = await getDraftSubmission(
         formSubmissionDraft,
       ).catch((err) => {
@@ -211,19 +210,34 @@ async function generateLocalFormSubmissionDraftsFromStorage(
           `Could not fetch draft submission for draft: ${formSubmissionDraft.id}`,
           err,
         )
+
         if (
           err instanceof OneBlinkAppsError &&
           err.title === DRAFT_DATA_UNAVAILABLE_ERROR_TITLE
         ) {
-          errorOrNotAvaialable = 'NOT_AVAILABLE'
+          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+            ...formSubmissionDraft,
+            downloadStatus: 'NOT_AVAILABLE',
+          })
+          return
         }
+
+        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+          ...formSubmissionDraft,
+          downloadStatus: 'ERROR',
+          downloadError: err.message,
+        })
+
         return undefined
       })
-      localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-        ...formSubmissionDraft,
-        draftSubmission: draftSubmission,
-        downloadStatus: draftSubmission ? 'SUCCESS' : errorOrNotAvaialable,
-      })
+      if (draftSubmission) {
+        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+          ...formSubmissionDraft,
+          draftSubmission: draftSubmission,
+          downloadStatus: 'SUCCESS',
+        })
+      }
+
       await broadcastUpdate()
     }
   }
@@ -233,11 +247,10 @@ async function generateLocalFormSubmissionDraftsFromStorage(
   )
 
   return _orderBy(localFormSubmissionDrafts, (localFormSubmissionDraft) => {
-    return (
-      localFormSubmissionDraft.draftSubmission?.createdAt ||
-      getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
-        ?.createdAt
-    )
+    return localFormSubmissionDraft.downloadStatus === 'SUCCESS'
+      ? localFormSubmissionDraft.draftSubmission?.createdAt
+      : getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
+          ?.createdAt
   })
 }
 

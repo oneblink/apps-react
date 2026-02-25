@@ -104,16 +104,21 @@ export type LocalFormSubmissionDraft = Omit<
    * remotely yet.
    */
   versions: SubmissionTypes.FormSubmissionDraftVersion[] | undefined
-  /**
-   * The draft submission data. `undefined` if it has not been downloaded
-   * locally yet.
-   */
-  draftSubmission: DraftSubmission | undefined
   /** `true` if the draft was created by a public user (not logged in). */
   isPublic?: boolean
-  /** The status of the draft download */
-  downloadStatus?: 'PENDING' | 'DOWNLOADING' | 'ERROR' | 'SUCCESS'
-}
+} & (
+    | {
+        downloadStatus: 'PENDING' | 'DOWNLOADING' | 'NOT_AVAILABLE'
+      }
+    | {
+        downloadStatus: 'ERROR'
+        downloadError: string
+      }
+    | {
+        downloadStatus: 'SUCCESS'
+        draftSubmission: DraftSubmission
+      }
+  )
 
 export type FormSubmission = NewFormSubmission &
   BaseFormSubmission & {
