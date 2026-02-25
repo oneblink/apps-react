@@ -116,7 +116,7 @@ export function getLatestFormSubmissionDraftVersion(
 
 export async function getDraftSubmission(
   formSubmissionDraft: SubmissionTypes.FormSubmissionDraft,
-  abortSignal?: AbortSignal,
+  abortSignal: AbortSignal | undefined,
 ): Promise<DraftSubmission | undefined> {
   const latestFormSubmissionDraftVersion = getLatestFormSubmissionDraftVersion(
     formSubmissionDraft.versions,
@@ -138,35 +138,9 @@ export async function getDraftSubmission(
     return undefined
   }
 
-  //drafts will always have a formsAppId
-  const s3SubmissionData = (await downloadDraftData(
-    latestFormSubmissionDraftVersion.id,
+  return await downloadDraftData(
+    formSubmissionDraft,
+    latestFormSubmissionDraftVersion,
     abortSignal,
-  )) as Omit<SubmissionTypes.S3SubmissionData, 'formsAppId'> & {
-    formsAppId: number
-  }
-  return await setLocalDraftSubmission({
-    definition: s3SubmissionData.definition,
-    submission: s3SubmissionData.submission,
-    lastElementUpdated: s3SubmissionData.lastElementUpdated,
-    formsAppId: s3SubmissionData.formsAppId,
-    jobId: formSubmissionDraft.jobId,
-    externalId: formSubmissionDraft.externalId,
-    previousFormSubmissionApprovalId:
-      formSubmissionDraft.previousFormSubmissionApprovalId,
-    taskCompletion: s3SubmissionData.task &&
-      s3SubmissionData.taskAction && {
-        task: s3SubmissionData.task,
-        taskAction: s3SubmissionData.taskAction,
-        taskGroup: s3SubmissionData.taskGroup,
-        taskGroupInstance: s3SubmissionData.taskGroupInstance,
-        redirectUrl: '',
-      },
-    title: latestFormSubmissionDraftVersion.title,
-    createdAt: latestFormSubmissionDraftVersion.createdAt,
-    formSubmissionDraftId: formSubmissionDraft.id,
-    sectionState: s3SubmissionData.sectionState,
-    previousElapsedDurationSeconds:
-      s3SubmissionData.previousElapsedDurationSeconds,
-  })
+  )
 }

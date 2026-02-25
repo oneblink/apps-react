@@ -5,11 +5,7 @@ import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { isOffline } from './offline-service'
 import { getUsername } from './services/cognito'
 import { getFormsKeyId, getCurrentFormsAppUser } from './auth-service'
-import {
-  DRAFT_DATA_UNAVAILABLE_ERROR_TITLE,
-  getFormSubmissionDrafts,
-  uploadDraftData,
-} from './services/api/drafts'
+import { getFormSubmissionDrafts, uploadDraftData } from './services/api/drafts'
 import {
   getPendingQueueSubmissions,
   deletePendingQueueSubmission,
@@ -138,6 +134,7 @@ async function generatePublicLocalFormSubmissionDraftsFromStorage(
 
 async function generateLocalFormSubmissionDraftsFromStorage(
   localDraftsStorage: LocalDraftsStorage,
+  abortSignal: AbortSignal | undefined,
 ): Promise<LocalFormSubmissionDraft[]> {
   const pendingSubmissionsDraftIds = await getPendingSubmissionsDraftIds()
   const deletedDraftIds = new Set(
@@ -200,38 +197,33 @@ async function generateLocalFormSubmissionDraftsFromStorage(
       }
       await broadcastUpdate()
 
-      const draftSubmission = await getDraftSubmission(
-        formSubmissionDraft,
-      ).catch((err) => {
+      try {
+        const draftSubmission = await getDraftSubmission(
+          formSubmissionDraft,
+          abortSignal,
+        )
+        if (draftSubmission) {
+          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+            ...formSubmissionDraft,
+            draftSubmission: draftSubmission,
+            downloadStatus: 'SUCCESS',
+          })
+        } else {
+          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+            ...formSubmissionDraft,
+            downloadStatus: 'NOT_AVAILABLE',
+          })
+        }
+      } catch (err) {
         console.warn(
           `Could not fetch draft submission for draft: ${formSubmissionDraft.id}`,
           err,
         )
 
-        if (
-          err instanceof OneBlinkAppsError &&
-          err.title === DRAFT_DATA_UNAVAILABLE_ERROR_TITLE
-        ) {
-          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-            ...formSubmissionDraft,
-            downloadStatus: 'NOT_AVAILABLE',
-          })
-          return
-        }
-
         localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
           ...formSubmissionDraft,
           downloadStatus: 'ERROR',
-          downloadError: err.message,
-        })
-
-        return undefined
-      })
-      if (draftSubmission) {
-        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-          ...formSubmissionDraft,
-          draftSubmission: draftSubmission,
-          downloadStatus: 'SUCCESS',
+          downloadError: (err as Error).message,
         })
       }
 
@@ -438,7 +430,7 @@ async function upsertDraft({
         }
       }
 
-      await setAndBroadcastDrafts(localDraftsStorage)
+      await setAndBroadcastDrafts(localDraftsStorage, abortSignal)
     } else {
       let updated = false
       const publicDraftsStorage = (await getPublicDraftsFromStorage()).map(
@@ -521,11 +513,17 @@ async function getPublicDraftsFromStorage(): Promise<DraftSubmission[]> {
  * const drafts = await draftService.getDrafts()
  * ```
  *
+ * @param abortSignal - Signal to abort the requests
  * @returns
  */
-async function getDrafts(): Promise<LocalFormSubmissionDraft[]> {
+async function getDrafts(
+  abortSignal?: AbortSignal,
+): Promise<LocalFormSubmissionDraft[]> {
   const localDraftsStorage = await getLocalDraftsFromStorage()
-  return await generateLocalFormSubmissionDraftsFromStorage(localDraftsStorage)
+  return await generateLocalFormSubmissionDraftsFromStorage(
+    localDraftsStorage,
+    abortSignal,
+  )
 }
 
 /**
@@ -592,7 +590,7 @@ async function getDraftAndData(
     const localDraftsStorage = await getLocalDraftsFromStorage()
     if (formSubmissionDrafts) {
       localDraftsStorage.syncedFormSubmissionDrafts = formSubmissionDrafts
-      await setAndBroadcastDrafts(localDraftsStorage)
+      await setAndBroadcastDrafts(localDraftsStorage, abortSignal)
     } else {
       formSubmissionDrafts = localDraftsStorage.syncedFormSubmissionDrafts
     }
@@ -604,7 +602,19 @@ async function getDraftAndData(
       return (await getLocalDraftSubmission(formSubmissionDraftId)) || undefined
     }
 
-    return await getDraftSubmission(formSubmissionDraft)
+    const s3SubmissionData = await getDraftSubmission(
+      formSubmissionDraft,
+      abortSignal,
+    )
+    if (!s3SubmissionData) {
+      throw new OneBlinkAppsError(
+        "Data has been removed based on your administrator's draft data retention policy.",
+        {
+          title: 'Draft Data Unavailable',
+        },
+      )
+    }
+    return s3SubmissionData
   } else {
     if (formSubmissionDrafts) {
       return (await getLocalDraftSubmission(formSubmissionDraftId)) || undefined
@@ -678,7 +688,7 @@ async function deleteDraft(
           )
       }
 
-      await setAndBroadcastDrafts(localDraftsStorage)
+      await setAndBroadcastDrafts(localDraftsStorage, abortSignal)
     } else {
       let publicDraftsStorage = await getPublicDraftsFromStorage()
       const draftSubmission = publicDraftsStorage.find(
@@ -723,6 +733,7 @@ async function setAndBroadcastPublicDrafts(publicDrafts: DraftSubmission[]) {
 
 async function setAndBroadcastDrafts(
   localDraftsStorage: LocalDraftsStorage,
+  abortSignal: AbortSignal | undefined,
 ): Promise<void> {
   const username = getUsername()
   if (!username) {
@@ -740,7 +751,10 @@ async function setAndBroadcastDrafts(
 
   console.log('Drafts have been updated', localDraftsStorage)
   const localFormSubmissionDrafts =
-    await generateLocalFormSubmissionDraftsFromStorage(localDraftsStorage)
+    await generateLocalFormSubmissionDraftsFromStorage(
+      localDraftsStorage,
+      abortSignal,
+    )
   await executeDraftsListeners(localFormSubmissionDrafts)
 }
 
@@ -870,7 +884,7 @@ async function syncDrafts({
     }
 
     console.log('Downloading drafts in the background')
-    setAndBroadcastDrafts(localDraftsStorage)
+    setAndBroadcastDrafts(localDraftsStorage, abortSignal)
       .then(async () => {
         console.log('Finished syncing drafts.')
       })

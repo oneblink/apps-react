@@ -12,8 +12,6 @@ import generateOneBlinkUploader from '../generateOneBlinkUploader'
 import { OneBlinkStorageError } from '@oneblink/storage'
 import generateOneBlinkDownloader from '../generateOneBlinkDownloader'
 
-export const DRAFT_DATA_UNAVAILABLE_ERROR_TITLE = 'Draft Data Unavailable'
-
 async function uploadDraftData(
   draftSubmission: DraftSubmission,
   onProgress?: ProgressListener,
@@ -172,28 +170,52 @@ async function getFormSubmissionDrafts(
 }
 
 async function downloadDraftData(
-  formSubmissionDraftVersionId: string,
+  formSubmissionDraft: SubmissionTypes.FormSubmissionDraft,
+  latestFormSubmissionDraftVersion: SubmissionTypes.FormSubmissionDraftVersion,
   abortSignal?: AbortSignal,
-) {
+): Promise<DraftSubmission | undefined> {
   try {
     console.log('Attempting to download draft form data:', {
-      formSubmissionDraftVersionId,
+      formSubmissionDraftVersionId: latestFormSubmissionDraftVersion.id,
     })
     const oneblinkDownloader = generateOneBlinkDownloader()
-    const data = await oneblinkDownloader.downloadDraftSubmission({
-      formSubmissionDraftVersionId,
+    const s3SubmissionData = await oneblinkDownloader.downloadDraftSubmission({
+      formSubmissionDraftVersionId: latestFormSubmissionDraftVersion.id,
       abortSignal,
     })
-    if (!data) {
-      throw new OneBlinkAppsError(
-        "Data has been removed based on your administrator's draft data retention policy.",
-        {
-          title: DRAFT_DATA_UNAVAILABLE_ERROR_TITLE,
-        },
-      )
+    if (!s3SubmissionData) {
+      return undefined
     }
-    return data
+    return {
+      definition: s3SubmissionData.definition,
+      submission: s3SubmissionData.submission,
+      lastElementUpdated: s3SubmissionData.lastElementUpdated,
+      // Drafts will always have a formsAppId, so we can safely cast to number
+      formsAppId: s3SubmissionData.formsAppId as number,
+      jobId: formSubmissionDraft.jobId,
+      externalId: formSubmissionDraft.externalId,
+      previousFormSubmissionApprovalId:
+        formSubmissionDraft.previousFormSubmissionApprovalId,
+      taskCompletion: s3SubmissionData.task &&
+        s3SubmissionData.taskAction && {
+          task: s3SubmissionData.task,
+          taskAction: s3SubmissionData.taskAction,
+          taskGroup: s3SubmissionData.taskGroup,
+          taskGroupInstance: s3SubmissionData.taskGroupInstance,
+          redirectUrl: '',
+        },
+      title: latestFormSubmissionDraftVersion.title,
+      createdAt: latestFormSubmissionDraftVersion.createdAt,
+      formSubmissionDraftId: formSubmissionDraft.id,
+      sectionState: s3SubmissionData.sectionState,
+      previousElapsedDurationSeconds:
+        s3SubmissionData.previousElapsedDurationSeconds,
+    }
   } catch (error) {
+    if (abortSignal?.aborted) {
+      return undefined
+    }
+
     console.error(
       'Error occurred while attempting to download draft data',
       error,

@@ -23,8 +23,11 @@ async function removePendingSubmissions(
   })
 }
 
-async function tagDrafts(jobList: SubmissionTypes.FormsAppJob[]) {
-  return getDrafts().then((drafts) =>
+async function tagDrafts(
+  jobList: SubmissionTypes.FormsAppJob[],
+  abortSignal?: AbortSignal,
+) {
+  return getDrafts(abortSignal).then((drafts) =>
     jobList.map((job) => {
       const draft = drafts.find((draft) => draft.jobId === job.id)
       return {
@@ -49,11 +52,13 @@ async function tagDrafts(jobList: SubmissionTypes.FormsAppJob[]) {
  *
  * @param formsAppId
  * @param jobsLabel
+ * @param abortSignal - Signal to abort the requests
  * @returns
  */
 export async function getJobs(
   formsAppId: number,
   jobsLabel: string,
+  abortSignal?: AbortSignal,
 ): Promise<SubmissionTypes.FormsAppJob[]> {
   if (!isLoggedIn()) {
     return []
@@ -66,7 +71,7 @@ export async function getJobs(
     },
   )
     .then((data) => removePendingSubmissions(data.jobs))
-    .then((jobs) => tagDrafts(jobs))
+    .then((jobs) => tagDrafts(jobs, abortSignal))
     .then((jobList) =>
       _orderBy(
         jobList,
