@@ -12,6 +12,8 @@ import generateOneBlinkUploader from '../generateOneBlinkUploader'
 import { OneBlinkStorageError } from '@oneblink/storage'
 import generateOneBlinkDownloader from '../generateOneBlinkDownloader'
 
+export const DRAFT_DATA_UNAVAILABLE_ERROR_TITLE = 'Draft Data Unavailable'
+
 async function uploadDraftData(
   draftSubmission: DraftSubmission,
   onProgress?: ProgressListener,
@@ -186,7 +188,7 @@ async function downloadDraftData(
       throw new OneBlinkAppsError(
         "Data has been removed based on your administrator's draft data retention policy.",
         {
-          title: 'Draft Data Unavailable',
+          title: DRAFT_DATA_UNAVAILABLE_ERROR_TITLE,
         },
       )
     }

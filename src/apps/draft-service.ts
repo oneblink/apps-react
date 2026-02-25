@@ -5,7 +5,11 @@ import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { isOffline } from './offline-service'
 import { getUsername } from './services/cognito'
 import { getFormsKeyId, getCurrentFormsAppUser } from './auth-service'
-import { getFormSubmissionDrafts, uploadDraftData } from './services/api/drafts'
+import {
+  DRAFT_DATA_UNAVAILABLE_ERROR_TITLE,
+  getFormSubmissionDrafts,
+  uploadDraftData,
+} from './services/api/drafts'
 import {
   getPendingQueueSubmissions,
   deletePendingQueueSubmission,
@@ -92,6 +96,7 @@ function generateLocalFormSubmissionDraftsFromDraftSubmissions(
         taskActionId: draftSubmission.taskCompletion?.taskAction.taskActionId,
         draftSubmission,
         versions: undefined,
+        downloadStatus: 'SUCCESS',
       })
     }
   }
@@ -125,7 +130,9 @@ async function generatePublicLocalFormSubmissionDraftsFromStorage(
   )
 
   return _orderBy(localFormSubmissionDrafts, (localFormSubmissionDraft) => {
-    return localFormSubmissionDraft.draftSubmission?.createdAt
+    return localFormSubmissionDraft.downloadStatus === 'SUCCESS'
+      ? localFormSubmissionDraft.draftSubmission?.createdAt
+      : undefined
   })
 }
 
@@ -144,6 +151,22 @@ async function generateLocalFormSubmissionDraftsFromStorage(
       deletedDraftIds,
     )
 
+  async function broadcastUpdate() {
+    const draftsToBroadcast = Array.from(localFormSubmissionDraftsMap.values())
+
+    const orderedDrafts = _orderBy(
+      draftsToBroadcast,
+      (localFormSubmissionDraft) =>
+        getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
+          ?.createdAt,
+    )
+
+    await executeDraftsListeners(orderedDrafts)
+  }
+
+  // At this point we need to store the state of the drafts in localForage
+  const draftsToDownload: SubmissionTypes.FormSubmissionDraft[] = []
+
   for (const formSubmissionDraft of localDraftsStorage.syncedFormSubmissionDrafts) {
     if (
       // Unsycned version of draft takes priority over the synced version
@@ -153,6 +176,30 @@ async function generateLocalFormSubmissionDraftsFromStorage(
       // Remove any drafts deleted while offline
       !deletedDraftIds.has(formSubmissionDraft.id)
     ) {
+      draftsToDownload.push(formSubmissionDraft)
+      localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+        ...formSubmissionDraft,
+        downloadStatus: 'PENDING',
+      })
+    }
+  }
+
+  await broadcastUpdate()
+
+  // TODO Batch the downloads instead of sequentially
+  if (draftsToDownload.length) {
+    for (const formSubmissionDraft of draftsToDownload) {
+      const currentValue = localFormSubmissionDraftsMap.get(
+        formSubmissionDraft.id,
+      )
+      if (currentValue) {
+        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+          ...currentValue,
+          downloadStatus: 'DOWNLOADING',
+        })
+      }
+      await broadcastUpdate()
+
       const draftSubmission = await getDraftSubmission(
         formSubmissionDraft,
       ).catch((err) => {
@@ -160,12 +207,35 @@ async function generateLocalFormSubmissionDraftsFromStorage(
           `Could not fetch draft submission for draft: ${formSubmissionDraft.id}`,
           err,
         )
+
+        if (
+          err instanceof OneBlinkAppsError &&
+          err.title === DRAFT_DATA_UNAVAILABLE_ERROR_TITLE
+        ) {
+          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+            ...formSubmissionDraft,
+            downloadStatus: 'NOT_AVAILABLE',
+          })
+          return
+        }
+
+        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+          ...formSubmissionDraft,
+          downloadStatus: 'ERROR',
+          downloadError: err.message,
+        })
+
         return undefined
       })
-      localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-        ...formSubmissionDraft,
-        draftSubmission,
-      })
+      if (draftSubmission) {
+        localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+          ...formSubmissionDraft,
+          draftSubmission: draftSubmission,
+          downloadStatus: 'SUCCESS',
+        })
+      }
+
+      await broadcastUpdate()
     }
   }
 
@@ -173,13 +243,12 @@ async function generateLocalFormSubmissionDraftsFromStorage(
     localFormSubmissionDraftsMap.values(),
   )
 
-  return _orderBy(localFormSubmissionDrafts, (localFormSubmissionDraft) => {
-    return (
-      localFormSubmissionDraft.draftSubmission?.createdAt ||
+  return _orderBy(
+    localFormSubmissionDrafts,
+    (localFormSubmissionDraft) =>
       getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
-        ?.createdAt
-    )
-  })
+        ?.createdAt,
+  )
 }
 
 function errorHandler(error: Error): Error {
@@ -800,24 +869,29 @@ async function syncDrafts({
       localDraftsStorage.syncedFormSubmissionDrafts = formSubmissionDrafts
     }
 
-    await setAndBroadcastDrafts(localDraftsStorage)
-
-    if (localDraftsStorage.syncedFormSubmissionDrafts.length) {
-      console.log(
-        'Ensuring all draft data is available for offline use for synced drafts',
-        localDraftsStorage.syncedFormSubmissionDrafts,
-      )
-      for (const formSubmissionDraft of localDraftsStorage.syncedFormSubmissionDrafts) {
-        await getDraftSubmission(formSubmissionDraft, abortSignal).catch(
-          (error) => {
-            console.warn('Could not download Draft Data as JSON', error)
-          },
+    console.log('Downloading drafts in the background')
+    setAndBroadcastDrafts(localDraftsStorage)
+      .then(async () => {
+        console.log('Finished syncing drafts.')
+      })
+      .catch((error) => {
+        if (abortSignal?.aborted) {
+          console.log('Syncing drafts has been aborted')
+          return
+        }
+        console.warn(
+          'Error while attempting download drafts in the background',
+          error,
         )
-      }
-    }
+        if (!(error instanceof OneBlinkAppsError)) {
+          Sentry.captureException(error)
+        }
+      })
+      .finally(() => {
+        _isSyncingDrafts = false
+      })
 
-    console.log('Finished syncing drafts.')
-    _isSyncingDrafts = false
+    // broadcast the drafts and download the draft data in the background
   } catch (error) {
     _isSyncingDrafts = false
     if (abortSignal?.aborted) {
