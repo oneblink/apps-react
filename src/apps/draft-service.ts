@@ -152,9 +152,16 @@ async function generateLocalFormSubmissionDraftsFromStorage(
     )
 
   async function broadcastUpdate() {
-    await executeDraftsListeners(
-      Array.from(localFormSubmissionDraftsMap.values()),
+    const draftsToBroadcast = Array.from(localFormSubmissionDraftsMap.values())
+
+    const orderedDrafts = _orderBy(
+      draftsToBroadcast,
+      (localFormSubmissionDraft) =>
+        getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
+          ?.createdAt,
     )
+
+    await executeDraftsListeners(orderedDrafts)
   }
 
   // At this point we need to store the state of the drafts in localForage
@@ -246,12 +253,12 @@ async function generateLocalFormSubmissionDraftsFromStorage(
     localFormSubmissionDraftsMap.values(),
   )
 
-  return _orderBy(localFormSubmissionDrafts, (localFormSubmissionDraft) => {
-    return localFormSubmissionDraft.downloadStatus === 'SUCCESS'
-      ? localFormSubmissionDraft.draftSubmission?.createdAt
-      : getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
-          ?.createdAt
-  })
+  return _orderBy(
+    localFormSubmissionDrafts,
+    (localFormSubmissionDraft) =>
+      getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
+        ?.createdAt,
+  )
 }
 
 function errorHandler(error: Error): Error {
