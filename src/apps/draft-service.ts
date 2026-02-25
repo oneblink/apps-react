@@ -872,19 +872,6 @@ async function syncDrafts({
     console.log('Downloading drafts in the background')
     setAndBroadcastDrafts(localDraftsStorage)
       .then(async () => {
-        if (localDraftsStorage.syncedFormSubmissionDrafts.length) {
-          console.log(
-            'Ensuring all draft data is available for offline use for synced drafts',
-            localDraftsStorage.syncedFormSubmissionDrafts,
-          )
-          for (const formSubmissionDraft of localDraftsStorage.syncedFormSubmissionDrafts) {
-            await getDraftSubmission(formSubmissionDraft, abortSignal).catch(
-              (error) => {
-                console.warn('Could not download Draft Data as JSON', error)
-              },
-            )
-          }
-        }
         console.log('Finished syncing drafts.')
       })
       .catch((error) => {
