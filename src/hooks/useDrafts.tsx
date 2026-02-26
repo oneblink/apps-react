@@ -3,6 +3,7 @@ import { draftService, submissionService } from '../apps'
 import useAuth from './useAuth'
 import useIsMounted from './useIsMounted'
 import useIsOffline from './useIsOffline'
+import { PriorityFn } from '../apps/draft-service'
 
 /** The value returned from `useDrafts()` hook */
 export type DraftsContextValue = {
@@ -18,7 +19,13 @@ export type DraftsContextValue = {
    */
   lastSyncTime: Date | null
   /** A function to trigger syncing of the drafts */
-  syncDrafts: (abortSignal: AbortSignal | undefined) => Promise<void>
+  syncDrafts: ({
+    abortSignal,
+    priorityFn,
+  }: {
+    abortSignal: AbortSignal | undefined
+    priorityFn: PriorityFn | undefined
+  }) => Promise<void>
   /** An Error object if syncing drafts fails */
   syncError: Error | null
   /** A function to clear Error object from syncing drafts */
@@ -100,9 +107,14 @@ export function DraftsContextProvider({
       syncError: null,
     }))
   }, [])
-  // TODO add formId to prioritize downloads for specific forms
   const syncDrafts = React.useCallback(
-    async (abortSignal: AbortSignal | undefined) => {
+    async ({
+      abortSignal,
+      priorityFn,
+    }: {
+      abortSignal: AbortSignal | undefined
+      priorityFn: PriorityFn | undefined
+    }) => {
       if (!isDraftsEnabled || isUsingFormsKey) {
         return
       }
@@ -120,6 +132,7 @@ export function DraftsContextProvider({
       try {
         await draftService.syncDrafts({
           formsAppId,
+          priorityFn,
           throwError: true,
           abortSignal,
         })
@@ -178,7 +191,7 @@ export function DraftsContextProvider({
     const abortController = new AbortController()
     const unregisterPendingQueueListener =
       submissionService.registerPendingQueueListener(() =>
-        syncDrafts(undefined),
+        syncDrafts({ abortSignal: undefined, priorityFn: undefined }),
       )
     const unregisterDraftsListener =
       draftService.registerDraftsListener(setDrafts)
@@ -192,7 +205,7 @@ export function DraftsContextProvider({
   React.useEffect(() => {
     if (!isOffline) {
       const abortController = new AbortController()
-      syncDrafts(abortController.signal)
+      syncDrafts({ abortSignal: abortController.signal, priorityFn: undefined })
       return () => {
         abortController.abort()
       }

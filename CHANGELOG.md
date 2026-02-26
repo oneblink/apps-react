@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **[BREAKING]** `draftService.syncDrafts` to download draft data in the background
+- `draftService.syncDrafts` to accept a priortyFn to prioritise specific draft downloads
 
 ### Fixed
 
