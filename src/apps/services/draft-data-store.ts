@@ -116,57 +116,37 @@ export function getLatestFormSubmissionDraftVersion(
 
 export async function getDraftSubmission(
   formSubmissionDraft: SubmissionTypes.FormSubmissionDraft,
-  abortSignal?: AbortSignal,
+  abortSignal: AbortSignal | undefined,
 ): Promise<DraftSubmission | undefined> {
   const latestFormSubmissionDraftVersion = getLatestFormSubmissionDraftVersion(
     formSubmissionDraft.versions,
   )
-  const draftSubmission = await getLocalDraftSubmission(formSubmissionDraft.id)
+  const localDraftSubmission = await getLocalDraftSubmission(
+    formSubmissionDraft.id,
+  )
 
   // If there is local data and no server data, return local data.
   // Or if the latest server version of the draft is what
   // is currently saved locally, return local data.
   if (
-    draftSubmission &&
+    localDraftSubmission &&
     (!latestFormSubmissionDraftVersion ||
-      latestFormSubmissionDraftVersion.createdAt <= draftSubmission.createdAt)
+      latestFormSubmissionDraftVersion.createdAt <=
+        localDraftSubmission.createdAt)
   ) {
-    return draftSubmission
+    return localDraftSubmission
   }
 
   if (!latestFormSubmissionDraftVersion) {
     return undefined
   }
 
-  //drafts will always have a formsAppId
-  const s3SubmissionData = (await downloadDraftData(
-    latestFormSubmissionDraftVersion.id,
+  const draftSubmission = await downloadDraftData(
+    formSubmissionDraft,
+    latestFormSubmissionDraftVersion,
     abortSignal,
-  )) as Omit<SubmissionTypes.S3SubmissionData, 'formsAppId'> & {
-    formsAppId: number
+  )
+  if (draftSubmission) {
+    await setLocalDraftSubmission(draftSubmission)
   }
-  return await setLocalDraftSubmission({
-    definition: s3SubmissionData.definition,
-    submission: s3SubmissionData.submission,
-    lastElementUpdated: s3SubmissionData.lastElementUpdated,
-    formsAppId: s3SubmissionData.formsAppId,
-    jobId: formSubmissionDraft.jobId,
-    externalId: formSubmissionDraft.externalId,
-    previousFormSubmissionApprovalId:
-      formSubmissionDraft.previousFormSubmissionApprovalId,
-    taskCompletion: s3SubmissionData.task &&
-      s3SubmissionData.taskAction && {
-        task: s3SubmissionData.task,
-        taskAction: s3SubmissionData.taskAction,
-        taskGroup: s3SubmissionData.taskGroup,
-        taskGroupInstance: s3SubmissionData.taskGroupInstance,
-        redirectUrl: '',
-      },
-    title: latestFormSubmissionDraftVersion.title,
-    createdAt: latestFormSubmissionDraftVersion.createdAt,
-    formSubmissionDraftId: formSubmissionDraft.id,
-    sectionState: s3SubmissionData.sectionState,
-    previousElapsedDurationSeconds:
-      s3SubmissionData.previousElapsedDurationSeconds,
-  })
 }
