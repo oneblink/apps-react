@@ -121,26 +121,32 @@ export async function getDraftSubmission(
   const latestFormSubmissionDraftVersion = getLatestFormSubmissionDraftVersion(
     formSubmissionDraft.versions,
   )
-  const draftSubmission = await getLocalDraftSubmission(formSubmissionDraft.id)
+  const localDraftSubmission = await getLocalDraftSubmission(
+    formSubmissionDraft.id,
+  )
 
   // If there is local data and no server data, return local data.
   // Or if the latest server version of the draft is what
   // is currently saved locally, return local data.
   if (
-    draftSubmission &&
+    localDraftSubmission &&
     (!latestFormSubmissionDraftVersion ||
-      latestFormSubmissionDraftVersion.createdAt <= draftSubmission.createdAt)
+      latestFormSubmissionDraftVersion.createdAt <=
+        localDraftSubmission.createdAt)
   ) {
-    return draftSubmission
+    return localDraftSubmission
   }
 
   if (!latestFormSubmissionDraftVersion) {
     return undefined
   }
 
-  return await downloadDraftData(
+  const draftSubmission = await downloadDraftData(
     formSubmissionDraft,
     latestFormSubmissionDraftVersion,
     abortSignal,
   )
+  if (draftSubmission) {
+    await setLocalDraftSubmission(draftSubmission)
+  }
 }
