@@ -27,7 +27,10 @@ import {
   ProgressListener,
 } from './types/submissions'
 
-export type PriorityFn = Parameters<typeof Array.prototype.sort>[0]
+export type PriorityFn = (
+  a: SubmissionTypes.FormSubmissionDraft,
+  b: SubmissionTypes.FormSubmissionDraft,
+) => number
 
 const DRAFT_CHUNK_SIZE = 5
 
@@ -822,7 +825,11 @@ async function syncDrafts({
 }: {
   /** The id of the OneBlink Forms App to sync drafts with */
   formsAppId: number
-  /** A sorting compare function to prioritize draft downloads */
+  /**
+   * Function used to determine the order of the draft downloads. It is expected
+   * to return a negative value if the first argument is less than the second
+   * argument, zero if they're equal, and a positive value otherwise.
+   */
   priorityFn?: PriorityFn
   /** `true` to throw errors while syncing */
   throwError?: boolean
