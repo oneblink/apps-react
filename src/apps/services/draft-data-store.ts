@@ -149,4 +149,5 @@ export async function getDraftSubmission(
   if (draftSubmission) {
     await setLocalDraftSubmission(draftSubmission)
   }
+  return draftSubmission
 }
