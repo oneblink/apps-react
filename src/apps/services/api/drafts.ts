@@ -11,6 +11,7 @@ import { DraftSubmission, ProgressListener } from '../../types/submissions'
 import generateOneBlinkUploader from '../generateOneBlinkUploader'
 import { OneBlinkStorageError } from '@oneblink/storage'
 import generateOneBlinkDownloader from '../generateOneBlinkDownloader'
+import { isOffline } from '../../offline-service'
 
 async function uploadDraftData(
   draftSubmission: DraftSubmission,
@@ -267,6 +268,16 @@ async function downloadDraftData(
           )
         }
       }
+    }
+
+    if (isOffline()) {
+      throw new OneBlinkAppsError(
+        'You are currently offline and do not have a local copy of this draft available, please connect to the internet and try again',
+        {
+          originalError: error instanceof Error ? error : undefined,
+          isOffline: true,
+        },
+      )
     }
 
     throw new OneBlinkAppsError(
