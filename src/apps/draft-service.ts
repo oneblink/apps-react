@@ -143,10 +143,12 @@ async function generateLocalFormSubmissionDraftsFromStorage({
   localDraftsStorage,
   abortSignal,
   priorityFn,
+  initialBroadcastCB,
 }: {
   localDraftsStorage: LocalDraftsStorage
   abortSignal: AbortSignal | undefined
   priorityFn?: PriorityFn
+  initialBroadcastCB?: () => void
 }): Promise<LocalFormSubmissionDraft[]> {
   const pendingSubmissionsDraftIds = await getPendingSubmissionsDraftIds()
   const deletedDraftIds = new Set(
@@ -194,6 +196,7 @@ async function generateLocalFormSubmissionDraftsFromStorage({
   }
 
   await broadcastUpdate()
+  initialBroadcastCB?.()
 
   if (draftsToDownload.length) {
     if (priorityFn) {
@@ -769,10 +772,12 @@ async function setAndBroadcastDrafts({
   localDraftsStorage,
   abortSignal,
   priorityFn,
+  initialBroadcastCB,
 }: {
   localDraftsStorage: LocalDraftsStorage
   abortSignal: AbortSignal | undefined
   priorityFn: PriorityFn | undefined
+  initialBroadcastCB?: () => void
 }): Promise<void> {
   const username = getUsername()
   if (!username) {
@@ -794,6 +799,7 @@ async function setAndBroadcastDrafts({
       localDraftsStorage,
       abortSignal,
       priorityFn,
+      initialBroadcastCB,
     })
   await executeDraftsListeners(localFormSubmissionDrafts)
 }
@@ -818,6 +824,7 @@ let _isSyncingDrafts = false
  * @returns
  */
 async function syncDrafts({
+  initialBroadcastCB,
   priorityFn,
   formsAppId,
   throwError,
@@ -831,6 +838,8 @@ async function syncDrafts({
    * argument, zero if they're equal, and a positive value otherwise.
    */
   priorityFn?: PriorityFn
+  /** A callback to be called when the drafts are initially broadcast */
+  initialBroadcastCB?: () => void
   /** `true` to throw errors while syncing */
   throwError?: boolean
   /** Signal to abort the requests */
@@ -931,7 +940,12 @@ async function syncDrafts({
     }
 
     console.log('Downloading drafts in the background')
-    setAndBroadcastDrafts({ localDraftsStorage, abortSignal, priorityFn })
+    setAndBroadcastDrafts({
+      localDraftsStorage,
+      abortSignal,
+      priorityFn,
+      initialBroadcastCB,
+    })
       .then(async () => {
         console.log('Finished syncing drafts.')
       })

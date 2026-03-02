@@ -127,25 +127,30 @@ export function DraftsContextProvider({
         }))
       }
 
-      let newError = null
-
       try {
         await draftService.syncDrafts({
           formsAppId,
           priorityFn,
           throwError: true,
           abortSignal,
+          initialBroadcastCB: () => {
+            if (isMounted.current) {
+              setSyncState({
+                lastSyncTime: new Date(),
+                isSyncing: false,
+                syncError: null,
+              })
+            }
+          },
         })
       } catch (error) {
-        newError = error as Error
-      }
-
-      if (isMounted.current) {
-        setSyncState({
-          lastSyncTime: new Date(),
-          isSyncing: false,
-          syncError: newError,
-        })
+        if (isMounted.current) {
+          setSyncState({
+            lastSyncTime: new Date(),
+            isSyncing: false,
+            syncError: error as Error,
+          })
+        }
       }
     },
     [formsAppId, isDraftsEnabled, isMounted, isUsingFormsKey],
