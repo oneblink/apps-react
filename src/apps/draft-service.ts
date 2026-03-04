@@ -147,7 +147,9 @@ async function generateLocalFormSubmissionDraftsFromStorage({
   localDraftsStorage: LocalDraftsStorage
   abortSignal: AbortSignal | undefined
   priorityFn?: PriorityFn
-}): Promise<LocalFormSubmissionDraft[]> {
+}): Promise<{
+  downloadDraftsSubmissionData: () => Promise<LocalFormSubmissionDraft[]>
+}> {
   const pendingSubmissionsDraftIds = await getPendingSubmissionsDraftIds()
   const deletedDraftIds = new Set(
     localDraftsStorage.deletedFormSubmissionDrafts.map(({ id }) => id),
@@ -195,73 +197,76 @@ async function generateLocalFormSubmissionDraftsFromStorage({
 
   await broadcastUpdate()
 
-  if (draftsToDownload.length) {
-    if (priorityFn) {
-      draftsToDownload.sort(priorityFn)
-    }
-    for (let i = 0; i < draftsToDownload.length; i += DRAFT_CHUNK_SIZE) {
-      const chunk = draftsToDownload.slice(i, i + DRAFT_CHUNK_SIZE)
-      chunk.forEach(async (formSubmissionDraft) => {
-        const currentValue = localFormSubmissionDraftsMap.get(
-          formSubmissionDraft.id,
-        )
-        if (currentValue) {
-          localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-            ...currentValue,
-            downloadStatus: 'DOWNLOADING',
-          })
+  return {
+    downloadDraftsSubmissionData: async () => {
+      if (draftsToDownload.length) {
+        if (priorityFn) {
+          draftsToDownload.sort(priorityFn)
         }
-      })
-      await broadcastUpdate()
-      // download the draft data for each draft in the chunk in parallel
-      await Promise.all(
-        chunk.map(async (formSubmissionDraft) => {
-          try {
-            const draftSubmission = await getDraftSubmission(
-              formSubmissionDraft,
-              abortSignal,
+        for (let i = 0; i < draftsToDownload.length; i += DRAFT_CHUNK_SIZE) {
+          const chunk = draftsToDownload.slice(i, i + DRAFT_CHUNK_SIZE)
+          chunk.forEach(async (formSubmissionDraft) => {
+            const currentValue = localFormSubmissionDraftsMap.get(
+              formSubmissionDraft.id,
             )
-            if (draftSubmission) {
+            if (currentValue) {
               localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-                ...formSubmissionDraft,
-                draftSubmission: draftSubmission,
-                downloadStatus: 'SUCCESS',
-              })
-            } else {
-              localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-                ...formSubmissionDraft,
-                downloadStatus: 'NOT_AVAILABLE',
+                ...currentValue,
+                downloadStatus: 'DOWNLOADING',
               })
             }
-          } catch (err) {
-            console.warn(
-              `Could not fetch draft submission for draft: ${formSubmissionDraft.id}`,
-              err,
-            )
-
-            localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
-              ...formSubmissionDraft,
-              downloadStatus: 'ERROR',
-              downloadError: (err as Error).message,
-            })
-          }
-
+          })
           await broadcastUpdate()
-        }),
+          // download the draft data for each draft in the chunk in parallel
+          await Promise.all(
+            chunk.map(async (formSubmissionDraft) => {
+              try {
+                const draftSubmission = await getDraftSubmission(
+                  formSubmissionDraft,
+                  abortSignal,
+                )
+                if (draftSubmission) {
+                  localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+                    ...formSubmissionDraft,
+                    draftSubmission: draftSubmission,
+                    downloadStatus: 'SUCCESS',
+                  })
+                } else {
+                  localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+                    ...formSubmissionDraft,
+                    downloadStatus: 'NOT_AVAILABLE',
+                  })
+                }
+              } catch (err) {
+                console.warn(
+                  `Could not fetch draft submission for draft: ${formSubmissionDraft.id}`,
+                  err,
+                )
+
+                localFormSubmissionDraftsMap.set(formSubmissionDraft.id, {
+                  ...formSubmissionDraft,
+                  downloadStatus: 'ERROR',
+                  downloadError: (err as Error).message,
+                })
+              }
+
+              await broadcastUpdate()
+            }),
+          )
+        }
+      }
+
+      const localFormSubmissionDrafts = Array.from(
+        localFormSubmissionDraftsMap.values(),
       )
-    }
+      return _orderBy(
+        localFormSubmissionDrafts,
+        (localFormSubmissionDraft) =>
+          getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
+            ?.createdAt,
+      )
+    },
   }
-
-  const localFormSubmissionDrafts = Array.from(
-    localFormSubmissionDraftsMap.values(),
-  )
-
-  return _orderBy(
-    localFormSubmissionDrafts,
-    (localFormSubmissionDraft) =>
-      getLatestFormSubmissionDraftVersion(localFormSubmissionDraft.versions)
-        ?.createdAt,
-  )
 }
 
 function errorHandler(error: Error): Error {
@@ -451,11 +456,12 @@ async function upsertDraft({
         }
       }
 
-      await setAndBroadcastDrafts({
+      const { downloadDraftsSubmissionData } = await setAndBroadcastDrafts({
         localDraftsStorage,
         abortSignal,
         priorityFn: undefined,
       })
+      await downloadDraftsSubmissionData()
     } else {
       let updated = false
       const publicDraftsStorage = (await getPublicDraftsFromStorage()).map(
@@ -545,11 +551,13 @@ async function getDrafts(
   abortSignal?: AbortSignal,
 ): Promise<LocalFormSubmissionDraft[]> {
   const localDraftsStorage = await getLocalDraftsFromStorage()
-  return await generateLocalFormSubmissionDraftsFromStorage({
-    localDraftsStorage,
-    abortSignal,
-    priorityFn: undefined,
-  })
+  const { downloadDraftsSubmissionData } =
+    await generateLocalFormSubmissionDraftsFromStorage({
+      localDraftsStorage,
+      abortSignal,
+      priorityFn: undefined,
+    })
+  return await downloadDraftsSubmissionData()
 }
 
 /**
@@ -616,11 +624,12 @@ async function getDraftAndData(
     const localDraftsStorage = await getLocalDraftsFromStorage()
     if (formSubmissionDrafts) {
       localDraftsStorage.syncedFormSubmissionDrafts = formSubmissionDrafts
-      await setAndBroadcastDrafts({
+      const { downloadDraftsSubmissionData } = await setAndBroadcastDrafts({
         localDraftsStorage,
         abortSignal,
         priorityFn: undefined,
       })
+      await downloadDraftsSubmissionData()
     } else {
       formSubmissionDrafts = localDraftsStorage.syncedFormSubmissionDrafts
     }
@@ -718,11 +727,12 @@ async function deleteDraft(
           )
       }
 
-      await setAndBroadcastDrafts({
+      const { downloadDraftsSubmissionData } = await setAndBroadcastDrafts({
         localDraftsStorage,
         abortSignal,
         priorityFn: undefined,
       })
+      await downloadDraftsSubmissionData()
     } else {
       let publicDraftsStorage = await getPublicDraftsFromStorage()
       const draftSubmission = publicDraftsStorage.find(
@@ -773,7 +783,7 @@ async function setAndBroadcastDrafts({
   localDraftsStorage: LocalDraftsStorage
   abortSignal: AbortSignal | undefined
   priorityFn: PriorityFn | undefined
-}): Promise<void> {
+}): Promise<{ downloadDraftsSubmissionData: () => Promise<void> }> {
   const username = getUsername()
   if (!username) {
     throw new OneBlinkAppsError(
@@ -789,13 +799,19 @@ async function setAndBroadcastDrafts({
   )
 
   console.log('Drafts have been updated', localDraftsStorage)
-  const localFormSubmissionDrafts =
+  const { downloadDraftsSubmissionData } =
     await generateLocalFormSubmissionDraftsFromStorage({
       localDraftsStorage,
       abortSignal,
       priorityFn,
     })
-  await executeDraftsListeners(localFormSubmissionDrafts)
+
+  return {
+    downloadDraftsSubmissionData: async () => {
+      const localFormSubmissionDrafts = await downloadDraftsSubmissionData()
+      await executeDraftsListeners(localFormSubmissionDrafts)
+    },
+  }
 }
 
 let _isSyncingDrafts = false
@@ -930,8 +946,14 @@ async function syncDrafts({
       localDraftsStorage.syncedFormSubmissionDrafts = formSubmissionDrafts
     }
 
+    const { downloadDraftsSubmissionData } = await setAndBroadcastDrafts({
+      localDraftsStorage,
+      abortSignal,
+      priorityFn,
+    })
+
     console.log('Downloading drafts in the background')
-    setAndBroadcastDrafts({ localDraftsStorage, abortSignal, priorityFn })
+    downloadDraftsSubmissionData()
       .then(async () => {
         console.log('Finished syncing drafts.')
       })
@@ -951,8 +973,6 @@ async function syncDrafts({
       .finally(() => {
         _isSyncingDrafts = false
       })
-
-    // broadcast the drafts and download the draft data in the background
   } catch (error) {
     _isSyncingDrafts = false
     if (abortSignal?.aborted) {
