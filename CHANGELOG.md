@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `completedAt` to scheduled tasks to allow the client to specify when a task was completed
+
 ### Fixed
 
 - Attribute filtering not clearing selected autocomplete value when invalid

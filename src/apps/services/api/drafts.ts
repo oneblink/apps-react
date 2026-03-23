@@ -203,6 +203,7 @@ async function downloadDraftData(
           taskAction: s3SubmissionData.taskAction,
           taskGroup: s3SubmissionData.taskGroup,
           taskGroupInstance: s3SubmissionData.taskGroupInstance,
+          completedAt: undefined,
           redirectUrl: '',
         },
       title: latestFormSubmissionDraftVersion.title,

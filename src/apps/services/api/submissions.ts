@@ -115,6 +115,7 @@ export async function uploadFormSubmission(
       taskActionId: formSubmission.taskCompletion?.taskAction.taskActionId,
       taskGroupInstanceId:
         formSubmission.taskCompletion?.taskGroupInstance?.taskGroupInstanceId,
+      taskCompletionTimestamp: formSubmission.taskCompletion?.completedAt,
       recaptchas: formSubmission.recaptchas,
       onProgress,
       abortSignal,
