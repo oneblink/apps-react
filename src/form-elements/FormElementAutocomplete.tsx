@@ -79,8 +79,9 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
   )
 
   const handleChange = React.useCallback(
-    //useFormElementOptions expects the first arg to be the element
-    (element: FormTypes.FormElement, newValue: unknown) => onChange(newValue),
+    (element: FormTypes.FormElement, { value }: { value?: unknown }) => {
+      onChange(value as string | undefined)
+    },
     [onChange],
   )
 
@@ -249,7 +250,6 @@ function FormElementAutocomplete({
       />
     )
   }
-
   return (
     <AutocompleteFilter
       {...props}
