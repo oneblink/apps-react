@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Lot / DP Numbers display for NSW Point V3 form element
 - disabled on `Clickable` not disabling click function
-- form store hidden columns not being saved as visible
+- column visibility not persisting correctly after re-showing a hidden column in Data View
 
 ## [9.1.0] - 2026-02-23
 
