@@ -547,7 +547,9 @@ export default function useFormStoreTable({
       const storageKey = localStorageKey(form.id)
       const augmentedState = {
         ...state,
-        hiddenColumns: Object.keys(state.columnVisibility),
+        hiddenColumns: Object.entries(state.columnVisibility)
+          .filter(([, isVisible]) => !isVisible)
+          .map(([column]) => column),
         formId: table.options.meta?.formId,
       }
       localStorage.setItem(storageKey, JSON.stringify(augmentedState))
