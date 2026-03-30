@@ -12,6 +12,7 @@ function FormElementLabelContainer({
   required,
   children,
   leading,
+  associateLabelWithInput = true,
 }: {
   className: string
   element: FormTypes.FormElementBase
@@ -19,20 +20,27 @@ function FormElementLabelContainer({
   required: boolean
   children: React.ReactNode
   leading?: React.ReactNode
+  /** When false, render the title as a span (no htmlFor), e.g. repeatable sets with no single control. */
+  associateLabelWithInput?: boolean
 }) {
+  const labelId = `${id}-label`
+  const labelClassName = clsx('ob-label', {
+    'ob-label__required is-required': required,
+  })
+
   return (
     <div className={clsx('ob-form__element', className)}>
       <div className="label ob-label__container">
         {leading}
-        <label
-          className={clsx('ob-label', {
-            'ob-label__required is-required': required,
-          })}
-          htmlFor={id}
-          id={`${id}-label`}
-        >
-          {element.label}
-        </label>
+        {associateLabelWithInput ? (
+          <label className={labelClassName} htmlFor={id} id={labelId}>
+            {element.label}
+          </label>
+        ) : (
+          <span className={labelClassName} id={labelId}>
+            {element.label}
+          </span>
+        )}
         {element.hint &&
           (element.hintPosition === 'TOOLTIP' || !element.hintPosition) && (
             <HintTooltip hint={element.hint} inputId={id} />

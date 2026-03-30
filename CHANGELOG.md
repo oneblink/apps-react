@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Repeatable set label acting as add button
+
 ### Changed
 
 - **[BREAKING]** `draftService.syncDrafts` to download draft data in the background
