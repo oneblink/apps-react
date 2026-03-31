@@ -77,7 +77,7 @@ export default function useFormElementOptions<T>({
     userProfileForInjectables,
   ])
 
-  //options that are shown based on conditional logic and user input
+  //options that are shown based on conditional logic, attributes, and user input
   const filteredOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
     const reducedOptions = withInjectedOptions.filter(
       (option) => !onFilter || (onFilter(option) && !option.displayAlways),
@@ -101,7 +101,7 @@ export default function useFormElementOptions<T>({
 
     if (
       typeof value === 'string' &&
-      !withInjectedOptions.some((option) => value === option.value)
+      !filteredOptions.some((option) => value === option.value)
     ) {
       onChange(element, {
         value: undefined,
@@ -111,7 +111,7 @@ export default function useFormElementOptions<T>({
 
     if (Array.isArray(value)) {
       const newValue = value.filter((selectedValue) =>
-        withInjectedOptions.some((option) => selectedValue === option.value),
+        filteredOptions.some((option) => selectedValue === option.value),
       )
       if (newValue.length !== value.length) {
         const newValueArray = newValue.length ? newValue : undefined
@@ -122,11 +122,10 @@ export default function useFormElementOptions<T>({
     }
   }, [
     element,
-    shownOptions,
     onChange,
     value,
     conditionallyShownOptionsElement?.dependencyIsLoading,
-    withInjectedOptions,
+    filteredOptions,
   ])
 
   useLoadDynamicOptionsEffect(element, onUpdateFormElements)
