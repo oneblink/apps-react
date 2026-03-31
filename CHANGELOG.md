@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Repeatable set label acting as add button
+- Attribute filtering not clearing selected autocomplete value when invalid
+
+## [10.0.0] - 2026-03-31
 
 ### Changed
 
@@ -21,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Lot / DP Numbers display for NSW Point V3 form element
 - disabled on `Clickable` not disabling click function
 - column visibility not persisting correctly after re-showing a hidden column in Data View
+
+### Dependencies
+
+- update @oneblink/storage to [6.0.0-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [5.0.0-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [9.1.0] - 2026-02-23
 
