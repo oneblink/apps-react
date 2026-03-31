@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Repeatable set label acting as add button
 - Attribute filtering not clearing selected autocomplete value when invalid
 
 ## [10.0.0] - 2026-03-31

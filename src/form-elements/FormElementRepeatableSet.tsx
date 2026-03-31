@@ -401,12 +401,12 @@ function FormElementRepeatableSet({
         element={element}
         id={id}
         required={!!minSetEntries && minSetEntries > 0}
+        associateLabelWithInput={false}
       >
         {element.layout === 'MULTIPLE_ADD_BUTTONS' && showAddButton && (
           <AddButton
             onAdd={() => handleAddEntry(0)}
             element={element}
-            id={id}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
           />
         )}
@@ -445,7 +445,6 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(entries.length)}
               element={element}
-              id={id}
             />
           )}
         {(isDirty || displayValidationMessage) &&
