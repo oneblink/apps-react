@@ -66,6 +66,8 @@ export type BaseFormSubmission = {
     taskGroup: ScheduledTasksTypes.TaskGroup | undefined
     /** The task group instance */
     taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance | undefined
+    /** The date and time (in ISO format) when the task was completed */
+    completedAt: string | undefined
     /**
      * The URL to redirect the user to after completing the task via form
      * submission
