@@ -408,6 +408,7 @@ function FormElementRepeatableSet({
             onAdd={() => handleAddEntry(0)}
             element={element}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
+            id={id}
           />
         )}
         {entries.map((entry, index) => {
@@ -445,6 +446,7 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(entries.length)}
               element={element}
+              id={id}
             />
           )}
         {(isDirty || displayValidationMessage) &&
