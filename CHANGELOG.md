@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.0] - 2026-04-10
+
 ### Added
 
 - `completedAt` to scheduled tasks to allow the client to specify when a task was completed
@@ -15,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Repeatable set label acting as add button
 - Attribute filtering not clearing selected autocomplete value when invalid
+
+### Dependencies
+
+- update @oneblink/storage to [6.1.0-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [6.0.0-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [10.0.0] - 2026-03-31
 
