@@ -225,6 +225,7 @@ export async function completeTask({
   taskActionId,
   taskGroupInstanceId,
   completedAt,
+  isAdhoc,
   abortSignal,
 }: {
   formsAppId: number
@@ -232,13 +233,21 @@ export async function completeTask({
   taskActionId: string
   taskGroupInstanceId: string | undefined
   completedAt: string | undefined
+  isAdhoc?: boolean
   abortSignal?: AbortSignal
 }): Promise<ScheduledTasksTypes.CompletedTask> {
   const url = `${tenants.current.apiOrigin}/completed-tasks`
   try {
     return await postRequest<ScheduledTasksTypes.CompletedTask>(
       url,
-      { formsAppId, taskId, taskActionId, taskGroupInstanceId, completedAt },
+      {
+        formsAppId,
+        taskId,
+        taskActionId,
+        taskGroupInstanceId,
+        completedAt,
+        isAdhoc,
+      },
       abortSignal,
     )
   } catch (err) {
