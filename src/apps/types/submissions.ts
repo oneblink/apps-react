@@ -62,6 +62,8 @@ export type BaseFormSubmission = {
     task: ScheduledTasksTypes.Task
     /** The task action */
     taskAction: ScheduledTasksTypes.TaskAction
+    /** `true` if the task was completed ad hoc */
+    isAdhoc?: boolean
     /** The task group */
     taskGroup: ScheduledTasksTypes.TaskGroup | undefined
     /** The task group instance */
