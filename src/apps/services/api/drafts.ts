@@ -37,6 +37,7 @@ async function uploadDraftData(
       taskActionId: draftSubmission.taskCompletion?.taskAction.taskActionId,
       taskGroupInstanceId:
         draftSubmission.taskCompletion?.taskGroupInstance?.taskGroupInstanceId,
+      taskIsAdhoc: draftSubmission.taskCompletion?.isAdhoc,
       formSubmissionDraftId: draftSubmission.formSubmissionDraftId,
       createdAt: draftSubmission.createdAt,
       title: draftSubmission.title,
