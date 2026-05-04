@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- BPay handling to NSW GovPay provider
+
+### Added
+
 - support adhoc tasks
 
 ## [10.1.1] - 2026-04-23
