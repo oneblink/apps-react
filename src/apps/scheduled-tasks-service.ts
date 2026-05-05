@@ -25,6 +25,7 @@ export type AdhocTaskResponse = Pick<TaskResponse, 'task' | 'actions'>
 async function getTasks<
   T extends {
     taskResponses: TaskResponse[]
+    availableAdhocTasks: AdhocTaskResponse[] | undefined
   },
 >(url: string, abortSignal?: AbortSignal) {
   try {
@@ -92,36 +93,10 @@ export async function getTasksForFormsApp({
   abortSignal?: AbortSignal
 }): Promise<{
   taskResponses: TaskResponse[]
+  availableAdhocTasks: AdhocTaskResponse[] | undefined
 }> {
   const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/scheduled-tasks?date=${date}`
   return await getTasks(url, abortSignal)
-}
-
-/**
- * Obtain all of the related adhoc Tasks for a specific Forms App
- *
- * #### Example
- *
- * ```js
- * const formsAppId = 1
- * const tasks = await getAdhocTasksForFormsApp({ formsAppId })
- * ```
- *
- * @param formsAppId
- * @param abortSignal
- * @returns
- */
-export async function getAdhocTasksForFormsApp({
-  formsAppId,
-  abortSignal,
-}: {
-  formsAppId: number
-  abortSignal?: AbortSignal
-}) {
-  const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/adhoc-tasks`
-  return (await getTasks(url, abortSignal)) as {
-    taskResponses: AdhocTaskResponse[]
-  }
 }
 
 /**
@@ -160,45 +135,10 @@ export async function getTaskGroupInstanceTasks({
   const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/scheduled-task-group-instances/${taskGroupInstanceId}?date=${date}`
   return await getTasks<{
     taskResponses: TaskResponse[]
+    availableAdhocTasks: AdhocTaskResponse[] | undefined
     taskGroup: ScheduledTasksTypes.TaskGroup
     taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance
   }>(url, abortSignal)
-}
-
-/**
- * Obtain all of the adhoc tasks related to a Task Group Instances in a specific
- * Forms App
- *
- * #### Example
- *
- * ```js
- * const formsAppId = 1
- * const taskGroupInstanceId = 'abc123'
- * const tasks = await getAdhocTaskGroupInstanceTasks({
- *   formsAppId,
- *   taskGroupInstanceId,
- * })
- * ```
- *
- * @param formsAppId
- * @param taskGroupInstanceId
- * @param abortSignal
- * @returns
- */
-export async function getAdhocTaskGroupInstanceTasks({
-  taskGroupInstanceId,
-  formsAppId,
-  abortSignal,
-}: {
-  taskGroupInstanceId: string
-  date: string
-  formsAppId: number
-  abortSignal?: AbortSignal
-}) {
-  const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/scheduled-task-group-instances/${taskGroupInstanceId}/adhoc-tasks`
-  return (await getTasks(url, abortSignal)) as {
-    taskResponses: AdhocTaskResponse[]
-  }
 }
 
 /**
