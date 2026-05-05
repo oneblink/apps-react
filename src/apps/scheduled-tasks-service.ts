@@ -20,6 +20,8 @@ export interface TaskResponse extends TaskAvailability {
   actions: ScheduledTasksTypes.TaskAction[]
 }
 
+export type AdhocTaskResponse = Pick<TaskResponse, 'task' | 'actions'>
+
 async function getTasks<
   T extends {
     taskResponses: TaskResponse[]
@@ -96,6 +98,33 @@ export async function getTasksForFormsApp({
 }
 
 /**
+ * Obtain all of the related adhoc Tasks for a specific Forms App
+ *
+ * #### Example
+ *
+ * ```js
+ * const formsAppId = 1
+ * const tasks = await getAdhocTasksForFormsApp({ formsAppId })
+ * ```
+ *
+ * @param formsAppId
+ * @param abortSignal
+ * @returns
+ */
+export async function getAdhocTasksForFormsApp({
+  formsAppId,
+  abortSignal,
+}: {
+  formsAppId: number
+  abortSignal?: AbortSignal
+}) {
+  const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/adhoc-tasks`
+  return (await getTasks(url, abortSignal)) as {
+    taskResponses: AdhocTaskResponse[]
+  }
+}
+
+/**
  * Obtain all of the tasks related to a Task Group Instances in a specific Forms
  * App
  *
@@ -134,6 +163,42 @@ export async function getTaskGroupInstanceTasks({
     taskGroup: ScheduledTasksTypes.TaskGroup
     taskGroupInstance: ScheduledTasksTypes.TaskGroupInstance
   }>(url, abortSignal)
+}
+
+/**
+ * Obtain all of the adhoc tasks related to a Task Group Instances in a specific
+ * Forms App
+ *
+ * #### Example
+ *
+ * ```js
+ * const formsAppId = 1
+ * const taskGroupInstanceId = 'abc123'
+ * const tasks = await getAdhocTaskGroupInstanceTasks({
+ *   formsAppId,
+ *   taskGroupInstanceId,
+ * })
+ * ```
+ *
+ * @param formsAppId
+ * @param taskGroupInstanceId
+ * @param abortSignal
+ * @returns
+ */
+export async function getAdhocTaskGroupInstanceTasks({
+  taskGroupInstanceId,
+  formsAppId,
+  abortSignal,
+}: {
+  taskGroupInstanceId: string
+  date: string
+  formsAppId: number
+  abortSignal?: AbortSignal
+}) {
+  const url = `${tenants.current.apiOrigin}/forms-apps/${formsAppId}/scheduled-task-group-instances/${taskGroupInstanceId}/adhoc-tasks`
+  return (await getTasks(url, abortSignal)) as {
+    taskResponses: AdhocTaskResponse[]
+  }
 }
 
 /**
