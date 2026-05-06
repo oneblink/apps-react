@@ -19,7 +19,7 @@ export type FormStoreFilter<T> = {
   $gt?: T
   $lt?: T
   $lte?: T
-  $in?: string[]
+  $in?: Array<string | number | null>
   $elemMatch?: {
     $in?: string[]
   }
@@ -58,6 +58,10 @@ export type FormStoreFilters = {
   taskGroupInstance?: {
     /** Filter results by the task group instance label */
     label?: FormStoreFilter<string>
+  }
+  /** Filter results by the forms app used to submit */
+  formsAppId?: {
+    $in: (number | null)[]
   }
 }
 

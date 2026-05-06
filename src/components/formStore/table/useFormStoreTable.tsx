@@ -57,6 +57,17 @@ export default function useFormStoreTable({
   }, [form, onChangeParameters])
 
   const formElements = React.useContext(FormStoreElementsContext)
+
+  const formsAppOptions = React.useMemo(() => {
+    const options: Array<{ formsAppId: number | null; label: string }> =
+      form.formsAppIds.map((id) => ({
+        formsAppId: id,
+        label: id.toString(),
+      }))
+    options.push({ formsAppId: null, label: 'No App' })
+    return options
+  }, [form.formsAppIds])
+
   const columns = React.useMemo(() => {
     return generateColumns<SubmissionTypes.FormStoreRecord>({
       sorting: parameters.sorting,
@@ -259,6 +270,43 @@ export default function useFormStoreTable({
           ),
         },
         {
+          id: 'FORMS_APP_ID',
+          header: 'App',
+          meta: {
+            sorting: undefined,
+            filter: {
+              type: 'FORMS_APP_ID' as const,
+              options: formsAppOptions,
+              value: parameters.filters?.formsAppId as
+                | { $in: (number | null)[] }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      formsAppId: newValue as
+                        | { $in: (number | null)[] }
+                        | undefined,
+                    },
+                  }),
+                  false,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => {
+            const text = formStoreRecord.formsAppId?.toString() ?? 'No App'
+            return (
+              <>
+                {text}
+                <TableCellCopyButton text={text} />
+              </>
+            )
+          },
+        },
+        {
           id: 'TASK_GROUP',
           header: 'Task Group',
           meta: {
@@ -432,6 +480,7 @@ export default function useFormStoreTable({
     })
   }, [
     formElements,
+    formsAppOptions,
     onChangeParameters,
     parameters,
     submissionIdValidationMessage,
