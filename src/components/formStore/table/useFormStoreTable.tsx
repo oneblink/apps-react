@@ -31,6 +31,7 @@ export default function useFormStoreTable({
   onChangeParameters,
   onRefresh,
   submissionIdValidationMessage,
+  getFormsAppLabel,
 }: {
   formStoreRecords: SubmissionTypes.FormStoreRecord[]
   form: FormTypes.Form
@@ -38,6 +39,7 @@ export default function useFormStoreTable({
   onChangeParameters: OnChangeFilters<formStoreService.FormStoreParameters>
   onRefresh: () => void
   submissionIdValidationMessage?: string
+  getFormsAppLabel?: (formsAppId: number | null) => string
 }) {
   // Resets parameters on form change
   React.useEffect(() => {
@@ -59,14 +61,15 @@ export default function useFormStoreTable({
   const formElements = React.useContext(FormStoreElementsContext)
 
   const formsAppOptions = React.useMemo(() => {
-    const options: Array<{ formsAppId: number | null; label: string }> =
-      form.formsAppIds.map((id) => ({
-        formsAppId: id,
-        label: id.toString(),
-      }))
-    options.push({ formsAppId: null, label: 'No App' })
-    return options
-  }, [form.formsAppIds])
+    if (!getFormsAppLabel) return undefined
+    return [
+      ...form.formsAppIds.map((id) => ({
+        formsAppId: id as number | null,
+        label: getFormsAppLabel(id),
+      })),
+      { formsAppId: null as number | null, label: getFormsAppLabel(null) },
+    ]
+  }, [form.formsAppIds, getFormsAppLabel])
 
   const columns = React.useMemo(() => {
     return generateColumns<SubmissionTypes.FormStoreRecord>({
@@ -269,43 +272,56 @@ export default function useFormStoreTable({
             </>
           ),
         },
-        {
-          id: 'FORMS_APP_ID',
-          header: 'App',
-          meta: {
-            sorting: undefined,
-            filter: {
-              type: 'FORMS_APP_ID' as const,
-              options: formsAppOptions,
-              value: parameters.filters?.formsAppId as
-                | { $in: (number | null)[] }
-                | undefined,
-              onChange: (newValue) => {
-                onChangeParameters(
-                  (currentParameters) => ({
-                    ...currentParameters,
-                    filters: {
-                      ...currentParameters.filters,
-                      formsAppId: newValue as
-                        | { $in: (number | null)[] }
-                        | undefined,
+        ...(formsAppOptions && getFormsAppLabel
+          ? [
+              {
+                id: 'FORMS_APP_ID',
+                header: 'App',
+                meta: {
+                  sorting: undefined,
+                  filter: {
+                    type: 'FORMS_APP_ID' as const,
+                    options: formsAppOptions,
+                    value: parameters.filters?.formsAppId as
+                      | { $in: (number | null)[] }
+                      | undefined,
+                    onChange: (
+                      newValue?: formStoreService.FormStoreFilter<unknown>,
+                      shouldDebounce?: boolean,
+                    ) => {
+                      onChangeParameters(
+                        (currentParameters) => ({
+                          ...currentParameters,
+                          filters: {
+                            ...currentParameters.filters,
+                            formsAppId: newValue as
+                              | { $in: (number | null)[] }
+                              | undefined,
+                          },
+                        }),
+                        shouldDebounce ?? false,
+                      )
                     },
-                  }),
-                  false,
-                )
+                  },
+                },
+                cell: ({
+                  row: { original: formStoreRecord },
+                }: {
+                  row: { original: SubmissionTypes.FormStoreRecord }
+                }) => {
+                  const text = getFormsAppLabel(
+                    formStoreRecord.formsAppId ?? null,
+                  )
+                  return (
+                    <>
+                      {text}
+                      <TableCellCopyButton text={text} />
+                    </>
+                  )
+                },
               },
-            },
-          },
-          cell: ({ row: { original: formStoreRecord } }) => {
-            const text = formStoreRecord.formsAppId?.toString() ?? 'No App'
-            return (
-              <>
-                {text}
-                <TableCellCopyButton text={text} />
-              </>
-            )
-          },
-        },
+            ]
+          : []),
         {
           id: 'TASK_GROUP',
           header: 'Task Group',
@@ -481,6 +497,7 @@ export default function useFormStoreTable({
   }, [
     formElements,
     formsAppOptions,
+    getFormsAppLabel,
     onChangeParameters,
     parameters,
     submissionIdValidationMessage,

@@ -19,7 +19,7 @@ export type FormStoreFilter<T> = {
   $gt?: T
   $lt?: T
   $lte?: T
-  $in?: Array<string | number | null>
+  $in?: string[]
   $elemMatch?: {
     $in?: string[]
   }
