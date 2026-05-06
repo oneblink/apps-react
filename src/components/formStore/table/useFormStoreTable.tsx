@@ -64,10 +64,10 @@ export default function useFormStoreTable({
     if (!getFormsAppLabel) return undefined
     return [
       ...form.formsAppIds.map((id) => ({
-        formsAppId: id as number | null,
+        value: id,
         label: getFormsAppLabel(id),
       })),
-      { formsAppId: null as number | null, label: getFormsAppLabel(null) },
+      { value: null, label: getFormsAppLabel(null) },
     ]
   }, [form.formsAppIds, getFormsAppLabel])
 
