@@ -69,6 +69,13 @@ declare module '@tanstack/react-table' {
             }
           }
         }
+      | {
+          type: 'FORMS_APP_ID'
+          options: Array<{ formsAppId: number | null; label: string }>
+          value?: {
+            $in: (number | null)[]
+          }
+        }
     )
   }
 
