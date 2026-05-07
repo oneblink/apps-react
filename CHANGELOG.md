@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.1.2] - 2026-05-07
+
 ### Added
 
 - support adhoc tasks
+
+### Dependencies
+
+- update @oneblink/sdk-core to [9.2.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [9.1.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [7.1.0-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [7.0.0-beta.4](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [10.1.1] - 2026-04-23
 
