@@ -52,6 +52,7 @@ function FormElementLookupButton({
   element,
   onChange,
   onLookup,
+  validationMessage,
   ...validationMessageProps
 }: Props & {
   onChange: FormElementValueChangeHandler
@@ -111,14 +112,16 @@ function FormElementLookupButton({
           className="ob-lookup-button"
           id={id}
           element={element}
-          required={false}
+          required={!!element.required}
         >
           <LookupButton
             value={value}
-            validationMessage={undefined}
+            validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
+            overrideRequiredMessage={element.requiredMessage}
           />
           <FormElementLookupButtonValidationMessage
+            validationMessage={validationMessage}
             {...validationMessageProps}
           />
         </FormElementLabelContainer>
