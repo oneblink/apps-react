@@ -92,7 +92,7 @@ export type FormSubmissionMetaListResponse = {
     limit: number | undefined
     offset: number | undefined
     /** `undefined` means there are no results left to fetch */
-    nextOffset: string | undefined
+    nextOffset: number | undefined
   }
   formSubmissionMeta: SubmissionTypes.FormSubmissionMeta[]
 }
