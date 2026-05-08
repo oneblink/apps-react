@@ -170,7 +170,7 @@ function FormElementBSB({
                   onChange(element, {
                     value: undefined,
                   })
-                  setText("")
+                  setText('')
                 }
                 setIsDirty()
               }}
@@ -198,6 +198,7 @@ function FormElementBSB({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
+            overrideRequiredMessage={undefined}
           />
         </div>
         {bsbRecord && (

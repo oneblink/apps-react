@@ -21,7 +21,6 @@ import { parseDateValue } from '../generate-default-data'
 import { localisationService } from '../../apps'
 import { ArcGISWebMapElementValue } from '@oneblink/types/typescript/arcgis'
 import { generateConfirmationFormElementName } from '../dynamic-elements'
-import { determineLookupButtonIsRequired } from './determineLookupButtonIsRequired'
 import { Value as FormElementComplianceValue } from '../../form-elements/FormElementCompliance'
 import {
   defaultAutoSnapshotButtonLabel,
@@ -752,14 +751,7 @@ export default function validateSubmission({
         }
         case 'lookupButton': {
           const errorMessages = validationExtensions.lookups({
-            formElement: {
-              ...formElement,
-              required: determineLookupButtonIsRequired(
-                formElement.elementDependencies,
-                elements,
-                submission ? [submission] : [],
-              ),
-            },
+            formElement,
             executedLookups,
           })
           if (errorMessages.length) {
