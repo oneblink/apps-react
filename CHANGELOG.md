@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BPay handling to NSW GovPay provider
 - `formsAppService.getFormSubmissionMetaList()`
+- `hideEndAdornment` to `AutocompleteDropdown`
 
 ## [10.1.2] - 2026-05-07
 
