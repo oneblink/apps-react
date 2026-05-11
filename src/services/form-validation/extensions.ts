@@ -16,10 +16,7 @@ const validationExtensions = {
     executedLookups,
     formElement,
   }: {
-    formElement: FormTypes.LookupFormElement &
-      FormTypes.FormElementRequired & {
-        type: FormTypes.FormElement['type']
-      }
+    formElement: FormTypes.LookupFormElement & FormTypes.FormElementRequired
     executedLookups: ExecutedLookups
   }): string[] {
     if (!formElement.isDataLookup && !formElement.isElementLookup) {
@@ -27,7 +24,7 @@ const validationExtensions = {
     }
 
     // Lookups must only be executed on required form elements
-    if (!formElement.required) {
+    if (formElement && !formElement.required) {
       return []
     }
 
@@ -36,14 +33,7 @@ const validationExtensions = {
       return []
     }
 
-    return [
-      generateLookupValidationMessage(
-        formElement.lookupButton,
-        formElement.type === 'lookupButton'
-          ? formElement.requiredMessage
-          : undefined,
-      ),
-    ]
+    return [generateLookupValidationMessage(formElement.lookupButton)]
   },
 
   presence(

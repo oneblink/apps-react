@@ -118,7 +118,6 @@ function FormElementNumber({
               value={value}
               validationMessage={validationMessage}
               lookupButtonConfig={element.lookupButton}
-              overrideRequiredMessage={undefined}
             />
           </div>
         ) : isPageVisible ? (

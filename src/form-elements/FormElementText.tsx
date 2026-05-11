@@ -80,7 +80,6 @@ function FormElementText({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
-            overrideRequiredMessage={undefined}
           />
         </div>
         {(isDisplayingValidationMessage || !!element.maxLength) && (
