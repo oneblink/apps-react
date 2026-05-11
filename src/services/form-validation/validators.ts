@@ -157,14 +157,9 @@ export function validateAttachments(
 }
 
 export const generateLookupValidationMessage = (
-  lookupButtonConfig: EnvironmentTypes.ButtonConfiguration | undefined,
-  overrideMessage: string | undefined,
+  lookupButtonConfig?: EnvironmentTypes.ButtonConfiguration,
 ) => {
-  if (overrideMessage) {
-    return overrideMessage
-  }
-  if (lookupButtonConfig && lookupButtonConfig.label) {
-    return `${lookupButtonConfig.label} is required`
-  }
-  return 'Lookup is required'
+  return lookupButtonConfig && lookupButtonConfig.label
+    ? `${lookupButtonConfig.label} is required`
+    : 'Lookup is required'
 }

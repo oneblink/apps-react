@@ -120,8 +120,7 @@ function FormElementABN({
         })
         if (result.ABRPayloadSearchResults.response.exception) {
           throw new Error(
-            result.ABRPayloadSearchResults.response.exception
-              .exceptionDescription,
+            result.ABRPayloadSearchResults.response.exception.exceptionDescription,
           )
         }
 
@@ -270,7 +269,6 @@ function FormElementABN({
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
-            overrideRequiredMessage={undefined}
           />
         </div>
         {value && (
