@@ -12,6 +12,7 @@ type Props = {
   hasMarginTop?: boolean
   isInputButton?: boolean
   lookupButtonConfig?: EnvironmentTypes.ButtonConfiguration
+  overrideRequiredMessage: string | undefined
 }
 
 function LookupButton({
@@ -20,6 +21,7 @@ function LookupButton({
   hasMarginTop,
   isInputButton,
   lookupButtonConfig,
+  overrideRequiredMessage,
 }: Props) {
   const { isLookup, onLookup, isDisabled, isLoading, allowLookupOnEmptyValue } =
     useLookupNotification(value)
@@ -51,7 +53,10 @@ function LookupButton({
         (!isEmptyValue &&
           !!validationMessage &&
           validationMessage !==
-            generateLookupValidationMessage(lookupButtonConfig))
+            generateLookupValidationMessage(
+              lookupButtonConfig,
+              overrideRequiredMessage,
+            ))
       }
     >
       {isInputButton && <span></span>}

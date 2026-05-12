@@ -17,7 +17,7 @@ function FormElementLabelContainer({
   className: string
   element: FormTypes.FormElementBase
   id: string
-  required: boolean
+  required: boolean | undefined
   children: React.ReactNode
   leading?: React.ReactNode
   associateLabelWithInput?: boolean
