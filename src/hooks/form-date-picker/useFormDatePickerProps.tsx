@@ -83,7 +83,7 @@ export default function useFormDatePickerProps({
   placeholder: string | undefined
   disabled: boolean | undefined
   className: string
-  required: boolean
+  required: boolean | undefined
   onBlur: () => void
   onChange: (newDate: Date | undefined) => void
 }) {
