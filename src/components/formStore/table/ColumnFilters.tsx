@@ -352,7 +352,7 @@ function FormsAppIdTextField({
   value,
   onChange,
 }: {
-  options: Array<{ value: number | null; label: string }>
+  options: Array<FormsAppOption>
   value: (number | null)[] | undefined
   onChange: (newValue: (number | null)[]) => void
 }) {
