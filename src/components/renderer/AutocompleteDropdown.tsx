@@ -39,6 +39,7 @@ type Props<T> = {
   'aria-describedby'?: string
   branding?: React.ReactNode
   autoComplete?: string
+  hideEndAdornment?: boolean
 } & IsDirtyProps
 
 function AutocompleteDropdown<T>({
@@ -61,6 +62,7 @@ function AutocompleteDropdown<T>({
   setIsDirty,
   branding,
   autoComplete,
+  hideEndAdornment,
   ...props
 }: Props<T>) {
   const optionsContainerElement = React.useRef<HTMLDivElement>(null)
@@ -295,19 +297,23 @@ function AutocompleteDropdown<T>({
               aria-describedby={props['aria-describedby']}
               aria-required={required}
             />
-            {isShowingValid && (
-              <span className=" ob-input-icon icon is-small is-right">
-                <MaterialIcon className="is-size-5 has-text-success">
-                  check
-                </MaterialIcon>
-              </span>
-            )}
-            {isShowingError && (
-              <span className=" ob-input-icon icon is-small is-right">
-                <MaterialIcon className="is-size-5 has-text-danger">
-                  error
-                </MaterialIcon>
-              </span>
+            {!hideEndAdornment && (
+              <>
+                {isShowingValid && (
+                  <span className=" ob-input-icon icon is-small is-right">
+                    <MaterialIcon className="is-size-5 has-text-success">
+                      check
+                    </MaterialIcon>
+                  </span>
+                )}
+                {isShowingError && (
+                  <span className=" ob-input-icon icon is-small is-right">
+                    <MaterialIcon className="is-size-5 has-text-danger">
+                      error
+                    </MaterialIcon>
+                  </span>
+                )}
+              </>
             )}
           </div>
         </div>

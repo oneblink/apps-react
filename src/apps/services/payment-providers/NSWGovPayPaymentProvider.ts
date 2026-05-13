@@ -15,9 +15,7 @@ import {
 } from './receipt-items'
 import { localisationService } from '../..'
 
-class NSWGovPayPaymentProvider
-  implements PaymentProvider<SubmissionEventTypes.NSWGovPaySubmissionEvent>
-{
+class NSWGovPayPaymentProvider implements PaymentProvider<SubmissionEventTypes.NSWGovPaySubmissionEvent> {
   constructor(
     paymentSubmissionEvent: SubmissionEventTypes.NSWGovPaySubmissionEvent,
     formSubmissionResult: FormSubmissionResult,
@@ -66,6 +64,9 @@ class NSWGovPayPaymentProvider
       bankReference,
       paymentMethod,
       cardLast4Digits,
+      bPayBillerCode,
+      bPayCrn,
+      bPayProcessingDate,
       amount,
       surcharge,
       surchargeGst,
@@ -77,6 +78,9 @@ class NSWGovPayPaymentProvider
       completionReference?: string
       bankReference?: string
       paymentMethod?: string
+      bPayBillerCode?: string
+      bPayCrn?: string
+      bPayProcessingDate?: string
       cardLast4Digits?: string
       amount?: string
       surcharge?: string
@@ -133,6 +137,30 @@ class NSWGovPayPaymentProvider
         generateCreditCardMaskReceiptItem(
           cardLast4Digits ? `xxxx xxxx xxxx ${cardLast4Digits}` : null,
         ),
+        generateReceiptItem({
+          className: 'ob-payment-receipt__bpay-biller-code',
+          valueClassName: 'cypress-payment-receipt-bpay-biller-code',
+          icon: 'account_balance',
+          label: 'BPay Biller Code',
+          value: bPayBillerCode,
+          allowCopyToClipboard: true,
+        }),
+        generateReceiptItem({
+          className: 'ob-payment-receipt__bpay-crn',
+          valueClassName: 'cypress-payment-receipt-bpay-crn',
+          icon: 'account_balance',
+          label: 'BPay Reference',
+          value: bPayCrn,
+          allowCopyToClipboard: true,
+        }),
+        generateReceiptItem({
+          className: 'ob-payment-receipt__bpay-processing-date',
+          valueClassName: 'cypress-payment-receipt-bpay-processing-date',
+          icon: 'account_balance',
+          label: 'BPay Processing Date',
+          value: formatBPayProcessingDate(bPayProcessingDate),
+          allowCopyToClipboard: false,
+        }),
         generateAmountReceiptItem(
           typeof amount === 'string' ? parseFloat(amount) : undefined,
         ),
@@ -185,9 +213,23 @@ function getPaymentMethodLabel(paymentMethod: string | undefined) {
     case 'PAYPAL': {
       return 'PayPal'
     }
-    case 'BPAY':
+    case 'BPAY': {
+      return 'BPay'
+    }
     default: {
       return paymentMethod
+    }
+  }
+}
+
+function formatBPayProcessingDate(bPayProcessingDate: string | undefined) {
+  if (bPayProcessingDate) {
+    const date = localisationService.generateDate({
+      daysOffset: undefined,
+      value: bPayProcessingDate,
+    })
+    if (date) {
+      return localisationService.formatDate(date)
     }
   }
 }

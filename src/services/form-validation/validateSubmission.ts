@@ -754,11 +754,14 @@ export default function validateSubmission({
           const errorMessages = validationExtensions.lookups({
             formElement: {
               ...formElement,
-              required: determineLookupButtonIsRequired(
-                formElement.elementDependencies,
-                elements,
-                submission ? [submission] : [],
-              ),
+              required:
+                typeof formElement.required === 'boolean'
+                  ? formElement.required
+                  : determineLookupButtonIsRequired(
+                      formElement.elementDependencies,
+                      elements,
+                      submission ? [submission] : [],
+                    ),
             },
             executedLookups,
           })
