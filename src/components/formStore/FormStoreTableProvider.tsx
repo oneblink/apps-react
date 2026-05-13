@@ -29,9 +29,11 @@ function getParamsFromLocalStorage() {
 export function FormStoreTableProvider({
   form,
   children,
+  getFormsAppLabel,
 }: {
   form: FormTypes.Form
   children: React.ReactNode
+  getFormsAppLabel?: (formsAppId: number | null) => string
 }) {
   const history = useHistory()
   const location = useLocation()
@@ -142,6 +144,7 @@ export function FormStoreTableProvider({
     submissionIdValidationMessage,
     form,
     onRefresh,
+    getFormsAppLabel,
   })
 
   const visibleColumns = formStoreTable.getVisibleFlatColumns()

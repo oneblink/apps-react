@@ -1,6 +1,6 @@
 import { FormTypes } from '@oneblink/types'
 import { formStoreService } from 'apps'
-
+import { FormsAppOption } from '../components/formStore/table/ColumnFilters'
 declare module '@tanstack/react-table' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -67,6 +67,13 @@ declare module '@tanstack/react-table' {
             $elemMatch: {
               $in: string[]
             }
+          }
+        }
+      | {
+          type: 'FORMS_APP_ID'
+          options: Array<FormsAppOption>
+          value?: {
+            $in: (number | null)[]
           }
         }
     )

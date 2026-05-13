@@ -19,9 +19,11 @@ export const FormStoreElementsContext =
 export function OneBlinkFormStoreProvider({
   form,
   children,
+  getFormsAppLabel,
 }: {
   form: FormTypes.Form
   children: React.ReactNode
+  getFormsAppLabel?: (formsAppId: number | null) => string
 }) {
   const fetchFormStoreDefinition = React.useCallback(
     (abortSignal?: AbortSignal) => {
@@ -55,7 +57,9 @@ export function OneBlinkFormStoreProvider({
     <FormStoreElementsContext.Provider
       value={formStoreDefinitionState.result.formElements}
     >
-      <FormStoreTableProvider form={form}>{children}</FormStoreTableProvider>
+      <FormStoreTableProvider form={form} getFormsAppLabel={getFormsAppLabel}>
+        {children}
+      </FormStoreTableProvider>
     </FormStoreElementsContext.Provider>
   )
 }

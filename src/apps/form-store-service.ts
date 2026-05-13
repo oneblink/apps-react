@@ -59,6 +59,10 @@ export type FormStoreFilters = {
     /** Filter results by the task group instance label */
     label?: FormStoreFilter<string>
   }
+  /** Filter results by the forms app used to submit */
+  formsAppId?: {
+    $in: (number | null)[]
+  }
 }
 
 export type FormStoreParameters = {

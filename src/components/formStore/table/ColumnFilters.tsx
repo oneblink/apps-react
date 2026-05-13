@@ -28,6 +28,10 @@ type Props = {
 
 const shortDateFormat = localisationService.getDateFnsFormats().shortDate
 
+export type FormsAppOption = {
+  value: number | null
+  label: string
+}
 function ColumnFilters({ filter }: Props) {
   switch (filter.type) {
     case 'SUBMISSION_ID': {
@@ -315,6 +319,24 @@ function ColumnFilters({ filter }: Props) {
         />
       )
     }
+    case 'FORMS_APP_ID': {
+      return (
+        <FormsAppIdTextField
+          options={filter.options}
+          value={filter.value?.$in}
+          onChange={(newValue) => {
+            filter.onChange(
+              newValue.length
+                ? {
+                    $in: newValue,
+                  }
+                : undefined,
+              false,
+            )
+          }}
+        />
+      )
+    }
     default: {
       return null
     }
@@ -322,6 +344,72 @@ function ColumnFilters({ filter }: Props) {
 }
 
 export default React.memo(ColumnFilters)
+
+const NO_APP_SENTINEL = '__no_app__'
+
+function FormsAppIdTextField({
+  options,
+  value,
+  onChange,
+}: {
+  options: Array<FormsAppOption>
+  value: (number | null)[] | undefined
+  onChange: (newValue: (number | null)[]) => void
+}) {
+  const selectedStrings = React.useMemo(
+    () =>
+      value?.map((v) => (v === null ? NO_APP_SENTINEL : v.toString())) ?? [],
+    [value],
+  )
+
+  return (
+    <StyledTextField
+      variant="outlined"
+      margin="dense"
+      size="small"
+      label="Filter"
+      select
+      slotProps={{
+        select: {
+          multiple: true,
+          renderValue: (selectedIds) => {
+            return options
+              .reduce<string[]>((selectedLabels, option) => {
+                const key =
+                  option.value === null
+                    ? NO_APP_SENTINEL
+                    : option.value.toString()
+                if ((selectedIds as string[]).includes(key)) {
+                  selectedLabels.push(option.label)
+                }
+                return selectedLabels
+              }, [])
+              .join(', ')
+          },
+        },
+      }}
+      fullWidth
+      value={selectedStrings}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.value as unknown as string[]
+        onChange(
+          selected.map((v) => (v === NO_APP_SENTINEL ? null : parseInt(v, 10))),
+        )
+      }}
+    >
+      {options.map((option) => {
+        const key =
+          option.value === null ? NO_APP_SENTINEL : option.value.toString()
+        return (
+          <MenuItem value={key} key={key}>
+            <Checkbox checked={selectedStrings.includes(key)} />
+            <ListItemText>{option.label}</ListItemText>
+          </MenuItem>
+        )
+      })}
+    </StyledTextField>
+  )
+}
 
 function OptionsTextField({
   options,
