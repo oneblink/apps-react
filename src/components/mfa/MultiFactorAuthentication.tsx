@@ -4,6 +4,10 @@ import {
   Chip,
   CircularProgress,
   Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   Icon,
   Paper,
@@ -15,6 +19,7 @@ import ConfirmDialog from '../ConfirmDialog'
 import MfaDialog from './MfaDialog'
 import ErrorSnackbar from '../ErrorSnackbar'
 import MaterialIcon from '../MaterialIcon'
+import SuccessSnackbar from '../SuccessSnackbar'
 import useMfa from '../../hooks/useMfa'
 import ErrorMessage from '../messages/ErrorMessage'
 
@@ -24,6 +29,7 @@ export const LargeIcon = styled(Icon)(({ theme }) => ({
 
 type Props = {
   ssoSetupUrl?: string
+  extraDescription?: string
 }
 
 type MfaStatusProps = {
@@ -89,8 +95,13 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
     isMfaEnabled,
     isDisablingMfa,
     isSettingUpMfa,
+    isSetupMethodDialogOpen,
+    isEmailSetupSuccessOpen,
     mfaSetup,
     beginMfaSetup,
+    openMfaSetupMethodDialog,
+    closeMfaSetupMethodDialog,
+    hideEmailSetupSuccess,
     cancelMfaSetup,
     completeMfaSetup,
     clearMfaSetupError,
@@ -175,11 +186,64 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
           size="small"
           loading={isSettingUpMfa}
           disabled={isMfaEnabled}
-          onClick={beginMfaSetup}
+          onClick={openMfaSetupMethodDialog}
           data-cypress="setup-mfa-button"
         >
           Setup MFA
         </Button>
+        <Dialog
+          open={isSetupMethodDialogOpen}
+          onClose={() => {
+            if (!isSettingUpMfa) {
+              closeMfaSetupMethodDialog()
+            }
+          }}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Choose MFA Method</DialogTitle>
+          <DialogContent dividers>
+            <Typography variant="body2" paragraph>
+              Choose how you want to receive MFA codes when you sign in.
+            </Typography>
+            <Typography variant="subtitle2" gutterBottom>
+              Authenticator App
+            </Typography>
+            <Typography variant="body2" paragraph>
+              Use an app like Google Authenticator or Microsoft Authenticator to
+              generate 6-digit verification codes.
+            </Typography>
+            <Typography variant="subtitle2" gutterBottom>
+              Email
+            </Typography>
+            <Typography variant="body2">
+              Receive a one-time verification code at your email address each
+              time MFA is required.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={closeMfaSetupMethodDialog}
+              disabled={isSettingUpMfa}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => beginMfaSetup('email')}
+              loading={isSettingUpMfa}
+            >
+              Use Email
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => beginMfaSetup('authenticator')}
+              loading={isSettingUpMfa}
+            >
+              Use Authenticator App
+            </Button>
+          </DialogActions>
+        </Dialog>
         <MfaDialog
           mfaSetup={mfaSetup}
           onClose={cancelMfaSetup}
@@ -191,6 +255,12 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
           {setupError?.message}
         </span>
       </ErrorSnackbar>
+      <SuccessSnackbar
+        open={isEmailSetupSuccessOpen}
+        onClose={hideEmailSetupSuccess}
+      >
+        MFA has been successfully setup.
+      </SuccessSnackbar>
     </>
   )
 }
@@ -230,7 +300,10 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
  * @returns
  * @group Components
  */
-export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
+export default function MultiFactorAuthentication({
+  ssoSetupUrl,
+  extraDescription,
+}: Props) {
   const {
     loadingError,
     isLoading,
@@ -266,7 +339,7 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
                   authentication (2FA), is a best practice that requires a
                   second authentication factor in addition to user name and
                   password sign-in credentials. We strongly recommend enabling
-                  MFA to enhance your account security.
+                  MFA to enhance your account security. {extraDescription}
                 </Typography>
                 <Grid container justifyContent="flex-end" spacing={1}>
                   <MfaSetup ssoSetupUrl={ssoSetupUrl || ''} />
