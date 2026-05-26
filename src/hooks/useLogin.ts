@@ -37,7 +37,7 @@ import useBooleanState from './useBooleanState'
  *     isResettingTemporaryPassword,
  *     resetTemporaryPassword,
  *     // MFA Password
- *     isMfaCodeRequired,
+ *     mfaMethod,
  *     isSubmittingMfaCode,
  *     submitMfaCode,
  *     // Login Errors
@@ -207,7 +207,7 @@ import useBooleanState from './useBooleanState'
  *     )
  *   }
  *
- *   if (isMfaCodeRequired) {
+ *   if (mfaMethod) {
  *     return (
  *       <form
  *         onSubmit={(e) => {
@@ -215,7 +215,13 @@ import useBooleanState from './useBooleanState'
  *           submitMfaCode()
  *         }}
  *       >
- *         <p>Enter the 6-digit code found in your authenticator app.</p>
+ *         <p>
+ *           {mfaMethod === 'email'
+ *             ? 'Enter the verification code sent to your email address.'
+ *             : mfaMethod === 'authenticator'
+ *               ? 'Enter the 6-digit code found in your authenticator app.'
+ *               : 'Enter your verification code.'}
+ *         </p>
  *
  *         <input
  *           type="password"
@@ -518,7 +524,7 @@ export default function useLogin({
   ])
 
   const submitMfaCode = React.useCallback(async () => {
-    const mfaCodeCallback = loginAttemptResponse?.mfaCodeCallback
+    const mfaCodeCallback = loginAttemptResponse?.mfa?.codeCallback
     if (!mfaCodeCallback) {
       return
     }
@@ -548,7 +554,7 @@ export default function useLogin({
         }))
       }
     }
-  }, [code, isMounted, loginAttemptResponse?.mfaCodeCallback])
+  }, [code, isMounted, loginAttemptResponse?.mfa?.codeCallback])
 
   // Forgot Password
   const [isShowingForgotPassword, showForgotPassword, hideForgotPassword] =
@@ -705,7 +711,7 @@ export default function useLogin({
     isResettingTemporaryPassword,
     resetTemporaryPassword,
     // MFA Code
-    isMfaCodeRequired: !!loginAttemptResponse?.mfaCodeCallback,
+    mfaMethod: loginAttemptResponse?.mfa?.method || null,
     isSubmittingMfaCode,
     submitMfaCode,
     // Showing Forgot Password
@@ -836,11 +842,8 @@ export interface UseLoginValue {
      */
     isInvalid: boolean
   }
-  /**
-   * `true` if the user logged in using MFA and a code is required to finish the
-   * login attempt. Prompt the user for a code and call `submitMfaCode()`.
-   */
-  isMfaCodeRequired: boolean
+  /** The MFA method the user must complete to finish signing in, if available. */
+  mfaMethod: authService.MfaMethod | null
   /** `true` while processing `submitMfaCode()`. */
   isSubmittingMfaCode: boolean
   /**

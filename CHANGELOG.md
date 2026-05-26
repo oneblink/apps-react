@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- email MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
+
+### Changed
+
+- **[BREAKING]** `LoginAttemptResponse` to replace `mfaCodeCallback` with `mfa.codeCallback` and `mfa.method`
+- **[BREAKING]** `useLogin()` to remove `isMfaCodeRequired`; use `mfaMethod` as the source of truth for an active MFA step
+- **[BREAKING]** `useMfa()` to require an `mfaMethod` parameter for `beginMfaSetup(mfaMethod)`
+
 ## [10.3.1] - 2026-06-18
 
 ### Fixed
