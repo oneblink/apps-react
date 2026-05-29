@@ -6,7 +6,7 @@ type MfaState = {
   isLoading: boolean
   isMfaEnabled: boolean
   isSetupMethodDialogOpen: boolean
-  isEmailSetupSuccessOpen: boolean
+  isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
   isDisablingMfa: boolean
@@ -19,7 +19,7 @@ export const MfaContext = React.createContext<
     beginMfaSetup: (mfaMethod: authService.MfaMethod) => Promise<void>
     openMfaSetupMethodDialog: () => void
     closeMfaSetupMethodDialog: () => void
-    hideEmailSetupSuccess: () => void
+    hideSetupSuccess: () => void
     cancelMfaSetup: () => void
     completeMfaSetup: () => void
     beginDisablingMfa: () => void
@@ -33,13 +33,13 @@ export const MfaContext = React.createContext<
   isLoading: true,
   isMfaEnabled: false,
   isSetupMethodDialogOpen: false,
-  isEmailSetupSuccessOpen: false,
+  isSetupSuccessOpen: false,
   isSettingUpMfa: false,
   isDisablingMfa: false,
   beginMfaSetup: async () => {},
   openMfaSetupMethodDialog: () => {},
   closeMfaSetupMethodDialog: () => {},
-  hideEmailSetupSuccess: () => {},
+  hideSetupSuccess: () => {},
   cancelMfaSetup: () => {},
   completeMfaSetup: () => {},
   beginDisablingMfa: () => {},
@@ -101,7 +101,7 @@ export function MfaProvider({
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
     isSetupMethodDialogOpen: false,
-    isEmailSetupSuccessOpen: false,
+    isSetupSuccessOpen: false,
     isSettingUpMfa: false,
     isDisablingMfa: false,
   })
@@ -152,10 +152,10 @@ export function MfaProvider({
     }))
   }, [])
 
-  const hideEmailSetupSuccess = React.useCallback(() => {
+  const hideSetupSuccess = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
-      isEmailSetupSuccessOpen: false,
+      isSetupSuccessOpen: false,
     }))
   }, [])
 
@@ -169,6 +169,7 @@ export function MfaProvider({
   const completeMfaSetup = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
+      isSetupSuccessOpen: true,
       isMfaEnabled: true,
       mfaSetup: undefined,
     }))
@@ -189,7 +190,7 @@ export function MfaProvider({
             setState((currentState) => ({
               ...currentState,
               isSetupMethodDialogOpen: false,
-              isEmailSetupSuccessOpen: true,
+              isSetupSuccessOpen: true,
               isSettingUpMfa: false,
               isMfaEnabled: true,
             }))
@@ -259,7 +260,7 @@ export function MfaProvider({
       beginMfaSetup,
       openMfaSetupMethodDialog,
       closeMfaSetupMethodDialog,
-      hideEmailSetupSuccess,
+      hideSetupSuccess,
       cancelMfaSetup,
       completeMfaSetup,
       beginDisablingMfa,
@@ -273,7 +274,7 @@ export function MfaProvider({
     beginMfaSetup,
     openMfaSetupMethodDialog,
     closeMfaSetupMethodDialog,
-    hideEmailSetupSuccess,
+    hideSetupSuccess,
     cancelMfaSetup,
     completeMfaSetup,
     beginDisablingMfa,
