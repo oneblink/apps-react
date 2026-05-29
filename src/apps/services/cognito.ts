@@ -1,6 +1,9 @@
 import { jwtDecode } from 'jwt-decode'
 
-import AWSCognitoClient, { LoginAttemptResponse, MfaMethod } from './AWSCognitoClient'
+import AWSCognitoClient, {
+  LoginAttemptResponse,
+  MfaMethod,
+} from './AWSCognitoClient'
 
 import * as offlineService from '../offline-service'
 import { userService } from '@oneblink/sdk-core'
@@ -68,10 +71,10 @@ function registerAuthListener(listener: () => unknown): () => void {
  * returned. This function should be called with the new password once entered
  * by the user. If the user requires an MFA token, the "mfa" property will be
  * returned. Its "codeCallback" should be called with the one-time token. The
- * functions returned are
- * recursive and the result from each of them is the same result from the
- * loginUsernamePassword() function. Each time the response includes a callback,
- * you will need to begin the process again until all callbacks are handled.
+ * functions returned are recursive and the result from each of them is the same
+ * result from the loginUsernamePassword() function. Each time the response
+ * includes a callback, you will need to begin the process again until all
+ * callbacks are handled.
  *
  * #### Example
  *
