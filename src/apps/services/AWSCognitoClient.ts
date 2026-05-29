@@ -15,9 +15,14 @@ import {
 import Sentry from '../Sentry'
 import { OneBlinkAppsError } from '..'
 
+export type MfaMethod = 'authenticator' | 'email'
+
 export type LoginAttemptResponse = {
   resetPasswordCallback?: (newPassword: string) => Promise<LoginAttemptResponse>
-  mfaCodeCallback?: (code: string) => Promise<LoginAttemptResponse>
+  mfa?: {
+    codeCallback: (code: string) => Promise<LoginAttemptResponse>
+    method: MfaMethod
+  }
 }
 
 export default class AWSCognitoClient {
@@ -221,23 +226,51 @@ export default class AWSCognitoClient {
       }
       case 'SOFTWARE_TOKEN_MFA': {
         return {
-          mfaCodeCallback: async (code) => {
-            const resetPasswordResult =
-              await this.cognitoIdentityProviderClient.send(
-                new RespondToAuthChallengeCommand({
-                  ChallengeName,
-                  ClientId: this.clientId,
-                  Session: initiateAuthResponse.Session,
-                  ChallengeResponses: {
-                    USERNAME: username,
-                    SOFTWARE_TOKEN_MFA_CODE: code,
-                  },
-                }),
+          mfa: {
+            method: 'authenticator',
+            codeCallback: async (code) => {
+              const resetPasswordResult =
+                await this.cognitoIdentityProviderClient.send(
+                  new RespondToAuthChallengeCommand({
+                    ChallengeName,
+                    ClientId: this.clientId,
+                    Session: initiateAuthResponse.Session,
+                    ChallengeResponses: {
+                      USERNAME: username,
+                      SOFTWARE_TOKEN_MFA_CODE: code,
+                    },
+                  }),
+                )
+              return await this.responseToAuthChallenge(
+                username,
+                resetPasswordResult,
               )
-            return await this.responseToAuthChallenge(
-              username,
-              resetPasswordResult,
-            )
+            },
+          },
+        }
+      }
+      case 'EMAIL_OTP': {
+        return {
+          mfa: {
+            method: 'email',
+            codeCallback: async (code) => {
+              const emailChallengeResult =
+                await this.cognitoIdentityProviderClient.send(
+                  new RespondToAuthChallengeCommand({
+                    ChallengeName,
+                    ClientId: this.clientId,
+                    Session: initiateAuthResponse.Session,
+                    ChallengeResponses: {
+                      USERNAME: username,
+                      EMAIL_OTP_CODE: code,
+                    },
+                  }),
+                )
+              return await this.responseToAuthChallenge(
+                username,
+                emailChallengeResult,
+              )
+            },
           },
         }
       }
@@ -492,6 +525,39 @@ export default class AWSCognitoClient {
 
     await this.cognitoIdentityProviderClient.send(
       new SetUserMFAPreferenceCommand({
+        EmailMfaSettings: {
+          Enabled: false,
+          PreferredMfa: false,
+        },
+        SMSMfaSettings: {
+          Enabled: false,
+          PreferredMfa: false,
+        },
+        SoftwareTokenMfaSettings: {
+          Enabled: false,
+          PreferredMfa: false,
+        },
+        AccessToken: accessToken,
+      }),
+    )
+  }
+
+  async setupEmailMfa() {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    await this.cognitoIdentityProviderClient.send(
+      new SetUserMFAPreferenceCommand({
+        EmailMfaSettings: {
+          Enabled: true,
+          PreferredMfa: true,
+        },
+        SMSMfaSettings: {
+          Enabled: false,
+          PreferredMfa: false,
+        },
         SoftwareTokenMfaSettings: {
           Enabled: false,
           PreferredMfa: false,

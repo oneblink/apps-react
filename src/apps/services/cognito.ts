@@ -1,6 +1,9 @@
 import { jwtDecode } from 'jwt-decode'
 
-import AWSCognitoClient, { LoginAttemptResponse } from './AWSCognitoClient'
+import AWSCognitoClient, {
+  LoginAttemptResponse,
+  MfaMethod,
+} from './AWSCognitoClient'
 
 import * as offlineService from '../offline-service'
 import { userService } from '@oneblink/sdk-core'
@@ -66,19 +69,19 @@ function registerAuthListener(listener: () => unknown): () => void {
  * Create a session for a user by entering a username and password. If the user
  * requires a password reset, the "resetPasswordCallback" property will be
  * returned. This function should be called with the new password once entered
- * by the user. If the user requires an MFA token, the "mfaCodeCallback"
- * property will be returned. This function should be called with a one-time
- * token generated from an authenticator app. The functions returned are
- * recursive and the result from each of them is the same result from the
- * loginUsernamePassword() function. Each time the response includes a callback,
- * you will need to begin the process again until all callbacks are handled.
+ * by the user. If the user requires an MFA token, the "mfa" property will be
+ * returned. Its "codeCallback" should be called with the one-time token. The
+ * functions returned are recursive and the result from each of them is the same
+ * result from the loginUsernamePassword() function. Each time the response
+ * includes a callback, you will need to begin the process again until all
+ * callbacks are handled.
  *
  * #### Example
  *
  * ```js
  * async function handleLoginAttemptResponse({
  *   resetPasswordCallback,
- *   mfaCodeCallback,
+ *   mfa,
  * }) {
  *   // "resetPasswordCallback" will be undefined if a password reset was not required.
  *   if (resetPasswordCallback) {
@@ -91,13 +94,15 @@ function registerAuthListener(listener: () => unknown): () => void {
  *     return await handleLoginAttemptResponse(resetPasswordResponse)
  *   }
  *
- *   // "mfaCodeCallback" will be undefined if MFA is not setup.
- *   if (mfaCodeCallback) {
+ *   // "mfa" will be undefined if MFA is not setup.
+ *   if (mfa) {
  *     // Prompt the user to enter an MFA code
  *     const code = prompt(
- *       'Please enter a one-time code from your MFA app.',
+ *       mfa.method === 'email'
+ *         ? 'Please enter the one-time code sent to your email.'
+ *         : 'Please enter a one-time code from your MFA app.',
  *     )
- *     const mfaCodeResponse = await mfaCodeCallback(code)
+ *     const mfaCodeResponse = await mfa.codeCallback(code)
  *     return await handleLoginAttemptResponse(mfaCodeResponse)
  *   }
  * }
@@ -484,6 +489,21 @@ async function disableMfa() {
 
   return await awsCognitoClient.disableMfa()
 }
+
+/**
+ * Setup email based MFA for the current user.
+ *
+ * @returns
+ */
+async function setupEmailMfa() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to setup email MFA.',
+    )
+  }
+
+  return await awsCognitoClient.setupEmailMfa()
+}
 /**
  * Setup MFA for the current user. The result will include a callback that
  * should be called with the valid TOTP from an authenticator app.
@@ -525,9 +545,10 @@ export {
   getCognitoIdToken,
   getUserProfile,
   getUserFriendlyName,
-  LoginAttemptResponse,
   checkIsMfaEnabled,
   disableMfa,
+  setupEmailMfa,
   setupMfa,
   generateMfaQrCodeUrl,
 }
+export type { LoginAttemptResponse, MfaMethod }

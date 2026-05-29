@@ -20,9 +20,11 @@ import {
   getUsername,
   getUserFriendlyName,
   LoginAttemptResponse,
+  MfaMethod,
   checkIsMfaEnabled,
   disableMfa,
   setupMfa,
+  setupEmailMfa,
   generateMfaQrCodeUrl,
 } from './services/cognito'
 import { getRequest, postRequest, HTTPError } from './services/fetch'
@@ -46,12 +48,13 @@ export {
   getUserToken,
   setUserToken,
   getUserFriendlyName,
-  LoginAttemptResponse,
   checkIsMfaEnabled,
   disableMfa,
   setupMfa,
+  setupEmailMfa,
   generateMfaQrCodeUrl,
 }
+export type { LoginAttemptResponse, MfaMethod }
 import Sentry from './Sentry'
 
 /**

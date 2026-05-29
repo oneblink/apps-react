@@ -5,6 +5,8 @@ type MfaState = {
   isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
+  isSetupMethodDialogOpen: boolean
+  isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
   isDisablingMfa: boolean
@@ -14,7 +16,10 @@ type MfaState = {
 
 export const MfaContext = React.createContext<
   MfaState & {
-    beginMfaSetup: () => void
+    beginMfaSetup: (mfaMethod: authService.MfaMethod) => Promise<void>
+    openMfaSetupMethodDialog: () => void
+    closeMfaSetupMethodDialog: () => void
+    hideSetupSuccess: () => void
     cancelMfaSetup: () => void
     completeMfaSetup: () => void
     beginDisablingMfa: () => void
@@ -27,9 +32,14 @@ export const MfaContext = React.createContext<
   isExternalIdentityProviderUser: false,
   isLoading: true,
   isMfaEnabled: false,
+  isSetupMethodDialogOpen: false,
+  isSetupSuccessOpen: false,
   isSettingUpMfa: false,
   isDisablingMfa: false,
-  beginMfaSetup: () => {},
+  beginMfaSetup: async () => {},
+  openMfaSetupMethodDialog: () => {},
+  closeMfaSetupMethodDialog: () => {},
+  hideSetupSuccess: () => {},
   cancelMfaSetup: () => {},
   completeMfaSetup: () => {},
   beginDisablingMfa: () => {},
@@ -90,6 +100,8 @@ export function MfaProvider({
     isExternalIdentityProviderUser,
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
+    isSetupMethodDialogOpen: false,
+    isSetupSuccessOpen: false,
     isSettingUpMfa: false,
     isDisablingMfa: false,
   })
@@ -126,6 +138,27 @@ export function MfaProvider({
     }))
   }, [])
 
+  const openMfaSetupMethodDialog = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isSetupMethodDialogOpen: true,
+    }))
+  }, [])
+
+  const closeMfaSetupMethodDialog = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isSetupMethodDialogOpen: false,
+    }))
+  }, [])
+
+  const hideSetupSuccess = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isSetupSuccessOpen: false,
+    }))
+  }, [])
+
   const cancelMfaSetup = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
@@ -136,33 +169,55 @@ export function MfaProvider({
   const completeMfaSetup = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
+      isSetupSuccessOpen: true,
       isMfaEnabled: true,
       mfaSetup: undefined,
     }))
   }, [])
 
-  const beginMfaSetup = React.useCallback(async () => {
-    setState((currentState) => ({
-      ...currentState,
-      isSettingUpMfa: true,
-      mfaSetup: undefined,
-      setupError: undefined,
-    }))
-    try {
-      const newMfaSetup = await authService.setupMfa()
+  const beginMfaSetup = React.useCallback(
+    async (mfaMethod: authService.MfaMethod) => {
       setState((currentState) => ({
         ...currentState,
-        isSettingUpMfa: false,
-        mfaSetup: newMfaSetup,
+        isSettingUpMfa: true,
+        mfaSetup: undefined,
+        setupError: undefined,
       }))
-    } catch (error) {
-      setState((currentState) => ({
-        ...currentState,
-        isSettingUpMfa: false,
-        setupError: error as Error,
-      }))
-    }
-  }, [])
+      try {
+        switch (mfaMethod) {
+          case 'email': {
+            await authService.setupEmailMfa()
+            setState((currentState) => ({
+              ...currentState,
+              isSetupMethodDialogOpen: false,
+              isSetupSuccessOpen: true,
+              isSettingUpMfa: false,
+              isMfaEnabled: true,
+            }))
+            return
+          }
+          case 'authenticator':
+          default: {
+            const newMfaSetup = await authService.setupMfa()
+            setState((currentState) => ({
+              ...currentState,
+              isSetupMethodDialogOpen: false,
+              isSettingUpMfa: false,
+              mfaSetup: newMfaSetup,
+            }))
+            return
+          }
+        }
+      } catch (error) {
+        setState((currentState) => ({
+          ...currentState,
+          isSettingUpMfa: false,
+          setupError: error as Error,
+        }))
+      }
+    },
+    [],
+  )
 
   const beginDisablingMfa = React.useCallback(() => {
     setState((currentState) => ({
@@ -203,6 +258,9 @@ export function MfaProvider({
       clearMfaSetupError,
       loadMfa,
       beginMfaSetup,
+      openMfaSetupMethodDialog,
+      closeMfaSetupMethodDialog,
+      hideSetupSuccess,
       cancelMfaSetup,
       completeMfaSetup,
       beginDisablingMfa,
@@ -214,6 +272,9 @@ export function MfaProvider({
     clearMfaSetupError,
     loadMfa,
     beginMfaSetup,
+    openMfaSetupMethodDialog,
+    closeMfaSetupMethodDialog,
+    hideSetupSuccess,
     cancelMfaSetup,
     completeMfaSetup,
     beginDisablingMfa,

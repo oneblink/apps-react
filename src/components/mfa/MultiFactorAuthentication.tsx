@@ -1,103 +1,32 @@
 import {
   Box,
   Button,
-  Chip,
-  CircularProgress,
   Divider,
   Grid,
-  Icon,
   Paper,
   Tooltip,
   Typography,
-  styled,
 } from '@mui/material'
-import ConfirmDialog from '../ConfirmDialog'
 import MfaDialog from './MfaDialog'
-import ErrorSnackbar from '../ErrorSnackbar'
-import MaterialIcon from '../MaterialIcon'
 import useMfa from '../../hooks/useMfa'
-import ErrorMessage from '../messages/ErrorMessage'
-
-export const LargeIcon = styled(Icon)(({ theme }) => ({
-  fontSize: `${theme.typography.h4.fontSize} !important`,
-}))
+import MfaDisableDialog from './MfaDisableDialog'
+import MfaMethodDialog from './MfaMethodDialog'
+import MfaSuccessSnackbar from './MfaSuccessSnackbar'
+import MfaErrorSnackbar from './MfaErrorSnackbar'
+import MfaStatusChip from './MfaStatusChip'
 
 type Props = {
-  ssoSetupUrl?: string
+  ssoSetupUrl: string | undefined
 }
 
-type MfaStatusProps = {
-  isExternalIdentityProviderUser: boolean
-  isLoading: boolean
-  isMfaEnabled: boolean
-  loadMfa: () => void
-  loadingError?: Error
-}
-
-function MfaStatus({
-  isExternalIdentityProviderUser,
-  isLoading,
-  loadingError,
-  loadMfa,
-  isMfaEnabled,
-}: MfaStatusProps) {
-  if (isExternalIdentityProviderUser) return null
-
-  if (isLoading) {
-    return (
-      <Box padding={3}>
-        <Grid container justifyContent="center">
-          <CircularProgress />
-        </Grid>
-      </Box>
-    )
-  }
-
-  if (loadingError) {
-    return (
-      <div>
-        <ErrorMessage
-          title="Error Loading Multi Factor Authentication Configuration"
-          onTryAgain={loadMfa}
-        >
-          {loadingError.message}
-        </ErrorMessage>
-      </div>
-    )
-  }
-
-  if (isMfaEnabled) {
-    return (
-      <Chip
-        label="Enabled"
-        icon={<MaterialIcon color="success">verified_user</MaterialIcon>}
-      />
-    )
-  }
-
-  return (
-    <Chip
-      label="Disabled"
-      icon={<MaterialIcon color="warning">remove_moderator</MaterialIcon>}
-    />
-  )
-}
-
-function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
+function MfaSetup({ ssoSetupUrl }: Props) {
   const {
-    setupError,
     isMfaEnabled,
-    isDisablingMfa,
     isSettingUpMfa,
-    mfaSetup,
-    beginMfaSetup,
-    cancelMfaSetup,
-    completeMfaSetup,
-    clearMfaSetupError,
+    openMfaSetupMethodDialog,
     beginDisablingMfa,
-    completeDisablingMfa,
-    cancelDisablingMfa,
     isExternalIdentityProviderUser,
+    loadingError,
   } = useMfa()
 
   if (ssoSetupUrl) {
@@ -149,51 +78,38 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
         >
           Disable MFA
         </Button>
-        <ConfirmDialog
-          isOpen={isDisablingMfa}
-          onClose={cancelDisablingMfa}
-          onConfirm={completeDisablingMfa}
-          title="Please Confirm"
-          confirmButtonText="Disable MFA"
-          confirmButtonIcon={<MaterialIcon>remove_moderator</MaterialIcon>}
-          cypress={{
-            dialog: 'disable-mfa-dialog',
-            confirmButton: 'disable-mfa-dialog-confirm-button',
-            cancelButton: 'disable-mfa-dialog-cancel-button',
-            error: 'disable-mfa-dialog-error-message',
-          }}
-        >
-          <Typography variant="body2">
-            Are you sure want to disable multi factor authentication (MFA)?
-          </Typography>
-        </ConfirmDialog>
       </Grid>
 
       <Grid>
-        <Button
-          variant="contained"
-          size="small"
-          loading={isSettingUpMfa}
-          disabled={isMfaEnabled}
-          onClick={beginMfaSetup}
-          data-cypress="setup-mfa-button"
+        <Tooltip
+          title={
+            loadingError
+              ? 'We are unable to load your MFA status. Please try again by click the reload button on the chip above.'
+              : ''
+          }
         >
-          Setup MFA
-        </Button>
-        <MfaDialog
-          mfaSetup={mfaSetup}
-          onClose={cancelMfaSetup}
-          onCompleted={completeMfaSetup}
-        />
+          <Button
+            variant="contained"
+            size="small"
+            loading={isSettingUpMfa}
+            disabled={isMfaEnabled || !!loadingError}
+            onClick={openMfaSetupMethodDialog}
+            data-cypress="setup-mfa-button"
+          >
+            Setup MFA
+          </Button>
+        </Tooltip>
       </Grid>
-      <ErrorSnackbar open={!!setupError} onClose={clearMfaSetupError}>
-        <span data-cypress="mfa-setup-error-message">
-          {setupError?.message}
-        </span>
-      </ErrorSnackbar>
+
+      <MfaDisableDialog />
+      <MfaMethodDialog />
+      <MfaDialog />
+      <MfaErrorSnackbar />
+      <MfaSuccessSnackbar />
     </>
   )
 }
+
 /**
  * React Component that provides a mechanism for app users to configure Multi
  * Factor Authentication. `<MfaProvider />` must be provided above this
@@ -231,14 +147,6 @@ function MfaSetup({ ssoSetupUrl }: { ssoSetupUrl: string }) {
  * @group Components
  */
 export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
-  const {
-    loadingError,
-    isLoading,
-    isMfaEnabled,
-    loadMfa,
-    isExternalIdentityProviderUser,
-  } = useMfa()
-
   return (
     <Grid size={{ xs: 'grow', lg: 8 }}>
       <Box padding={3}>
@@ -247,16 +155,7 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
             <Grid container spacing={2} alignItems="center">
               <Grid size={{ xs: 'grow' }}>
                 <Typography variant="h4" fontWeight="light">
-                  Multi Factor Authentication{' '}
-                  <MfaStatus
-                    loadMfa={loadMfa}
-                    isLoading={isLoading}
-                    loadingError={loadingError}
-                    isMfaEnabled={isMfaEnabled}
-                    isExternalIdentityProviderUser={
-                      !!isExternalIdentityProviderUser
-                    }
-                  />
+                  Multi Factor Authentication <MfaStatusChip />
                 </Typography>
                 <Box marginY={1}>
                   <Divider />
@@ -269,7 +168,7 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
                   MFA to enhance your account security.
                 </Typography>
                 <Grid container justifyContent="flex-end" spacing={1}>
-                  <MfaSetup ssoSetupUrl={ssoSetupUrl || ''} />
+                  <MfaSetup ssoSetupUrl={ssoSetupUrl} />
                 </Grid>
               </Grid>
             </Grid>
