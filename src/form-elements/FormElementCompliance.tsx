@@ -223,9 +223,11 @@ function FormElementCompliance({
                       isSelected={isSelected}
                       onClick={() => {
                         setIsDirty()
-                        handleValueChange(element, {
-                          value: option.value,
-                        })
+                        if (!isSelected) {
+                          handleValueChange(element, {
+                            value: option.value,
+                          })
+                        }
                       }}
                       className={clsx(
                         'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',
