@@ -115,6 +115,7 @@ function FormElementCheckboxes({
         id={id}
         element={element}
         required={element.required || !!element.requiredAll}
+        associateLabelWithInput={false}
       >
         <FormElementOptions
           options={element.options}

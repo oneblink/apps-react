@@ -201,6 +201,7 @@ function FormElementCompliance({
         id={id}
         element={element}
         required={element.required}
+        associateLabelWithInput={false}
       >
         <div className="ob-compliance__container">
           <FormElementOptions
