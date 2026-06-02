@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- radio buttons triggering lookup validation when value does not change
+
 ## [10.3.0] - 2026-05-22
 
 ### Added
