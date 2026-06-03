@@ -14,17 +14,19 @@ import {
   FormElementValueChangeHandler,
   FormElementConditionallyShownElement,
   IsDirtyProps,
+  NestedFormElementValueChangeHandler,
   UpdateFormElementsHandler,
 } from '../types/form'
 import { attachmentsService } from '../apps'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
+import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
 
 interface Props extends IsDirtyProps {
   id: string
   element: FormTypes.ComplianceElement
   value: unknown
-  onChange: FormElementValueChangeHandler<Value>
+  onChange: NestedFormElementValueChangeHandler<Value>
   displayValidationMessage: boolean
   validationMessage: string | undefined
   conditionallyShownOptionsElement:
@@ -46,6 +48,14 @@ const baseElement = {
   isElementLookup: false,
   required: false,
   requiresAllConditionallyShowPredicates: false,
+}
+
+export function stringifyComplianceValue(value: unknown): string {
+  if (!value) {
+    return ''
+  }
+  const selectedValue = (value as { value: unknown }).value
+  return typeof selectedValue === 'string' ? selectedValue : ''
 }
 
 function FormElementCompliance({
@@ -117,6 +127,8 @@ function FormElementCompliance({
             value: newValue,
           }
         },
+        executedLookups: undefined,
+        sectionState: undefined,
       })
     },
     [onChange],
@@ -126,7 +138,7 @@ function FormElementCompliance({
   >(
     (fe, { value: v }) => {
       onChange(element, {
-        value: (existingValue) => {
+        value: (existingValue: Value | undefined) => {
           if (!existingValue) {
             return
           }
@@ -141,6 +153,10 @@ function FormElementCompliance({
             notes: newNotes,
           }
         },
+        // Preserve the executed lookups state to indicate the
+        // lookup does not need to be executed again if the notes change.
+        executedLookups: (executedLookups) => executedLookups,
+        sectionState: undefined,
       })
     },
     [element, onChange],
@@ -150,7 +166,7 @@ function FormElementCompliance({
   >(
     (fe, { value: v }) => {
       onChange(element, {
-        value: (existingValue) => {
+        value: (existingValue: Value | undefined) => {
           if (!existingValue) {
             return
           }
@@ -165,6 +181,10 @@ function FormElementCompliance({
             files: newFiles && newFiles.length ? newFiles : undefined,
           }
         },
+        // Preserve the executed lookups state to indicate the
+        // lookup does not need to be executed again if the files change.
+        executedLookups: (executedLookups) => executedLookups,
+        sectionState: undefined,
       })
     },
     [element, onChange],
@@ -188,6 +208,10 @@ function FormElementCompliance({
     conditionallyShownOptionsElement,
     onUpdateFormElements,
   })
+
+  const { isLookingUp } = React.useContext(LookupNotificationContext)
+  const isDisplayingValidationMessage =
+    (isDirty || displayValidationMessage) && !!validationMessage && !isLookingUp
 
   return (
     <div
@@ -224,9 +248,11 @@ function FormElementCompliance({
                       isSelected={isSelected}
                       onClick={() => {
                         setIsDirty()
-                        handleValueChange(element, {
-                          value: option.value,
-                        })
+                        if (!isSelected) {
+                          handleValueChange(element, {
+                            value: option.value,
+                          })
+                        }
                       }}
                       className={clsx(
                         'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',
@@ -242,7 +268,7 @@ function FormElementCompliance({
               })}
             </div>
           </FormElementOptions>
-          {(isDirty || displayValidationMessage) && !!validationMessage && (
+          {isDisplayingValidationMessage && (
             <FormElementValidationMessage message={validationMessage} />
           )}
           <div className="buttons ob-buttons ob-buttons-compliance cypress-compliance-button-group">

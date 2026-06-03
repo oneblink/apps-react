@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Broken aria references
+- radio buttons triggering lookup validation when value does not change
+- compliance element lookup being required after changing notes or media
 
 ## [10.3.0] - 2026-05-22
 

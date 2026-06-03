@@ -120,10 +120,12 @@ function FormElementRadio({
                       option={option}
                       isSelected={isSelected}
                       onClick={() => {
-                        setIsDirty()
-                        onChange(element, {
-                          value: option.value,
-                        })
+                        if (!isSelected) {
+                          setIsDirty()
+                          onChange(element, {
+                            value: option.value,
+                          })
+                        }
                       }}
                       className={clsx(
                         'button ob-button ob-button__input ob-radio__button cypress-radio-button-control',

@@ -37,7 +37,9 @@ import FormElementLocation, {
   stringifyLocation,
 } from '../../form-elements/FormElementLocation'
 import FormElementGeoscapeAddress from '../../form-elements/FormElementGeoscapeAddress'
-import FormElementCompliance from '../../form-elements/FormElementCompliance'
+import FormElementCompliance, {
+  stringifyComplianceValue,
+} from '../../form-elements/FormElementCompliance'
 import FormElementPointAddress from '../../form-elements/FormElementPointAddress'
 import FormElementGoogleAddress from '../../form-elements/FormElementGoogleAddress'
 import FormElementBoolean from '../../form-elements/FormElementBoolean'
@@ -836,9 +838,8 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'compliance': {
       return (
         <LookupNotification
-          autoLookupValue={
-            value ? (value as { value: unknown }).value : undefined
-          }
+          autoLookupValue={value}
+          stringifyAutoLookupValue={stringifyComplianceValue}
           element={element}
           onLookup={onLookup}
         >

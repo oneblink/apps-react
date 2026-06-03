@@ -58,13 +58,22 @@ export type SectionState = NewS3SubmissionData['sectionState']
 export type NestedFormElementValueChangeHandler<T = unknown> =
   ValueChangeHandler<{
     value?: T | ((existingValue?: T) => T | undefined)
+    /**
+     * The executed lookups to preserve when the nested element is changed,
+     * setting to undefined indicate the lookup has not been executed.
+     */
     executedLookups:
       | ExecutedLookupValue
       | ((currentExecutedLookups: ExecutedLookupValue) => ExecutedLookupValue)
     deleteSection?: boolean
-    sectionState: SectionState | ((currentSectionState: SectionState) => SectionState)
+    /**
+     * The section state to preserve when the nested element is changed, setting
+     * to undefined will not update the section state
+     */
+    sectionState:
+      | SectionState
+      | ((currentSectionState: SectionState) => SectionState)
   }>
-
 
 export type FormElementLookupHandler = (
   setter: (data: {

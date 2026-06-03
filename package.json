@@ -1,7 +1,7 @@
 {
   "name": "@oneblink/apps-react",
   "description": "Helper functions for OneBlink apps in ReactJS.",
-  "version": "10.3.0",
+  "version": "10.3.1-beta.3",
   "author": "OneBlink <developers@oneblink.io> (https://oneblink.io)",
   "bugs": {
     "url": "https://github.com/oneblink/apps-react/issues"
@@ -12,8 +12,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@nylas/react": "^3.1.2",
-    "@oneblink/sdk-core": "^9.2.0-beta.1",
-    "@oneblink/storage": "^7.1.0-beta.1",
+    "@oneblink/sdk-core": "^9.2.1-beta.1",
+    "@oneblink/storage": "^7.1.1-beta.2",
     "@react-google-maps/api": "^2.20.8",
     "@react-input/mask": "^2.0.4",
     "@sentry/browser": "^10.38.0",
