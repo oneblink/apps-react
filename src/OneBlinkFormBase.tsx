@@ -1272,6 +1272,12 @@ function OneBlinkFormBase({
                                       <Clickable
                                         key={page.id}
                                         id={`steps-navigation-step-${page.id}`}
+                                        aria-label={`${page.label}, page ${index + 1} of ${visiblePages.length}`}
+                                        aria-current={
+                                          currentPage.id === page.id
+                                            ? 'step'
+                                            : undefined
+                                        }
                                         className={clsx(
                                           'step-item cypress-step-item',
                                           {

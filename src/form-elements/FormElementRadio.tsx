@@ -62,6 +62,7 @@ function FormElementRadio({
         id={id}
         element={element}
         required={element.required}
+        associateLabelWithInput={false}
       >
         <FormElementOptions
           options={element.options}
