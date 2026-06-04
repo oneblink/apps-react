@@ -245,7 +245,17 @@ function generateLookupButtonValue(
         }
         default: {
           if (formElement && 'name' in formElement) {
-            const dependencyValue = formSubmissionModel[formElement.name]
+            let dependencyValue = formSubmissionModel[formElement.name]
+            // If the dependency is a compliance element, we need to get the value of the compliance element
+            // and not trigger the lookup if the notes or files are changing.
+            if (
+              formElement.type === 'compliance' &&
+              typeof dependencyValue === 'object' &&
+              dependencyValue !== null &&
+              'value' in dependencyValue
+            ) {
+              dependencyValue = dependencyValue.value
+            }
             const isAutoLookupChecker = autoLookupElementMap[formElement.type]
             const isFormElementAutoLookup =
               typeof isAutoLookupChecker === 'function'
