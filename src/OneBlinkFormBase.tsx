@@ -1505,32 +1505,34 @@ function OneBlinkFormBase({
                                     : 'Submission disabled: Your inputs have not met the criteria for submission'
                                 }
                               >
-                                <button
-                                  type="submit"
-                                  className={clsx(
-                                    'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
-                                    { 'is-loading': isPreparingToSubmit },
-                                    {
-                                      'ob-button-submit-is-disabled':
-                                        submissionConditionallyEnabled,
-                                    },
-                                  )}
-                                  disabled={
-                                    isPreview ||
-                                    disabled ||
-                                    isPreparingToSubmit ||
-                                    !submissionConditionallyEnabled
-                                  }
-                                >
-                                  <CustomisableButtonInner
-                                    label={
-                                      isInfoPage
-                                        ? 'Done'
-                                        : buttons?.submit?.label || 'Submit'
+                                <span>
+                                  <button
+                                    type="submit"
+                                    className={clsx(
+                                      'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
+                                      { 'is-loading': isPreparingToSubmit },
+                                      {
+                                        'ob-button-submit-is-disabled':
+                                          submissionConditionallyEnabled,
+                                      },
+                                    )}
+                                    disabled={
+                                      isPreview ||
+                                      disabled ||
+                                      isPreparingToSubmit ||
+                                      !submissionConditionallyEnabled
                                     }
-                                    icon={buttons?.submit?.icon}
-                                  />
-                                </button>
+                                  >
+                                    <CustomisableButtonInner
+                                      label={
+                                        isInfoPage
+                                          ? 'Done'
+                                          : buttons?.submit?.label || 'Submit'
+                                      }
+                                      icon={buttons?.submit?.icon}
+                                    />
+                                  </button>
+                                </span>
                               </Tooltip>
                             )}
                           </div>
