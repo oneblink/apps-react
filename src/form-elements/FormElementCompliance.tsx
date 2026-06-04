@@ -54,8 +54,10 @@ export function stringifyComplianceValue(value: unknown): string {
   if (!value) {
     return ''
   }
-  const selectedValue = (value as { value: unknown }).value
-  return typeof selectedValue === 'string' ? selectedValue : ''
+  // in production currently the files do not trigger a lookup element to run
+  const { files, ...rest } = value as Value
+  void files
+  return JSON.stringify(rest)
 }
 
 function FormElementCompliance({
@@ -153,9 +155,7 @@ function FormElementCompliance({
             notes: newNotes,
           }
         },
-        // Preserve the executed lookups state to indicate the
-        // lookup does not need to be executed again if the notes change.
-        executedLookups: (executedLookups) => executedLookups,
+        executedLookups: undefined,
         sectionState: undefined,
       })
     },
