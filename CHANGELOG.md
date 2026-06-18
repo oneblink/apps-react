@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [10.3.1] - 2026-06-18
+
 ### Fixed
 
 - Broken page aria references
 - radio buttons triggering lookup validation when value does not change
 - compliance element lookup being required after changing notes or media
+
+### Dependencies
+
+- update @oneblink/sdk-core to [9.2.1-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [9.2.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [7.1.1-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [7.1.0-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [10.3.0] - 2026-05-22
 
