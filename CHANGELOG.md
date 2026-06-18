@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- email MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
+- sms MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
 
 ### Changed
 

@@ -218,9 +218,11 @@ import useBooleanState from './useBooleanState'
  *         <p>
  *           {mfaMethod === 'email'
  *             ? 'Enter the verification code sent to your email address.'
- *             : mfaMethod === 'authenticator'
- *               ? 'Enter the 6-digit code found in your authenticator app.'
- *               : 'Enter your verification code.'}
+ *             : mfaMethod === 'sms'
+ *               ? 'Enter the verification code sent to your phone number.'
+ *               : mfaMethod === 'authenticator'
+ *                 ? 'Enter the 6-digit code found in your authenticator app.'
+ *                 : 'Enter your verification code.'}
  *         </p>
  *
  *         <input

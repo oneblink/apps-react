@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  DialogTitle,
 } from '@mui/material'
 import { authService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
@@ -31,16 +32,24 @@ function MfaDialog() {
   }, [mfaSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
-  const handleSave = React.useCallback(async () => {
-    startSaving()
-    if (!code || !mfaSetup) {
-      return
-    }
+  const handleSubmit = React.useCallback(
+    async (event: React.SubmitEvent<HTMLFormElement>) => {
+      event.preventDefault()
 
-    await mfaSetup.mfaCodeCallback(code)
-    completeMfaSetup()
-    stopSaving()
-  }, [code, completeMfaSetup, mfaSetup, startSaving, stopSaving])
+      if (!code || !mfaSetup || isSaving) {
+        return
+      }
+
+      startSaving()
+      try {
+        await mfaSetup.mfaCodeCallback(code)
+        await completeMfaSetup()
+      } finally {
+        stopSaving()
+      }
+    },
+    [code, completeMfaSetup, isSaving, mfaSetup, startSaving, stopSaving],
+  )
 
   return (
     <React.Fragment>
@@ -49,11 +58,9 @@ function MfaDialog() {
         onClose={cancelMfaSetup}
         title="Complete MFA Setup"
       >
-        <DialogContent dividers>
-          <>
-            <Typography variant="subtitle2" gutterBottom>
-              Authenticator App
-            </Typography>
+        <form onSubmit={handleSubmit}>
+          <DialogTitle>Authenticator App Setup</DialogTitle>
+          <DialogContent dividers>
             <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               Authenticator apps like{' '}
               <Link
@@ -99,7 +106,11 @@ function MfaDialog() {
                 <Grid size={{ xs: 'grow' }}>
                   <Typography variant="caption" color="text.secondary">
                     Having trouble scanning the QR code?{' '}
-                    <Link onClick={showSecretCode} component="button">
+                    <Link
+                      type="button"
+                      onClick={showSecretCode}
+                      component="button"
+                    >
                       Click here
                     </Link>{' '}
                     to display the setup key which can be manually entered in
@@ -134,7 +145,11 @@ function MfaDialog() {
                   }}
                   helperText={
                     <>
-                      <Link onClick={hideSecretCode} component="button">
+                      <Link
+                        type="button"
+                        onClick={hideSecretCode}
+                        component="button"
+                      >
                         Click here
                       </Link>{' '}
                       to hide the setup key
@@ -167,21 +182,21 @@ function MfaDialog() {
               disabled={isSaving}
               data-cypress="mfa-dialog-code"
             />
-          </>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelMfaSetup} disabled={isSaving}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            loading={isSaving}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button type="button" onClick={cancelMfaSetup} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!code || isSaving}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     </React.Fragment>
   )

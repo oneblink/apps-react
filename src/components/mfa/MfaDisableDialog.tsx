@@ -4,16 +4,29 @@ import ConfirmDialog from '../ConfirmDialog'
 import MaterialIcon from '../MaterialIcon'
 import useMfa from '../../hooks/useMfa'
 
+const methodLabels = {
+  authenticator: 'Authenticator App',
+  sms: 'SMS',
+} as const
+
 function MfaDisableDialog() {
-  const { isDisablingMfa, completeDisablingMfa, cancelDisablingMfa } = useMfa()
+  const {
+    disablingMfaMethod,
+    completeDisablingMfa,
+    cancelDisablingMfa,
+  } = useMfa()
+
+  const methodLabel = disablingMfaMethod
+    ? methodLabels[disablingMfaMethod]
+    : 'MFA'
 
   return (
     <ConfirmDialog
-      isOpen={isDisablingMfa}
+      isOpen={!!disablingMfaMethod}
       onClose={cancelDisablingMfa}
       onConfirm={completeDisablingMfa}
       title="Please Confirm"
-      confirmButtonText="Disable MFA"
+      confirmButtonText={`Disable ${methodLabel}`}
       confirmButtonIcon={<MaterialIcon>remove_moderator</MaterialIcon>}
       cypress={{
         dialog: 'disable-mfa-dialog',
@@ -23,16 +36,17 @@ function MfaDisableDialog() {
       }}
     >
       <Typography variant="body2">
-        Are you sure want to disable multi factor authentication (MFA)?
+        Are you sure you want to disable {methodLabel} multi factor
+        authentication (MFA)?
       </Typography>
     </ConfirmDialog>
   )
 }
 
 /**
- * React Component that prompts the user to confirm disabling MFA. Typically
- * rendered by `<MultiFactorAuthentication />` within an `<MfaProvider />`
- * tree.
+ * React Component that prompts the user to confirm disabling an MFA method.
+ * Typically rendered by `<MultiFactorAuthentication />` within an `<MfaProvider
+ * />` tree.
  *
  * @returns
  */

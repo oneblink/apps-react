@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   Box,
   Button,
@@ -10,7 +11,9 @@ import {
 import MfaDialog from './MfaDialog'
 import useMfa from '../../hooks/useMfa'
 import MfaDisableDialog from './MfaDisableDialog'
-import MfaMethodDialog from './MfaMethodDialog'
+import MfaRemovePhoneNumberDialog from './MfaRemovePhoneNumberDialog'
+import MfaPhoneNumberDialog from './MfaPhoneNumberDialog'
+import MfaMethodRow from './MfaMethodRow'
 import MfaSuccessSnackbar from './MfaSuccessSnackbar'
 import MfaErrorSnackbar from './MfaErrorSnackbar'
 import MfaStatusChip from './MfaStatusChip'
@@ -19,90 +22,113 @@ type Props = {
   ssoSetupUrl: string | undefined
 }
 
-function MfaSetup({ ssoSetupUrl }: Props) {
-  const {
-    isMfaEnabled,
-    isSettingUpMfa,
-    openMfaSetupMethodDialog,
-    beginDisablingMfa,
-    isExternalIdentityProviderUser,
-    loadingError,
-  } = useMfa()
+function MfaMethodList() {
+  const { mfaSettings, loadingError, isLoading, beginRemovingPhoneNumber } =
+    useMfa()
 
-  if (ssoSetupUrl) {
+  const phoneDetail = useMemo(() => {
+    if (!mfaSettings?.phoneNumber) {
+      return undefined
+    }
+
+    if (!mfaSettings.isPhoneNumberVerified) {
+      return `Phone number: ${mfaSettings.phoneNumber} (not verified)`
+    }
+
+    return `Phone number: ${mfaSettings.phoneNumber}`
+  }, [mfaSettings])
+
+  if (isLoading) {
     return (
-      <Grid>
-        <Button
-          variant="outlined"
-          size="small"
-          component="a"
-          href={ssoSetupUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-cypress="configure-mfa-button"
-        >
-          Configure MFA
-        </Button>
-      </Grid>
+      <Typography variant="body2" color="text.secondary">
+        Loading MFA methods...
+      </Typography>
     )
   }
 
-  if (isExternalIdentityProviderUser) {
+  if (loadingError) {
     return (
-      <Grid>
-        <Tooltip title="MFA must be configured in your login provider.">
-          <span>
-            <Button
-              variant="outlined"
-              size="small"
-              disabled={isExternalIdentityProviderUser}
-              data-cypress="configure-mfa-button"
-            >
-              Configure MFA
-            </Button>
-          </span>
-        </Tooltip>
-      </Grid>
+      <Typography variant="body2" color="error">
+        We are unable to load your MFA methods. Please try again by clicking the
+        reload button on the chip above.
+      </Typography>
     )
   }
 
   return (
     <>
-      <Grid>
-        <Button
-          variant="outlined"
-          size="small"
-          disabled={!isMfaEnabled}
-          data-cypress="disable-mfa-button"
-          onClick={beginDisablingMfa}
-        >
-          Disable MFA
-        </Button>
-      </Grid>
+      <MfaMethodRow
+        method="authenticator"
+        title="Authenticator App"
+        description="Use an app like Google Authenticator or Microsoft Authenticator to generate 6-digit verification codes."
+        cypressPrefix="mfa-authenticator"
+      />
+      <Divider sx={{ my: 2 }} />
+      <MfaMethodRow
+        method="sms"
+        title="SMS"
+        description="Receive a one-time verification code via SMS each time MFA is required."
+        detail={phoneDetail}
+        cypressPrefix="mfa-sms"
+        extraButtons={
+          !!mfaSettings?.phoneNumber && !mfaSettings?.sms?.enabled ? (
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={!!loadingError}
+              onClick={beginRemovingPhoneNumber}
+              data-cypress="mfa-sms-remove-phone-button"
+            >
+              Remove Phone
+            </Button>
+          ) : undefined
+        }
+      />
+    </>
+  )
+}
 
-      <Grid>
-        <Tooltip
-          title={
-            loadingError
-              ? 'We are unable to load your MFA status. Please try again by click the reload button on the chip above.'
-              : ''
-          }
-        >
+function MfaSetup({ ssoSetupUrl }: Props) {
+  const { isExternalIdentityProviderUser } = useMfa()
+
+  if (ssoSetupUrl) {
+    return (
+      <Button
+        variant="outlined"
+        size="small"
+        component="a"
+        href={ssoSetupUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cypress="configure-mfa-button"
+      >
+        Configure MFA
+      </Button>
+    )
+  }
+
+  if (isExternalIdentityProviderUser) {
+    return (
+      <Tooltip title="MFA must be configured in your login provider.">
+        <span>
           <Button
-            variant="contained"
-            size="small"
-            loading={isSettingUpMfa}
-            disabled={isMfaEnabled || !!loadingError}
-            onClick={openMfaSetupMethodDialog}
-            data-cypress="setup-mfa-button"
+            variant="outlined"
+            disabled={isExternalIdentityProviderUser}
+            data-cypress="configure-mfa-button"
           >
-            Setup MFA
+            Configure MFA
           </Button>
-        </Tooltip>
-      </Grid>
+        </span>
+      </Tooltip>
+    )
+  }
 
+  return (
+    <>
+      <MfaMethodList />
       <MfaDisableDialog />
-      <MfaMethodDialog />
+      <MfaRemovePhoneNumberDialog />
+      <MfaPhoneNumberDialog />
       <MfaDialog />
       <MfaErrorSnackbar />
       <MfaSuccessSnackbar />
@@ -167,9 +193,7 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
                   password sign-in credentials. We strongly recommend enabling
                   MFA to enhance your account security.
                 </Typography>
-                <Grid container justifyContent="flex-end" spacing={1}>
-                  <MfaSetup ssoSetupUrl={ssoSetupUrl} />
-                </Grid>
+                <MfaSetup ssoSetupUrl={ssoSetupUrl} />
               </Grid>
             </Grid>
           </Box>

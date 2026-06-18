@@ -3,6 +3,8 @@ import { jwtDecode } from 'jwt-decode'
 import AWSCognitoClient, {
   LoginAttemptResponse,
   MfaMethod,
+  MfaSettings,
+  MfaSetupMethod,
 } from './AWSCognitoClient'
 
 import * as offlineService from '../offline-service'
@@ -469,6 +471,86 @@ async function checkIsMfaEnabled() {
   return await awsCognitoClient.checkIsMfaEnabled()
 }
 
+async function getMfaSettings() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before checking MFA settings.',
+    )
+  }
+
+  return await awsCognitoClient.getMfaSettings()
+}
+
+async function updateUserPhoneNumber(phoneNumber: string) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before updating the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.updateUserPhoneNumber(phoneNumber)
+}
+
+async function removeUserPhoneNumber() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before removing the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.removeUserPhoneNumber()
+}
+
+async function sendPhoneNumberVerificationCode() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before sending a phone number verification code.',
+    )
+  }
+
+  return await awsCognitoClient.sendPhoneNumberVerificationCode()
+}
+
+async function verifyUserPhoneNumber(code: string) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before verifying the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.verifyUserPhoneNumber(code)
+}
+
+async function setupSmsMfa(options?: { preferred?: boolean }) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to setup SMS MFA.',
+    )
+  }
+
+  return await awsCognitoClient.setupSmsMfa(options)
+}
+
+async function disableMfaMethod(method: MfaSetupMethod) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to disable an MFA method.',
+    )
+  }
+
+  return await awsCognitoClient.disableMfaMethod(method)
+}
+
+async function setPreferredMfaMethod(method: MfaSetupMethod) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to set the preferred MFA method.',
+    )
+  }
+
+  return await awsCognitoClient.setPreferredMfaMethod(method)
+}
+
 /**
  * Disable MFA for the current user.
  *
@@ -521,14 +603,14 @@ async function setupEmailMfa() {
  *
  * @returns
  */
-async function setupMfa() {
+async function setupMfa(options?: { preferred?: boolean }) {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before attempting to setup MFA.',
     )
   }
 
-  return await awsCognitoClient.setupMfa()
+  return await awsCognitoClient.setupMfa(options)
 }
 
 export {
@@ -546,9 +628,17 @@ export {
   getUserProfile,
   getUserFriendlyName,
   checkIsMfaEnabled,
+  getMfaSettings,
+  updateUserPhoneNumber,
+  removeUserPhoneNumber,
+  sendPhoneNumberVerificationCode,
+  verifyUserPhoneNumber,
   disableMfa,
+  disableMfaMethod,
+  setPreferredMfaMethod,
   setupEmailMfa,
+  setupSmsMfa,
   setupMfa,
   generateMfaQrCodeUrl,
 }
-export type { LoginAttemptResponse, MfaMethod }
+export type { LoginAttemptResponse, MfaMethod, MfaSettings, MfaSetupMethod }

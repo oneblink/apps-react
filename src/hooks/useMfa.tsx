@@ -5,26 +5,44 @@ type MfaState = {
   isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
-  isSetupMethodDialogOpen: boolean
+  mfaSettings?: authService.MfaSettings
   isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
-  isDisablingMfa: boolean
+  settingUpMfaMethod?: authService.MfaSetupMethod
+  isSetupMethodDialogOpen: boolean
+  disablingMfaMethod?: authService.MfaSetupMethod
   setupError?: Error
   mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
+  isPhoneNumberDialogOpen: boolean
+  pendingSmsSetup: boolean
+  isPhoneVerificationRequired: boolean
+  phoneVerificationCodeSentAt?: number
+  isRemovePhoneNumberDialogOpen: boolean
 }
 
 export const MfaContext = React.createContext<
   MfaState & {
-    beginMfaSetup: (mfaMethod: authService.MfaMethod) => Promise<void>
+    beginMfaSetup: (mfaMethod: authService.MfaSetupMethod) => Promise<void>
     openMfaSetupMethodDialog: () => void
     closeMfaSetupMethodDialog: () => void
+    beginDisablingMfaMethod: (mfaMethod: authService.MfaSetupMethod) => void
+    setPreferredMfaMethod: (
+      mfaMethod: authService.MfaSetupMethod,
+    ) => Promise<void>
+    openPhoneNumberDialog: (forSmsSetup?: boolean) => void
+    closePhoneNumberDialog: () => void
+    savePhoneNumber: (phoneNumber: string) => Promise<void>
+    verifyPhoneNumber: (code: string) => Promise<void>
+    resendPhoneNumberVerificationCode: () => Promise<void>
+    beginRemovingPhoneNumber: () => void
+    cancelRemovingPhoneNumber: () => void
+    completeRemovingPhoneNumber: () => Promise<void>
     hideSetupSuccess: () => void
     cancelMfaSetup: () => void
-    completeMfaSetup: () => void
-    beginDisablingMfa: () => void
+    completeMfaSetup: () => Promise<void>
     cancelDisablingMfa: () => void
-    completeDisablingMfa: () => void
+    completeDisablingMfa: () => Promise<void>
     clearMfaSetupError: () => void
     loadMfa: () => void
   }
@@ -32,22 +50,56 @@ export const MfaContext = React.createContext<
   isExternalIdentityProviderUser: false,
   isLoading: true,
   isMfaEnabled: false,
-  isSetupMethodDialogOpen: false,
   isSetupSuccessOpen: false,
   isSettingUpMfa: false,
-  isDisablingMfa: false,
+  isSetupMethodDialogOpen: false,
+  isPhoneNumberDialogOpen: false,
+  pendingSmsSetup: false,
+  isPhoneVerificationRequired: false,
+  isRemovePhoneNumberDialogOpen: false,
   beginMfaSetup: async () => {},
   openMfaSetupMethodDialog: () => {},
   closeMfaSetupMethodDialog: () => {},
+  beginDisablingMfaMethod: () => {},
+  setPreferredMfaMethod: async () => {},
+  openPhoneNumberDialog: () => {},
+  closePhoneNumberDialog: () => {},
+  savePhoneNumber: async () => {},
+  verifyPhoneNumber: async () => {},
+  resendPhoneNumberVerificationCode: async () => {},
+  beginRemovingPhoneNumber: () => {},
+  cancelRemovingPhoneNumber: () => {},
+  completeRemovingPhoneNumber: async () => {},
   hideSetupSuccess: () => {},
   cancelMfaSetup: () => {},
-  completeMfaSetup: () => {},
-  beginDisablingMfa: () => {},
+  completeMfaSetup: async () => {},
   cancelDisablingMfa: () => {},
-  completeDisablingMfa: () => {},
+  completeDisablingMfa: async () => {},
   clearMfaSetupError: () => {},
   loadMfa: () => {},
 })
+
+function getIsMfaEnabled(mfaSettings: authService.MfaSettings | undefined) {
+  return !!(mfaSettings?.authenticator.enabled || mfaSettings?.sms.enabled)
+}
+
+async function resolveMfaSettingsAfterSmsSetup(
+  smsPreferred: boolean,
+): Promise<authService.MfaSettings> {
+  const mfaSettings = await authService.getMfaSettings()
+
+  if (mfaSettings.sms.enabled) {
+    return mfaSettings
+  }
+
+  return {
+    ...mfaSettings,
+    sms: {
+      enabled: true,
+      preferred: smsPreferred,
+    },
+  }
+}
 
 /**
  * React Component that provides the context for the
@@ -100,10 +152,13 @@ export function MfaProvider({
     isExternalIdentityProviderUser,
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
-    isSetupMethodDialogOpen: false,
     isSetupSuccessOpen: false,
     isSettingUpMfa: false,
-    isDisablingMfa: false,
+    isSetupMethodDialogOpen: false,
+    isPhoneNumberDialogOpen: false,
+    pendingSmsSetup: false,
+    isPhoneVerificationRequired: false,
+    isRemovePhoneNumberDialogOpen: false,
   })
 
   const loadMfa = React.useCallback(async (abortSignal?: AbortSignal) => {
@@ -111,15 +166,17 @@ export function MfaProvider({
       ...currentState,
       isLoading: true,
       isMfaEnabled: false,
+      mfaSettings: undefined,
       loadingError: undefined,
     }))
     try {
-      const newIsMfaEnabled = await authService.checkIsMfaEnabled()
+      const mfaSettings = await authService.getMfaSettings()
       if (!abortSignal?.aborted) {
         setState((currentState) => ({
           ...currentState,
           isLoading: false,
-          isMfaEnabled: newIsMfaEnabled,
+          mfaSettings,
+          isMfaEnabled: getIsMfaEnabled(mfaSettings),
         }))
       }
     } catch (error) {
@@ -163,84 +220,360 @@ export function MfaProvider({
     setState((currentState) => ({
       ...currentState,
       mfaSetup: undefined,
+      settingUpMfaMethod: undefined,
     }))
   }, [])
 
-  const completeMfaSetup = React.useCallback(() => {
+  const completeMfaSetup = React.useCallback(async () => {
+    const mfaSettings = await authService.getMfaSettings()
     setState((currentState) => ({
       ...currentState,
       isSetupSuccessOpen: true,
-      isMfaEnabled: true,
+      isMfaEnabled: getIsMfaEnabled(mfaSettings),
+      mfaSettings,
       mfaSetup: undefined,
+      settingUpMfaMethod: undefined,
     }))
   }, [])
 
-  const beginMfaSetup = React.useCallback(
-    async (mfaMethod: authService.MfaMethod) => {
+  const openPhoneNumberDialog = React.useCallback((forSmsSetup = false) => {
+    setState((currentState) => ({
+      ...currentState,
+      isPhoneNumberDialogOpen: true,
+      pendingSmsSetup: forSmsSetup,
+      isPhoneVerificationRequired: false,
+      setupError: undefined,
+    }))
+  }, [])
+
+  const closePhoneNumberDialog = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isPhoneNumberDialogOpen: false,
+      pendingSmsSetup: false,
+      isPhoneVerificationRequired: false,
+      phoneVerificationCodeSentAt: undefined,
+    }))
+  }, [])
+
+  const setupSmsMfaMethod = React.useCallback(
+    async (mfaSettings?: authService.MfaSettings) => {
+      const hasPreferredMethod =
+        (mfaSettings?.authenticator.enabled &&
+          mfaSettings.authenticator.preferred) ||
+        (mfaSettings?.sms.enabled && mfaSettings.sms.preferred)
+      const smsPreferred = !hasPreferredMethod
+
+      await authService.setupSmsMfa({
+        preferred: smsPreferred,
+      })
+
+      const updatedMfaSettings =
+        await resolveMfaSettingsAfterSmsSetup(smsPreferred)
+
       setState((currentState) => ({
         ...currentState,
-        isSettingUpMfa: true,
-        mfaSetup: undefined,
+        isSetupSuccessOpen: true,
+        isSettingUpMfa: false,
+        settingUpMfaMethod: undefined,
+        isMfaEnabled: getIsMfaEnabled(updatedMfaSettings),
+        mfaSettings: updatedMfaSettings,
+      }))
+    },
+    [],
+  )
+
+  const savePhoneNumber = React.useCallback(
+    async (phoneNumber: string) => {
+      setState((currentState) => ({
+        ...currentState,
         setupError: undefined,
       }))
+
       try {
-        switch (mfaMethod) {
-          case 'email': {
-            await authService.setupEmailMfa()
-            setState((currentState) => ({
-              ...currentState,
-              isSetupMethodDialogOpen: false,
-              isSetupSuccessOpen: true,
-              isSettingUpMfa: false,
-              isMfaEnabled: true,
-            }))
-            return
-          }
-          case 'authenticator':
-          default: {
-            const newMfaSetup = await authService.setupMfa()
-            setState((currentState) => ({
-              ...currentState,
-              isSetupMethodDialogOpen: false,
-              isSettingUpMfa: false,
-              mfaSetup: newMfaSetup,
-            }))
-            return
-          }
+        await authService.updateUserPhoneNumber(phoneNumber)
+        const mfaSettings = await authService.getMfaSettings()
+        const savedPhoneNumber = mfaSettings.phoneNumber || phoneNumber
+        const phoneNumberNeedsVerification =
+          !!savedPhoneNumber && !mfaSettings.isPhoneNumberVerified
+
+        if (phoneNumberNeedsVerification) {
+          setState((currentState) => ({
+            ...currentState,
+            isPhoneVerificationRequired: true,
+            phoneVerificationCodeSentAt: Date.now(),
+            mfaSettings: {
+              ...(currentState.mfaSettings || {
+                authenticator: { enabled: false, preferred: false },
+                sms: { enabled: false, preferred: false },
+                isPhoneNumberVerified: false,
+              }),
+              phoneNumber: savedPhoneNumber,
+              isPhoneNumberVerified: false,
+            },
+          }))
+          return
+        }
+        let pendingSmsSetup = false
+
+        setState((currentState) => {
+          pendingSmsSetup = currentState.pendingSmsSetup
+          return currentState
+        })
+
+        if (pendingSmsSetup) {
+          await setupSmsMfaMethod(mfaSettings)
+          setState((currentState) => ({
+            ...currentState,
+            isPhoneNumberDialogOpen: false,
+            pendingSmsSetup: false,
+            isPhoneVerificationRequired: false,
+            phoneVerificationCodeSentAt: undefined,
+          }))
+        } else {
+          setState((currentState) => ({
+            ...currentState,
+            mfaSettings,
+            isPhoneNumberDialogOpen: false,
+            pendingSmsSetup: false,
+            isPhoneVerificationRequired: false,
+            phoneVerificationCodeSentAt: undefined,
+          }))
         }
       } catch (error) {
         setState((currentState) => ({
           ...currentState,
+          setupError: error as Error,
+        }))
+        throw error
+      }
+    },
+    [setupSmsMfaMethod],
+  )
+
+  const verifyPhoneNumber = React.useCallback(
+    async (code: string) => {
+      setState((currentState) => ({
+        ...currentState,
+        setupError: undefined,
+      }))
+
+      try {
+        await authService.verifyUserPhoneNumber(code)
+        const mfaSettings = await authService.getMfaSettings()
+        let pendingSmsSetup = false
+
+        setState((currentState) => {
+          pendingSmsSetup = currentState.pendingSmsSetup
+          return currentState
+        })
+
+        if (pendingSmsSetup) {
+          await setupSmsMfaMethod(mfaSettings)
+          setState((currentState) => ({
+            ...currentState,
+            isPhoneNumberDialogOpen: false,
+            pendingSmsSetup: false,
+            isPhoneVerificationRequired: false,
+            phoneVerificationCodeSentAt: undefined,
+          }))
+          return
+        }
+
+        setState((currentState) => ({
+          ...currentState,
+          mfaSettings,
+          isPhoneNumberDialogOpen: false,
+          isPhoneVerificationRequired: false,
+          pendingSmsSetup: false,
+          phoneVerificationCodeSentAt: undefined,
+        }))
+      } catch (error) {
+        setState((currentState) => ({
+          ...currentState,
+          setupError: error as Error,
+        }))
+        throw error
+      }
+    },
+    [setupSmsMfaMethod],
+  )
+
+  const resendInFlightRef = React.useRef(false)
+
+  const resendPhoneNumberVerificationCode = React.useCallback(async () => {
+    if (resendInFlightRef.current) {
+      return
+    }
+
+    resendInFlightRef.current = true
+    setState((currentState) => ({
+      ...currentState,
+      setupError: undefined,
+      phoneVerificationCodeSentAt: Date.now(),
+    }))
+
+    try {
+      await authService.sendPhoneNumberVerificationCode()
+    } catch (error) {
+      setState((currentState) => ({
+        ...currentState,
+        setupError: error as Error,
+      }))
+      throw error
+    } finally {
+      resendInFlightRef.current = false
+    }
+  }, [])
+
+  const beginRemovingPhoneNumber = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isRemovePhoneNumberDialogOpen: true,
+      setupError: undefined,
+    }))
+  }, [])
+
+  const cancelRemovingPhoneNumber = React.useCallback(() => {
+    setState((currentState) => ({
+      ...currentState,
+      isRemovePhoneNumberDialogOpen: false,
+    }))
+  }, [])
+
+  const completeRemovingPhoneNumber = React.useCallback(async () => {
+    await authService.removeUserPhoneNumber()
+    const mfaSettings = await authService.getMfaSettings()
+    setState((currentState) => ({
+      ...currentState,
+      isRemovePhoneNumberDialogOpen: false,
+      mfaSettings,
+    }))
+  }, [])
+
+  const beginMfaSetup = React.useCallback(
+    async (mfaMethod: authService.MfaSetupMethod) => {
+      setState((currentState) => ({
+        ...currentState,
+        isSettingUpMfa: true,
+        settingUpMfaMethod: mfaMethod,
+        mfaSetup: undefined,
+        setupError: undefined,
+      }))
+
+      try {
+        const mfaSettings = await authService.getMfaSettings()
+        const hasPreferredMethod =
+          (mfaSettings.authenticator.enabled &&
+            mfaSettings.authenticator.preferred) ||
+          (mfaSettings.sms.enabled && mfaSettings.sms.preferred)
+
+        if (mfaMethod === 'sms') {
+          if (!mfaSettings.phoneNumber || !mfaSettings.isPhoneNumberVerified) {
+            setState((currentState) => ({
+              ...currentState,
+              isSettingUpMfa: false,
+              settingUpMfaMethod: undefined,
+              isSetupMethodDialogOpen: false,
+              isPhoneNumberDialogOpen: true,
+              pendingSmsSetup: true,
+              mfaSettings,
+            }))
+            return
+          }
+
+          await setupSmsMfaMethod(mfaSettings)
+          setState((currentState) => ({
+            ...currentState,
+            isSetupMethodDialogOpen: false,
+          }))
+          return
+        }
+
+        const newMfaSetup = await authService.setupMfa({
+          preferred: !hasPreferredMethod,
+        })
+        setState((currentState) => ({
+          ...currentState,
           isSettingUpMfa: false,
+          isSetupMethodDialogOpen: false,
+          mfaSetup: newMfaSetup,
+        }))
+      } catch (error) {
+        setState((currentState) => ({
+          ...currentState,
+          isSettingUpMfa: false,
+          settingUpMfaMethod: undefined,
+          setupError: error as Error,
+        }))
+      }
+    },
+    [setupSmsMfaMethod],
+  )
+
+  const disablingMfaMethodRef = React.useRef<
+    authService.MfaSetupMethod | undefined
+  >(undefined)
+
+  const beginDisablingMfaMethod = React.useCallback(
+    (mfaMethod: authService.MfaSetupMethod) => {
+      disablingMfaMethodRef.current = mfaMethod
+      setState((currentState) => ({
+        ...currentState,
+        disablingMfaMethod: mfaMethod,
+      }))
+    },
+    [],
+  )
+
+  const cancelDisablingMfa = React.useCallback(() => {
+    disablingMfaMethodRef.current = undefined
+    setState((currentState) => ({
+      ...currentState,
+      disablingMfaMethod: undefined,
+    }))
+  }, [])
+
+  const completeDisablingMfa = React.useCallback(async () => {
+    const disablingMfaMethod = disablingMfaMethodRef.current
+    if (!disablingMfaMethod) {
+      return
+    }
+
+    await authService.disableMfaMethod(disablingMfaMethod)
+    const mfaSettings = await authService.getMfaSettings()
+    disablingMfaMethodRef.current = undefined
+    setState((currentState) => ({
+      ...currentState,
+      disablingMfaMethod: undefined,
+      mfaSettings,
+      isMfaEnabled: getIsMfaEnabled(mfaSettings),
+    }))
+  }, [])
+
+  const setPreferredMfaMethod = React.useCallback(
+    async (mfaMethod: authService.MfaSetupMethod) => {
+      setState((currentState) => ({
+        ...currentState,
+        setupError: undefined,
+      }))
+
+      try {
+        await authService.setPreferredMfaMethod(mfaMethod)
+        const mfaSettings = await authService.getMfaSettings()
+        setState((currentState) => ({
+          ...currentState,
+          mfaSettings,
+        }))
+      } catch (error) {
+        setState((currentState) => ({
+          ...currentState,
           setupError: error as Error,
         }))
       }
     },
     [],
   )
-
-  const beginDisablingMfa = React.useCallback(() => {
-    setState((currentState) => ({
-      ...currentState,
-      isDisablingMfa: true,
-    }))
-  }, [])
-
-  const cancelDisablingMfa = React.useCallback(() => {
-    setState((currentState) => ({
-      ...currentState,
-      isDisablingMfa: false,
-    }))
-  }, [])
-
-  const completeDisablingMfa = React.useCallback(async () => {
-    await authService.disableMfa()
-    setState((currentState) => ({
-      ...currentState,
-      isDisablingMfa: false,
-      isMfaEnabled: false,
-    }))
-  }, [])
 
   React.useEffect(() => {
     if (isExternalIdentityProviderUser) {
@@ -260,10 +593,19 @@ export function MfaProvider({
       beginMfaSetup,
       openMfaSetupMethodDialog,
       closeMfaSetupMethodDialog,
+      beginDisablingMfaMethod,
+      setPreferredMfaMethod,
+      openPhoneNumberDialog,
+      closePhoneNumberDialog,
+      savePhoneNumber,
+      verifyPhoneNumber,
+      resendPhoneNumberVerificationCode,
+      beginRemovingPhoneNumber,
+      cancelRemovingPhoneNumber,
+      completeRemovingPhoneNumber,
       hideSetupSuccess,
       cancelMfaSetup,
       completeMfaSetup,
-      beginDisablingMfa,
       cancelDisablingMfa,
       completeDisablingMfa,
     }
@@ -274,10 +616,19 @@ export function MfaProvider({
     beginMfaSetup,
     openMfaSetupMethodDialog,
     closeMfaSetupMethodDialog,
+    beginDisablingMfaMethod,
+    setPreferredMfaMethod,
+    openPhoneNumberDialog,
+    closePhoneNumberDialog,
+    savePhoneNumber,
+    verifyPhoneNumber,
+    resendPhoneNumberVerificationCode,
+    beginRemovingPhoneNumber,
+    cancelRemovingPhoneNumber,
+    completeRemovingPhoneNumber,
     hideSetupSuccess,
     cancelMfaSetup,
     completeMfaSetup,
-    beginDisablingMfa,
     cancelDisablingMfa,
     completeDisablingMfa,
   ])
