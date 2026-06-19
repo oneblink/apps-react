@@ -801,7 +801,7 @@ export default class AWSCognitoClient {
     )
   }
 
-  async setupMfa({ preferred }: { preferred?: boolean } = {}) {
+  async setupMfaAuthenticatorApp({ preferred }: { preferred?: boolean } = {}) {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
       return

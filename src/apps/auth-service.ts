@@ -31,9 +31,9 @@ import {
   verifyUserPhoneNumber,
   disableMfaMethod,
   setPreferredMfaMethod,
-  setupMfa,
+  setupMfaAuthenticatorApp,
   setupSmsMfa,
-  generateMfaQrCodeUrl,
+  generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 } from './services/cognito'
 import { getRequest, postRequest, HTTPError } from './services/fetch'
@@ -65,9 +65,9 @@ export {
   verifyUserPhoneNumber,
   disableMfaMethod,
   setPreferredMfaMethod,
-  setupMfa,
+  setupMfaAuthenticatorApp,
   setupSmsMfa,
-  generateMfaQrCodeUrl,
+  generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 }
 export type {

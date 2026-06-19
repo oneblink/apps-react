@@ -421,29 +421,32 @@ function getUserFriendlyName(): string | undefined {
 }
 
 /**
- * Generate a QR code link to display to a user after they have initiated MFA
- * setup.
+ * Generate a QR code link to display to a user after they have initiated
+ * authenticator app MFA setup.
  *
  * #### Example
  *
  * ```js
- * const mfaSetupQrCodeUrl = authService.generateMfaQrCodeUrl()
- * if (mfaSetupQrCodeUrl) {
- *   // use mfaSetupQrCodeUrl to display QR code to user
+ * const mfaAuthenticatorAppSetupQrCodeUrl =
+ *   authService.generateMfaAuthenticatorAppQrCodeUrl()
+ * if (mfaAuthenticatorAppSetupQrCodeUrl) {
+ *   // use mfaAuthenticatorAppSetupQrCodeUrl to display QR code to user
  * }
  * ```
  *
  * @returns
  */
-function generateMfaQrCodeUrl(
-  mfaSetupConfiguration: Awaited<ReturnType<typeof setupMfa>>,
+function generateMfaAuthenticatorAppQrCodeUrl(
+  mfaAuthenticatorAppSetup: Awaited<
+    ReturnType<typeof setupMfaAuthenticatorApp>
+  >,
 ): string | undefined {
   const profile = getUserProfile()
-  if (!profile || !mfaSetupConfiguration) {
+  if (!profile || !mfaAuthenticatorAppSetup) {
     return
   }
 
-  return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaSetupConfiguration.secretCode}&issuer=${tenants.current.productShortName}`
+  return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaAuthenticatorAppSetup.secretCode}&issuer=${tenants.current.productShortName}`
 }
 
 /**
@@ -556,13 +559,14 @@ async function setPreferredMfaMethod(method: MfaMethod) {
 }
 
 /**
- * Setup MFA for the current user. The result will include a callback that
- * should be called with the valid TOTP from an authenticator app.
+ * Setup authenticator app MFA for the current user. The result will include a
+ * callback that should be called with the valid TOTP from an authenticator app.
  *
  * #### Example
  *
  * ```js
- * const { secretCode, mfaCodeCallback } = await authService.setupMfa()
+ * const { secretCode, mfaCodeCallback } =
+ *   await authService.setupMfaAuthenticatorApp()
  * // Prompt the user to enter an MFA code
  * const code = prompt(
  *   `Please enter a one-time code from your MFA app after creating a new entry with secret: ${secretCode}.`,
@@ -572,14 +576,14 @@ async function setPreferredMfaMethod(method: MfaMethod) {
  *
  * @returns
  */
-async function setupMfa(options?: { preferred?: boolean }) {
+async function setupMfaAuthenticatorApp(options?: { preferred?: boolean }) {
   if (!awsCognitoClient) {
     throw new Error(
-      '"authService" has not been initiated. You must call the init() function before attempting to setup MFA.',
+      '"authService" has not been initiated. You must call the init() function before attempting to setup authenticator app MFA.',
     )
   }
 
-  return await awsCognitoClient.setupMfa(options)
+  return await awsCognitoClient.setupMfaAuthenticatorApp(options)
 }
 
 export {
@@ -605,8 +609,8 @@ export {
   disableMfaMethod,
   setPreferredMfaMethod,
   setupSmsMfa,
-  setupMfa,
-  generateMfaQrCodeUrl,
+  setupMfaAuthenticatorApp,
+  generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 }
 export type {

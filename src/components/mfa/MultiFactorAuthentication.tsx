@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import MfaDialog from './MfaDialog'
+import MfaAuthenticatorAppDialog from './MfaAuthenticatorAppDialog'
 import useMfa from '../../hooks/useMfa'
 import MfaDisableDialog from './MfaDisableDialog'
 import MfaRemovePhoneNumberDialog from './MfaRemovePhoneNumberDialog'
@@ -157,7 +157,7 @@ function MfaSetup({ ssoSetupUrl }: Props) {
       <MfaDisableDialog />
       <MfaRemovePhoneNumberDialog />
       <MfaPhoneNumberDialog />
-      <MfaDialog />
+      <MfaAuthenticatorAppDialog />
       <MfaErrorSnackbar />
       <MfaSuccessSnackbar />
     </>

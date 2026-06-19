@@ -18,44 +18,57 @@ import useMfa from '../../hooks/useMfa'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import InputField from '../InputField'
 
-function MfaDialog() {
-  const { mfaSetup, cancelMfaSetup, completeMfaSetup } = useMfa()
+function MfaAuthenticatorAppDialog() {
+  const {
+    mfaAuthenticatorAppSetup,
+    cancelMfaAuthenticatorAppSetup,
+    completeMfaAuthenticatorAppSetup,
+  } = useMfa()
 
   const [code, setState] = React.useState('')
   const [isShowingSecretCode, showSecretCode, hideSecretCode] =
     useBooleanState(false)
 
   const qrcodeValue = React.useMemo(() => {
-    if (mfaSetup) {
-      return authService.generateMfaQrCodeUrl(mfaSetup)
+    if (mfaAuthenticatorAppSetup) {
+      return authService.generateMfaAuthenticatorAppQrCodeUrl(
+        mfaAuthenticatorAppSetup,
+      )
     }
-  }, [mfaSetup])
+  }, [mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
   const handleSubmit = React.useCallback(
     async (event: React.SubmitEvent<HTMLFormElement>) => {
       event.preventDefault()
 
-      if (!code || !mfaSetup || isSaving) {
+      if (!code || !mfaAuthenticatorAppSetup || isSaving) {
         return
       }
 
       startSaving()
       try {
-        await mfaSetup.mfaCodeCallback(code)
-        await completeMfaSetup()
+        await mfaAuthenticatorAppSetup.mfaCodeCallback(code)
+        await completeMfaAuthenticatorAppSetup()
       } finally {
         stopSaving()
       }
     },
-    [code, completeMfaSetup, isSaving, mfaSetup, startSaving, stopSaving],
+    [
+      code,
+      completeMfaAuthenticatorAppSetup,
+      isSaving,
+      mfaAuthenticatorAppSetup,
+      startSaving,
+      stopSaving,
+    ],
   )
 
   return (
     <React.Fragment>
       <Dialog
-        open={!!mfaSetup}
-        onClose={cancelMfaSetup}
+        open={!!mfaAuthenticatorAppSetup}
+        onClose={cancelMfaAuthenticatorAppSetup}
         title="Complete MFA Setup"
       >
         <form onSubmit={handleSubmit}>
@@ -124,7 +137,7 @@ function MfaDialog() {
               <Box marginBottom={2}>
                 <InputField
                   label="Setup Key"
-                  value={mfaSetup?.secretCode || ''}
+                  value={mfaAuthenticatorAppSetup?.secretCode || ''}
                   variant="filled"
                   focused={false}
                   sx={{
@@ -138,7 +151,7 @@ function MfaDialog() {
                       readOnly: true,
                       endAdornment: (
                         <CopyToClipBoardIconButton
-                          text={mfaSetup?.secretCode || ''}
+                          text={mfaAuthenticatorAppSetup?.secretCode || ''}
                         />
                       ),
                     },
@@ -180,11 +193,15 @@ function MfaDialog() {
                 setState(() => newValue)
               }}
               disabled={isSaving}
-              data-cypress="mfa-dialog-code"
+              data-cypress="mfa-authenticator-app-code"
             />
           </DialogContent>
           <DialogActions>
-            <Button type="button" onClick={cancelMfaSetup} disabled={isSaving}>
+            <Button
+              type="button"
+              onClick={cancelMfaAuthenticatorAppSetup}
+              disabled={isSaving}
+            >
               Cancel
             </Button>
             <Button
@@ -205,8 +222,9 @@ function MfaDialog() {
 /**
  * React Component that guides users through authenticator app MFA setup,
  * including QR code scanning and verification code entry. Typically rendered by
- * `<MultiFactorAuthentication />` within an `<MfaProvider />` tree.
+ * `<MultiFactorAuthentication />` within an
+ * `<MfaProvider />` tree.
  *
  * @returns
  */
-export default React.memo(MfaDialog)
+export default React.memo(MfaAuthenticatorAppDialog)

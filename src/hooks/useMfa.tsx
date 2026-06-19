@@ -15,7 +15,9 @@ type MfaState = {
   disablingMfaMethod?: authService.MfaMethod
   isSettingPreferredMfaMethod: boolean
   setupError?: Error
-  mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
+  mfaAuthenticatorAppSetup?: Awaited<
+    ReturnType<typeof authService.setupMfaAuthenticatorApp>
+  >
   isPhoneNumberDialogOpen: boolean
   phoneVerificationCodeSentAt?: number
   isRemovePhoneNumberDialogOpen: boolean
@@ -37,8 +39,8 @@ export const MfaContext = React.createContext<
     cancelRemovingPhoneNumber: () => void
     completeRemovingPhoneNumber: () => Promise<void>
     hideSetupSuccess: () => void
-    cancelMfaSetup: () => void
-    completeMfaSetup: () => Promise<void>
+    cancelMfaAuthenticatorAppSetup: () => void
+    completeMfaAuthenticatorAppSetup: () => Promise<void>
     cancelDisablingMfa: () => void
     completeDisablingMfa: () => Promise<void>
     clearMfaSetupError: () => void
@@ -69,8 +71,8 @@ export const MfaContext = React.createContext<
   cancelRemovingPhoneNumber: () => {},
   completeRemovingPhoneNumber: async () => {},
   hideSetupSuccess: () => {},
-  cancelMfaSetup: () => {},
-  completeMfaSetup: async () => {},
+  cancelMfaAuthenticatorAppSetup: () => {},
+  completeMfaAuthenticatorAppSetup: async () => {},
   cancelDisablingMfa: () => {},
   completeDisablingMfa: async () => {},
   clearMfaSetupError: () => {},
@@ -265,15 +267,15 @@ export function MfaProvider({
     }))
   }, [])
 
-  const cancelMfaSetup = React.useCallback(() => {
+  const cancelMfaAuthenticatorAppSetup = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
-      mfaSetup: undefined,
+      mfaAuthenticatorAppSetup: undefined,
       settingUpMfaMethod: undefined,
     }))
   }, [])
 
-  const completeMfaSetup = React.useCallback(async () => {
+  const completeMfaAuthenticatorAppSetup = React.useCallback(async () => {
     setState((currentState) => {
       const authenticatorPreferred = !hasPreferredMfaMethod(
         currentState.mfaSettings,
@@ -288,7 +290,7 @@ export function MfaProvider({
         isSetupSuccessOpen: true,
         isMfaEnabled: getIsMfaEnabled(mfaSettings),
         mfaSettings,
-        mfaSetup: undefined,
+        mfaAuthenticatorAppSetup: undefined,
         settingUpMfaMethod: undefined,
       }
     })
@@ -489,7 +491,7 @@ export function MfaProvider({
         ...currentState,
         isSettingUpMfa: true,
         settingUpMfaMethod: mfaMethod,
-        mfaSetup: undefined,
+        mfaAuthenticatorAppSetup: undefined,
         setupError: undefined,
       }))
 
@@ -525,14 +527,15 @@ export function MfaProvider({
         }
 
         const hasPreferredMethod = hasPreferredMfaMethod(mfaSettings)
-        const newMfaSetup = await authService.setupMfa({
-          preferred: !hasPreferredMethod,
-        })
+        const newMfaAuthenticatorAppSetup =
+          await authService.setupMfaAuthenticatorApp({
+            preferred: !hasPreferredMethod,
+          })
         setState((currentState) => ({
           ...currentState,
           isSettingUpMfa: false,
           isSetupMethodDialogOpen: false,
-          mfaSetup: newMfaSetup,
+          mfaAuthenticatorAppSetup: newMfaAuthenticatorAppSetup,
         }))
       } catch (error) {
         setState((currentState) => ({
@@ -634,8 +637,8 @@ export function MfaProvider({
       cancelRemovingPhoneNumber,
       completeRemovingPhoneNumber,
       hideSetupSuccess,
-      cancelMfaSetup,
-      completeMfaSetup,
+      cancelMfaAuthenticatorAppSetup,
+      completeMfaAuthenticatorAppSetup,
       cancelDisablingMfa,
       completeDisablingMfa,
     }
@@ -657,13 +660,17 @@ export function MfaProvider({
     cancelRemovingPhoneNumber,
     completeRemovingPhoneNumber,
     hideSetupSuccess,
-    cancelMfaSetup,
-    completeMfaSetup,
+    cancelMfaAuthenticatorAppSetup,
+    completeMfaAuthenticatorAppSetup,
     cancelDisablingMfa,
     completeDisablingMfa,
   ])
 
-  return <MfaContext.Provider value={value}>{children}</MfaContext.Provider>
+  return (
+    <MfaContext.Provider value={value}>
+      {children}
+    </MfaContext.Provider>
+  )
 }
 
 export default function useMfa() {
@@ -672,8 +679,8 @@ export default function useMfa() {
 
 /**
  * React hook to check if the logged in user meets the MFA requirement of your
- * application. Will throw an Error if used outside of the `<MfaProvider />`
- * component.
+ * application. Will throw an Error if used outside of the
+ * `<MfaProvider />` component.
  *
  * Example
  *
