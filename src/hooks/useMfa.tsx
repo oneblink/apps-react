@@ -10,9 +10,9 @@ type MfaState = {
   isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
-  settingUpMfaMethod?: authService.MfaSetupMethod
+  settingUpMfaMethod?: authService.MfaMethod
   isSetupMethodDialogOpen: boolean
-  disablingMfaMethod?: authService.MfaSetupMethod
+  disablingMfaMethod?: authService.MfaMethod
   isSettingPreferredMfaMethod: boolean
   setupError?: Error
   mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
@@ -25,13 +25,11 @@ type MfaState = {
 
 export const MfaContext = React.createContext<
   MfaState & {
-    beginMfaSetup: (mfaMethod: authService.MfaSetupMethod) => Promise<void>
+    beginMfaSetup: (mfaMethod: authService.MfaMethod) => Promise<void>
     openMfaSetupMethodDialog: () => void
     closeMfaSetupMethodDialog: () => void
-    beginDisablingMfaMethod: (mfaMethod: authService.MfaSetupMethod) => void
-    setPreferredMfaMethod: (
-      mfaMethod: authService.MfaSetupMethod,
-    ) => Promise<void>
+    beginDisablingMfaMethod: (mfaMethod: authService.MfaMethod) => void
+    setPreferredMfaMethod: (mfaMethod: authService.MfaMethod) => Promise<void>
     openPhoneNumberDialog: (forSmsSetup?: boolean) => void
     closePhoneNumberDialog: () => void
     savePhoneNumber: (phoneNumber: string) => Promise<void>
@@ -128,7 +126,7 @@ function enableAuthenticatorMfaInSettings(
 
 function setPreferredMfaMethodInSettings(
   mfaSettings: authService.MfaSettings,
-  mfaMethod: authService.MfaSetupMethod,
+  mfaMethod: authService.MfaMethod,
 ): authService.MfaSettings {
   return {
     ...mfaSettings,
@@ -544,7 +542,7 @@ export function MfaProvider({
   }, [])
 
   const beginMfaSetup = React.useCallback(
-    async (mfaMethod: authService.MfaSetupMethod) => {
+    async (mfaMethod: authService.MfaMethod) => {
       setState((currentState) => ({
         ...currentState,
         isSettingUpMfa: true,
@@ -607,12 +605,12 @@ export function MfaProvider({
     [setupSmsMfaMethod],
   )
 
-  const disablingMfaMethodRef = React.useRef<
-    authService.MfaSetupMethod | undefined
-  >(undefined)
+  const disablingMfaMethodRef = React.useRef<authService.MfaMethod | undefined>(
+    undefined,
+  )
 
   const beginDisablingMfaMethod = React.useCallback(
-    (mfaMethod: authService.MfaSetupMethod) => {
+    (mfaMethod: authService.MfaMethod) => {
       disablingMfaMethodRef.current = mfaMethod
       setState((currentState) => ({
         ...currentState,
@@ -648,7 +646,7 @@ export function MfaProvider({
   }, [])
 
   const setPreferredMfaMethod = React.useCallback(
-    async (mfaMethod: authService.MfaSetupMethod) => {
+    async (mfaMethod: authService.MfaMethod) => {
       setState((currentState) => ({
         ...currentState,
         isSettingPreferredMfaMethod: true,

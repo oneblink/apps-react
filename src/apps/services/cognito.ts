@@ -5,9 +5,7 @@ import AWSCognitoClient, {
   LoginAttemptResponse,
   MfaMethod,
   MfaRequirementCheckResult,
-  MfaRequirementOption,
   MfaSettings,
-  MfaSetupMethod,
 } from './AWSCognitoClient'
 
 import * as offlineService from '../offline-service'
@@ -466,7 +464,7 @@ function generateMfaQrCodeUrl(
  * @returns
  */
 async function checkIsMfaEnabled(
-  mfaRequirement: MfaRequirementOption,
+  mfaRequirement: MiscTypes.MfaRequirement,
 ): Promise<MfaRequirementCheckResult> {
   if (!awsCognitoClient) {
     throw new Error(
@@ -537,7 +535,7 @@ async function setupSmsMfa(options?: { preferred?: boolean }) {
   return await awsCognitoClient.setupSmsMfa(options)
 }
 
-async function disableMfaMethod(method: MfaSetupMethod) {
+async function disableMfaMethod(method: MfaMethod) {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before attempting to disable an MFA method.',
@@ -547,7 +545,7 @@ async function disableMfaMethod(method: MfaSetupMethod) {
   return await awsCognitoClient.disableMfaMethod(method)
 }
 
-async function setPreferredMfaMethod(method: MfaSetupMethod) {
+async function setPreferredMfaMethod(method: MfaMethod) {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before attempting to set the preferred MFA method.',
@@ -557,41 +555,6 @@ async function setPreferredMfaMethod(method: MfaSetupMethod) {
   return await awsCognitoClient.setPreferredMfaMethod(method)
 }
 
-/**
- * Disable MFA for the current user.
- *
- * #### Example
- *
- * ```js
- * await authService.disableMfa()
- * ```
- *
- * @returns
- */
-async function disableMfa() {
-  if (!awsCognitoClient) {
-    throw new Error(
-      '"authService" has not been initiated. You must call the init() function before attempting to disable MFA.',
-    )
-  }
-
-  return await awsCognitoClient.disableMfa()
-}
-
-/**
- * Setup email based MFA for the current user.
- *
- * @returns
- */
-async function setupEmailMfa() {
-  if (!awsCognitoClient) {
-    throw new Error(
-      '"authService" has not been initiated. You must call the init() function before attempting to setup email MFA.',
-    )
-  }
-
-  return await awsCognitoClient.setupEmailMfa()
-}
 /**
  * Setup MFA for the current user. The result will include a callback that
  * should be called with the valid TOTP from an authenticator app.
@@ -639,10 +602,8 @@ export {
   removeUserPhoneNumber,
   sendPhoneNumberVerificationCode,
   verifyUserPhoneNumber,
-  disableMfa,
   disableMfaMethod,
   setPreferredMfaMethod,
-  setupEmailMfa,
   setupSmsMfa,
   setupMfa,
   generateMfaQrCodeUrl,
@@ -652,7 +613,5 @@ export type {
   LoginAttemptResponse,
   MfaMethod,
   MfaRequirementCheckResult,
-  MfaRequirementOption,
   MfaSettings,
-  MfaSetupMethod,
 }

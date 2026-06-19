@@ -18,11 +18,9 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider'
 import Sentry from '../Sentry'
 import { OneBlinkAppsError } from '..'
+import { MiscTypes } from '@oneblink/types'
 
-export type MfaMethod = 'authenticator' | 'email' | 'sms'
-export type MfaSetupMethod = 'authenticator' | 'sms'
-
-export type MfaRequirementOption = 'none' | 'sms' | 'authenticatorApp' | 'any'
+export type MfaMethod = 'authenticator' | 'sms'
 
 export type MfaSettings = {
   authenticator: {
@@ -50,6 +48,34 @@ export const DEFAULT_MFA_SETTINGS: MfaSettings = {
 export type MfaRequirementCheckResult = {
   mfaSettings: MfaSettings
   userMeetsMfaRequirement: boolean
+}
+
+const MFA_REQUIREMENT_METHOD_CHECKS = {
+  sms: (mfaSettings: MfaSettings) => mfaSettings.sms.enabled,
+  authenticatorApp: (mfaSettings: MfaSettings) =>
+    mfaSettings.authenticator.enabled,
+} satisfies Record<
+  keyof MiscTypes.MfaRequirement,
+  (mfaSettings: MfaSettings) => boolean
+>
+
+function checkUserMeetsMfaRequirement(
+  mfaRequirement: MiscTypes.MfaRequirement,
+  mfaSettings: MfaSettings,
+): boolean {
+  const requiredMethods = (
+    Object.keys(MFA_REQUIREMENT_METHOD_CHECKS) as Array<
+      keyof MiscTypes.MfaRequirement
+    >
+  ).filter((method) => mfaRequirement[method])
+
+  if (requiredMethods.length === 0) {
+    return true
+  }
+
+  return requiredMethods.some((method) =>
+    MFA_REQUIREMENT_METHOD_CHECKS[method](mfaSettings),
+  )
 }
 
 export type LoginAttemptResponse = {
@@ -285,29 +311,7 @@ export default class AWSCognitoClient {
         }
       }
       case 'EMAIL_OTP': {
-        return {
-          mfa: {
-            method: 'email',
-            codeCallback: async (code) => {
-              const emailChallengeResult =
-                await this.cognitoIdentityProviderClient.send(
-                  new RespondToAuthChallengeCommand({
-                    ChallengeName,
-                    ClientId: this.clientId,
-                    Session: initiateAuthResponse.Session,
-                    ChallengeResponses: {
-                      USERNAME: username,
-                      EMAIL_OTP_CODE: code,
-                    },
-                  }),
-                )
-              return await this.responseToAuthChallenge(
-                username,
-                emailChallengeResult,
-              )
-            },
-          },
-        }
+        throw new Error('Email OTP is not supported')
       }
       case 'SMS_MFA': {
         return {
@@ -600,30 +604,16 @@ export default class AWSCognitoClient {
   }
 
   async checkIsMfaEnabled(
-    mfaRequirementOption: MfaRequirementOption,
+    mfaRequirement: MiscTypes.MfaRequirement,
   ): Promise<MfaRequirementCheckResult> {
     const mfaSettings = await this.getMfaSettings()
 
-    let userMeetsMfaRequirement = false
-    switch (mfaRequirementOption) {
-      case 'none':
-        userMeetsMfaRequirement = true
-        break
-      case 'sms':
-        userMeetsMfaRequirement = mfaSettings.sms.enabled
-        break
-      case 'authenticatorApp':
-        userMeetsMfaRequirement = mfaSettings.authenticator.enabled
-        break
-      case 'any':
-        userMeetsMfaRequirement =
-          mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
-        break
-    }
-
     return {
       mfaSettings,
-      userMeetsMfaRequirement,
+      userMeetsMfaRequirement: checkUserMeetsMfaRequirement(
+        mfaRequirement,
+        mfaSettings,
+      ),
     }
   }
 
@@ -694,7 +684,7 @@ export default class AWSCognitoClient {
     )
   }
 
-  async setPreferredMfaMethod(method: MfaSetupMethod) {
+  async setPreferredMfaMethod(method: MfaMethod) {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
       return
@@ -725,7 +715,7 @@ export default class AWSCognitoClient {
     )
   }
 
-  async disableMfaMethod(method: MfaSetupMethod) {
+  async disableMfaMethod(method: MfaMethod) {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
       return
@@ -736,7 +726,7 @@ export default class AWSCognitoClient {
       method === 'authenticator'
         ? currentSettings.authenticator.preferred
         : currentSettings.sms.preferred
-    const otherMethod: MfaSetupMethod =
+    const otherMethod: MfaMethod =
       method === 'authenticator' ? 'sms' : 'authenticator'
     const otherSettings =
       method === 'authenticator'
@@ -807,56 +797,6 @@ export default class AWSCognitoClient {
               },
             }
           : {}),
-      }),
-    )
-  }
-
-  async disableMfa() {
-    const accessToken = await this.getAccessToken()
-    if (!accessToken) {
-      return
-    }
-
-    await this.cognitoIdentityProviderClient.send(
-      new SetUserMFAPreferenceCommand({
-        EmailMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
-        SMSMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
-        SoftwareTokenMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
-        AccessToken: accessToken,
-      }),
-    )
-  }
-
-  async setupEmailMfa() {
-    const accessToken = await this.getAccessToken()
-    if (!accessToken) {
-      return
-    }
-
-    await this.cognitoIdentityProviderClient.send(
-      new SetUserMFAPreferenceCommand({
-        EmailMfaSettings: {
-          Enabled: true,
-          PreferredMfa: true,
-        },
-        SMSMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
-        SoftwareTokenMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
-        AccessToken: accessToken,
       }),
     )
   }
