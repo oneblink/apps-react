@@ -467,7 +467,7 @@ function generateMfaAuthenticatorAppQrCodeUrl(
  * @returns
  */
 async function checkIsMfaEnabled(
-  mfaRequirement: MiscTypes.MfaRequirement,
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
 ): Promise<MfaRequirementCheckResult> {
   if (!awsCognitoClient) {
     throw new Error(
@@ -560,7 +560,8 @@ async function setPreferredMfaMethod(method: MfaMethod) {
 
 /**
  * Setup authenticator app MFA for the current user. The result will include a
- * callback that should be called with the valid TOTP from an authenticator app.
+ * callback that should be called with the valid TOTP from an authenticator
+ * app.
  *
  * #### Example
  *

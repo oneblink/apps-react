@@ -60,9 +60,13 @@ const MFA_REQUIREMENT_METHOD_CHECKS = {
 >
 
 function checkUserMeetsMfaRequirement(
-  mfaRequirement: MiscTypes.MfaRequirement,
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
   mfaSettings: MfaSettings,
 ): boolean {
+  if (!mfaRequirement) {
+    return true
+  }
+
   const requiredMethods = (
     Object.keys(MFA_REQUIREMENT_METHOD_CHECKS) as Array<
       keyof MiscTypes.MfaRequirement
@@ -604,7 +608,7 @@ export default class AWSCognitoClient {
   }
 
   async checkIsMfaEnabled(
-    mfaRequirement: MiscTypes.MfaRequirement,
+    mfaRequirement: MiscTypes.MfaRequirement | undefined,
   ): Promise<MfaRequirementCheckResult> {
     const mfaSettings = await this.getMfaSettings()
 
