@@ -50,6 +50,7 @@ export { default as useGoogleJsApiLoader } from './hooks/useGoogleJsApiLoader'
 export { default as useFormSubmissionDuration } from './hooks/useFormSubmissionDuration'
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
+export { default as LoadingWithMessage } from './components/LoadingWithMessage'
 export { default as PaymentReceipt } from './PaymentReceipt'
 export { default as PaymentForm } from './components/payments/PaymentForm'
 

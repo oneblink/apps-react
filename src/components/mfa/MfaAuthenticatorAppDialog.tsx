@@ -12,7 +12,7 @@ import {
   Button,
   DialogTitle,
 } from '@mui/material'
-import { authService } from '../../apps'
+import { mfaService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
 import useMfa from '../../hooks/useMfa'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
@@ -31,7 +31,7 @@ function MfaAuthenticatorAppDialog() {
 
   const qrcodeValue = React.useMemo(() => {
     if (mfaAuthenticatorAppSetup) {
-      return authService.generateMfaAuthenticatorAppQrCodeUrl(
+      return mfaService.generateMfaAuthenticatorAppQrCodeUrl(
         mfaAuthenticatorAppSetup,
       )
     }

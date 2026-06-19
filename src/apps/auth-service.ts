@@ -19,22 +19,6 @@ import {
   getUserProfile,
   getUsername,
   getUserFriendlyName,
-  LoginAttemptResponse,
-  MfaMethod,
-  MfaRequirementCheckResult,
-  MfaSettings,
-  checkIsMfaEnabled,
-  getMfaSettings,
-  updateUserPhoneNumber,
-  removeUserPhoneNumber,
-  sendPhoneNumberVerificationCode,
-  verifyUserPhoneNumber,
-  disableMfaMethod,
-  setPreferredMfaMethod,
-  setupMfaAuthenticatorApp,
-  setupSmsMfa,
-  generateMfaAuthenticatorAppQrCodeUrl,
-  DEFAULT_MFA_SETTINGS,
 } from './services/cognito'
 import { getRequest, postRequest, HTTPError } from './services/fetch'
 import tenants from './tenants'
@@ -57,25 +41,8 @@ export {
   getUserToken,
   setUserToken,
   getUserFriendlyName,
-  checkIsMfaEnabled,
-  getMfaSettings,
-  updateUserPhoneNumber,
-  removeUserPhoneNumber,
-  sendPhoneNumberVerificationCode,
-  verifyUserPhoneNumber,
-  disableMfaMethod,
-  setPreferredMfaMethod,
-  setupMfaAuthenticatorApp,
-  setupSmsMfa,
-  generateMfaAuthenticatorAppQrCodeUrl,
-  DEFAULT_MFA_SETTINGS,
 }
-export type {
-  LoginAttemptResponse,
-  MfaMethod,
-  MfaRequirementCheckResult,
-  MfaSettings,
-}
+export type { LoginAttemptResponse } from './services/cognito'
 import Sentry from './Sentry'
 
 /**
