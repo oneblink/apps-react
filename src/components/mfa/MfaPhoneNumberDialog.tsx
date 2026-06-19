@@ -57,9 +57,7 @@ function usePhoneVerificationResendCoolDown(sentAt: number | undefined) {
 function MfaPhoneNumberDialog() {
   const {
     isPhoneNumberDialogOpen,
-    isPhoneVerificationRequired,
     mfaSettings,
-    pendingSmsSetup,
     phoneVerificationCodeSentAt,
     closePhoneNumberDialog,
     savePhoneNumber,
@@ -67,10 +65,12 @@ function MfaPhoneNumberDialog() {
     resendPhoneNumberVerificationCode,
   } = useMfa()
 
+  const isPhoneVerificationRequired = phoneVerificationCodeSentAt !== undefined
+
   const [phoneNumber, setPhoneNumber] = React.useState('')
   const [verificationCode, setVerificationCode] = React.useState('')
   const resendCoolDownSeconds = usePhoneVerificationResendCoolDown(
-    isPhoneVerificationRequired ? phoneVerificationCodeSentAt : undefined,
+    phoneVerificationCodeSentAt,
   )
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
   const [isResending, startResending, stopResending] = useBooleanState(false)
@@ -201,9 +201,8 @@ function MfaPhoneNumberDialog() {
           ) : (
             <>
               <Typography variant="body2" paragraph>
-                {pendingSmsSetup
-                  ? 'Enter your phone number to receive SMS verification codes when signing in.'
-                  : 'Enter your phone number to save it to your account.'}
+                Enter your phone number to receive SMS verification codes when
+                signing in.
               </Typography>
               <InputField
                 key="phone-number"

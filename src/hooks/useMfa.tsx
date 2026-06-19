@@ -17,8 +17,6 @@ type MfaState = {
   setupError?: Error
   mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
   isPhoneNumberDialogOpen: boolean
-  pendingSmsSetup: boolean
-  isPhoneVerificationRequired: boolean
   phoneVerificationCodeSentAt?: number
   isRemovePhoneNumberDialogOpen: boolean
 }
@@ -30,7 +28,7 @@ export const MfaContext = React.createContext<
     closeMfaSetupMethodDialog: () => void
     beginDisablingMfaMethod: (mfaMethod: authService.MfaMethod) => void
     setPreferredMfaMethod: (mfaMethod: authService.MfaMethod) => Promise<void>
-    openPhoneNumberDialog: (forSmsSetup?: boolean) => void
+    openPhoneNumberDialog: () => void
     closePhoneNumberDialog: () => void
     savePhoneNumber: (phoneNumber: string) => Promise<void>
     verifyPhoneNumber: (code: string) => Promise<void>
@@ -56,8 +54,6 @@ export const MfaContext = React.createContext<
   isSetupMethodDialogOpen: false,
   isSettingPreferredMfaMethod: false,
   isPhoneNumberDialogOpen: false,
-  pendingSmsSetup: false,
-  isPhoneVerificationRequired: false,
   isRemovePhoneNumberDialogOpen: false,
   beginMfaSetup: async () => {},
   openMfaSetupMethodDialog: () => {},
@@ -198,8 +194,6 @@ export function MfaProvider({
     isSetupMethodDialogOpen: false,
     isSettingPreferredMfaMethod: false,
     isPhoneNumberDialogOpen: false,
-    pendingSmsSetup: false,
-    isPhoneVerificationRequired: false,
     isRemovePhoneNumberDialogOpen: false,
   })
 
@@ -300,12 +294,11 @@ export function MfaProvider({
     })
   }, [])
 
-  const openPhoneNumberDialog = React.useCallback((forSmsSetup = false) => {
+  const openPhoneNumberDialog = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
       isPhoneNumberDialogOpen: true,
-      pendingSmsSetup: forSmsSetup,
-      isPhoneVerificationRequired: false,
+      phoneVerificationCodeSentAt: undefined,
       setupError: undefined,
     }))
   }, [])
@@ -314,8 +307,6 @@ export function MfaProvider({
     setState((currentState) => ({
       ...currentState,
       isPhoneNumberDialogOpen: false,
-      pendingSmsSetup: false,
-      isPhoneVerificationRequired: false,
       phoneVerificationCodeSentAt: undefined,
     }))
   }, [])
@@ -363,7 +354,6 @@ export function MfaProvider({
         if (!isPhoneNumberVerified) {
           setState((currentState) => ({
             ...currentState,
-            isPhoneVerificationRequired: true,
             phoneVerificationCodeSentAt: Date.now(),
             mfaSettings: {
               ...currentState.mfaSettings,
@@ -376,47 +366,20 @@ export function MfaProvider({
           }))
           return
         }
-        let pendingSmsSetup = false
-
-        setState((currentState) => {
-          pendingSmsSetup = currentState.pendingSmsSetup
-          return currentState
-        })
-
-        if (pendingSmsSetup) {
-          setState((currentState) => ({
-            ...currentState,
-            mfaSettings: {
-              ...currentState.mfaSettings,
-              sms: {
-                ...currentState.mfaSettings.sms,
-                phoneNumber,
-                isPhoneNumberVerified,
-              },
+        setState((currentState) => ({
+          ...currentState,
+          mfaSettings: {
+            ...currentState.mfaSettings,
+            sms: {
+              ...currentState.mfaSettings.sms,
+              phoneNumber,
+              isPhoneNumberVerified,
             },
-            isPhoneNumberDialogOpen: false,
-            pendingSmsSetup: false,
-            isPhoneVerificationRequired: false,
-            phoneVerificationCodeSentAt: undefined,
-          }))
-          await setupSmsMfaMethod()
-        } else {
-          setState((currentState) => ({
-            ...currentState,
-            mfaSettings: {
-              ...currentState.mfaSettings,
-              sms: {
-                ...currentState.mfaSettings.sms,
-                phoneNumber,
-                isPhoneNumberVerified,
-              },
-            },
-            isPhoneNumberDialogOpen: false,
-            pendingSmsSetup: false,
-            isPhoneVerificationRequired: false,
-            phoneVerificationCodeSentAt: undefined,
-          }))
-        }
+          },
+          isPhoneNumberDialogOpen: false,
+          phoneVerificationCodeSentAt: undefined,
+        }))
+        await setupSmsMfaMethod()
       } catch (error) {
         setState((currentState) => ({
           ...currentState,
@@ -436,41 +399,20 @@ export function MfaProvider({
 
       try {
         await authService.verifyUserPhoneNumber(code)
-        let pendingSmsSetup = false
-
-        setState((currentState) => {
-          pendingSmsSetup = currentState.pendingSmsSetup
-          return {
-            ...currentState,
-            mfaSettings: {
-              ...currentState.mfaSettings,
-              sms: {
-                ...currentState.mfaSettings.sms,
-                isPhoneNumberVerified: true,
-              },
-            },
-          }
-        })
-
-        if (pendingSmsSetup) {
-          setState((currentState) => ({
-            ...currentState,
-            isPhoneNumberDialogOpen: false,
-            pendingSmsSetup: false,
-            isPhoneVerificationRequired: false,
-            phoneVerificationCodeSentAt: undefined,
-          }))
-          await setupSmsMfaMethod()
-          return
-        }
 
         setState((currentState) => ({
           ...currentState,
+          mfaSettings: {
+            ...currentState.mfaSettings,
+            sms: {
+              ...currentState.mfaSettings.sms,
+              isPhoneNumberVerified: true,
+            },
+          },
           isPhoneNumberDialogOpen: false,
-          isPhoneVerificationRequired: false,
-          pendingSmsSetup: false,
           phoneVerificationCodeSentAt: undefined,
         }))
+        await setupSmsMfaMethod()
       } catch (error) {
         setState((currentState) => ({
           ...currentState,
@@ -570,7 +512,6 @@ export function MfaProvider({
               settingUpMfaMethod: undefined,
               isSetupMethodDialogOpen: false,
               isPhoneNumberDialogOpen: true,
-              pendingSmsSetup: true,
             }))
             return
           }
