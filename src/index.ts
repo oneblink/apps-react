@@ -58,7 +58,13 @@ export { default as CalendarBookingsRescheduleForm } from './components/calendar
 export { default as CalendarBookingsCancelForm } from './components/calendar-bookings/CalendarBookingsCancelForm'
 
 export { default as MultiFactorAuthentication } from './components/mfa/MultiFactorAuthentication'
-
+export { default as MfaAuthenticatorAppDialog } from './components/mfa/MfaAuthenticatorAppDialog'
+export { default as MfaDisableDialog } from './components/mfa/MfaDisableDialog'
+export { default as MfaRemovePhoneNumberDialog } from './components/mfa/MfaRemovePhoneNumberDialog'
+export { default as MfaPhoneNumberDialog } from './components/mfa/MfaPhoneNumberDialog'
+export { default as MfaSuccessSnackbar } from './components/mfa/MfaSuccessSnackbar'
+export { default as MfaErrorSnackbar } from './components/mfa/MfaErrorSnackbar'
+export { default as MfaStatusChip } from './components/mfa/MfaStatusChip'
 export {
   default as useMfa,
   MfaProvider,

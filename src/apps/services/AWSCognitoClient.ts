@@ -4,20 +4,90 @@ import {
   ChangePasswordCommand,
   CognitoIdentityProviderClient,
   ConfirmForgotPasswordCommand,
+  DeleteUserAttributesCommand,
+  GetUserAttributeVerificationCodeCommand,
   GetUserCommand,
   GlobalSignOutCommand,
   InitiateAuthCommand,
   InitiateAuthResponse,
   RespondToAuthChallengeCommand,
   SetUserMFAPreferenceCommand,
+  UpdateUserAttributesCommand,
   VerifySoftwareTokenCommand,
+  VerifyUserAttributeCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
 import Sentry from '../Sentry'
 import { OneBlinkAppsError } from '..'
+import { MiscTypes } from '@oneblink/types'
+
+export type MfaMethod = 'authenticator' | 'sms'
+
+export type MfaSettings = {
+  authenticator: {
+    enabled: boolean
+    preferred: boolean
+  }
+  sms: {
+    enabled: boolean
+    preferred: boolean
+    phoneNumber: string | undefined
+    isPhoneNumberVerified: boolean
+  }
+}
+
+export const DEFAULT_MFA_SETTINGS: MfaSettings = {
+  authenticator: { enabled: false, preferred: false },
+  sms: {
+    enabled: false,
+    preferred: false,
+    phoneNumber: undefined,
+    isPhoneNumberVerified: false,
+  },
+}
+
+export type MfaRequirementCheckResult = {
+  mfaSettings: MfaSettings
+  userMeetsMfaRequirement: boolean
+}
+
+const MFA_REQUIREMENT_METHOD_CHECKS = {
+  sms: (mfaSettings: MfaSettings) => mfaSettings.sms.enabled,
+  authenticatorApp: (mfaSettings: MfaSettings) =>
+    mfaSettings.authenticator.enabled,
+} satisfies Record<
+  keyof MiscTypes.MfaRequirement,
+  (mfaSettings: MfaSettings) => boolean
+>
+
+function checkUserMeetsMfaRequirement(
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
+  mfaSettings: MfaSettings,
+): boolean {
+  if (!mfaRequirement) {
+    return true
+  }
+
+  const requiredMethods = (
+    Object.keys(MFA_REQUIREMENT_METHOD_CHECKS) as Array<
+      keyof MiscTypes.MfaRequirement
+    >
+  ).filter((method) => mfaRequirement[method])
+
+  if (requiredMethods.length === 0) {
+    return true
+  }
+
+  return requiredMethods.some((method) =>
+    MFA_REQUIREMENT_METHOD_CHECKS[method](mfaSettings),
+  )
+}
 
 export type LoginAttemptResponse = {
   resetPasswordCallback?: (newPassword: string) => Promise<LoginAttemptResponse>
-  mfaCodeCallback?: (code: string) => Promise<LoginAttemptResponse>
+  mfa?: {
+    codeCallback: (code: string) => Promise<LoginAttemptResponse>
+    method: MfaMethod
+  }
 }
 
 export default class AWSCognitoClient {
@@ -221,23 +291,54 @@ export default class AWSCognitoClient {
       }
       case 'SOFTWARE_TOKEN_MFA': {
         return {
-          mfaCodeCallback: async (code) => {
-            const resetPasswordResult =
-              await this.cognitoIdentityProviderClient.send(
-                new RespondToAuthChallengeCommand({
-                  ChallengeName,
-                  ClientId: this.clientId,
-                  Session: initiateAuthResponse.Session,
-                  ChallengeResponses: {
-                    USERNAME: username,
-                    SOFTWARE_TOKEN_MFA_CODE: code,
-                  },
-                }),
+          mfa: {
+            method: 'authenticator',
+            codeCallback: async (code) => {
+              const resetPasswordResult =
+                await this.cognitoIdentityProviderClient.send(
+                  new RespondToAuthChallengeCommand({
+                    ChallengeName,
+                    ClientId: this.clientId,
+                    Session: initiateAuthResponse.Session,
+                    ChallengeResponses: {
+                      USERNAME: username,
+                      SOFTWARE_TOKEN_MFA_CODE: code,
+                    },
+                  }),
+                )
+              return await this.responseToAuthChallenge(
+                username,
+                resetPasswordResult,
               )
-            return await this.responseToAuthChallenge(
-              username,
-              resetPasswordResult,
-            )
+            },
+          },
+        }
+      }
+      case 'EMAIL_OTP': {
+        throw new Error('Email OTP is not supported')
+      }
+      case 'SMS_MFA': {
+        return {
+          mfa: {
+            method: 'sms',
+            codeCallback: async (code) => {
+              const smsChallengeResult =
+                await this.cognitoIdentityProviderClient.send(
+                  new RespondToAuthChallengeCommand({
+                    ChallengeName,
+                    ClientId: this.clientId,
+                    Session: initiateAuthResponse.Session,
+                    ChallengeResponses: {
+                      USERNAME: username,
+                      SMS_MFA_CODE: code,
+                    },
+                  }),
+                )
+              return await this.responseToAuthChallenge(
+                username,
+                smsChallengeResult,
+              )
+            },
           },
         }
       }
@@ -469,39 +570,242 @@ export default class AWSCognitoClient {
     return this._getAccessToken()
   }
 
-  async checkIsMfaEnabled() {
+  async getMfaSettings(abortSignal?: AbortSignal): Promise<MfaSettings> {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
-      return false
+      return DEFAULT_MFA_SETTINGS
     }
 
     const user = await this.cognitoIdentityProviderClient.send(
       new GetUserCommand({
         AccessToken: accessToken,
       }),
+      { abortSignal },
     )
 
-    return !!user.UserMFASettingList?.length
+    const mfaList = user.UserMFASettingList || []
+    const preferredMfaSetting = user.PreferredMfaSetting
+    const phoneNumber = user.UserAttributes?.find(
+      (attribute) => attribute.Name === 'phone_number',
+    )?.Value
+    const isPhoneNumberVerified =
+      user.UserAttributes?.find(
+        (attribute) => attribute.Name === 'phone_number_verified',
+      )?.Value === 'true'
+
+    return {
+      authenticator: {
+        enabled: mfaList.includes('SOFTWARE_TOKEN_MFA'),
+        preferred: preferredMfaSetting === 'SOFTWARE_TOKEN_MFA',
+      },
+      sms: {
+        enabled: mfaList.includes('SMS_MFA'),
+        preferred: preferredMfaSetting === 'SMS_MFA',
+        phoneNumber,
+        isPhoneNumberVerified,
+      },
+    }
   }
 
-  async disableMfa() {
+  async checkIsMfaEnabled(
+    mfaRequirement: MiscTypes.MfaRequirement | undefined,
+  ): Promise<MfaRequirementCheckResult> {
+    const mfaSettings = await this.getMfaSettings()
+
+    return {
+      mfaSettings,
+      userMeetsMfaRequirement: checkUserMeetsMfaRequirement(
+        mfaRequirement,
+        mfaSettings,
+      ),
+    }
+  }
+
+  async updateUserPhoneNumber(
+    phoneNumber: string,
+  ): Promise<{ isPhoneNumberVerified: boolean }> {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return { isPhoneNumberVerified: false }
+    }
+
+    await this.cognitoIdentityProviderClient.send(
+      new UpdateUserAttributesCommand({
+        AccessToken: accessToken,
+        UserAttributes: [
+          {
+            Name: 'phone_number',
+            Value: phoneNumber,
+          },
+        ],
+      }),
+    )
+
+    const mfaSettings = await this.getMfaSettings()
+    return { isPhoneNumberVerified: mfaSettings.sms.isPhoneNumberVerified }
+  }
+
+  async removeUserPhoneNumber() {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
       return
     }
 
     await this.cognitoIdentityProviderClient.send(
-      new SetUserMFAPreferenceCommand({
-        SoftwareTokenMfaSettings: {
-          Enabled: false,
-          PreferredMfa: false,
-        },
+      new DeleteUserAttributesCommand({
         AccessToken: accessToken,
+        UserAttributeNames: ['phone_number'],
       }),
     )
   }
 
-  async setupMfa() {
+  async sendPhoneNumberVerificationCode() {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    return await this.cognitoIdentityProviderClient.send(
+      new GetUserAttributeVerificationCodeCommand({
+        AccessToken: accessToken,
+        AttributeName: 'phone_number',
+      }),
+    )
+  }
+
+  async verifyUserPhoneNumber(code: string) {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    await this.cognitoIdentityProviderClient.send(
+      new VerifyUserAttributeCommand({
+        AccessToken: accessToken,
+        AttributeName: 'phone_number',
+        Code: code,
+      }),
+    )
+  }
+
+  async setPreferredMfaMethod(method: MfaMethod) {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    const currentSettings = await this.getMfaSettings()
+
+    await this.cognitoIdentityProviderClient.send(
+      new SetUserMFAPreferenceCommand({
+        AccessToken: accessToken,
+        ...(currentSettings.authenticator.enabled
+          ? {
+              SoftwareTokenMfaSettings: {
+                Enabled: true,
+                PreferredMfa: method === 'authenticator',
+              },
+            }
+          : {}),
+        ...(currentSettings.sms.enabled
+          ? {
+              SMSMfaSettings: {
+                Enabled: true,
+                PreferredMfa: method === 'sms',
+              },
+            }
+          : {}),
+      }),
+    )
+  }
+
+  async disableMfaMethod(method: MfaMethod) {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    const currentSettings = await this.getMfaSettings()
+    const wasPreferred =
+      method === 'authenticator'
+        ? currentSettings.authenticator.preferred
+        : currentSettings.sms.preferred
+    const otherMethod: MfaMethod =
+      method === 'authenticator' ? 'sms' : 'authenticator'
+    const otherSettings =
+      method === 'authenticator'
+        ? currentSettings.sms
+        : currentSettings.authenticator
+
+    await this.cognitoIdentityProviderClient.send(
+      new SetUserMFAPreferenceCommand({
+        AccessToken: accessToken,
+        ...(method === 'authenticator'
+          ? {
+              SoftwareTokenMfaSettings: {
+                Enabled: false,
+                PreferredMfa: false,
+              },
+            }
+          : {
+              SMSMfaSettings: {
+                Enabled: false,
+                PreferredMfa: false,
+              },
+            }),
+        ...(wasPreferred && otherSettings.enabled
+          ? otherMethod === 'authenticator'
+            ? {
+                SoftwareTokenMfaSettings: {
+                  Enabled: true,
+                  PreferredMfa: true,
+                },
+              }
+            : {
+                SMSMfaSettings: {
+                  Enabled: true,
+                  PreferredMfa: true,
+                },
+              }
+          : {}),
+      }),
+    )
+  }
+
+  async setupSmsMfa({ preferred }: { preferred?: boolean } = {}) {
+    const accessToken = await this.getAccessToken()
+    if (!accessToken) {
+      return
+    }
+
+    const currentSettings = await this.getMfaSettings()
+    const hasPreferredMethod =
+      (currentSettings.authenticator.enabled &&
+        currentSettings.authenticator.preferred) ||
+      (currentSettings.sms.enabled && currentSettings.sms.preferred)
+    const shouldBePreferred =
+      preferred ?? (!hasPreferredMethod && !currentSettings.sms.enabled)
+
+    await this.cognitoIdentityProviderClient.send(
+      new SetUserMFAPreferenceCommand({
+        AccessToken: accessToken,
+        SMSMfaSettings: {
+          Enabled: true,
+          PreferredMfa: shouldBePreferred,
+        },
+        ...(shouldBePreferred && currentSettings.authenticator.enabled
+          ? {
+              SoftwareTokenMfaSettings: {
+                Enabled: true,
+                PreferredMfa: false,
+              },
+            }
+          : {}),
+      }),
+    )
+  }
+
+  async setupMfaAuthenticatorApp({ preferred }: { preferred?: boolean } = {}) {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
       return
@@ -522,12 +826,30 @@ export default class AWSCognitoClient {
             UserCode: code,
           }),
         )
+
+        const currentSettings = await this.getMfaSettings()
+        const hasPreferredMethod =
+          (currentSettings.authenticator.enabled &&
+            currentSettings.authenticator.preferred) ||
+          (currentSettings.sms.enabled && currentSettings.sms.preferred)
+        const shouldBePreferred =
+          preferred ??
+          (!hasPreferredMethod && !currentSettings.authenticator.enabled)
+
         await this.cognitoIdentityProviderClient.send(
           new SetUserMFAPreferenceCommand({
             SoftwareTokenMfaSettings: {
               Enabled: true,
-              PreferredMfa: true,
+              PreferredMfa: shouldBePreferred,
             },
+            ...(shouldBePreferred && currentSettings.sms.enabled
+              ? {
+                  SMSMfaSettings: {
+                    Enabled: true,
+                    PreferredMfa: false,
+                  },
+                }
+              : {}),
             AccessToken: accessToken,
           }),
         )

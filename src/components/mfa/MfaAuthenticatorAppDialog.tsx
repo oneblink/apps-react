@@ -10,63 +10,71 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  DialogTitle,
 } from '@mui/material'
 import { authService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
+import useMfa from '../../hooks/useMfa'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
-import SuccessSnackbar from '../SuccessSnackbar'
 import InputField from '../InputField'
 
-function MfaDialog({
-  onClose,
-  onCompleted,
-  mfaSetup,
-}: {
-  onClose: () => void
-  onCompleted: () => void
-  mfaSetup: Awaited<ReturnType<typeof authService.setupMfa>> | undefined
-}) {
+function MfaAuthenticatorAppDialog() {
+  const {
+    mfaAuthenticatorAppSetup,
+    cancelMfaAuthenticatorAppSetup,
+    completeMfaAuthenticatorAppSetup,
+  } = useMfa()
+
   const [code, setState] = React.useState('')
-  const [hasSuccessfullySaved, showSuccessfullySaved, hideSuccessfullySaved] =
-    useBooleanState(false)
   const [isShowingSecretCode, showSecretCode, hideSecretCode] =
     useBooleanState(false)
 
   const qrcodeValue = React.useMemo(() => {
-    if (mfaSetup) {
-      return authService.generateMfaQrCodeUrl(mfaSetup)
+    if (mfaAuthenticatorAppSetup) {
+      return authService.generateMfaAuthenticatorAppQrCodeUrl(
+        mfaAuthenticatorAppSetup,
+      )
     }
-  }, [mfaSetup])
+  }, [mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
-  const handleSave = React.useCallback(async () => {
-    startSaving()
-    if (!code || !mfaSetup) {
-      return
-    }
+  const handleSubmit = React.useCallback(
+    async (event: React.SubmitEvent<HTMLFormElement>) => {
+      event.preventDefault()
 
-    await mfaSetup.mfaCodeCallback(code)
-    onCompleted()
-    stopSaving()
-    showSuccessfullySaved()
-  }, [
-    code,
-    mfaSetup,
-    onCompleted,
-    showSuccessfullySaved,
-    startSaving,
-    stopSaving,
-  ])
+      if (!code || !mfaAuthenticatorAppSetup || isSaving) {
+        return
+      }
+
+      startSaving()
+      try {
+        await mfaAuthenticatorAppSetup.mfaCodeCallback(code)
+        await completeMfaAuthenticatorAppSetup()
+      } finally {
+        stopSaving()
+      }
+    },
+    [
+      code,
+      completeMfaAuthenticatorAppSetup,
+      isSaving,
+      mfaAuthenticatorAppSetup,
+      startSaving,
+      stopSaving,
+    ],
+  )
 
   return (
     <React.Fragment>
-      <Dialog open={!!mfaSetup} onClose={onClose} title="Complete MFA Setup">
-        <DialogContent dividers>
-          <>
-            <Typography variant="subtitle2" gutterBottom>
-              Authenticator App
-            </Typography>
-            <Typography variant="body2" paragraph>
+      <Dialog
+        open={!!mfaAuthenticatorAppSetup}
+        onClose={cancelMfaAuthenticatorAppSetup}
+        title="Complete MFA Setup"
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogTitle>Authenticator App Setup</DialogTitle>
+          <DialogContent dividers>
+            <Typography variant="body2" component="p" sx={{ mb: 2 }}>
               Authenticator apps like{' '}
               <Link
                 href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
@@ -89,7 +97,7 @@ function MfaDialog({
             <Typography variant="subtitle2" gutterBottom>
               Scan the QR code
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" sx={{ mb: 2 }}>
               Use an authenticator app or browser extension to scan the QR code
               below.
             </Typography>
@@ -103,6 +111,7 @@ function MfaDialog({
                     borderRadius={1}
                     borderColor="divider"
                     display="inline-block"
+                    lineHeight={0}
                   >
                     <QRCodeSVG value={qrcodeValue || ''} />
                   </Box>
@@ -110,7 +119,11 @@ function MfaDialog({
                 <Grid size={{ xs: 'grow' }}>
                   <Typography variant="caption" color="text.secondary">
                     Having trouble scanning the QR code?{' '}
-                    <Link onClick={showSecretCode} component="button">
+                    <Link
+                      type="button"
+                      onClick={showSecretCode}
+                      component="button"
+                    >
                       Click here
                     </Link>{' '}
                     to display the setup key which can be manually entered in
@@ -124,20 +137,32 @@ function MfaDialog({
               <Box marginBottom={2}>
                 <InputField
                   label="Setup Key"
-                  value={mfaSetup?.secretCode || ''}
+                  value={mfaAuthenticatorAppSetup?.secretCode || ''}
+                  variant="filled"
+                  focused={false}
+                  sx={{
+                    input: {
+                      cursor: 'default !important',
+                    },
+                  }}
                   fullWidth
                   slotProps={{
                     input: {
+                      readOnly: true,
                       endAdornment: (
                         <CopyToClipBoardIconButton
-                          text={mfaSetup?.secretCode || ''}
+                          text={mfaAuthenticatorAppSetup?.secretCode || ''}
                         />
                       ),
                     },
                   }}
                   helperText={
                     <>
-                      <Link onClick={hideSecretCode} component="button">
+                      <Link
+                        type="button"
+                        onClick={hideSecretCode}
+                        component="button"
+                      >
                         Click here
                       </Link>{' '}
                       to hide the setup key
@@ -150,7 +175,7 @@ function MfaDialog({
             <Typography variant="subtitle2" gutterBottom>
               Verify App
             </Typography>
-            <Typography variant="body2" paragraph>
+            <Typography variant="body2" sx={{ mb: 2 }}>
               Enter the 6-digit code found in your authenticator app.
             </Typography>
 
@@ -168,33 +193,38 @@ function MfaDialog({
                 setState(() => newValue)
               }}
               disabled={isSaving}
-              data-cypress="mfa-dialog-code"
+              data-cypress="mfa-authenticator-app-code"
             />
-          </>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} disabled={isSaving}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            loading={isSaving}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              type="button"
+              onClick={cancelMfaAuthenticatorAppSetup}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!code || isSaving}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
-
-      <SuccessSnackbar
-        open={hasSuccessfullySaved}
-        onClose={hideSuccessfullySaved}
-      >
-        MFA has been successfully setup.
-      </SuccessSnackbar>
     </React.Fragment>
   )
 }
 
-export default React.memo(MfaDialog)
+/**
+ * React Component that guides users through authenticator app MFA setup,
+ * including QR code scanning and verification code entry. Typically rendered by
+ * `<MultiFactorAuthentication />` within an
+ * `<MfaProvider />` tree.
+ *
+ * @returns
+ */
+export default React.memo(MfaAuthenticatorAppDialog)

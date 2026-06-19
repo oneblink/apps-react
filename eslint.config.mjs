@@ -20,15 +20,10 @@ const compat = new FlatCompat({
 
 export default defineConfig([
   globalIgnores([
-    '**/build',
-    '**/node_modules',
-    '**/plugins',
-    '**/platforms',
-    '**/coverage',
-    '**/dist',
-    '**/www',
-    '**/flow-typed',
-    '**/vite.config.ts',
+    './node_modules/**',
+    './dist/**',
+    './docs/**',
+    './scripts/**',
   ]),
   pluginMicrosoftSdl.configs.recommended,
   reactHooks.configs.flat.recommended,
@@ -52,7 +47,7 @@ export default defineConfig([
 
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: './tsconfig.json',
+        project: './tsconfig.eslint.json',
       },
     },
 

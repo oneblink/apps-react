@@ -1,6 +1,12 @@
 import { jwtDecode } from 'jwt-decode'
 
-import AWSCognitoClient, { LoginAttemptResponse } from './AWSCognitoClient'
+import AWSCognitoClient, {
+  DEFAULT_MFA_SETTINGS,
+  LoginAttemptResponse,
+  MfaMethod,
+  MfaRequirementCheckResult,
+  MfaSettings,
+} from './AWSCognitoClient'
 
 import * as offlineService from '../offline-service'
 import { userService } from '@oneblink/sdk-core'
@@ -66,19 +72,19 @@ function registerAuthListener(listener: () => unknown): () => void {
  * Create a session for a user by entering a username and password. If the user
  * requires a password reset, the "resetPasswordCallback" property will be
  * returned. This function should be called with the new password once entered
- * by the user. If the user requires an MFA token, the "mfaCodeCallback"
- * property will be returned. This function should be called with a one-time
- * token generated from an authenticator app. The functions returned are
- * recursive and the result from each of them is the same result from the
- * loginUsernamePassword() function. Each time the response includes a callback,
- * you will need to begin the process again until all callbacks are handled.
+ * by the user. If the user requires an MFA token, the "mfa" property will be
+ * returned. Its "codeCallback" should be called with the one-time token. The
+ * functions returned are recursive and the result from each of them is the same
+ * result from the loginUsernamePassword() function. Each time the response
+ * includes a callback, you will need to begin the process again until all
+ * callbacks are handled.
  *
  * #### Example
  *
  * ```js
  * async function handleLoginAttemptResponse({
  *   resetPasswordCallback,
- *   mfaCodeCallback,
+ *   mfa,
  * }) {
  *   // "resetPasswordCallback" will be undefined if a password reset was not required.
  *   if (resetPasswordCallback) {
@@ -91,13 +97,15 @@ function registerAuthListener(listener: () => unknown): () => void {
  *     return await handleLoginAttemptResponse(resetPasswordResponse)
  *   }
  *
- *   // "mfaCodeCallback" will be undefined if MFA is not setup.
- *   if (mfaCodeCallback) {
+ *   // "mfa" will be undefined if MFA is not setup.
+ *   if (mfa) {
  *     // Prompt the user to enter an MFA code
  *     const code = prompt(
- *       'Please enter a one-time code from your MFA app.',
+ *       mfa.method === 'email'
+ *         ? 'Please enter the one-time code sent to your email.'
+ *         : 'Please enter a one-time code from your MFA app.',
  *     )
- *     const mfaCodeResponse = await mfaCodeCallback(code)
+ *     const mfaCodeResponse = await mfa.codeCallback(code)
  *     return await handleLoginAttemptResponse(mfaCodeResponse)
  *   }
  * }
@@ -413,85 +421,153 @@ function getUserFriendlyName(): string | undefined {
 }
 
 /**
- * Generate a QR code link to display to a user after they have initiated MFA
- * setup.
+ * Generate a QR code link to display to a user after they have initiated
+ * authenticator app MFA setup.
  *
  * #### Example
  *
  * ```js
- * const mfaSetupQrCodeUrl = authService.generateMfaQrCodeUrl()
- * if (mfaSetupQrCodeUrl) {
- *   // use mfaSetupQrCodeUrl to display QR code to user
+ * const mfaAuthenticatorAppSetupQrCodeUrl =
+ *   authService.generateMfaAuthenticatorAppQrCodeUrl()
+ * if (mfaAuthenticatorAppSetupQrCodeUrl) {
+ *   // use mfaAuthenticatorAppSetupQrCodeUrl to display QR code to user
  * }
  * ```
  *
  * @returns
  */
-function generateMfaQrCodeUrl(
-  mfaSetupConfiguration: Awaited<ReturnType<typeof setupMfa>>,
+function generateMfaAuthenticatorAppQrCodeUrl(
+  mfaAuthenticatorAppSetup: Awaited<
+    ReturnType<typeof setupMfaAuthenticatorApp>
+  >,
 ): string | undefined {
   const profile = getUserProfile()
-  if (!profile || !mfaSetupConfiguration) {
+  if (!profile || !mfaAuthenticatorAppSetup) {
     return
   }
 
-  return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaSetupConfiguration.secretCode}&issuer=${tenants.current.productShortName}`
+  return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaAuthenticatorAppSetup.secretCode}&issuer=${tenants.current.productShortName}`
 }
 
 /**
- * Check if MFA is enabled for this current user.
+ * Check if the current user meets an MFA requirement.
  *
  * #### Example
  *
  * ```js
- * const isMfaEnabled = await authService.checkIsMfaEnabled()
- * if (isMfaEnabled) {
- *   // Allow disabling MFA
+ * const { mfaSettings, userMeetsMfaRequirement } =
+ *   await authService.checkIsMfaEnabled('any')
+ * if (userMeetsMfaRequirement) {
+ *   // User has met the MFA requirement
  * } else {
- *   // Allow enabling MFA
+ *   // Prompt user to set up MFA
  * }
  * ```
  *
  * @returns
  */
-async function checkIsMfaEnabled() {
+async function checkIsMfaEnabled(
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
+): Promise<MfaRequirementCheckResult> {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before checking if the current user has MFA enabled.',
     )
   }
 
-  return await awsCognitoClient.checkIsMfaEnabled()
+  return await awsCognitoClient.checkIsMfaEnabled(mfaRequirement)
 }
 
-/**
- * Disable MFA for the current user.
- *
- * #### Example
- *
- * ```js
- * await authService.disableMfa()
- * ```
- *
- * @returns
- */
-async function disableMfa() {
+async function getMfaSettings(abortSignal?: AbortSignal) {
   if (!awsCognitoClient) {
     throw new Error(
-      '"authService" has not been initiated. You must call the init() function before attempting to disable MFA.',
+      '"authService" has not been initiated. You must call the init() function before checking MFA settings.',
     )
   }
 
-  return await awsCognitoClient.disableMfa()
+  return await awsCognitoClient.getMfaSettings(abortSignal)
 }
+
+async function updateUserPhoneNumber(phoneNumber: string) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before updating the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.updateUserPhoneNumber(phoneNumber)
+}
+
+async function removeUserPhoneNumber() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before removing the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.removeUserPhoneNumber()
+}
+
+async function sendPhoneNumberVerificationCode() {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before sending a phone number verification code.',
+    )
+  }
+
+  return await awsCognitoClient.sendPhoneNumberVerificationCode()
+}
+
+async function verifyUserPhoneNumber(code: string) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before verifying the user phone number.',
+    )
+  }
+
+  return await awsCognitoClient.verifyUserPhoneNumber(code)
+}
+
+async function setupSmsMfa(options?: { preferred?: boolean }) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to setup SMS MFA.',
+    )
+  }
+
+  return await awsCognitoClient.setupSmsMfa(options)
+}
+
+async function disableMfaMethod(method: MfaMethod) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to disable an MFA method.',
+    )
+  }
+
+  return await awsCognitoClient.disableMfaMethod(method)
+}
+
+async function setPreferredMfaMethod(method: MfaMethod) {
+  if (!awsCognitoClient) {
+    throw new Error(
+      '"authService" has not been initiated. You must call the init() function before attempting to set the preferred MFA method.',
+    )
+  }
+
+  return await awsCognitoClient.setPreferredMfaMethod(method)
+}
+
 /**
- * Setup MFA for the current user. The result will include a callback that
- * should be called with the valid TOTP from an authenticator app.
+ * Setup authenticator app MFA for the current user. The result will include a
+ * callback that should be called with the valid TOTP from an authenticator
+ * app.
  *
  * #### Example
  *
  * ```js
- * const { secretCode, mfaCodeCallback } = await authService.setupMfa()
+ * const { secretCode, mfaCodeCallback } =
+ *   await authService.setupMfaAuthenticatorApp()
  * // Prompt the user to enter an MFA code
  * const code = prompt(
  *   `Please enter a one-time code from your MFA app after creating a new entry with secret: ${secretCode}.`,
@@ -501,14 +577,14 @@ async function disableMfa() {
  *
  * @returns
  */
-async function setupMfa() {
+async function setupMfaAuthenticatorApp(options?: { preferred?: boolean }) {
   if (!awsCognitoClient) {
     throw new Error(
-      '"authService" has not been initiated. You must call the init() function before attempting to setup MFA.',
+      '"authService" has not been initiated. You must call the init() function before attempting to setup authenticator app MFA.',
     )
   }
 
-  return await awsCognitoClient.setupMfa()
+  return await awsCognitoClient.setupMfaAuthenticatorApp(options)
 }
 
 export {
@@ -525,9 +601,22 @@ export {
   getCognitoIdToken,
   getUserProfile,
   getUserFriendlyName,
-  LoginAttemptResponse,
   checkIsMfaEnabled,
-  disableMfa,
-  setupMfa,
-  generateMfaQrCodeUrl,
+  getMfaSettings,
+  updateUserPhoneNumber,
+  removeUserPhoneNumber,
+  sendPhoneNumberVerificationCode,
+  verifyUserPhoneNumber,
+  disableMfaMethod,
+  setPreferredMfaMethod,
+  setupSmsMfa,
+  setupMfaAuthenticatorApp,
+  generateMfaAuthenticatorAppQrCodeUrl,
+  DEFAULT_MFA_SETTINGS,
+}
+export type {
+  LoginAttemptResponse,
+  MfaMethod,
+  MfaRequirementCheckResult,
+  MfaSettings,
 }
