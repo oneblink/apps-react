@@ -28,7 +28,7 @@ function MfaRemovePhoneNumberDialog() {
       }}
     >
       <Typography variant="body2">
-        Are you sure you want to remove {mfaSettings?.phoneNumber} from your
+        Are you sure you want to remove {mfaSettings.sms.phoneNumber} from your
         account?
       </Typography>
     </ConfirmDialog>

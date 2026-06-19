@@ -22,6 +22,8 @@ import { OneBlinkAppsError } from '..'
 export type MfaMethod = 'authenticator' | 'email' | 'sms'
 export type MfaSetupMethod = 'authenticator' | 'sms'
 
+export type MfaRequirementOption = 'none' | 'sms' | 'authenticatorApp' | 'any'
+
 export type MfaSettings = {
   authenticator: {
     enabled: boolean
@@ -30,9 +32,24 @@ export type MfaSettings = {
   sms: {
     enabled: boolean
     preferred: boolean
+    phoneNumber: string | undefined
+    isPhoneNumberVerified: boolean
   }
-  phoneNumber?: string
-  isPhoneNumberVerified: boolean
+}
+
+export const DEFAULT_MFA_SETTINGS: MfaSettings = {
+  authenticator: { enabled: false, preferred: false },
+  sms: {
+    enabled: false,
+    preferred: false,
+    phoneNumber: undefined,
+    isPhoneNumberVerified: false,
+  },
+}
+
+export type MfaRequirementCheckResult = {
+  mfaSettings: MfaSettings
+  userMeetsMfaRequirement: boolean
 }
 
 export type LoginAttemptResponse = {
@@ -545,20 +562,17 @@ export default class AWSCognitoClient {
     return this._getAccessToken()
   }
 
-  async getMfaSettings(): Promise<MfaSettings> {
+  async getMfaSettings(abortSignal?: AbortSignal): Promise<MfaSettings> {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
-      return {
-        authenticator: { enabled: false, preferred: false },
-        sms: { enabled: false, preferred: false },
-        isPhoneNumberVerified: false,
-      }
+      return DEFAULT_MFA_SETTINGS
     }
 
     const user = await this.cognitoIdentityProviderClient.send(
       new GetUserCommand({
         AccessToken: accessToken,
       }),
+      { abortSignal },
     )
 
     const mfaList = user.UserMFASettingList || []
@@ -579,24 +593,49 @@ export default class AWSCognitoClient {
       sms: {
         enabled: mfaList.includes('SMS_MFA'),
         preferred: preferredMfaSetting === 'SMS_MFA',
+        phoneNumber,
+        isPhoneNumberVerified,
       },
-      phoneNumber,
-      isPhoneNumberVerified,
     }
   }
 
-  async checkIsMfaEnabled() {
+  async checkIsMfaEnabled(
+    mfaRequirementOption: MfaRequirementOption,
+  ): Promise<MfaRequirementCheckResult> {
     const mfaSettings = await this.getMfaSettings()
-    return mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
+
+    let userMeetsMfaRequirement = false
+    switch (mfaRequirementOption) {
+      case 'none':
+        userMeetsMfaRequirement = true
+        break
+      case 'sms':
+        userMeetsMfaRequirement = mfaSettings.sms.enabled
+        break
+      case 'authenticatorApp':
+        userMeetsMfaRequirement = mfaSettings.authenticator.enabled
+        break
+      case 'any':
+        userMeetsMfaRequirement =
+          mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
+        break
+    }
+
+    return {
+      mfaSettings,
+      userMeetsMfaRequirement,
+    }
   }
 
-  async updateUserPhoneNumber(phoneNumber: string) {
+  async updateUserPhoneNumber(
+    phoneNumber: string,
+  ): Promise<{ isPhoneNumberVerified: boolean }> {
     const accessToken = await this.getAccessToken()
     if (!accessToken) {
-      return
+      return { isPhoneNumberVerified: false }
     }
 
-    return await this.cognitoIdentityProviderClient.send(
+    await this.cognitoIdentityProviderClient.send(
       new UpdateUserAttributesCommand({
         AccessToken: accessToken,
         UserAttributes: [
@@ -607,6 +646,9 @@ export default class AWSCognitoClient {
         ],
       }),
     )
+
+    const mfaSettings = await this.getMfaSettings()
+    return { isPhoneNumberVerified: mfaSettings.sms.isPhoneNumberVerified }
   }
 
   async removeUserPhoneNumber() {
@@ -697,7 +739,9 @@ export default class AWSCognitoClient {
     const otherMethod: MfaSetupMethod =
       method === 'authenticator' ? 'sms' : 'authenticator'
     const otherSettings =
-      method === 'authenticator' ? currentSettings.sms : currentSettings.authenticator
+      method === 'authenticator'
+        ? currentSettings.sms
+        : currentSettings.authenticator
 
     await this.cognitoIdentityProviderClient.send(
       new SetUserMFAPreferenceCommand({
@@ -845,7 +889,8 @@ export default class AWSCognitoClient {
             currentSettings.authenticator.preferred) ||
           (currentSettings.sms.enabled && currentSettings.sms.preferred)
         const shouldBePreferred =
-          preferred ?? (!hasPreferredMethod && !currentSettings.authenticator.enabled)
+          preferred ??
+          (!hasPreferredMethod && !currentSettings.authenticator.enabled)
 
         await this.cognitoIdentityProviderClient.send(
           new SetUserMFAPreferenceCommand({

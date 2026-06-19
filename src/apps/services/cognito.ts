@@ -1,8 +1,11 @@
 import { jwtDecode } from 'jwt-decode'
 
 import AWSCognitoClient, {
+  DEFAULT_MFA_SETTINGS,
   LoginAttemptResponse,
   MfaMethod,
+  MfaRequirementCheckResult,
+  MfaRequirementOption,
   MfaSettings,
   MfaSetupMethod,
 } from './AWSCognitoClient'
@@ -446,39 +449,42 @@ function generateMfaQrCodeUrl(
 }
 
 /**
- * Check if MFA is enabled for this current user.
+ * Check if the current user meets an MFA requirement.
  *
  * #### Example
  *
  * ```js
- * const isMfaEnabled = await authService.checkIsMfaEnabled()
- * if (isMfaEnabled) {
- *   // Allow disabling MFA
+ * const { mfaSettings, userMeetsMfaRequirement } =
+ *   await authService.checkIsMfaEnabled('any')
+ * if (userMeetsMfaRequirement) {
+ *   // User has met the MFA requirement
  * } else {
- *   // Allow enabling MFA
+ *   // Prompt user to set up MFA
  * }
  * ```
  *
  * @returns
  */
-async function checkIsMfaEnabled() {
+async function checkIsMfaEnabled(
+  mfaRequirement: MfaRequirementOption,
+): Promise<MfaRequirementCheckResult> {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before checking if the current user has MFA enabled.',
     )
   }
 
-  return await awsCognitoClient.checkIsMfaEnabled()
+  return await awsCognitoClient.checkIsMfaEnabled(mfaRequirement)
 }
 
-async function getMfaSettings() {
+async function getMfaSettings(abortSignal?: AbortSignal) {
   if (!awsCognitoClient) {
     throw new Error(
       '"authService" has not been initiated. You must call the init() function before checking MFA settings.',
     )
   }
 
-  return await awsCognitoClient.getMfaSettings()
+  return await awsCognitoClient.getMfaSettings(abortSignal)
 }
 
 async function updateUserPhoneNumber(phoneNumber: string) {
@@ -640,5 +646,13 @@ export {
   setupSmsMfa,
   setupMfa,
   generateMfaQrCodeUrl,
+  DEFAULT_MFA_SETTINGS,
 }
-export type { LoginAttemptResponse, MfaMethod, MfaSettings, MfaSetupMethod }
+export type {
+  LoginAttemptResponse,
+  MfaMethod,
+  MfaRequirementCheckResult,
+  MfaRequirementOption,
+  MfaSettings,
+  MfaSetupMethod,
+}

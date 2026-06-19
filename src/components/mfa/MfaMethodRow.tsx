@@ -1,41 +1,39 @@
 import { memo } from 'react'
 import { Box, Button, Chip, Grid, Tooltip, Typography } from '@mui/material'
-import { authService } from '../../apps'
-import useMfa from '../../hooks/useMfa'
 
 type Props = {
-  method: authService.MfaSetupMethod
+  isEnabled: boolean
+  isPreferred: boolean
+  isSettingUp: boolean
+  isSettingPreferredMfaMethod: boolean
+  isSetupDisabled: boolean
+  showSetupErrorTooltip?: boolean
   title: string
   description: string
   detail?: string
   cypressPrefix: string
   extraButtons?: React.ReactNode
+  onSetup: () => void
+  onDisable: () => void
+  onSetPreferred: () => void
 }
 
 function MfaMethodRow({
-  method,
+  isEnabled,
+  isPreferred,
+  isSettingUp,
+  isSettingPreferredMfaMethod,
+  isSetupDisabled,
+  showSetupErrorTooltip,
   title,
   description,
   detail,
   cypressPrefix,
   extraButtons,
+  onSetup,
+  onDisable,
+  onSetPreferred,
 }: Props) {
-  const {
-    mfaSettings,
-    isSettingUpMfa,
-    settingUpMfaMethod,
-    loadingError,
-    beginMfaSetup,
-    beginDisablingMfaMethod,
-    setPreferredMfaMethod,
-  } = useMfa()
-
-  const methodSettings =
-    method === 'authenticator' ? mfaSettings?.authenticator : mfaSettings?.sms
-  const isEnabled = !!methodSettings?.enabled
-  const isPreferred = !!methodSettings?.preferred
-  const isSettingUpThisMethod = isSettingUpMfa && settingUpMfaMethod === method
-
   return (
     <Box data-cypress={`${cypressPrefix}-method-row`}>
       <Grid container spacing={2} alignItems="center">
@@ -81,7 +79,9 @@ function MfaMethodRow({
                   <Button
                     size="small"
                     variant="outlined"
-                    onClick={() => setPreferredMfaMethod(method)}
+                    loading={isSettingPreferredMfaMethod}
+                    disabled={isSettingPreferredMfaMethod}
+                    onClick={onSetPreferred}
                     data-cypress={`${cypressPrefix}-set-preferred-button`}
                   >
                     Set as Preferred
@@ -90,7 +90,7 @@ function MfaMethodRow({
                 <Button
                   size="small"
                   variant="outlined"
-                  onClick={() => beginDisablingMfaMethod(method)}
+                  onClick={onDisable}
                   data-cypress={`${cypressPrefix}-disable-button`}
                 >
                   Disable
@@ -99,7 +99,7 @@ function MfaMethodRow({
             ) : (
               <Tooltip
                 title={
-                  loadingError
+                  showSetupErrorTooltip
                     ? 'We are unable to load your MFA status. Please try again by clicking the reload button on the chip above.'
                     : ''
                 }
@@ -108,11 +108,9 @@ function MfaMethodRow({
                   <Button
                     size="small"
                     variant="contained"
-                    loading={isSettingUpThisMethod}
-                    disabled={
-                      !!loadingError || isSettingUpMfa || isSettingUpThisMethod
-                    }
-                    onClick={() => beginMfaSetup(method)}
+                    loading={isSettingUp}
+                    disabled={isSetupDisabled}
+                    onClick={onSetup}
                     data-cypress={`${cypressPrefix}-setup-button`}
                   >
                     Setup

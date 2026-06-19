@@ -48,6 +48,8 @@ function MfaStatusChip() {
       <Chip
         label="Enabled"
         icon={<MaterialIcon color="success">verified_user</MaterialIcon>}
+        deleteIcon={<MaterialIcon color="error">refresh</MaterialIcon>}
+        onDelete={loadMfa}
       />
     )
   }
@@ -56,6 +58,8 @@ function MfaStatusChip() {
     <Chip
       label="Disabled"
       icon={<MaterialIcon color="warning">remove_moderator</MaterialIcon>}
+      deleteIcon={<MaterialIcon color="error">refresh</MaterialIcon>}
+      onDelete={loadMfa}
     />
   )
 }

@@ -23,19 +23,29 @@ type Props = {
 }
 
 function MfaMethodList() {
-  const { mfaSettings, loadingError, isLoading, beginRemovingPhoneNumber } =
-    useMfa()
+  const {
+    mfaSettings,
+    loadingError,
+    isLoading,
+    isSettingUpMfa,
+    settingUpMfaMethod,
+    isSettingPreferredMfaMethod,
+    beginMfaSetup,
+    beginDisablingMfaMethod,
+    setPreferredMfaMethod,
+    beginRemovingPhoneNumber,
+  } = useMfa()
 
   const phoneDetail = useMemo(() => {
-    if (!mfaSettings?.phoneNumber) {
+    if (!mfaSettings.sms.phoneNumber) {
       return undefined
     }
 
-    if (!mfaSettings.isPhoneNumberVerified) {
-      return `Phone number: ${mfaSettings.phoneNumber} (not verified)`
+    if (!mfaSettings.sms.isPhoneNumberVerified) {
+      return `Phone number: ${mfaSettings.sms.phoneNumber} (not verified)`
     }
 
-    return `Phone number: ${mfaSettings.phoneNumber}`
+    return `Phone number: ${mfaSettings.sms.phoneNumber}`
   }, [mfaSettings])
 
   if (isLoading) {
@@ -58,20 +68,38 @@ function MfaMethodList() {
   return (
     <>
       <MfaMethodRow
-        method="authenticator"
+        isEnabled={mfaSettings.authenticator.enabled}
+        isPreferred={mfaSettings.authenticator.preferred}
+        isSettingUp={
+          isSettingUpMfa && settingUpMfaMethod === 'authenticator'
+        }
+        isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
+        isSetupDisabled={!!loadingError || isSettingUpMfa}
+        showSetupErrorTooltip={!!loadingError}
         title="Authenticator App"
         description="Use an app like Google Authenticator or Microsoft Authenticator to generate 6-digit verification codes."
         cypressPrefix="mfa-authenticator"
+        onSetup={() => beginMfaSetup('authenticator')}
+        onDisable={() => beginDisablingMfaMethod('authenticator')}
+        onSetPreferred={() => setPreferredMfaMethod('authenticator')}
       />
       <Divider sx={{ my: 2 }} />
       <MfaMethodRow
-        method="sms"
+        isEnabled={mfaSettings.sms.enabled}
+        isPreferred={mfaSettings.sms.preferred}
+        isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'sms'}
+        isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
+        isSetupDisabled={!!loadingError || isSettingUpMfa}
+        showSetupErrorTooltip={!!loadingError}
         title="SMS"
         description="Receive a one-time verification code via SMS each time MFA is required."
         detail={phoneDetail}
         cypressPrefix="mfa-sms"
+        onSetup={() => beginMfaSetup('sms')}
+        onDisable={() => beginDisablingMfaMethod('sms')}
+        onSetPreferred={() => setPreferredMfaMethod('sms')}
         extraButtons={
-          !!mfaSettings?.phoneNumber && !mfaSettings?.sms?.enabled ? (
+          !!mfaSettings.sms.phoneNumber && !mfaSettings.sms.enabled ? (
             <Button
               size="small"
               variant="outlined"

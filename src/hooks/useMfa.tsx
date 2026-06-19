@@ -1,17 +1,19 @@
 import * as React from 'react'
 import { authService } from '../apps'
+import useLoadDataEffect from './useLoadDataEffect'
 
 type MfaState = {
   isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
-  mfaSettings?: authService.MfaSettings
+  mfaSettings: authService.MfaSettings
   isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
   settingUpMfaMethod?: authService.MfaSetupMethod
   isSetupMethodDialogOpen: boolean
   disablingMfaMethod?: authService.MfaSetupMethod
+  isSettingPreferredMfaMethod: boolean
   setupError?: Error
   mfaSetup?: Awaited<ReturnType<typeof authService.setupMfa>>
   isPhoneNumberDialogOpen: boolean
@@ -50,9 +52,11 @@ export const MfaContext = React.createContext<
   isExternalIdentityProviderUser: false,
   isLoading: true,
   isMfaEnabled: false,
+  mfaSettings: authService.DEFAULT_MFA_SETTINGS,
   isSetupSuccessOpen: false,
   isSettingUpMfa: false,
   isSetupMethodDialogOpen: false,
+  isSettingPreferredMfaMethod: false,
   isPhoneNumberDialogOpen: false,
   pendingSmsSetup: false,
   isPhoneVerificationRequired: false,
@@ -79,24 +83,62 @@ export const MfaContext = React.createContext<
   loadMfa: () => {},
 })
 
-function getIsMfaEnabled(mfaSettings: authService.MfaSettings | undefined) {
-  return !!(mfaSettings?.authenticator.enabled || mfaSettings?.sms.enabled)
+function getIsMfaEnabled(mfaSettings: authService.MfaSettings) {
+  return mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
 }
 
-async function resolveMfaSettingsAfterSmsSetup(
+function hasPreferredMfaMethod(mfaSettings: authService.MfaSettings) {
+  return (
+    (mfaSettings.authenticator.enabled &&
+      mfaSettings.authenticator.preferred) ||
+    (mfaSettings.sms.enabled && mfaSettings.sms.preferred)
+  )
+}
+
+function enableSmsMfaInSettings(
+  mfaSettings: authService.MfaSettings,
   smsPreferred: boolean,
-): Promise<authService.MfaSettings> {
-  const mfaSettings = await authService.getMfaSettings()
-
-  if (mfaSettings.sms.enabled) {
-    return mfaSettings
-  }
-
+): authService.MfaSettings {
   return {
     ...mfaSettings,
     sms: {
+      ...mfaSettings.sms,
       enabled: true,
       preferred: smsPreferred,
+    },
+  }
+}
+
+function enableAuthenticatorMfaInSettings(
+  mfaSettings: authService.MfaSettings,
+  authenticatorPreferred: boolean,
+): authService.MfaSettings {
+  return {
+    ...mfaSettings,
+    authenticator: {
+      enabled: true,
+      preferred: authenticatorPreferred,
+    },
+    sms: {
+      ...mfaSettings.sms,
+      preferred: authenticatorPreferred ? false : mfaSettings.sms.preferred,
+    },
+  }
+}
+
+function setPreferredMfaMethodInSettings(
+  mfaSettings: authService.MfaSettings,
+  mfaMethod: authService.MfaSetupMethod,
+): authService.MfaSettings {
+  return {
+    ...mfaSettings,
+    authenticator: {
+      ...mfaSettings.authenticator,
+      preferred: mfaMethod === 'authenticator',
+    },
+    sms: {
+      ...mfaSettings.sms,
+      preferred: mfaMethod === 'sms',
     },
   }
 }
@@ -152,41 +194,56 @@ export function MfaProvider({
     isExternalIdentityProviderUser,
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
+    mfaSettings: authService.DEFAULT_MFA_SETTINGS,
     isSetupSuccessOpen: false,
     isSettingUpMfa: false,
     isSetupMethodDialogOpen: false,
+    isSettingPreferredMfaMethod: false,
     isPhoneNumberDialogOpen: false,
     pendingSmsSetup: false,
     isPhoneVerificationRequired: false,
     isRemovePhoneNumberDialogOpen: false,
   })
 
-  const loadMfa = React.useCallback(async (abortSignal?: AbortSignal) => {
-    setState((currentState) => ({
-      ...currentState,
-      isLoading: true,
-      isMfaEnabled: false,
-      mfaSettings: undefined,
-      loadingError: undefined,
-    }))
-    try {
-      const mfaSettings = await authService.getMfaSettings()
-      if (!abortSignal?.aborted) {
+  const handleLoadMfa = React.useCallback(
+    async (abortSignal: AbortSignal) => {
+      if (isExternalIdentityProviderUser) {
+        return
+      }
+
+      setState((currentState) => ({
+        ...currentState,
+        isLoading: true,
+        isMfaEnabled: false,
+        mfaSettings: authService.DEFAULT_MFA_SETTINGS,
+        loadingError: undefined,
+      }))
+      try {
+        const mfaSettings = await authService.getMfaSettings(abortSignal)
+        if (!abortSignal.aborted) {
+          setState((currentState) => ({
+            ...currentState,
+            isLoading: false,
+            mfaSettings,
+            isMfaEnabled: getIsMfaEnabled(mfaSettings),
+          }))
+        }
+      } catch (error) {
+        if (abortSignal.aborted) {
+          return
+        }
+
         setState((currentState) => ({
           ...currentState,
           isLoading: false,
-          mfaSettings,
-          isMfaEnabled: getIsMfaEnabled(mfaSettings),
+          loadingError: error as Error,
         }))
       }
-    } catch (error) {
-      setState((currentState) => ({
-        ...currentState,
-        isLoading: false,
-        loadingError: error as Error,
-      }))
-    }
-  }, [])
+    },
+    [isExternalIdentityProviderUser],
+  )
+
+  const loadMfa = useLoadDataEffect(handleLoadMfa)
 
   const clearMfaSetupError = React.useCallback(() => {
     setState((currentState) => ({
@@ -225,15 +282,24 @@ export function MfaProvider({
   }, [])
 
   const completeMfaSetup = React.useCallback(async () => {
-    const mfaSettings = await authService.getMfaSettings()
-    setState((currentState) => ({
-      ...currentState,
-      isSetupSuccessOpen: true,
-      isMfaEnabled: getIsMfaEnabled(mfaSettings),
-      mfaSettings,
-      mfaSetup: undefined,
-      settingUpMfaMethod: undefined,
-    }))
+    setState((currentState) => {
+      const authenticatorPreferred = !hasPreferredMfaMethod(
+        currentState.mfaSettings,
+      )
+      const mfaSettings = enableAuthenticatorMfaInSettings(
+        currentState.mfaSettings,
+        authenticatorPreferred,
+      )
+
+      return {
+        ...currentState,
+        isSetupSuccessOpen: true,
+        isMfaEnabled: getIsMfaEnabled(mfaSettings),
+        mfaSettings,
+        mfaSetup: undefined,
+        settingUpMfaMethod: undefined,
+      }
+    })
   }, [])
 
   const openPhoneNumberDialog = React.useCallback((forSmsSetup = false) => {
@@ -256,32 +322,34 @@ export function MfaProvider({
     }))
   }, [])
 
-  const setupSmsMfaMethod = React.useCallback(
-    async (mfaSettings?: authService.MfaSettings) => {
-      const hasPreferredMethod =
-        (mfaSettings?.authenticator.enabled &&
-          mfaSettings.authenticator.preferred) ||
-        (mfaSettings?.sms.enabled && mfaSettings.sms.preferred)
-      const smsPreferred = !hasPreferredMethod
+  const setupSmsMfaMethod = React.useCallback(async () => {
+    let smsPreferred = false
 
-      await authService.setupSmsMfa({
-        preferred: smsPreferred,
-      })
+    setState((currentState) => {
+      smsPreferred = !hasPreferredMfaMethod(currentState.mfaSettings)
+      return currentState
+    })
 
-      const updatedMfaSettings =
-        await resolveMfaSettingsAfterSmsSetup(smsPreferred)
+    await authService.setupSmsMfa({
+      preferred: smsPreferred,
+    })
 
-      setState((currentState) => ({
+    setState((currentState) => {
+      const mfaSettings = enableSmsMfaInSettings(
+        currentState.mfaSettings,
+        smsPreferred,
+      )
+
+      return {
         ...currentState,
         isSetupSuccessOpen: true,
         isSettingUpMfa: false,
         settingUpMfaMethod: undefined,
-        isMfaEnabled: getIsMfaEnabled(updatedMfaSettings),
-        mfaSettings: updatedMfaSettings,
-      }))
-    },
-    [],
-  )
+        isMfaEnabled: getIsMfaEnabled(mfaSettings),
+        mfaSettings,
+      }
+    })
+  }, [])
 
   const savePhoneNumber = React.useCallback(
     async (phoneNumber: string) => {
@@ -291,25 +359,21 @@ export function MfaProvider({
       }))
 
       try {
-        await authService.updateUserPhoneNumber(phoneNumber)
-        const mfaSettings = await authService.getMfaSettings()
-        const savedPhoneNumber = mfaSettings.phoneNumber || phoneNumber
-        const phoneNumberNeedsVerification =
-          !!savedPhoneNumber && !mfaSettings.isPhoneNumberVerified
+        const { isPhoneNumberVerified } =
+          await authService.updateUserPhoneNumber(phoneNumber)
 
-        if (phoneNumberNeedsVerification) {
+        if (!isPhoneNumberVerified) {
           setState((currentState) => ({
             ...currentState,
             isPhoneVerificationRequired: true,
             phoneVerificationCodeSentAt: Date.now(),
             mfaSettings: {
-              ...(currentState.mfaSettings || {
-                authenticator: { enabled: false, preferred: false },
-                sms: { enabled: false, preferred: false },
+              ...currentState.mfaSettings,
+              sms: {
+                ...currentState.mfaSettings.sms,
+                phoneNumber,
                 isPhoneNumberVerified: false,
-              }),
-              phoneNumber: savedPhoneNumber,
-              isPhoneNumberVerified: false,
+              },
             },
           }))
           return
@@ -322,18 +386,33 @@ export function MfaProvider({
         })
 
         if (pendingSmsSetup) {
-          await setupSmsMfaMethod(mfaSettings)
           setState((currentState) => ({
             ...currentState,
+            mfaSettings: {
+              ...currentState.mfaSettings,
+              sms: {
+                ...currentState.mfaSettings.sms,
+                phoneNumber,
+                isPhoneNumberVerified,
+              },
+            },
             isPhoneNumberDialogOpen: false,
             pendingSmsSetup: false,
             isPhoneVerificationRequired: false,
             phoneVerificationCodeSentAt: undefined,
           }))
+          await setupSmsMfaMethod()
         } else {
           setState((currentState) => ({
             ...currentState,
-            mfaSettings,
+            mfaSettings: {
+              ...currentState.mfaSettings,
+              sms: {
+                ...currentState.mfaSettings.sms,
+                phoneNumber,
+                isPhoneNumberVerified,
+              },
+            },
             isPhoneNumberDialogOpen: false,
             pendingSmsSetup: false,
             isPhoneVerificationRequired: false,
@@ -345,7 +424,6 @@ export function MfaProvider({
           ...currentState,
           setupError: error as Error,
         }))
-        throw error
       }
     },
     [setupSmsMfaMethod],
@@ -360,16 +438,23 @@ export function MfaProvider({
 
       try {
         await authService.verifyUserPhoneNumber(code)
-        const mfaSettings = await authService.getMfaSettings()
         let pendingSmsSetup = false
 
         setState((currentState) => {
           pendingSmsSetup = currentState.pendingSmsSetup
-          return currentState
+          return {
+            ...currentState,
+            mfaSettings: {
+              ...currentState.mfaSettings,
+              sms: {
+                ...currentState.mfaSettings.sms,
+                isPhoneNumberVerified: true,
+              },
+            },
+          }
         })
 
         if (pendingSmsSetup) {
-          await setupSmsMfaMethod(mfaSettings)
           setState((currentState) => ({
             ...currentState,
             isPhoneNumberDialogOpen: false,
@@ -377,12 +462,12 @@ export function MfaProvider({
             isPhoneVerificationRequired: false,
             phoneVerificationCodeSentAt: undefined,
           }))
+          await setupSmsMfaMethod()
           return
         }
 
         setState((currentState) => ({
           ...currentState,
-          mfaSettings,
           isPhoneNumberDialogOpen: false,
           isPhoneVerificationRequired: false,
           pendingSmsSetup: false,
@@ -393,20 +478,12 @@ export function MfaProvider({
           ...currentState,
           setupError: error as Error,
         }))
-        throw error
       }
     },
     [setupSmsMfaMethod],
   )
 
-  const resendInFlightRef = React.useRef(false)
-
   const resendPhoneNumberVerificationCode = React.useCallback(async () => {
-    if (resendInFlightRef.current) {
-      return
-    }
-
-    resendInFlightRef.current = true
     setState((currentState) => ({
       ...currentState,
       setupError: undefined,
@@ -420,9 +497,6 @@ export function MfaProvider({
         ...currentState,
         setupError: error as Error,
       }))
-      throw error
-    } finally {
-      resendInFlightRef.current = false
     }
   }, [])
 
@@ -442,13 +516,31 @@ export function MfaProvider({
   }, [])
 
   const completeRemovingPhoneNumber = React.useCallback(async () => {
-    await authService.removeUserPhoneNumber()
-    const mfaSettings = await authService.getMfaSettings()
     setState((currentState) => ({
       ...currentState,
-      isRemovePhoneNumberDialogOpen: false,
-      mfaSettings,
+      setupError: undefined,
     }))
+
+    try {
+      await authService.removeUserPhoneNumber()
+      setState((currentState) => ({
+        ...currentState,
+        isRemovePhoneNumberDialogOpen: false,
+        mfaSettings: {
+          ...currentState.mfaSettings,
+          sms: {
+            ...currentState.mfaSettings.sms,
+            phoneNumber: undefined,
+            isPhoneNumberVerified: false,
+          },
+        },
+      }))
+    } catch (error) {
+      setState((currentState) => ({
+        ...currentState,
+        setupError: error as Error,
+      }))
+    }
   }, [])
 
   const beginMfaSetup = React.useCallback(
@@ -462,14 +554,18 @@ export function MfaProvider({
       }))
 
       try {
-        const mfaSettings = await authService.getMfaSettings()
-        const hasPreferredMethod =
-          (mfaSettings.authenticator.enabled &&
-            mfaSettings.authenticator.preferred) ||
-          (mfaSettings.sms.enabled && mfaSettings.sms.preferred)
+        let mfaSettings = authService.DEFAULT_MFA_SETTINGS
+
+        setState((currentState) => {
+          mfaSettings = currentState.mfaSettings
+          return currentState
+        })
 
         if (mfaMethod === 'sms') {
-          if (!mfaSettings.phoneNumber || !mfaSettings.isPhoneNumberVerified) {
+          if (
+            !mfaSettings.sms.phoneNumber ||
+            !mfaSettings.sms.isPhoneNumberVerified
+          ) {
             setState((currentState) => ({
               ...currentState,
               isSettingUpMfa: false,
@@ -477,12 +573,11 @@ export function MfaProvider({
               isSetupMethodDialogOpen: false,
               isPhoneNumberDialogOpen: true,
               pendingSmsSetup: true,
-              mfaSettings,
             }))
             return
           }
 
-          await setupSmsMfaMethod(mfaSettings)
+          await setupSmsMfaMethod()
           setState((currentState) => ({
             ...currentState,
             isSetupMethodDialogOpen: false,
@@ -490,6 +585,7 @@ export function MfaProvider({
           return
         }
 
+        const hasPreferredMethod = hasPreferredMfaMethod(mfaSettings)
         const newMfaSetup = await authService.setupMfa({
           preferred: !hasPreferredMethod,
         })
@@ -555,35 +651,30 @@ export function MfaProvider({
     async (mfaMethod: authService.MfaSetupMethod) => {
       setState((currentState) => ({
         ...currentState,
+        isSettingPreferredMfaMethod: true,
         setupError: undefined,
       }))
 
       try {
         await authService.setPreferredMfaMethod(mfaMethod)
-        const mfaSettings = await authService.getMfaSettings()
         setState((currentState) => ({
           ...currentState,
-          mfaSettings,
+          isSettingPreferredMfaMethod: false,
+          mfaSettings: setPreferredMfaMethodInSettings(
+            currentState.mfaSettings,
+            mfaMethod,
+          ),
         }))
       } catch (error) {
         setState((currentState) => ({
           ...currentState,
+          isSettingPreferredMfaMethod: false,
           setupError: error as Error,
         }))
       }
     },
     [],
   )
-
-  React.useEffect(() => {
-    if (isExternalIdentityProviderUser) {
-      return
-    }
-
-    loadMfa()
-
-    return () => {}
-  }, [isExternalIdentityProviderUser, loadMfa])
 
   const value = React.useMemo(() => {
     return {

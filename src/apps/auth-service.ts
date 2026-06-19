@@ -21,6 +21,8 @@ import {
   getUserFriendlyName,
   LoginAttemptResponse,
   MfaMethod,
+  MfaRequirementCheckResult,
+  MfaRequirementOption,
   MfaSettings,
   MfaSetupMethod,
   checkIsMfaEnabled,
@@ -36,6 +38,7 @@ import {
   setupEmailMfa,
   setupSmsMfa,
   generateMfaQrCodeUrl,
+  DEFAULT_MFA_SETTINGS,
 } from './services/cognito'
 import { getRequest, postRequest, HTTPError } from './services/fetch'
 import tenants from './tenants'
@@ -71,8 +74,16 @@ export {
   setupEmailMfa,
   setupSmsMfa,
   generateMfaQrCodeUrl,
+  DEFAULT_MFA_SETTINGS,
 }
-export type { LoginAttemptResponse, MfaMethod, MfaSettings, MfaSetupMethod }
+export type {
+  LoginAttemptResponse,
+  MfaMethod,
+  MfaRequirementCheckResult,
+  MfaRequirementOption,
+  MfaSettings,
+  MfaSetupMethod,
+}
 import Sentry from './Sentry'
 
 /**

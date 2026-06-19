@@ -77,10 +77,10 @@ function MfaPhoneNumberDialog() {
 
   React.useEffect(() => {
     if (isPhoneNumberDialogOpen) {
-      setPhoneNumber(mfaSettings?.phoneNumber || '')
+      setPhoneNumber(mfaSettings.sms.phoneNumber || '')
       setVerificationCode('')
     }
-  }, [isPhoneNumberDialogOpen, mfaSettings?.phoneNumber])
+  }, [isPhoneNumberDialogOpen, mfaSettings.sms.phoneNumber])
 
   const handleSavePhoneNumber = React.useCallback(async () => {
     startSaving()
