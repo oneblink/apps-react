@@ -84,17 +84,6 @@ export function formatMfaRequirementMethodLabel(
   }
 }
 
-function isMfaRequirementMethodEnabled(
-  method: MfaRequirementMethod,
-  mfaSettings: MfaSettings,
-): boolean {
-  if (method === 'sms') {
-    return mfaSettings.sms.preferred
-  }
-
-  return mfaSettings.authenticator.preferred
-}
-
 export function userMeetsMfaRequirement(
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
   mfaSettings: MfaSettings,
@@ -103,9 +92,23 @@ export function userMeetsMfaRequirement(
     return true
   }
 
-  return mfaRequirementToSelectedMethods(mfaRequirement).some((method) =>
-    isMfaRequirementMethodEnabled(method, mfaSettings),
-  )
+  if (
+    mfaRequirement?.sms &&
+    mfaSettings.sms.enabled &&
+    mfaSettings.sms.preferred
+  ) {
+    return true
+  }
+
+  if (
+    mfaRequirement?.authenticatorApp &&
+    mfaSettings.authenticator.enabled &&
+    mfaSettings.authenticator.preferred
+  ) {
+    return true
+  }
+
+  return false
 }
 
 export function formatMfaMethodNotAcceptedMessage(
