@@ -35,7 +35,6 @@ export const MfaContext = React.createContext<
     closePhoneNumberDialog: () => void
     savePhoneNumber: (phoneNumber: string) => Promise<void>
     verifyPhoneNumber: (code: string) => Promise<void>
-    resendPhoneNumberVerificationCode: () => Promise<void>
     beginRemovingPhoneNumber: () => void
     cancelRemovingPhoneNumber: () => void
     completeRemovingPhoneNumber: () => Promise<void>
@@ -67,7 +66,6 @@ export const MfaContext = React.createContext<
   closePhoneNumberDialog: () => {},
   savePhoneNumber: async () => {},
   verifyPhoneNumber: async () => {},
-  resendPhoneNumberVerificationCode: async () => {},
   beginRemovingPhoneNumber: () => {},
   cancelRemovingPhoneNumber: () => {},
   completeRemovingPhoneNumber: async () => {},
@@ -439,23 +437,6 @@ export function MfaProvider({
     [setupSmsMfaMethod],
   )
 
-  const resendPhoneNumberVerificationCode = React.useCallback(async () => {
-    setState((currentState) => ({
-      ...currentState,
-      setupError: undefined,
-      phoneVerificationCodeSentAt: Date.now(),
-    }))
-
-    try {
-      await mfaService.sendPhoneNumberVerificationCode()
-    } catch (error) {
-      setState((currentState) => ({
-        ...currentState,
-        setupError: error as Error,
-      }))
-    }
-  }, [])
-
   const beginRemovingPhoneNumber = React.useCallback(() => {
     setState((currentState) => ({
       ...currentState,
@@ -646,7 +627,6 @@ export function MfaProvider({
       closePhoneNumberDialog,
       savePhoneNumber,
       verifyPhoneNumber,
-      resendPhoneNumberVerificationCode,
       beginRemovingPhoneNumber,
       cancelRemovingPhoneNumber,
       completeRemovingPhoneNumber,
@@ -669,7 +649,6 @@ export function MfaProvider({
     closePhoneNumberDialog,
     savePhoneNumber,
     verifyPhoneNumber,
-    resendPhoneNumberVerificationCode,
     beginRemovingPhoneNumber,
     cancelRemovingPhoneNumber,
     completeRemovingPhoneNumber,

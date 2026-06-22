@@ -22,7 +22,7 @@ function getResendCoolDownRemainingSeconds(
     return 0
   }
 
-  const elapsedSeconds = Math.floor((now - sentAt) / 1000)
+  const elapsedSeconds = Math.max(0, Math.floor((now - sentAt) / 1000))
   return Math.max(
     0,
     PHONE_VERIFICATION_RESEND_COOL_DOWN_SECONDS - elapsedSeconds,
@@ -39,10 +39,7 @@ function usePhoneVerificationResendCoolDown(sentAt: number | undefined) {
       return
     }
 
-    const remaining = getResendCoolDownRemainingSeconds(sentAt, Date.now())
-    if (remaining <= 0) {
-      return
-    }
+    setNow(Date.now())
 
     const intervalId = window.setInterval(() => {
       setNow(Date.now())
@@ -62,7 +59,6 @@ function MfaPhoneNumberDialog() {
     closePhoneNumberDialog,
     savePhoneNumber,
     verifyPhoneNumber,
-    resendPhoneNumberVerificationCode,
   } = useMfa()
 
   const isPhoneVerificationRequired = phoneVerificationCodeSentAt !== undefined
@@ -73,7 +69,6 @@ function MfaPhoneNumberDialog() {
     phoneVerificationCodeSentAt,
   )
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
-  const [isResending, startResending, stopResending] = useBooleanState(false)
 
   React.useEffect(() => {
     if (isPhoneNumberDialogOpen) {
@@ -134,13 +129,13 @@ function MfaPhoneNumberDialog() {
   )
 
   const handleResendVerificationCode = React.useCallback(async () => {
-    startResending()
+    startSaving()
     try {
-      await resendPhoneNumberVerificationCode()
+      await savePhoneNumber(phoneNumber)
     } finally {
-      stopResending()
+      stopSaving()
     }
-  }, [resendPhoneNumberVerificationCode, startResending, stopResending])
+  }, [phoneNumber, savePhoneNumber, startSaving, stopSaving])
 
   return (
     <Dialog
@@ -186,15 +181,14 @@ function MfaPhoneNumberDialog() {
                   type="button"
                   variant="text"
                   size="small"
-                  disabled={
-                    resendCoolDownSeconds > 0 || isSaving || isResending
-                  }
+                  sx={{ textTransform: 'none' }}
+                  disabled={resendCoolDownSeconds > 0 || isSaving}
                   onClick={handleResendVerificationCode}
                   data-cypress="mfa-phone-resend-button"
                 >
                   {resendCoolDownSeconds > 0
-                    ? `Send again (${resendCoolDownSeconds}s)`
-                    : 'Send again'}
+                    ? `Send Again (${resendCoolDownSeconds}s)`
+                    : 'Send Again'}
                 </Button>
               </Box>
             </>

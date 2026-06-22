@@ -5,7 +5,6 @@ import {
   CognitoIdentityProviderClient,
   ConfirmForgotPasswordCommand,
   DeleteUserAttributesCommand,
-  GetUserAttributeVerificationCodeCommand,
   GetUserCommand,
   GlobalSignOutCommand,
   InitiateAuthCommand,
@@ -655,20 +654,6 @@ export default class AWSCognitoClient {
       new DeleteUserAttributesCommand({
         AccessToken: accessToken,
         UserAttributeNames: ['phone_number'],
-      }),
-    )
-  }
-
-  async sendPhoneNumberVerificationCode() {
-    const accessToken = await this.getAccessToken()
-    if (!accessToken) {
-      return
-    }
-
-    return await this.cognitoIdentityProviderClient.send(
-      new GetUserAttributeVerificationCodeCommand({
-        AccessToken: accessToken,
-        AttributeName: 'phone_number',
       }),
     )
   }

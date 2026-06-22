@@ -3,7 +3,6 @@ export {
   getMfaSettings,
   updateUserPhoneNumber,
   removeUserPhoneNumber,
-  sendPhoneNumberVerificationCode,
   verifyUserPhoneNumber,
   disableMfaMethod,
   setPreferredMfaMethod,
