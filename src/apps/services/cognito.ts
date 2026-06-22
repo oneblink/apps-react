@@ -508,16 +508,6 @@ async function removeUserPhoneNumber() {
   return await awsCognitoClient.removeUserPhoneNumber()
 }
 
-async function sendPhoneNumberVerificationCode() {
-  if (!awsCognitoClient) {
-    throw new Error(
-      '"authService" has not been initiated. You must call the init() function before sending a phone number verification code.',
-    )
-  }
-
-  return await awsCognitoClient.sendPhoneNumberVerificationCode()
-}
-
 async function verifyUserPhoneNumber(code: string) {
   if (!awsCognitoClient) {
     throw new Error(
@@ -605,7 +595,6 @@ export {
   getMfaSettings,
   updateUserPhoneNumber,
   removeUserPhoneNumber,
-  sendPhoneNumberVerificationCode,
   verifyUserPhoneNumber,
   disableMfaMethod,
   setPreferredMfaMethod,
