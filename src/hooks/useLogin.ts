@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { authService, Sentry } from '../apps'
+import { authService, mfaService, Sentry } from '../apps'
 
 import useIsMounted from './useIsMounted'
 import useBooleanState from './useBooleanState'
@@ -845,7 +845,7 @@ export interface UseLoginValue {
     isInvalid: boolean
   }
   /** The MFA method the user must complete to finish signing in, if available. */
-  mfaMethod: authService.MfaMethod | null
+  mfaMethod: mfaService.MfaMethod | null
   /** `true` while processing `submitMfaCode()`. */
   isSubmittingMfaCode: boolean
   /**

@@ -22,6 +22,16 @@ export * as offlineService from './offline-service'
  */
 export * as authService from './auth-service'
 /**
+ * ## MFA Service
+ *
+ * Helper functions for multi factor authentication and MFA requirements.
+ *
+ * ```js
+ * import { mfaService } from '@oneblink/apps-react'
+ * ```
+ */
+export * as mfaService from './mfa-service'
+/**
  * ## Draft Service
  *
  * Helper functions for handling drafts.

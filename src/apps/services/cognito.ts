@@ -428,7 +428,7 @@ function getUserFriendlyName(): string | undefined {
  *
  * ```js
  * const mfaAuthenticatorAppSetupQrCodeUrl =
- *   authService.generateMfaAuthenticatorAppQrCodeUrl()
+ *   mfaService.generateMfaAuthenticatorAppQrCodeUrl()
  * if (mfaAuthenticatorAppSetupQrCodeUrl) {
  *   // use mfaAuthenticatorAppSetupQrCodeUrl to display QR code to user
  * }
@@ -456,7 +456,7 @@ function generateMfaAuthenticatorAppQrCodeUrl(
  *
  * ```js
  * const { mfaSettings, userMeetsMfaRequirement } =
- *   await authService.checkIsMfaEnabled('any')
+ *   await mfaService.checkIsMfaEnabled('any')
  * if (userMeetsMfaRequirement) {
  *   // User has met the MFA requirement
  * } else {
@@ -567,7 +567,7 @@ async function setPreferredMfaMethod(method: MfaMethod) {
  *
  * ```js
  * const { secretCode, mfaCodeCallback } =
- *   await authService.setupMfaAuthenticatorApp()
+ *   await mfaService.setupMfaAuthenticatorApp()
  * // Prompt the user to enter an MFA code
  * const code = prompt(
  *   `Please enter a one-time code from your MFA app after creating a new entry with secret: ${secretCode}.`,

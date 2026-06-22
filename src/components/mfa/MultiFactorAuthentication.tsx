@@ -8,6 +8,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import { MiscTypes } from '@oneblink/types'
 import MfaAuthenticatorAppDialog from './MfaAuthenticatorAppDialog'
 import useMfa from '../../hooks/useMfa'
 import MfaDisableDialog from './MfaDisableDialog'
@@ -17,12 +18,14 @@ import MfaMethodRow from './MfaMethodRow'
 import MfaSuccessSnackbar from './MfaSuccessSnackbar'
 import MfaErrorSnackbar from './MfaErrorSnackbar'
 import MfaStatusChip from './MfaStatusChip'
+import { formatMfaMethodNotAcceptedMessage } from '../../utils/mfa-requirement'
 
 type Props = {
-  ssoSetupUrl: string | undefined
+  mfaRequirement: MiscTypes.MfaRequirement | undefined
+  ssoSetupUrl?: string
 }
 
-function MfaMethodList() {
+function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
   const {
     mfaSettings,
     loadingError,
@@ -48,6 +51,14 @@ function MfaMethodList() {
     return `Phone number: ${mfaSettings.sms.phoneNumber}`
   }, [mfaSettings])
 
+  const authenticatorMfaRequirementMessage = useMemo(() => {
+    return formatMfaMethodNotAcceptedMessage('authenticatorApp', mfaRequirement)
+  }, [mfaRequirement])
+
+  const smsMfaRequirementMessage = useMemo(() => {
+    return formatMfaMethodNotAcceptedMessage('sms', mfaRequirement)
+  }, [mfaRequirement])
+
   if (isLoading) {
     return (
       <Typography variant="body2" color="text.secondary">
@@ -70,14 +81,13 @@ function MfaMethodList() {
       <MfaMethodRow
         isEnabled={mfaSettings.authenticator.enabled}
         isPreferred={mfaSettings.authenticator.preferred}
-        isSettingUp={
-          isSettingUpMfa && settingUpMfaMethod === 'authenticator'
-        }
+        isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'authenticator'}
         isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
         isSetupDisabled={!!loadingError || isSettingUpMfa}
         showSetupErrorTooltip={!!loadingError}
         title="Authenticator App"
         description="Use an app like Google Authenticator or Microsoft Authenticator to generate 6-digit verification codes."
+        mfaRequirementMessage={authenticatorMfaRequirementMessage}
         cypressPrefix="mfa-authenticator"
         onSetup={() => beginMfaSetup('authenticator')}
         onDisable={() => beginDisablingMfaMethod('authenticator')}
@@ -94,6 +104,7 @@ function MfaMethodList() {
         title="SMS"
         description="Receive a one-time verification code via SMS each time MFA is required."
         detail={phoneDetail}
+        mfaRequirementMessage={smsMfaRequirementMessage}
         cypressPrefix="mfa-sms"
         onSetup={() => beginMfaSetup('sms')}
         onDisable={() => beginDisablingMfaMethod('sms')}
@@ -116,7 +127,7 @@ function MfaMethodList() {
   )
 }
 
-function MfaSetup({ ssoSetupUrl }: Props) {
+function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
   const { isExternalIdentityProviderUser } = useMfa()
 
   if (ssoSetupUrl) {
@@ -153,7 +164,7 @@ function MfaSetup({ ssoSetupUrl }: Props) {
 
   return (
     <>
-      <MfaMethodList />
+      <MfaMethodList mfaRequirement={mfaRequirement} />
       <MfaDisableDialog />
       <MfaRemovePhoneNumberDialog />
       <MfaPhoneNumberDialog />
@@ -179,28 +190,30 @@ function MfaSetup({ ssoSetupUrl }: Props) {
  * } from '@oneblink/apps-react'
  *
  * function Component() {
- *   return <MultiFactorAuthentication />
+ *   return <MultiFactorAuthentication mfaRequirement={undefined} />
  * }
  *
- * function App() {
+ * function AppWithMfaRequirement({ mfaRequirement }) {
  *   return (
  *     <MfaProvider>
- *       <Component />
+ *       <MultiFactorAuthentication mfaRequirement={mfaRequirement} />
  *     </MfaProvider>
  *   )
- * }
- *
- * const root = document.getElementById('root')
- * if (root) {
- *   ReactDOM.render(<App />, root)
  * }
  * ```
  *
  * @param props
+ * @param props.mfaRequirement - The MFA methods allowed by your administrator
+ *   for using this app. Pass `undefined` when the app has no MFA requirement.
+ *   Users can still enable other methods, but will be warned when their
+ *   configuration does not meet this requirement.
  * @returns
  * @group Components
  */
-export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
+export default function MultiFactorAuthentication({
+  mfaRequirement,
+  ssoSetupUrl,
+}: Props) {
   return (
     <Grid size={{ xs: 'grow', lg: 8 }}>
       <Box padding={3}>
@@ -221,7 +234,10 @@ export default function MultiFactorAuthentication({ ssoSetupUrl }: Props) {
                   password sign-in credentials. We strongly recommend enabling
                   MFA to enhance your account security.
                 </Typography>
-                <MfaSetup ssoSetupUrl={ssoSetupUrl} />
+                <MfaSetup
+                  ssoSetupUrl={ssoSetupUrl}
+                  mfaRequirement={mfaRequirement}
+                />
               </Grid>
             </Grid>
           </Box>

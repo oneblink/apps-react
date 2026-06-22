@@ -10,12 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - sms MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
+- `mfaService` for MFA setup APIs and MFA requirement helpers
+- export `LoadingWithMessage` component
 
 ### Changed
 
 - **[BREAKING]** `LoginAttemptResponse` to replace `mfaCodeCallback` with `mfa.codeCallback` and `mfa.method`
 - **[BREAKING]** `useLogin()` to remove `isMfaCodeRequired`; use `mfaMethod` as the source of truth for an active MFA step
 - **[BREAKING]** `useMfa()` to require an `mfaMethod` parameter for `beginMfaSetup(mfaMethod)`
+- **[BREAKING]** `useUserMeetsMfaRequirement(mfaRequirement)` to accept an `MfaRequirement` and return `{ mfaSetupRequired, isLoading, loadingError, refreshMfa }` instead of a boolean
+- **[BREAKING]** MFA functions and types moved from `authService` to `mfaService`
 
 ## [10.3.1] - 2026-06-18
 

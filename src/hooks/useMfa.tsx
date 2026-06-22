@@ -1,22 +1,23 @@
 import * as React from 'react'
-import { authService } from '../apps'
+import { mfaService } from '../apps'
 import useLoadDataEffect from './useLoadDataEffect'
+import { MiscTypes } from '@oneblink/types'
 
 type MfaState = {
   isExternalIdentityProviderUser: boolean
   isLoading: boolean
   isMfaEnabled: boolean
-  mfaSettings: authService.MfaSettings
+  mfaSettings: mfaService.MfaSettings
   isSetupSuccessOpen: boolean
   loadingError?: Error
   isSettingUpMfa: boolean
-  settingUpMfaMethod?: authService.MfaMethod
+  settingUpMfaMethod?: mfaService.MfaMethod
   isSetupMethodDialogOpen: boolean
-  disablingMfaMethod?: authService.MfaMethod
+  disablingMfaMethod?: mfaService.MfaMethod
   isSettingPreferredMfaMethod: boolean
   setupError?: Error
   mfaAuthenticatorAppSetup?: Awaited<
-    ReturnType<typeof authService.setupMfaAuthenticatorApp>
+    ReturnType<typeof mfaService.setupMfaAuthenticatorApp>
   >
   isPhoneNumberDialogOpen: boolean
   phoneVerificationCodeSentAt?: number
@@ -25,11 +26,11 @@ type MfaState = {
 
 export const MfaContext = React.createContext<
   MfaState & {
-    beginMfaSetup: (mfaMethod: authService.MfaMethod) => Promise<void>
+    beginMfaSetup: (mfaMethod: mfaService.MfaMethod) => Promise<void>
     openMfaSetupMethodDialog: () => void
     closeMfaSetupMethodDialog: () => void
-    beginDisablingMfaMethod: (mfaMethod: authService.MfaMethod) => void
-    setPreferredMfaMethod: (mfaMethod: authService.MfaMethod) => Promise<void>
+    beginDisablingMfaMethod: (mfaMethod: mfaService.MfaMethod) => void
+    setPreferredMfaMethod: (mfaMethod: mfaService.MfaMethod) => Promise<void>
     openPhoneNumberDialog: () => void
     closePhoneNumberDialog: () => void
     savePhoneNumber: (phoneNumber: string) => Promise<void>
@@ -50,7 +51,7 @@ export const MfaContext = React.createContext<
   isExternalIdentityProviderUser: false,
   isLoading: true,
   isMfaEnabled: false,
-  mfaSettings: authService.DEFAULT_MFA_SETTINGS,
+  mfaSettings: mfaService.DEFAULT_MFA_SETTINGS,
   isSetupSuccessOpen: false,
   isSettingUpMfa: false,
   isSetupMethodDialogOpen: false,
@@ -79,11 +80,11 @@ export const MfaContext = React.createContext<
   loadMfa: () => {},
 })
 
-function getIsMfaEnabled(mfaSettings: authService.MfaSettings) {
+function getIsMfaEnabled(mfaSettings: mfaService.MfaSettings) {
   return mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
 }
 
-function hasPreferredMfaMethod(mfaSettings: authService.MfaSettings) {
+function hasPreferredMfaMethod(mfaSettings: mfaService.MfaSettings) {
   return (
     (mfaSettings.authenticator.enabled &&
       mfaSettings.authenticator.preferred) ||
@@ -92,9 +93,9 @@ function hasPreferredMfaMethod(mfaSettings: authService.MfaSettings) {
 }
 
 function enableSmsMfaInSettings(
-  mfaSettings: authService.MfaSettings,
+  mfaSettings: mfaService.MfaSettings,
   smsPreferred: boolean,
-): authService.MfaSettings {
+): mfaService.MfaSettings {
   return {
     ...mfaSettings,
     sms: {
@@ -106,9 +107,9 @@ function enableSmsMfaInSettings(
 }
 
 function enableAuthenticatorMfaInSettings(
-  mfaSettings: authService.MfaSettings,
+  mfaSettings: mfaService.MfaSettings,
   authenticatorPreferred: boolean,
-): authService.MfaSettings {
+): mfaService.MfaSettings {
   return {
     ...mfaSettings,
     authenticator: {
@@ -123,9 +124,9 @@ function enableAuthenticatorMfaInSettings(
 }
 
 function setPreferredMfaMethodInSettings(
-  mfaSettings: authService.MfaSettings,
-  mfaMethod: authService.MfaMethod,
-): authService.MfaSettings {
+  mfaSettings: mfaService.MfaSettings,
+  mfaMethod: mfaService.MfaMethod,
+): mfaService.MfaSettings {
   return {
     ...mfaSettings,
     authenticator: {
@@ -155,23 +156,36 @@ function setPreferredMfaMethodInSettings(
  *   useUserMeetsMfaRequirement,
  * } from '@oneblink/apps-react'
  *
- * function Component() {
- *   const { isLoading, userMeetsMfaRequirement } =
- *     useUserMeetsMfaRequirement(true)
- *   // use MFA Requirement details here
+ * function Component({ teamMemberMfaRequirement }) {
+ *   const { mfaSetupRequired, isLoading, loadingError, refreshMfa } =
+ *     useUserMeetsMfaRequirement(teamMemberMfaRequirement)
+ *
+ *   if (isLoading) {
+ *     return <Loading />
+ *   }
+ *
+ *   if (loadingError) {
+ *     return <Error onRetry={refreshMfa} />
+ *   }
+ *
+ *   if (mfaSetupRequired) {
+ *     return <ConfigureMfa />
+ *   }
+ *
+ *   return <Application />
  * }
  *
- * function App() {
+ * function App({ teamMemberMfaRequirement }) {
  *   return (
  *     <MfaProvider isExternalIdentityProviderUser={false}>
- *       <Component />
+ *       <Component teamMemberMfaRequirement={teamMemberMfaRequirement} />
  *     </MfaProvider>
  *   )
  * }
  *
  * const root = document.getElementById('root')
  * if (root) {
- *   ReactDOM.render(<App />, root)
+ *   ReactDOM.render(<App teamMemberMfaRequirement={mfaRequirement} />, root)
  * }
  * ```
  *
@@ -190,7 +204,7 @@ export function MfaProvider({
     isExternalIdentityProviderUser,
     isLoading: !isExternalIdentityProviderUser,
     isMfaEnabled: false,
-    mfaSettings: authService.DEFAULT_MFA_SETTINGS,
+    mfaSettings: mfaService.DEFAULT_MFA_SETTINGS,
     isSetupSuccessOpen: false,
     isSettingUpMfa: false,
     isSetupMethodDialogOpen: false,
@@ -209,11 +223,11 @@ export function MfaProvider({
         ...currentState,
         isLoading: true,
         isMfaEnabled: false,
-        mfaSettings: authService.DEFAULT_MFA_SETTINGS,
+        mfaSettings: mfaService.DEFAULT_MFA_SETTINGS,
         loadingError: undefined,
       }))
       try {
-        const mfaSettings = await authService.getMfaSettings(abortSignal)
+        const mfaSettings = await mfaService.getMfaSettings(abortSignal)
         if (!abortSignal.aborted) {
           setState((currentState) => ({
             ...currentState,
@@ -321,7 +335,7 @@ export function MfaProvider({
       return currentState
     })
 
-    await authService.setupSmsMfa({
+    await mfaService.setupSmsMfa({
       preferred: smsPreferred,
     })
 
@@ -351,7 +365,7 @@ export function MfaProvider({
 
       try {
         const { isPhoneNumberVerified } =
-          await authService.updateUserPhoneNumber(phoneNumber)
+          await mfaService.updateUserPhoneNumber(phoneNumber)
 
         if (!isPhoneNumberVerified) {
           setState((currentState) => ({
@@ -400,7 +414,7 @@ export function MfaProvider({
       }))
 
       try {
-        await authService.verifyUserPhoneNumber(code)
+        await mfaService.verifyUserPhoneNumber(code)
 
         setState((currentState) => ({
           ...currentState,
@@ -433,7 +447,7 @@ export function MfaProvider({
     }))
 
     try {
-      await authService.sendPhoneNumberVerificationCode()
+      await mfaService.sendPhoneNumberVerificationCode()
     } catch (error) {
       setState((currentState) => ({
         ...currentState,
@@ -464,7 +478,7 @@ export function MfaProvider({
     }))
 
     try {
-      await authService.removeUserPhoneNumber()
+      await mfaService.removeUserPhoneNumber()
       setState((currentState) => ({
         ...currentState,
         isRemovePhoneNumberDialogOpen: false,
@@ -486,7 +500,7 @@ export function MfaProvider({
   }, [])
 
   const beginMfaSetup = React.useCallback(
-    async (mfaMethod: authService.MfaMethod) => {
+    async (mfaMethod: mfaService.MfaMethod) => {
       setState((currentState) => ({
         ...currentState,
         isSettingUpMfa: true,
@@ -496,7 +510,7 @@ export function MfaProvider({
       }))
 
       try {
-        let mfaSettings = authService.DEFAULT_MFA_SETTINGS
+        let mfaSettings = mfaService.DEFAULT_MFA_SETTINGS
 
         setState((currentState) => {
           mfaSettings = currentState.mfaSettings
@@ -528,7 +542,7 @@ export function MfaProvider({
 
         const hasPreferredMethod = hasPreferredMfaMethod(mfaSettings)
         const newMfaAuthenticatorAppSetup =
-          await authService.setupMfaAuthenticatorApp({
+          await mfaService.setupMfaAuthenticatorApp({
             preferred: !hasPreferredMethod,
           })
         setState((currentState) => ({
@@ -549,12 +563,12 @@ export function MfaProvider({
     [setupSmsMfaMethod],
   )
 
-  const disablingMfaMethodRef = React.useRef<authService.MfaMethod | undefined>(
+  const disablingMfaMethodRef = React.useRef<mfaService.MfaMethod | undefined>(
     undefined,
   )
 
   const beginDisablingMfaMethod = React.useCallback(
-    (mfaMethod: authService.MfaMethod) => {
+    (mfaMethod: mfaService.MfaMethod) => {
       disablingMfaMethodRef.current = mfaMethod
       setState((currentState) => ({
         ...currentState,
@@ -578,8 +592,8 @@ export function MfaProvider({
       return
     }
 
-    await authService.disableMfaMethod(disablingMfaMethod)
-    const mfaSettings = await authService.getMfaSettings()
+    await mfaService.disableMfaMethod(disablingMfaMethod)
+    const mfaSettings = await mfaService.getMfaSettings()
     disablingMfaMethodRef.current = undefined
     setState((currentState) => ({
       ...currentState,
@@ -590,7 +604,7 @@ export function MfaProvider({
   }, [])
 
   const setPreferredMfaMethod = React.useCallback(
-    async (mfaMethod: authService.MfaMethod) => {
+    async (mfaMethod: mfaService.MfaMethod) => {
       setState((currentState) => ({
         ...currentState,
         isSettingPreferredMfaMethod: true,
@@ -598,7 +612,7 @@ export function MfaProvider({
       }))
 
       try {
-        await authService.setPreferredMfaMethod(mfaMethod)
+        await mfaService.setPreferredMfaMethod(mfaMethod)
         setState((currentState) => ({
           ...currentState,
           isSettingPreferredMfaMethod: false,
@@ -666,11 +680,7 @@ export function MfaProvider({
     completeDisablingMfa,
   ])
 
-  return (
-    <MfaContext.Provider value={value}>
-      {children}
-    </MfaContext.Provider>
-  )
+  return <MfaContext.Provider value={value}>{children}</MfaContext.Provider>
 }
 
 export default function useMfa() {
@@ -678,38 +688,77 @@ export default function useMfa() {
 }
 
 /**
- * React hook to check if the logged in user meets the MFA requirement of your
- * application. Will throw an Error if used outside of the
- * `<MfaProvider />` component.
+ * React hook to determine whether the logged in user must set up MFA before
+ * accessing your application. Reads MFA settings from the `<MfaProvider />`
+ * context. Will throw an Error if used outside of `<MfaProvider />`.
  *
- * Example
+ * Users signed in via an external identity provider are not required to set up
+ * MFA.
+ *
+ * #### Example
  *
  * ```js
- * import { useUserMeetsMfaRequirement } from '@oneblink/apps-react'
+ * import { MfaProvider, useUserMeetsMfaRequirement } from '@oneblink/apps-react'
  *
- * const isMfaRequired = true
+ * function Component({ teamMemberMfaRequirement }) {
+ *   const { mfaSetupRequired, isLoading, loadingError, refreshMfa } =
+ *     useUserMeetsMfaRequirement(teamMemberMfaRequirement)
  *
- * function Component() {
- *   const userMeetsMfaRequirement =
- *     useUserMeetsMfaRequirement(isMfaRequired)
+ *   if (isLoading) {
+ *     return <Loading />
+ *   }
+ *
+ *   if (loadingError) {
+ *     return <Error onRetry={refreshMfa} />
+ *   }
+ *
+ *   if (mfaSetupRequired) {
+ *     return <ConfigureMfa />
+ *   }
+ *
+ *   return <Application />
  * }
  * ```
  *
- * @returns
+ * @param mfaRequirement - The MFA requirement to enforce, e.g. from your
+ * organisation or app settings.
+ * @returns Whether MFA setup is required, along with loading state from the MFA
+ * provider.
  * @group Hooks
  */
-export function useUserMeetsMfaRequirement(isMfaRequired: boolean) {
-  const context = React.useContext(MfaContext)
+export function useUserMeetsMfaRequirement(
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
+) {
+  const {
+    isLoading,
+    loadingError,
+    mfaSettings,
+    loadMfa,
+    isExternalIdentityProviderUser,
+  } = useMfa()
 
-  if (!context) {
-    throw new Error(
-      `"useUserMeetsMfaRequirement" hook was used outside of the "<MfaProvider />" component's children.`,
+  return React.useMemo(() => {
+    const mfaRequired = mfaService.isMfaRequired(mfaRequirement)
+    const shouldCheckMfa = mfaRequired && !isExternalIdentityProviderUser
+    const meetsRequirement = mfaService.userMeetsMfaRequirement(
+      mfaRequirement,
+      mfaSettings,
     )
-  }
+    const mfaSetupRequired =
+      shouldCheckMfa && !isLoading && !loadingError && !meetsRequirement
 
-  const { isMfaEnabled, isExternalIdentityProviderUser } = context
-  if (!isMfaRequired || isExternalIdentityProviderUser) {
-    return true
-  }
-  return isMfaEnabled
+    return {
+      mfaSetupRequired,
+      isLoading: shouldCheckMfa && isLoading,
+      loadingError: shouldCheckMfa ? loadingError : undefined,
+      refreshMfa: loadMfa,
+    }
+  }, [
+    mfaRequirement,
+    isExternalIdentityProviderUser,
+    mfaSettings,
+    isLoading,
+    loadingError,
+    loadMfa,
+  ])
 }
