@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 import {
   formatMfaRequirementLabel,
   formatMfaRequirementMethodLabel,
+  formatMfaMethodNotAcceptedMessage,
   formatMfaSetupRequiredMessage,
   isMfaRequired,
   mfaSelectedMethodsToMfaRequirement,
@@ -139,6 +140,49 @@ describe('userMeetsMfaRequirement', () => {
         authenticatorMfaSettings,
       ),
     ).toBe(false)
+  })
+})
+
+describe('formatMfaMethodNotAcceptedMessage', () => {
+  test('returns undefined when MFA is optional', () => {
+    expect(formatMfaMethodNotAcceptedMessage('sms', undefined)).toBeUndefined()
+    expect(
+      formatMfaMethodNotAcceptedMessage('sms', {
+        sms: false,
+        authenticatorApp: false,
+      }),
+    ).toBeUndefined()
+  })
+
+  test('returns undefined when the method is accepted', () => {
+    expect(
+      formatMfaMethodNotAcceptedMessage('sms', {
+        sms: true,
+        authenticatorApp: false,
+      }),
+    ).toBeUndefined()
+  })
+
+  test('describes a single required method', () => {
+    expect(
+      formatMfaMethodNotAcceptedMessage('authenticatorApp', {
+        sms: true,
+        authenticatorApp: false,
+      }),
+    ).toBe(
+      'This MFA method is not sufficient for using this app. Your administrator requires SMS multi factor authentication.',
+    )
+  })
+
+  test('describes multiple required methods', () => {
+    expect(
+      formatMfaMethodNotAcceptedMessage('sms', {
+        sms: false,
+        authenticatorApp: true,
+      }),
+    ).toBe(
+      'This MFA method is not sufficient for using this app. Your administrator requires Authenticator App multi factor authentication.',
+    )
   })
 })
 

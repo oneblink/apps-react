@@ -1,5 +1,13 @@
 import { memo } from 'react'
-import { Box, Button, Chip, Grid, Tooltip, Typography } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 
 type Props = {
   isEnabled: boolean
@@ -11,6 +19,7 @@ type Props = {
   title: string
   description: string
   detail?: string
+  mfaRequirementMessage?: string
   cypressPrefix: string
   extraButtons?: React.ReactNode
   onSetup: () => void
@@ -28,6 +37,7 @@ function MfaMethodRow({
   title,
   description,
   detail,
+  mfaRequirementMessage,
   cypressPrefix,
   extraButtons,
   onSetup,
@@ -68,6 +78,15 @@ function MfaMethodRow({
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               {detail}
             </Typography>
+          )}
+          {!!mfaRequirementMessage && (
+            <Alert
+              severity={isEnabled && isPreferred ? 'warning' : 'info'}
+              sx={{ mt: 1 }}
+              data-cypress={`${cypressPrefix}-mfa-requirement-message`}
+            >
+              {mfaRequirementMessage}
+            </Alert>
           )}
         </Grid>
         <Grid size="auto">

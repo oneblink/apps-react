@@ -25,5 +25,6 @@ export {
   formatMfaRequirementMethodLabel,
   userMeetsMfaRequirement,
   formatMfaSetupRequiredMessage,
+  formatMfaMethodNotAcceptedMessage,
 } from '../utils/mfa-requirement'
 export type { MfaRequirementMethod } from '../utils/mfa-requirement'

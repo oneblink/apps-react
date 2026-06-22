@@ -108,6 +108,29 @@ export function userMeetsMfaRequirement(
   )
 }
 
+export function formatMfaMethodNotAcceptedMessage(
+  method: MfaRequirementMethod,
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
+  accessScopeLabel = 'app',
+): string | undefined {
+  if (!mfaRequirement || !isMfaRequired(mfaRequirement)) {
+    return undefined
+  }
+
+  if (mfaRequirement[method]) {
+    return undefined
+  }
+
+  const requiredMethods = mfaRequirementToSelectedMethods(mfaRequirement)
+
+  const methodList = joinArray(
+    requiredMethods.map(formatMfaRequirementMethodLabel),
+    'disjunction',
+  )
+
+  return `This MFA method is not sufficient for using this ${accessScopeLabel.toLowerCase()}. Your administrator requires ${methodList} multi factor authentication.`
+}
+
 export function formatMfaSetupRequiredMessage(
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
   mfaSettings: MfaSettings,
