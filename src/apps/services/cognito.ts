@@ -4,7 +4,6 @@ import AWSCognitoClient, {
   DEFAULT_MFA_SETTINGS,
   LoginAttemptResponse,
   MfaMethod,
-  MfaRequirementCheckResult,
   MfaSettings,
 } from './AWSCognitoClient'
 
@@ -449,35 +448,6 @@ function generateMfaAuthenticatorAppQrCodeUrl(
   return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaAuthenticatorAppSetup.secretCode}&issuer=${tenants.current.productShortName}`
 }
 
-/**
- * Check if the current user meets an MFA requirement.
- *
- * #### Example
- *
- * ```js
- * const { mfaSettings, userMeetsMfaRequirement } =
- *   await mfaService.checkIsMfaEnabled('any')
- * if (userMeetsMfaRequirement) {
- *   // User has met the MFA requirement
- * } else {
- *   // Prompt user to set up MFA
- * }
- * ```
- *
- * @returns
- */
-async function checkIsMfaEnabled(
-  mfaRequirement: MiscTypes.MfaRequirement | undefined,
-): Promise<MfaRequirementCheckResult> {
-  if (!awsCognitoClient) {
-    throw new Error(
-      '"authService" has not been initiated. You must call the init() function before checking if the current user has MFA enabled.',
-    )
-  }
-
-  return await awsCognitoClient.checkIsMfaEnabled(mfaRequirement)
-}
-
 async function getMfaSettings(abortSignal?: AbortSignal) {
   if (!awsCognitoClient) {
     throw new Error(
@@ -591,7 +561,6 @@ export {
   getCognitoIdToken,
   getUserProfile,
   getUserFriendlyName,
-  checkIsMfaEnabled,
   getMfaSettings,
   updateUserPhoneNumber,
   removeUserPhoneNumber,
@@ -603,9 +572,4 @@ export {
   generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 }
-export type {
-  LoginAttemptResponse,
-  MfaMethod,
-  MfaRequirementCheckResult,
-  MfaSettings,
-}
+export type { LoginAttemptResponse, MfaMethod, MfaSettings }

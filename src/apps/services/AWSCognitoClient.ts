@@ -17,7 +17,6 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider'
 import Sentry from '../Sentry'
 import { OneBlinkAppsError } from '..'
-import { MiscTypes } from '@oneblink/types'
 
 export type MfaMethod = 'authenticator' | 'sms'
 
@@ -44,41 +43,38 @@ export const DEFAULT_MFA_SETTINGS: MfaSettings = {
   },
 }
 
-export type MfaRequirementCheckResult = {
-  mfaSettings: MfaSettings
-  userMeetsMfaRequirement: boolean
-}
+export function resolveMfaPreferredFlags({
+  authenticatorEnabled,
+  smsEnabled,
+  preferredMfaSetting,
+}: {
+  authenticatorEnabled: boolean
+  smsEnabled: boolean
+  preferredMfaSetting: string | undefined
+}): {
+  authenticatorPreferred: boolean
+  smsPreferred: boolean
+} {
+  const cognitoAuthenticatorPreferred =
+    preferredMfaSetting === 'SOFTWARE_TOKEN_MFA'
+  const cognitoSmsPreferred = preferredMfaSetting === 'SMS_MFA'
 
-const MFA_REQUIREMENT_METHOD_CHECKS = {
-  sms: (mfaSettings: MfaSettings) => mfaSettings.sms.enabled,
-  authenticatorApp: (mfaSettings: MfaSettings) =>
-    mfaSettings.authenticator.enabled,
-} satisfies Record<
-  keyof MiscTypes.MfaRequirement,
-  (mfaSettings: MfaSettings) => boolean
->
-
-function checkUserMeetsMfaRequirement(
-  mfaRequirement: MiscTypes.MfaRequirement | undefined,
-  mfaSettings: MfaSettings,
-): boolean {
-  if (!mfaRequirement) {
-    return true
+  if (cognitoAuthenticatorPreferred && authenticatorEnabled) {
+    return { authenticatorPreferred: true, smsPreferred: false }
   }
 
-  const requiredMethods = (
-    Object.keys(MFA_REQUIREMENT_METHOD_CHECKS) as Array<
-      keyof MiscTypes.MfaRequirement
-    >
-  ).filter((method) => mfaRequirement[method])
-
-  if (requiredMethods.length === 0) {
-    return true
+  if (cognitoSmsPreferred && smsEnabled) {
+    return { authenticatorPreferred: false, smsPreferred: true }
   }
 
-  return requiredMethods.some((method) =>
-    MFA_REQUIREMENT_METHOD_CHECKS[method](mfaSettings),
-  )
+  if (authenticatorEnabled && smsEnabled) {
+    return { authenticatorPreferred: true, smsPreferred: false }
+  }
+
+  return {
+    authenticatorPreferred: authenticatorEnabled,
+    smsPreferred: smsEnabled,
+  }
 }
 
 export type LoginAttemptResponse = {
@@ -592,31 +588,25 @@ export default class AWSCognitoClient {
         (attribute) => attribute.Name === 'phone_number_verified',
       )?.Value === 'true'
 
+    const authenticatorEnabled = mfaList.includes('SOFTWARE_TOKEN_MFA')
+    const smsEnabled = mfaList.includes('SMS_MFA')
+    const { authenticatorPreferred, smsPreferred } = resolveMfaPreferredFlags({
+      authenticatorEnabled,
+      smsEnabled,
+      preferredMfaSetting,
+    })
+
     return {
       authenticator: {
-        enabled: mfaList.includes('SOFTWARE_TOKEN_MFA'),
-        preferred: preferredMfaSetting === 'SOFTWARE_TOKEN_MFA',
+        enabled: authenticatorEnabled,
+        preferred: authenticatorPreferred,
       },
       sms: {
-        enabled: mfaList.includes('SMS_MFA'),
-        preferred: preferredMfaSetting === 'SMS_MFA',
+        enabled: smsEnabled,
+        preferred: smsPreferred,
         phoneNumber,
         isPhoneNumberVerified,
       },
-    }
-  }
-
-  async checkIsMfaEnabled(
-    mfaRequirement: MiscTypes.MfaRequirement | undefined,
-  ): Promise<MfaRequirementCheckResult> {
-    const mfaSettings = await this.getMfaSettings()
-
-    return {
-      mfaSettings,
-      userMeetsMfaRequirement: checkUserMeetsMfaRequirement(
-        mfaRequirement,
-        mfaSettings,
-      ),
     }
   }
 
