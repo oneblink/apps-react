@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[BREAKING]** `useUserMeetsMfaRequirement(mfaRequirement)` to accept an `MfaRequirement` and return `{ mfaSetupRequired, isLoading, loadingError, refreshMfa }` instead of a boolean
 - **[BREAKING]** MFA functions and types moved from `authService` to `mfaService`
 
+### Fixed
+
+- barcode scanner not showing errors
+
 ## [10.3.1] - 2026-06-18
 
 ### Fixed
