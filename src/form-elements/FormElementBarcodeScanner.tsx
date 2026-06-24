@@ -261,6 +261,7 @@ function BarcodeScanner({
   restrictedBarcodeTypes,
   onScan,
   onClose,
+  cameraDevices,
   ...props
 }: BarcodeScannerProps & {
   cameraDevices: CameraDevice[]
@@ -281,48 +282,119 @@ function BarcodeScanner({
     )
   }, [restrictedBarcodeTypes])
 
+  const [scannerState, setScannerState] = React.useState<
+    { state: 'loading' } | { state: 'ready' } | { state: 'error'; error: Error }
+  >({ state: 'loading' })
+
   React.useEffect(() => {
+    setScannerState({ state: 'loading' })
+
     const html5Qrcode = new Html5Qrcode(id, {
       verbose: !!localStorage.getItem('BARCODE_SCANNER_VERBOSE'),
       formatsToSupport: formatsToSupport?.length ? formatsToSupport : undefined,
     })
 
-    html5Qrcode
-      .start(
-        {
-          facingMode: 'environment',
-        },
-        {
-          fps: 20,
-          qrbox: {
-            width: 400,
-            height: 400,
-          },
-        },
-        function onScanSuccess(decodedText, decodedResult) {
-          console.log('Barcode scanner decoded result:', decodedResult)
-          onScan(decodedText)
-        },
-        function onScanFailure() {
-          // do nothing and keep scanning
-        },
-      )
-      .catch((error) => {
-        console.warn('Failed to start scanning', error)
-      })
+    const backFacingCamera = cameraDevices.find((device) =>
+      /back|rear|environment/i.test(device.label),
+    )
+    const preferredCamera = backFacingCamera ?? cameraDevices[0]
+    const scanConfig = {
+      fps: 20,
+      qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+        const size = Math.min(
+          400,
+          Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.75),
+        )
+        return { width: size, height: size }
+      },
+    }
+
+    const onScanSuccess = (decodedText: string, decodedResult: unknown) => {
+      console.log('Barcode scanner decoded result:', decodedResult)
+      onScan(decodedText)
+    }
+    const onScanFailure = () => {
+      // do nothing and keep scanning
+    }
+
+    const abortController = new AbortController()
+
+    const begin = async () => {
+      try {
+        // Attempt to start with the back facing camera
+        await html5Qrcode.start(
+          { deviceId: preferredCamera.id },
+          scanConfig,
+          onScanSuccess,
+          onScanFailure,
+        )
+        if (abortController.signal.aborted) {
+          return
+        }
+        setScannerState({ state: 'ready' })
+      } catch (deviceIdError) {
+        if (abortController.signal.aborted) {
+          return
+        }
+        console.warn('Failed to start scanning with deviceId', deviceIdError)
+        try {
+          // If the back facing camera is not available, try to start in environment mode
+          await html5Qrcode.start(
+            { facingMode: 'environment' },
+            scanConfig,
+            onScanSuccess,
+            onScanFailure,
+          )
+          if (abortController.signal.aborted) {
+            return
+          }
+          setScannerState({ state: 'ready' })
+        } catch (facingModeError) {
+          if (abortController.signal.aborted) {
+            return
+          }
+          console.warn('Failed to start scanning', facingModeError)
+          setScannerState({
+            state: 'error',
+            error:
+              facingModeError instanceof Error
+                ? facingModeError
+                : new Error(String(facingModeError)),
+          })
+        }
+      }
+    }
+
+    begin()
 
     return () => {
-      html5Qrcode.stop().catch((error) => {
+      abortController.abort()
+      if (!html5Qrcode.isScanning) {
+        return
+      }
+      try {
+        html5Qrcode.stop().catch((error) => {
+          console.warn('Failed to stop barcode scanner', error)
+        })
+      } catch (error) {
         console.warn('Failed to stop barcode scanner', error)
-      })
+      }
     }
-  }, [formatsToSupport, id, onScan])
+  }, [cameraDevices, formatsToSupport, id, onScan])
 
   return (
     <BarcodeScannerFigure onClose={onClose}>
-      <div className="figure-content-absolute-center">
-        <OnLoading small />
-      </div>
+      {scannerState.state === 'loading' && (
+        <div className="figure-content-absolute-center">
+          <OnLoading small />
+        </div>
+      )}
+      {scannerState.state === 'error' && (
+        <BarcodeScannerError
+          title="Whoops..."
+          message={scannerState.error.message}
+        />
+      )}
       <div
         id={id}
         className="ob-figure__barcode-scanner"
