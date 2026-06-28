@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { isValid } from 'date-fns'
 import { formStoreService, localisationService } from '../../../apps'
 import {
   useReactTable,
@@ -491,6 +492,104 @@ export default function useFormStoreTable({
               )}
             </>
           ),
+        },
+        {
+          id: 'CALENDER_EVENT_TITLE',
+          header: 'Calendar Booking - Event Title',
+          meta: {
+            sorting: {
+              property: 'calendarEvent.name',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'calendarEvent.name',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.calendarEvent?.name as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      calendarEvent: {
+                        ...currentParameters.filters?.calendarEvent,
+                        name: newValue,
+                      },
+                    },
+                  }),
+                  true,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.calendarEvent?.name}
+              {formStoreRecord.calendarEvent?.name && (
+                <TableCellCopyButton
+                  text={formStoreRecord.calendarEvent?.name}
+                />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'CALENDER_EVENT_DATE_TIME',
+          header: 'Calendar Booking - Event Date Time',
+          meta: {
+            sorting: {
+              property: 'calendarEvent.dateTime',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'calendarEvent.dateTime',
+              )?.direction,
+            },
+            filter: {
+              type: 'DATETIME',
+              value: parameters.filters?.calendarEvent?.dateTime as
+                | { $gte?: string; $lte?: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      calendarEvent: {
+                        ...currentParameters.filters?.calendarEvent,
+                        dateTime: newValue,
+                      },
+                    },
+                  }),
+                  false,
+                )
+              },
+            },
+          },
+
+          cell: ({ row: { original: formStoreRecord } }) => {
+            if (!formStoreRecord.calendarEvent?.dateTime) {
+              return null
+            }
+            const calendarEventDate = new Date(
+              formStoreRecord.calendarEvent?.dateTime,
+            )
+            if (!isValid(calendarEventDate)) {
+              return null
+            }
+            const text = format(
+              calendarEventDate,
+              localisationService.getDateFnsFormats().longDateTime,
+            )
+            return (
+              <>
+                {text}
+                <TableCellCopyButton text={text} />
+              </>
+            )
+          },
         },
       ],
     })
