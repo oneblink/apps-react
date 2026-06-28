@@ -63,6 +63,13 @@ export type FormStoreFilters = {
   formsAppId?: {
     $in: (number | null)[]
   }
+  /** Filter results by the calendar event title */
+  calendarEvent?: {
+    /** Filter results by the calendar event title */
+    name?: FormStoreFilter<string>
+    /** Filter results by the calendar event date and time */
+    dateTime?: FormStoreFilter<string>
+  }
 }
 
 export type FormStoreParameters = {
