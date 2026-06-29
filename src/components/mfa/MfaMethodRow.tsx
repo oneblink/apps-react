@@ -20,6 +20,7 @@ type Props = {
   description: string
   detail?: string
   mfaRequirementMessage?: string
+  unavailableMessage?: string
   cypressPrefix: string
   extraButtons?: React.ReactNode
   onSetup: () => void
@@ -38,6 +39,7 @@ function MfaMethodRow({
   description,
   detail,
   mfaRequirementMessage,
+  unavailableMessage,
   cypressPrefix,
   extraButtons,
   onSetup,
@@ -78,6 +80,15 @@ function MfaMethodRow({
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               {detail}
             </Typography>
+          )}
+          {!!unavailableMessage && (
+            <Alert
+              severity="info"
+              sx={{ mt: 1 }}
+              data-cypress={`${cypressPrefix}-unavailable-message`}
+            >
+              {unavailableMessage}
+            </Alert>
           )}
           {!!mfaRequirementMessage && (
             <Alert

@@ -21,11 +21,29 @@ import MfaStatusChip from './MfaStatusChip'
 import { formatMfaMethodNotAcceptedMessage } from '../../utils/mfa-requirement'
 
 type Props = {
+  /**
+   * The MFA methods allowed by your administrator for using this app. Pass
+   * `undefined` when the app has no MFA requirement. Users can still enable
+   * other methods, but will be warned when their configuration does not meet
+   * this requirement.
+   */
   mfaRequirement: MiscTypes.MfaRequirement | undefined
+  /**
+   * When provided, renders a link to configure MFA externally instead of the
+   * inline MFA method list.
+   */
   ssoSetupUrl?: string
+  /**
+   * When `true`, SMS setup is disabled and a message is shown indicating it
+   * will be available soon. Defaults to `false`.
+   */
+  isSMSUnavailable?: boolean
 }
 
-function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
+function MfaMethodList({
+  mfaRequirement,
+  isSMSUnavailable = false,
+}: Pick<Props, 'mfaRequirement' | 'isSMSUnavailable'>) {
   const {
     mfaSettings,
     loadingError,
@@ -76,6 +94,10 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
     )
   }
 
+  const smsUnavailableMessage = isSMSUnavailable
+    ? 'SMS authentication will be available soon.'
+    : undefined
+
   return (
     <>
       <MfaMethodRow
@@ -99,11 +121,12 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
         isPreferred={mfaSettings.sms.preferred}
         isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'sms'}
         isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
-        isSetupDisabled={!!loadingError || isSettingUpMfa}
+        isSetupDisabled={!!loadingError || isSettingUpMfa || isSMSUnavailable}
         showSetupErrorTooltip={!!loadingError}
         title="SMS"
         description="Receive a one-time verification code via SMS each time MFA is required."
         detail={phoneDetail}
+        unavailableMessage={smsUnavailableMessage}
         mfaRequirementMessage={smsMfaRequirementMessage}
         cypressPrefix="mfa-sms"
         onSetup={() => beginMfaSetup('sms')}
@@ -114,7 +137,7 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
             <Button
               size="small"
               variant="outlined"
-              disabled={!!loadingError}
+              disabled={!!loadingError || isSMSUnavailable}
               onClick={beginRemovingPhoneNumber}
               data-cypress="mfa-sms-remove-phone-button"
             >
@@ -127,7 +150,7 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
   )
 }
 
-function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
+function MfaSetup({ ssoSetupUrl, mfaRequirement, isSMSUnavailable }: Props) {
   const { isExternalIdentityProviderUser } = useMfa()
 
   if (ssoSetupUrl) {
@@ -164,7 +187,10 @@ function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
 
   return (
     <>
-      <MfaMethodList mfaRequirement={mfaRequirement} />
+      <MfaMethodList
+        mfaRequirement={mfaRequirement}
+        isSMSUnavailable={isSMSUnavailable}
+      />
       <MfaDisableDialog />
       <MfaRemovePhoneNumberDialog />
       <MfaPhoneNumberDialog />
@@ -207,12 +233,18 @@ function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
  *   for using this app. Pass `undefined` when the app has no MFA requirement.
  *   Users can still enable other methods, but will be warned when their
  *   configuration does not meet this requirement.
+ * @param props.ssoSetupUrl - When provided, renders a link to configure MFA
+ *   externally instead of the inline MFA method list.
+ * @param props.isSMSUnavailable - When `true`, SMS setup is disabled and a
+ *   message is shown indicating it will be available soon. Defaults to
+ *   `false`.
  * @returns
  * @group Components
  */
 export default function MultiFactorAuthentication({
   mfaRequirement,
   ssoSetupUrl,
+  isSMSUnavailable,
 }: Props) {
   return (
     <Grid size={{ xs: 'grow', lg: 8 }}>
@@ -237,6 +269,7 @@ export default function MultiFactorAuthentication({
                 <MfaSetup
                   ssoSetupUrl={ssoSetupUrl}
                   mfaRequirement={mfaRequirement}
+                  isSMSUnavailable={isSMSUnavailable}
                 />
               </Grid>
             </Grid>
