@@ -3,6 +3,7 @@ import {
   Html5Qrcode,
   CameraDevice,
   Html5QrcodeSupportedFormats,
+  Html5QrcodeCameraScanConfig,
 } from 'html5-qrcode'
 import CopyToClipboardButton from '../components/renderer/CopyToClipboardButton'
 import useBooleanState from '../hooks/useBooleanState'
@@ -298,11 +299,12 @@ function BarcodeScanner({
       /back|rear|environment/i.test(device.label),
     )
     const preferredCamera = backFacingCamera ?? cameraDevices[0]
-    const scanConfig = {
+    const scanConfig: Html5QrcodeCameraScanConfig = {
       fps: 20,
-      qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+      aspectRatio: 1,
+      qrbox: (viewfinderWidth, viewfinderHeight) => {
         const size = Math.min(
-          400,
+          250,
           Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.75),
         )
         return { width: size, height: size }
