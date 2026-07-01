@@ -10,46 +10,10 @@ import {
 } from '@mui/material'
 import useBooleanState from '../../hooks/useBooleanState'
 import useMfa from '../../hooks/useMfa'
+import useResendCoolDown from '../../hooks/useResendCoolDown'
 import InputField from '../InputField'
 
 const PHONE_VERIFICATION_RESEND_COOL_DOWN_SECONDS = 60
-
-function getResendCoolDownRemainingSeconds(
-  sentAt: number | undefined,
-  now: number,
-) {
-  if (!sentAt) {
-    return 0
-  }
-
-  const elapsedSeconds = Math.max(0, Math.floor((now - sentAt) / 1000))
-  return Math.max(
-    0,
-    PHONE_VERIFICATION_RESEND_COOL_DOWN_SECONDS - elapsedSeconds,
-  )
-}
-
-function usePhoneVerificationResendCoolDown(sentAt: number | undefined) {
-  const [now, setNow] = React.useState(() => Date.now())
-
-  const remainingSeconds = getResendCoolDownRemainingSeconds(sentAt, now)
-
-  React.useEffect(() => {
-    if (!sentAt) {
-      return
-    }
-
-    setNow(Date.now())
-
-    const intervalId = window.setInterval(() => {
-      setNow(Date.now())
-    }, 1000)
-
-    return () => window.clearInterval(intervalId)
-  }, [sentAt])
-
-  return remainingSeconds
-}
 
 function MfaPhoneNumberDialog() {
   const {
@@ -65,8 +29,9 @@ function MfaPhoneNumberDialog() {
 
   const [phoneNumber, setPhoneNumber] = React.useState('')
   const [verificationCode, setVerificationCode] = React.useState('')
-  const resendCoolDownSeconds = usePhoneVerificationResendCoolDown(
+  const resendCoolDownSeconds = useResendCoolDown(
     phoneVerificationCodeSentAt,
+    PHONE_VERIFICATION_RESEND_COOL_DOWN_SECONDS,
   )
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
 

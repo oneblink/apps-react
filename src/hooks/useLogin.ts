@@ -40,6 +40,8 @@ import useBooleanState from './useBooleanState'
  *     mfaMethod,
  *     isSubmittingMfaCode,
  *     submitMfaCode,
+ *     isResendingMfaCode,
+ *     resendMfaCode,
  *     // Login Errors
  *     loginError,
  *     clearLoginError,
@@ -393,6 +395,8 @@ export default function useLogin({
       loginError,
       loginAttemptResponse,
       isSubmittingMfaCode,
+      isResendingMfaCode,
+      mfaCodeSentAt,
     },
     setLoginState,
   ] = React.useState<{
@@ -401,12 +405,16 @@ export default function useLogin({
     loginError: null | Error
     loginAttemptResponse: authService.LoginAttemptResponse | undefined
     isSubmittingMfaCode: boolean
+    isResendingMfaCode: boolean
+    mfaCodeSentAt: number | undefined
   }>({
     isResettingTemporaryPassword: false,
     isLoggingIn: false,
     loginError: null,
     loginAttemptResponse: undefined,
     isSubmittingMfaCode: false,
+    isResendingMfaCode: false,
+    mfaCodeSentAt: undefined,
   })
   const clearLoginError = React.useCallback(
     () =>
@@ -448,6 +456,9 @@ export default function useLogin({
           ...currentState,
           isLoggingIn: false,
           loginAttemptResponse: newLoginAttemptResponse,
+          mfaCodeSentAt: newLoginAttemptResponse.mfa
+            ? Date.now()
+            : undefined,
         }))
       }
     } catch (error) {
@@ -505,6 +516,9 @@ export default function useLogin({
           ...currentState,
           isResettingTemporaryPassword: false,
           loginAttemptResponse: resetPasswordResponse,
+          mfaCodeSentAt: resetPasswordResponse.mfa
+            ? Date.now()
+            : undefined,
         }))
       }
     } catch (error) {
@@ -544,6 +558,9 @@ export default function useLogin({
           ...currentState,
           isSubmittingMfaCode: false,
           loginAttemptResponse: mfaResponse,
+          mfaCodeSentAt: mfaResponse.mfa
+            ? currentState.mfaCodeSentAt
+            : undefined,
         }))
       }
     } catch (error) {
@@ -557,6 +574,43 @@ export default function useLogin({
       }
     }
   }, [code, isMounted, loginAttemptResponse?.mfa?.codeCallback])
+
+  const resendMfaCodeCallback = loginAttemptResponse?.mfa?.resendCodeCallback
+
+  const resendMfaCode = React.useMemo(() => {
+    if (!resendMfaCodeCallback) {
+      return
+    }
+
+    return async () => {
+      setLoginState((current) => ({
+        ...current,
+        isResendingMfaCode: true,
+        loginError: null,
+      }))
+
+      try {
+        const mfaResponse = await resendMfaCodeCallback()
+        if (isMounted.current) {
+          setLoginState((currentState) => ({
+            ...currentState,
+            isResendingMfaCode: false,
+            loginAttemptResponse: mfaResponse,
+            mfaCodeSentAt: Date.now(),
+          }))
+        }
+      } catch (error) {
+        Sentry.captureException(error)
+        if (isMounted.current) {
+          setLoginState((current) => ({
+            ...current,
+            isResendingMfaCode: false,
+            loginError: error as Error,
+          }))
+        }
+      }
+    }
+  }, [isMounted, resendMfaCodeCallback])
 
   // Forgot Password
   const [isShowingForgotPassword, showForgotPassword, hideForgotPassword] =
@@ -716,6 +770,9 @@ export default function useLogin({
     mfaMethod: loginAttemptResponse?.mfa?.method || null,
     isSubmittingMfaCode,
     submitMfaCode,
+    isResendingMfaCode,
+    resendMfaCode,
+    mfaCodeSentAt,
     // Showing Forgot Password
     isShowingForgotPassword,
     showForgotPassword,
@@ -853,4 +910,16 @@ export interface UseLoginValue {
    * Will call `onLogin()` if successful, otherwise will set `loginError`.
    */
   submitMfaCode: () => void
+  /** `true` while processing `resendMfaCode()`, when available. */
+  isResendingMfaCode: boolean
+  /**
+   * Request a new one-time verification code during sign-in. Defined when the
+   * active MFA step supports resending a code (e.g. SMS).
+   */
+  resendMfaCode?: () => void
+  /**
+   * Timestamp when the current MFA code was sent. Use with `useResendCoolDown()`
+   * to enforce a resend cooldown.
+   */
+  mfaCodeSentAt?: number
 }
