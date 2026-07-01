@@ -288,7 +288,9 @@ const ValidationErrorsCard = ({
                               )}
                               onClick={() => {
                                 if (page && page.id !== currentPage.id) {
-                                  setPageId(page.id)
+                                  setPageId(page.id, {
+                                    focusFirstTabbable: false,
+                                  })
                                 }
 
                                 scrollToElement({

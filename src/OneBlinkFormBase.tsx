@@ -1140,7 +1140,7 @@ function OneBlinkFormBase({
     if (!hasResumed) {
       if (lastElementUpdated && lastElementUpdatedExistsOnForm) {
         if (lastElementUpdatedPage) {
-          setPageId(lastElementUpdatedPage.id)
+          setPageId(lastElementUpdatedPage.id, { focusFirstTabbable: false })
         }
         const element = document.querySelector(
           `[data-element-id="${lastElementUpdated.id}"]`,

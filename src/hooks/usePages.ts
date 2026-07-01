@@ -10,6 +10,22 @@ import {
 } from '../types/form'
 import { injectDynamicElements } from '../services/dynamic-elements'
 
+const TABBABLE_ELEMENT_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+function getFirstTabbableElement(
+  container: HTMLElement,
+): HTMLElement | null {
+  for (const element of container.querySelectorAll<HTMLElement>(
+    TABBABLE_ELEMENT_SELECTOR,
+  )) {
+    if (element.checkVisibility()) {
+      return element
+    }
+  }
+  return null
+}
+
 export default function usePages({
   pages,
   formElementsValidation,
@@ -24,6 +40,7 @@ export default function usePages({
   scrollToTopOfPage?: boolean
 }) {
   const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
+  const focusFirstTabbableOnPageChangeRef = React.useRef(false)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
 
   const [isStepsHeaderActive, , closeStepsNavigation, toggleStepsNavigation] =
@@ -68,7 +85,12 @@ export default function usePages({
   const isShowingMultiplePages = visiblePages.length > 1
 
   const setPageId = React.useCallback(
-    (pageId: string) => {
+    (
+      pageId: string,
+      options?: {
+        focusFirstTabbable?: boolean
+      },
+    ) => {
       setVisitedPageIds((currentVisitedPageIds) => {
         if (currentVisitedPageIds.includes(currentPageId)) {
           return currentVisitedPageIds
@@ -78,6 +100,8 @@ export default function usePages({
       })
       setCurrentPageId(pageId)
       closeStepsNavigation()
+      focusFirstTabbableOnPageChangeRef.current =
+        options?.focusFirstTabbable ?? true
 
       const scrollToTopOfPageHTMLElement =
         scrollToTopOfPageHTMLElementRef.current
@@ -105,10 +129,6 @@ export default function usePages({
             })
           }
         }
-
-        //blur prev/next buttons after they've been clicked
-        const activeElement = document?.activeElement as HTMLElement
-        activeElement.blur()
       }
     },
     [
@@ -118,6 +138,26 @@ export default function usePages({
       scrollToTopOfPage,
     ],
   )
+
+  React.useEffect(() => {
+    if (!focusFirstTabbableOnPageChangeRef.current) {
+      return
+    }
+    focusFirstTabbableOnPageChangeRef.current = false
+
+    if (!isShowingMultiplePages) {
+      return
+    }
+
+    window.requestAnimationFrame(() => {
+      const pageElement = document.getElementById(currentPageId)
+      if (!pageElement) {
+        return
+      }
+
+      getFirstTabbableElement(pageElement)?.focus({ preventScroll: true })
+    })
+  }, [currentPageId, isShowingMultiplePages])
 
   const goToNextPage = React.useCallback(() => {
     for (let i = 0; i < visiblePages.length; i++) {
