@@ -77,12 +77,15 @@ export function resolveMfaPreferredFlags({
   }
 }
 
+export type LoginAttemptMfa = {
+  method: MfaMethod
+  codeCallback: (code: string) => Promise<LoginAttemptResponse>
+  resendCodeCallback?: () => Promise<LoginAttemptResponse>
+}
+
 export type LoginAttemptResponse = {
   resetPasswordCallback?: (newPassword: string) => Promise<LoginAttemptResponse>
-  mfa?: {
-    codeCallback: (code: string) => Promise<LoginAttemptResponse>
-    method: MfaMethod
-  }
+  mfa?: LoginAttemptMfa
 }
 
 export default class AWSCognitoClient {
@@ -254,6 +257,7 @@ export default class AWSCognitoClient {
   async responseToAuthChallenge(
     username: string,
     initiateAuthResponse: InitiateAuthResponse,
+    password?: string,
   ): Promise<LoginAttemptResponse> {
     if (initiateAuthResponse.AuthenticationResult) {
       this._storeAuthenticationResult(initiateAuthResponse.AuthenticationResult)
@@ -280,6 +284,7 @@ export default class AWSCognitoClient {
             return await this.responseToAuthChallenge(
               username,
               resetPasswordResult,
+              newPassword,
             )
           },
         }
@@ -304,8 +309,10 @@ export default class AWSCognitoClient {
               return await this.responseToAuthChallenge(
                 username,
                 resetPasswordResult,
+                password,
               )
             },
+            resendCodeCallback: undefined,
           },
         }
       }
@@ -313,6 +320,12 @@ export default class AWSCognitoClient {
         throw new Error('Email OTP is not supported')
       }
       case 'SMS_MFA': {
+        if (!initiateAuthResponse.Session) {
+          throw new Error(
+            'An unexpected error occurred while attempting to process your login. Please try again or contact support if the problem persists.',
+          )
+        }
+
         return {
           mfa: {
             method: 'sms',
@@ -332,7 +345,28 @@ export default class AWSCognitoClient {
               return await this.responseToAuthChallenge(
                 username,
                 smsChallengeResult,
+                password,
               )
+            },
+            resendCodeCallback: async () => {
+              if (!password) {
+                throw new Error(
+                  'Unable to resend the SMS verification code. Please try signing in again.',
+                )
+              }
+
+              const loginAttemptResponse = await this.loginUsernamePassword(
+                username,
+                password,
+              )
+
+              if (loginAttemptResponse.mfa?.method !== 'sms') {
+                throw new Error(
+                  'Unable to resend the SMS verification code. Please try signing in again.',
+                )
+              }
+
+              return loginAttemptResponse
             },
           },
         }
@@ -363,7 +397,7 @@ export default class AWSCognitoClient {
       }),
     )
 
-    return await this.responseToAuthChallenge(username, loginResult)
+    return await this.responseToAuthChallenge(username, loginResult, password)
   }
 
   async loginHostedUI(identityProviderName?: string): Promise<void> {

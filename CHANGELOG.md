@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sms MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
 - `mfaService` for MFA setup APIs and MFA requirement helpers
 - export `LoadingWithMessage` component
+- `useResendCoolDown()` hook
+- `isResendingMfaCode` and `resendMfaCode` to result of `useLogin()` hook
 
 ### Changed
 
