@@ -100,28 +100,38 @@ export function init({ oAuthClientId }: { oAuthClientId: string }) {
 
 /**
  * Determine if the current user is a OneBlink App User for a OneBlink Forms
- * App. Returns `false` if the current user is not logged in.
+ * App. Returns `false` if the current user is not logged in or not authorised
+ * for the given SAML groups.
  *
  * #### Example
  *
  * ```js
- * const formsAppId = 1
- * const isAuthorised = await authService.isAuthorised(formsAppId)
+ * const isAuthorised = await authService.isAuthorised({
+ *   formsAppId: 1,
+ *   samlGroups: ['group1', 'group2'],
+ * })
  * if (!isAuthorised) {
  *   // handle unauthorised user
  * }
  * ```
  *
- * @param formsAppId
+ * @param options.formsAppId
+ * @param options.samlGroups
  * @param abortSignal
  * @returns
  */
 export async function isAuthorised(
-  formsAppId: number,
+  { formsAppId, samlGroups }: { formsAppId: number; samlGroups?: string[] },
   abortSignal?: AbortSignal,
 ): Promise<boolean> {
   return getCurrentFormsAppUser(formsAppId, abortSignal)
-    .then(() => true)
+    .then((userProfile) => {
+      // if no SAML groups are provided, then provided the user is authenticated then they're authorised
+      if (!samlGroups) {
+        return true
+      }
+      return samlGroups.some((group) => userProfile?.groups.includes(group))
+    })
     .catch((error) => {
       if (error.status >= 400 && error.status < 500) {
         return false

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[BREAKING]** `useMfa()` to require an `mfaMethod` parameter for `beginMfaSetup(mfaMethod)`
 - **[BREAKING]** `useUserMeetsMfaRequirement(mfaRequirement)` to accept an `MfaRequirement` and return `{ mfaSetupRequired, isLoading, loadingError, refreshMfa }` instead of a boolean
 - **[BREAKING]** MFA functions and types moved from `authService` to `mfaService`
+- **[BREAKING]** changed signaure of `authService.isAuthorised` to include SAML groups
 
 ### Fixed
 
