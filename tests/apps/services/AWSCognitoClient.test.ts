@@ -1,5 +1,39 @@
 import { describe, expect, test } from 'vitest'
-import { resolveMfaPreferredFlags } from '../../../src/apps/services/AWSCognitoClient'
+import {
+  resolveLoggedInMfaMethod,
+  resolveMfaPreferredFlags,
+} from '../../../src/apps/services/AWSCognitoClient'
+
+function createTestIdToken(payload: Record<string, unknown>) {
+  const encode = (value: object) =>
+    Buffer.from(JSON.stringify(value)).toString('base64url')
+
+  return `${encode({ alg: 'none', typ: 'JWT' })}.${encode(payload)}.signature`
+}
+
+describe('resolveLoggedInMfaMethod', () => {
+  test('returns valid Cognito MFA methods from the id token', () => {
+    expect(
+      resolveLoggedInMfaMethod(
+        createTestIdToken({ mfa_method: 'SOFTWARE_TOKEN_MFA' }),
+      ),
+    ).toBe('SOFTWARE_TOKEN_MFA')
+    expect(
+      resolveLoggedInMfaMethod(createTestIdToken({ mfa_method: 'SMS_MFA' })),
+    ).toBe('SMS_MFA')
+  })
+
+  test('falls back to NO_MFA_ENABLED for missing or invalid tokens', () => {
+    expect(resolveLoggedInMfaMethod(undefined)).toBe('NO_MFA_ENABLED')
+    expect(resolveLoggedInMfaMethod('not-a-jwt')).toBe('NO_MFA_ENABLED')
+    expect(
+      resolveLoggedInMfaMethod(createTestIdToken({ mfa_method: 'UNKNOWN' })),
+    ).toBe('NO_MFA_ENABLED')
+    expect(resolveLoggedInMfaMethod(createTestIdToken({}))).toBe(
+      'NO_MFA_ENABLED',
+    )
+  })
+})
 
 describe('resolveMfaPreferredFlags', () => {
   test('returns no preferred methods when none are enabled', () => {

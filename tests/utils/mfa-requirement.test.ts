@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
 import {
+  formatMfaMethodRequirementMessage,
   formatMfaRequirementLabel,
-  formatMfaRequirementMethodLabel,
-  formatMfaMethodNotAcceptedMessage,
   formatMfaSetupRequiredMessage,
+  isMfaMethodUsedForLogin,
   isMfaRequired,
   mfaSelectedMethodsToMfaRequirement,
   mfaRequirementToSelectedMethods,
@@ -12,6 +12,7 @@ import {
 } from '../../src/utils/mfa-requirement'
 
 const emptyMfaSettings: MfaSettings = {
+  loggedInWithMfaMethod: 'NO_MFA_ENABLED',
   authenticator: { enabled: false, preferred: false },
   sms: {
     enabled: false,
@@ -22,6 +23,7 @@ const emptyMfaSettings: MfaSettings = {
 }
 
 const authenticatorMfaSettings: MfaSettings = {
+  loggedInWithMfaMethod: 'SOFTWARE_TOKEN_MFA',
   authenticator: { enabled: true, preferred: true },
   sms: {
     enabled: false,
@@ -32,6 +34,29 @@ const authenticatorMfaSettings: MfaSettings = {
 }
 
 const smsMfaSettings: MfaSettings = {
+  loggedInWithMfaMethod: 'SMS_MFA',
+  authenticator: { enabled: false, preferred: false },
+  sms: {
+    enabled: true,
+    preferred: true,
+    phoneNumber: '+61400000000',
+    isPhoneNumberVerified: true,
+  },
+}
+
+const smsEnabledButLoggedInWithAuthenticator: MfaSettings = {
+  loggedInWithMfaMethod: 'SOFTWARE_TOKEN_MFA',
+  authenticator: { enabled: true, preferred: true },
+  sms: {
+    enabled: true,
+    preferred: false,
+    phoneNumber: '+61400000000',
+    isPhoneNumberVerified: true,
+  },
+}
+
+const smsConfiguredButNotUsedForLogin: MfaSettings = {
+  loggedInWithMfaMethod: 'NO_MFA_ENABLED',
   authenticator: { enabled: false, preferred: false },
   sms: {
     enabled: true,
@@ -98,91 +123,90 @@ describe('formatMfaRequirementLabel', () => {
   })
 })
 
-describe('formatMfaRequirementMethodLabel', () => {
-  test('formats each method', () => {
-    expect(formatMfaRequirementMethodLabel('sms')).toBe('SMS')
-    expect(formatMfaRequirementMethodLabel('authenticatorApp')).toBe(
-      'Authenticator App',
-    )
-  })
-})
-
-describe('userMeetsMfaRequirement', () => {
-  test('returns true when MFA is optional', () => {
-    expect(userMeetsMfaRequirement(undefined, emptyMfaSettings)).toBe(true)
-  })
-
-  test('returns true when any required method is enabled', () => {
+describe('formatMfaMethodRequirementMessage', () => {
+  test('returns undefined when MFA is optional', () => {
+    expect(formatMfaMethodRequirementMessage('sms', undefined, emptyMfaSettings)).toBeUndefined()
     expect(
-      userMeetsMfaRequirement(
-        { sms: true, authenticatorApp: true },
-        authenticatorMfaSettings,
+      formatMfaMethodRequirementMessage(
+        'sms',
+        { sms: false, authenticatorApp: false },
+        emptyMfaSettings,
       ),
-    ).toBe(true)
+    ).toBeUndefined()
+  })
+
+  test('returns undefined when the user meets the requirement', () => {
     expect(
-      userMeetsMfaRequirement(
+      formatMfaMethodRequirementMessage(
+        'sms',
         { sms: true, authenticatorApp: false },
         smsMfaSettings,
       ),
-    ).toBe(true)
+    ).toBeUndefined()
   })
 
-  test('returns false when no required method is enabled', () => {
+  test('describes when a method is not accepted', () => {
     expect(
-      userMeetsMfaRequirement(
+      formatMfaMethodRequirementMessage(
+        'authenticatorApp',
         { sms: true, authenticatorApp: false },
         emptyMfaSettings,
       ),
-    ).toBe(false)
-    expect(
-      userMeetsMfaRequirement(
-        { sms: true, authenticatorApp: false },
-        authenticatorMfaSettings,
-      ),
-    ).toBe(false)
-  })
-})
-
-describe('formatMfaMethodNotAcceptedMessage', () => {
-  test('returns undefined when MFA is optional', () => {
-    expect(formatMfaMethodNotAcceptedMessage('sms', undefined)).toBeUndefined()
-    expect(
-      formatMfaMethodNotAcceptedMessage('sms', {
-        sms: false,
-        authenticatorApp: false,
-      }),
-    ).toBeUndefined()
-  })
-
-  test('returns undefined when the method is accepted', () => {
-    expect(
-      formatMfaMethodNotAcceptedMessage('sms', {
-        sms: true,
-        authenticatorApp: false,
-      }),
-    ).toBeUndefined()
-  })
-
-  test('describes a single required method', () => {
-    expect(
-      formatMfaMethodNotAcceptedMessage('authenticatorApp', {
-        sms: true,
-        authenticatorApp: false,
-      }),
     ).toBe(
       'This MFA method is not sufficient for using this app. Your administrator requires SMS multi factor authentication.',
     )
   })
 
-  test('describes multiple required methods', () => {
+  test('describes when a required method needs to be set as preferred', () => {
     expect(
-      formatMfaMethodNotAcceptedMessage('sms', {
-        sms: false,
-        authenticatorApp: true,
-      }),
+      formatMfaMethodRequirementMessage(
+        'sms',
+        { sms: true, authenticatorApp: false },
+        smsEnabledButLoggedInWithAuthenticator,
+      ),
     ).toBe(
-      'This MFA method is not sufficient for using this app. Your administrator requires Authenticator App multi factor authentication.',
+      'Your administrator requires SMS multi factor authentication. Set SMS as your preferred MFA method to access this app.',
     )
+  })
+
+  test('describes when a required preferred method needs a new login session', () => {
+    expect(
+      formatMfaMethodRequirementMessage(
+        'sms',
+        { sms: true, authenticatorApp: false },
+        smsConfiguredButNotUsedForLogin,
+      ),
+    ).toBe(
+      'Your administrator requires SMS multi factor authentication. Now that SMS is your preferred MFA method, you must log out and log back in to access this app.',
+    )
+  })
+
+  test('describes when a required method needs to be set up', () => {
+    expect(
+      formatMfaMethodRequirementMessage(
+        'sms',
+        { sms: true, authenticatorApp: false },
+        emptyMfaSettings,
+      ),
+    ).toBe(
+      'Your administrator requires SMS multi factor authentication. Setup SMS to access this app',
+    )
+  })
+})
+
+describe('isMfaMethodUsedForLogin', () => {
+  test('returns true when the login method matches', () => {
+    expect(isMfaMethodUsedForLogin(smsMfaSettings, 'sms')).toBe(true)
+    expect(
+      isMfaMethodUsedForLogin(authenticatorMfaSettings, 'authenticatorApp'),
+    ).toBe(true)
+  })
+
+  test('returns false when the login method does not match', () => {
+    expect(isMfaMethodUsedForLogin(smsMfaSettings, 'authenticatorApp')).toBe(
+      false,
+    )
+    expect(isMfaMethodUsedForLogin(emptyMfaSettings, 'sms')).toBe(false)
   })
 })
 
@@ -207,14 +231,25 @@ describe('formatMfaSetupRequiredMessage', () => {
     )
   })
 
-  test('describes an unaccepted method when another MFA method is enabled', () => {
+  test('describes when the preferred MFA method needs to change', () => {
     expect(
       formatMfaSetupRequiredMessage(
         { sms: true, authenticatorApp: false },
-        authenticatorMfaSettings,
+        smsEnabledButLoggedInWithAuthenticator,
       ),
     ).toBe(
-      'requires SMS multi factor authentication. You have a different MFA method configured, but that method is not accepted for this account.',
+      'requires SMS multi factor authentication. Please change your preferred MFA method to SMS to access this Account.',
+    )
+  })
+
+  test('describes when MFA is configured but the preferred method needs to change', () => {
+    expect(
+      formatMfaSetupRequiredMessage(
+        { sms: true, authenticatorApp: false },
+        smsConfiguredButNotUsedForLogin,
+      ),
+    ).toBe(
+      'requires SMS multi factor authentication. Now that SMS is your preferred MFA method, you must log out and log back in to access this Account.',
     )
   })
 
@@ -239,5 +274,47 @@ describe('formatMfaSetupRequiredMessage', () => {
     ).toBe(
       'requires SMS multi factor authentication to be configured before accessing this App.',
     )
+  })
+})
+
+describe('userMeetsMfaRequirement', () => {
+  test('returns true when MFA is optional', () => {
+    expect(userMeetsMfaRequirement(undefined, emptyMfaSettings)).toBe(true)
+  })
+
+  test('returns true when the user logged in with a required method', () => {
+    expect(
+      userMeetsMfaRequirement(
+        { sms: true, authenticatorApp: true },
+        authenticatorMfaSettings,
+      ),
+    ).toBe(true)
+    expect(
+      userMeetsMfaRequirement(
+        { sms: true, authenticatorApp: false },
+        smsMfaSettings,
+      ),
+    ).toBe(true)
+  })
+
+  test('returns false when the user did not log in with a required method', () => {
+    expect(
+      userMeetsMfaRequirement(
+        { sms: true, authenticatorApp: false },
+        emptyMfaSettings,
+      ),
+    ).toBe(false)
+    expect(
+      userMeetsMfaRequirement(
+        { sms: true, authenticatorApp: false },
+        authenticatorMfaSettings,
+      ),
+    ).toBe(false)
+    expect(
+      userMeetsMfaRequirement(
+        { sms: true, authenticatorApp: false },
+        smsConfiguredButNotUsedForLogin,
+      ),
+    ).toBe(false)
   })
 })

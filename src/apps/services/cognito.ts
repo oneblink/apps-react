@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode'
 import AWSCognitoClient, {
   DEFAULT_MFA_SETTINGS,
   LoginAttemptResponse,
+  LoggedInMfaMethod,
   MfaMethod,
   MfaSettings,
 } from './AWSCognitoClient'
@@ -572,4 +573,4 @@ export {
   generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 }
-export type { LoginAttemptResponse, MfaMethod, MfaSettings }
+export type { LoginAttemptResponse, LoggedInMfaMethod, MfaMethod, MfaSettings }

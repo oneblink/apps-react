@@ -12,6 +12,7 @@ import {
 type Props = {
   isEnabled: boolean
   isPreferred: boolean
+  isUsedForLogin: boolean
   isSettingUp: boolean
   isSettingPreferredMfaMethod: boolean
   isSetupDisabled: boolean
@@ -20,6 +21,7 @@ type Props = {
   description: string
   detail?: string
   mfaRequirementMessage?: string
+  mfaRequirementMessageIsWarning?: boolean
   cypressPrefix: string
   extraButtons?: React.ReactNode
   onSetup: () => void
@@ -30,6 +32,7 @@ type Props = {
 function MfaMethodRow({
   isEnabled,
   isPreferred,
+  isUsedForLogin,
   isSettingUp,
   isSettingPreferredMfaMethod,
   isSetupDisabled,
@@ -38,6 +41,7 @@ function MfaMethodRow({
   description,
   detail,
   mfaRequirementMessage,
+  mfaRequirementMessageIsWarning,
   cypressPrefix,
   extraButtons,
   onSetup,
@@ -56,7 +60,7 @@ function MfaMethodRow({
               <Chip
                 size="small"
                 label="Enabled"
-                color="info"
+                color="default"
                 sx={{ ml: 1 }}
                 data-cypress={`${cypressPrefix}-status-chip`}
               />
@@ -65,9 +69,18 @@ function MfaMethodRow({
               <Chip
                 size="small"
                 label="Preferred"
-                color="success"
+                color="info"
                 sx={{ ml: 1 }}
                 data-cypress={`${cypressPrefix}-preferred-chip`}
+              />
+            )}
+            {isUsedForLogin && (
+              <Chip
+                size="small"
+                label="Used for login"
+                color="success"
+                sx={{ ml: 1 }}
+                data-cypress={`${cypressPrefix}-used-for-login-chip`}
               />
             )}
           </Box>
@@ -78,15 +91,6 @@ function MfaMethodRow({
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               {detail}
             </Typography>
-          )}
-          {!!mfaRequirementMessage && (
-            <Alert
-              severity={isEnabled && isPreferred ? 'warning' : 'info'}
-              sx={{ mt: 1 }}
-              data-cypress={`${cypressPrefix}-mfa-requirement-message`}
-            >
-              {mfaRequirementMessage}
-            </Alert>
           )}
         </Grid>
         <Grid size="auto">
@@ -140,6 +144,15 @@ function MfaMethodRow({
           </Box>
         </Grid>
       </Grid>
+
+      {!!mfaRequirementMessage && (
+        <Alert
+          severity={mfaRequirementMessageIsWarning ? 'warning' : 'info'}
+          data-cypress={`${cypressPrefix}-mfa-requirement-message`}
+        >
+          {mfaRequirementMessage}
+        </Alert>
+      )}
     </Box>
   )
 }

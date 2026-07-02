@@ -1,8 +1,11 @@
 import { MiscTypes } from '@oneblink/types'
-import type { MfaSettings } from '../apps/services/AWSCognitoClient'
+import type {
+  LoggedInMfaMethod,
+  MfaSettings,
+} from '../apps/services/AWSCognitoClient'
 import { joinArray } from './joinArray'
 
-export type { MfaSettings }
+export type { LoggedInMfaMethod, MfaSettings }
 
 export function isMfaRequired(
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
@@ -69,9 +72,7 @@ export function formatMfaRequirementLabel(
   return `MFA Required (${methodList} only)`
 }
 
-export function formatMfaRequirementMethodLabel(
-  method: MfaRequirementMethod,
-): string {
+function formatMfaRequirementMethodLabel(method: MfaRequirementMethod): string {
   switch (method) {
     case 'sms':
       return 'SMS'
@@ -84,6 +85,22 @@ export function formatMfaRequirementMethodLabel(
   }
 }
 
+function mfaRequirementMethodToLoggedInMfaMethod(
+  method: MfaRequirementMethod,
+): Exclude<LoggedInMfaMethod, 'NO_MFA_ENABLED'> {
+  return method === 'sms' ? 'SMS_MFA' : 'SOFTWARE_TOKEN_MFA'
+}
+
+export function isMfaMethodUsedForLogin(
+  mfaSettings: MfaSettings,
+  method: MfaRequirementMethod,
+): boolean {
+  return (
+    mfaSettings.loggedInWithMfaMethod ===
+    mfaRequirementMethodToLoggedInMfaMethod(method)
+  )
+}
+
 export function userMeetsMfaRequirement(
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
   mfaSettings: MfaSettings,
@@ -92,18 +109,13 @@ export function userMeetsMfaRequirement(
     return true
   }
 
-  if (
-    mfaRequirement?.sms &&
-    mfaSettings.sms.enabled &&
-    mfaSettings.sms.preferred
-  ) {
+  if (mfaRequirement?.sms && mfaSettings.loggedInWithMfaMethod === 'SMS_MFA') {
     return true
   }
 
   if (
     mfaRequirement?.authenticatorApp &&
-    mfaSettings.authenticator.enabled &&
-    mfaSettings.authenticator.preferred
+    mfaSettings.loggedInWithMfaMethod === 'SOFTWARE_TOKEN_MFA'
   ) {
     return true
   }
@@ -111,7 +123,7 @@ export function userMeetsMfaRequirement(
   return false
 }
 
-export function formatMfaMethodNotAcceptedMessage(
+function formatMfaMethodNotAcceptedMessage(
   method: MfaRequirementMethod,
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
   accessScopeLabel = 'app',
@@ -134,12 +146,42 @@ export function formatMfaMethodNotAcceptedMessage(
   return `This MFA method is not sufficient for using this ${accessScopeLabel.toLowerCase()}. Your administrator requires ${methodList} multi factor authentication.`
 }
 
+function isMfaMethodEnabled(
+  mfaSettings: MfaSettings,
+  method: MfaRequirementMethod,
+): boolean {
+  return method === 'sms'
+    ? mfaSettings.sms.enabled
+    : mfaSettings.authenticator.enabled
+}
+
+function isMfaMethodPreferred(
+  mfaSettings: MfaSettings,
+  method: MfaRequirementMethod,
+): boolean {
+  return method === 'sms'
+    ? mfaSettings.sms.preferred
+    : mfaSettings.authenticator.preferred
+}
+
+function hasPreferredEnabledRequiredMethod(
+  mfaRequirement: MiscTypes.MfaRequirement,
+  mfaSettings: MfaSettings,
+): boolean {
+  return mfaRequirementToSelectedMethods(mfaRequirement).some(
+    (method) =>
+      isMfaMethodEnabled(mfaSettings, method) &&
+      isMfaMethodPreferred(mfaSettings, method),
+  )
+}
+
 export function formatMfaSetupRequiredMessage(
   mfaRequirement: MiscTypes.MfaRequirement | undefined,
   mfaSettings: MfaSettings,
   accessScopeLabel = 'Account',
 ): string | undefined {
   if (
+    !mfaRequirement ||
     !isMfaRequired(mfaRequirement) ||
     userMeetsMfaRequirement(mfaRequirement, mfaSettings)
   ) {
@@ -147,27 +189,77 @@ export function formatMfaSetupRequiredMessage(
   }
 
   const requiredMethods = mfaRequirementToSelectedMethods(mfaRequirement)
-  const hasAnyMfaEnabled =
-    mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
 
   if (requiredMethods.length === 1) {
-    const methodLabel = formatMfaRequirementMethodLabel(requiredMethods[0])
+    const method = requiredMethods[0]
+    const methodLabel = formatMfaRequirementMethodLabel(method)
 
-    if (hasAnyMfaEnabled) {
-      return `requires ${methodLabel} multi factor authentication. You have a different MFA method configured, but that method is not accepted for this ${accessScopeLabel.toLowerCase()}.`
+    if (!isMfaMethodEnabled(mfaSettings, method)) {
+      return `requires ${methodLabel} multi factor authentication to be configured before accessing this ${accessScopeLabel}.`
     }
 
-    return `requires ${methodLabel} multi factor authentication to be configured before accessing this ${accessScopeLabel}.`
+    if (!isMfaMethodPreferred(mfaSettings, method)) {
+      return `requires ${methodLabel} multi factor authentication. Please change your preferred MFA method to ${methodLabel} to access this ${accessScopeLabel}.`
+    }
+
+    return `requires ${methodLabel} multi factor authentication. Now that ${methodLabel} is your preferred MFA method, you must log out and log back in to access this ${accessScopeLabel}.`
   }
 
   const methodList = joinArray(
     requiredMethods.map(formatMfaRequirementMethodLabel),
     'disjunction',
   )
+  const hasAnyMfaEnabled =
+    mfaSettings.authenticator.enabled || mfaSettings.sms.enabled
 
-  if (hasAnyMfaEnabled) {
-    return `requires ${methodList} multi factor authentication. Your current MFA method is not accepted for this ${accessScopeLabel.toLowerCase()}.`
+  if (!hasAnyMfaEnabled) {
+    return `requires ${methodList} multi factor authentication to be configured before accessing this ${accessScopeLabel}.`
   }
 
-  return `requires ${methodList} multi factor authentication to be configured before accessing this ${accessScopeLabel}.`
+  if (!hasPreferredEnabledRequiredMethod(mfaRequirement, mfaSettings)) {
+    return `requires ${methodList} multi factor authentication. Please change your preferred MFA method to one of the accepted methods to access this ${accessScopeLabel}.`
+  }
+
+  return `requires ${methodList} multi factor authentication. Now that your preferred MFA method meets this requirement, you must log out and log back in to access this ${accessScopeLabel}.`
+}
+
+export function formatMfaMethodRequirementMessage(
+  method: MfaRequirementMethod,
+  mfaRequirement: MiscTypes.MfaRequirement | undefined,
+  mfaSettings: MfaSettings,
+  accessScopeLabel = 'app',
+): string | undefined {
+  if (!mfaRequirement || !isMfaRequired(mfaRequirement)) {
+    return undefined
+  }
+
+  const scope = accessScopeLabel.toLowerCase()
+
+  if (!mfaRequirement[method]) {
+    return formatMfaMethodNotAcceptedMessage(
+      method,
+      mfaRequirement,
+      accessScopeLabel,
+    )
+  }
+
+  if (userMeetsMfaRequirement(mfaRequirement, mfaSettings)) {
+    return undefined
+  }
+
+  const methodLabel = formatMfaRequirementMethodLabel(method)
+  const isMethodEnabled = isMfaMethodEnabled(mfaSettings, method)
+  const isMethodPreferred = isMfaMethodPreferred(mfaSettings, method)
+
+  const firstSentence = `Your administrator requires ${methodLabel} multi factor authentication.`
+
+  if (!isMethodEnabled) {
+    return `${firstSentence} Setup ${methodLabel} to access this ${scope}`
+  }
+
+  if (!isMethodPreferred) {
+    return `${firstSentence} Set ${methodLabel} as your preferred MFA method to access this ${scope}.`
+  }
+
+  return `${firstSentence} Now that ${methodLabel} is your preferred MFA method, you must log out and log back in to access this ${scope}.`
 }
