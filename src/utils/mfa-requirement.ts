@@ -244,7 +244,7 @@ export function formatMfaMethodRequirementMessage(
   }
 
   if (userMeetsMfaRequirement(mfaRequirement, mfaSettings)) {
-    return undefined
+    return
   }
 
   const methodLabel = formatMfaRequirementMethodLabel(method)
