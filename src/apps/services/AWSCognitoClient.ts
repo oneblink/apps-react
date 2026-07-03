@@ -14,6 +14,7 @@ import {
   UpdateUserAttributesCommand,
   VerifySoftwareTokenCommand,
   VerifyUserAttributeCommand,
+  NotAuthorizedException,
 } from '@aws-sdk/client-cognito-identity-provider'
 import { jwtDecode } from 'jwt-decode'
 import Sentry from '../Sentry'
@@ -635,45 +636,59 @@ export default class AWSCognitoClient {
       return DEFAULT_MFA_SETTINGS
     }
 
-    const user = await this.cognitoIdentityProviderClient.send(
-      new GetUserCommand({
-        AccessToken: accessToken,
-      }),
-      { abortSignal },
-    )
+    try {
+      const user = await this.cognitoIdentityProviderClient.send(
+        new GetUserCommand({
+          AccessToken: accessToken,
+        }),
+        { abortSignal },
+      )
 
-    const mfaList = user.UserMFASettingList || []
-    const preferredMfaSetting = user.PreferredMfaSetting
-    const phoneNumber = user.UserAttributes?.find(
-      (attribute) => attribute.Name === 'phone_number',
-    )?.Value
-    const isPhoneNumberVerified =
-      user.UserAttributes?.find(
-        (attribute) => attribute.Name === 'phone_number_verified',
-      )?.Value === 'true'
+      const mfaList = user.UserMFASettingList || []
+      const preferredMfaSetting = user.PreferredMfaSetting
+      const phoneNumber = user.UserAttributes?.find(
+        (attribute) => attribute.Name === 'phone_number',
+      )?.Value
+      const isPhoneNumberVerified =
+        user.UserAttributes?.find(
+          (attribute) => attribute.Name === 'phone_number_verified',
+        )?.Value === 'true'
 
-    const authenticatorEnabled = mfaList.includes('SOFTWARE_TOKEN_MFA')
-    const smsEnabled = mfaList.includes('SMS_MFA')
-    const { authenticatorPreferred, smsPreferred } = resolveMfaPreferredFlags({
-      authenticatorEnabled,
-      smsEnabled,
-      preferredMfaSetting,
-    })
+      const authenticatorEnabled = mfaList.includes('SOFTWARE_TOKEN_MFA')
+      const smsEnabled = mfaList.includes('SMS_MFA')
+      const { authenticatorPreferred, smsPreferred } = resolveMfaPreferredFlags(
+        {
+          authenticatorEnabled,
+          smsEnabled,
+          preferredMfaSetting,
+        },
+      )
 
-    const loggedInWithMfaMethod = resolveLoggedInMfaMethod(this._getIdToken())
+      const loggedInWithMfaMethod = resolveLoggedInMfaMethod(this._getIdToken())
 
-    return {
-      loggedInWithMfaMethod,
-      authenticator: {
-        enabled: authenticatorEnabled,
-        preferred: authenticatorPreferred,
-      },
-      sms: {
-        enabled: smsEnabled,
-        preferred: smsPreferred,
-        phoneNumber,
-        isPhoneNumberVerified,
-      },
+      return {
+        loggedInWithMfaMethod,
+        authenticator: {
+          enabled: authenticatorEnabled,
+          preferred: authenticatorPreferred,
+        },
+        sms: {
+          enabled: smsEnabled,
+          preferred: smsPreferred,
+          phoneNumber,
+          isPhoneNumberVerified,
+        },
+      }
+    } catch (error) {
+      if (error instanceof NotAuthorizedException) {
+        console.warn(
+          'User session has expired, returning default MFA settings',
+          error,
+        )
+        this._removeAuthenticationResult()
+        return DEFAULT_MFA_SETTINGS
+      }
+      throw error
     }
   }
 
