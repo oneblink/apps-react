@@ -18,14 +18,21 @@ import MfaMethodRow from './MfaMethodRow'
 import MfaSuccessSnackbar from './MfaSuccessSnackbar'
 import MfaErrorSnackbar from './MfaErrorSnackbar'
 import MfaStatusChip from './MfaStatusChip'
-import { formatMfaMethodNotAcceptedMessage } from '../../utils/mfa-requirement'
+import {
+  formatMfaMethodRequirementMessage,
+  isMfaMethodUsedForLogin,
+} from '../../utils/mfa-requirement'
 
 type Props = {
   mfaRequirement: MiscTypes.MfaRequirement | undefined
   ssoSetupUrl?: string
+  accessScopeLabel?: string
 }
 
-function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
+function MfaMethodList({
+  mfaRequirement,
+  accessScopeLabel = 'app',
+}: Pick<Props, 'mfaRequirement' | 'accessScopeLabel'>) {
   const {
     mfaSettings,
     loadingError,
@@ -52,12 +59,22 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
   }, [mfaSettings])
 
   const authenticatorMfaRequirementMessage = useMemo(() => {
-    return formatMfaMethodNotAcceptedMessage('authenticatorApp', mfaRequirement)
-  }, [mfaRequirement])
+    return formatMfaMethodRequirementMessage(
+      'authenticatorApp',
+      mfaRequirement,
+      mfaSettings,
+      accessScopeLabel,
+    )
+  }, [accessScopeLabel, mfaRequirement, mfaSettings])
 
   const smsMfaRequirementMessage = useMemo(() => {
-    return formatMfaMethodNotAcceptedMessage('sms', mfaRequirement)
-  }, [mfaRequirement])
+    return formatMfaMethodRequirementMessage(
+      'sms',
+      mfaRequirement,
+      mfaSettings,
+      accessScopeLabel,
+    )
+  }, [accessScopeLabel, mfaRequirement, mfaSettings])
 
   if (isLoading) {
     return (
@@ -81,6 +98,10 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
       <MfaMethodRow
         isEnabled={mfaSettings.authenticator.enabled}
         isPreferred={mfaSettings.authenticator.preferred}
+        isUsedForLogin={isMfaMethodUsedForLogin(
+          mfaSettings,
+          'authenticatorApp',
+        )}
         isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'authenticator'}
         isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
         isSetupDisabled={!!loadingError || isSettingUpMfa}
@@ -88,6 +109,10 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
         title="Authenticator App"
         description="Use an app like Google Authenticator or Microsoft Authenticator to generate 6-digit verification codes."
         mfaRequirementMessage={authenticatorMfaRequirementMessage}
+        mfaRequirementMessageIsWarning={
+          !!mfaRequirement?.authenticatorApp &&
+          !!authenticatorMfaRequirementMessage
+        }
         cypressPrefix="mfa-authenticator"
         onSetup={() => beginMfaSetup('authenticator')}
         onDisable={() => beginDisablingMfaMethod('authenticator')}
@@ -97,6 +122,7 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
       <MfaMethodRow
         isEnabled={mfaSettings.sms.enabled}
         isPreferred={mfaSettings.sms.preferred}
+        isUsedForLogin={isMfaMethodUsedForLogin(mfaSettings, 'sms')}
         isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'sms'}
         isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
         isSetupDisabled={!!loadingError || isSettingUpMfa}
@@ -105,6 +131,9 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
         description="Receive a one-time verification code via SMS each time MFA is required."
         detail={phoneDetail}
         mfaRequirementMessage={smsMfaRequirementMessage}
+        mfaRequirementMessageIsWarning={
+          !!mfaRequirement?.sms && !!smsMfaRequirementMessage
+        }
         cypressPrefix="mfa-sms"
         onSetup={() => beginMfaSetup('sms')}
         onDisable={() => beginDisablingMfaMethod('sms')}
@@ -127,7 +156,7 @@ function MfaMethodList({ mfaRequirement }: Pick<Props, 'mfaRequirement'>) {
   )
 }
 
-function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
+function MfaSetup({ ssoSetupUrl, mfaRequirement, accessScopeLabel }: Props) {
   const { isExternalIdentityProviderUser } = useMfa()
 
   if (ssoSetupUrl) {
@@ -164,7 +193,10 @@ function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
 
   return (
     <>
-      <MfaMethodList mfaRequirement={mfaRequirement} />
+      <MfaMethodList
+        mfaRequirement={mfaRequirement}
+        accessScopeLabel={accessScopeLabel}
+      />
       <MfaDisableDialog />
       <MfaRemovePhoneNumberDialog />
       <MfaPhoneNumberDialog />
@@ -213,6 +245,7 @@ function MfaSetup({ ssoSetupUrl, mfaRequirement }: Props) {
 export default function MultiFactorAuthentication({
   mfaRequirement,
   ssoSetupUrl,
+  accessScopeLabel = 'App',
 }: Props) {
   return (
     <Grid size={{ xs: 'grow', lg: 8 }}>
@@ -222,7 +255,8 @@ export default function MultiFactorAuthentication({
             <Grid container spacing={2} alignItems="center">
               <Grid size={{ xs: 'grow' }}>
                 <Typography variant="h4" fontWeight="light">
-                  Multi Factor Authentication <MfaStatusChip />
+                  Multi Factor Authentication{' '}
+                  <MfaStatusChip />
                 </Typography>
                 <Box marginY={1}>
                   <Divider />
@@ -237,6 +271,7 @@ export default function MultiFactorAuthentication({
                 <MfaSetup
                   ssoSetupUrl={ssoSetupUrl}
                   mfaRequirement={mfaRequirement}
+                  accessScopeLabel={accessScopeLabel}
                 />
               </Grid>
             </Grid>

@@ -15,12 +15,19 @@ import {
   VerifySoftwareTokenCommand,
   VerifyUserAttributeCommand,
 } from '@aws-sdk/client-cognito-identity-provider'
+import { jwtDecode } from 'jwt-decode'
 import Sentry from '../Sentry'
 import { OneBlinkAppsError } from '..'
 
 export type MfaMethod = 'authenticator' | 'sms'
 
+export type LoggedInMfaMethod =
+  | 'SOFTWARE_TOKEN_MFA'
+  | 'SMS_MFA'
+  | 'NO_MFA_ENABLED'
+
 export type MfaSettings = {
+  loggedInWithMfaMethod: LoggedInMfaMethod
   authenticator: {
     enabled: boolean
     preferred: boolean
@@ -34,6 +41,7 @@ export type MfaSettings = {
 }
 
 export const DEFAULT_MFA_SETTINGS: MfaSettings = {
+  loggedInWithMfaMethod: 'NO_MFA_ENABLED',
   authenticator: { enabled: false, preferred: false },
   sms: {
     enabled: false,
@@ -41,6 +49,28 @@ export const DEFAULT_MFA_SETTINGS: MfaSettings = {
     phoneNumber: undefined,
     isPhoneNumberVerified: false,
   },
+}
+
+export function resolveLoggedInMfaMethod(
+  idToken: string | undefined,
+): LoggedInMfaMethod {
+  if (idToken) {
+    try {
+      const payload = jwtDecode<{ mfa_method?: unknown }>(idToken)
+      switch (payload.mfa_method) {
+        case 'SOFTWARE_TOKEN_MFA':
+        case 'SMS_MFA':
+          return payload.mfa_method
+      }
+    } catch (error) {
+      console.warn(
+        'Error while decoding id token for logged in MFA method',
+        error,
+      )
+      Sentry.captureException(error)
+    }
+  }
+  return 'NO_MFA_ENABLED'
 }
 
 export function resolveMfaPreferredFlags({
@@ -630,7 +660,10 @@ export default class AWSCognitoClient {
       preferredMfaSetting,
     })
 
+    const loggedInWithMfaMethod = resolveLoggedInMfaMethod(this._getIdToken())
+
     return {
+      loggedInWithMfaMethod,
       authenticator: {
         enabled: authenticatorEnabled,
         preferred: authenticatorPreferred,

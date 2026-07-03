@@ -14,16 +14,16 @@ export {
   generateMfaAuthenticatorAppQrCodeUrl,
   DEFAULT_MFA_SETTINGS,
 } from './services/cognito'
-export type { MfaMethod, MfaSettings } from './services/cognito'
+export type { MfaMethod, MfaSettings, LoggedInMfaMethod } from './services/cognito'
 export {
   isMfaRequired,
   mfaRequirementToSelectedMethods,
   mfaSelectedMethodsToMfaRequirement,
   formatMfaRequirementLabel,
-  formatMfaRequirementMethodLabel,
   userMeetsMfaRequirement,
   formatMfaSetupRequiredMessage,
-  formatMfaMethodNotAcceptedMessage,
+  formatMfaMethodRequirementMessage,
+  isMfaMethodUsedForLogin,
 } from '../utils/mfa-requirement'
 export type { MfaRequirementMethod } from '../utils/mfa-requirement'
 
