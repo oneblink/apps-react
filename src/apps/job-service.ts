@@ -11,6 +11,63 @@ import tenants from './tenants'
 import { SubmissionTypes } from '@oneblink/types'
 import Sentry from './Sentry'
 
+export type JobListenerEvent = {
+  action: 'SUBMITTED'
+  jobId: string
+}
+
+export type JobsListener = (event: JobListenerEvent) => unknown
+
+const jobsListeners: Array<JobsListener> = []
+
+/**
+ * Register a listener function that will be called when jobs state should be
+ * updated after a submission.
+ *
+ * #### Example
+ *
+ * ```js
+ * const listener = ({ action, jobId }) => {
+ *   if (action === 'SUBMITTED') {
+ *     // remove job from local state...
+ *   }
+ * }
+ * const deregister = jobService.registerJobsListener(listener)
+ *
+ * // When no longer needed, remember to deregister the listener
+ * deregister()
+ * ```
+ *
+ * @param listener
+ * @returns
+ */
+export function registerJobsListener(listener: JobsListener): () => void {
+  jobsListeners.push(listener)
+
+  return () => {
+    const index = jobsListeners.indexOf(listener)
+    if (index !== -1) {
+      jobsListeners.splice(index, 1)
+    }
+  }
+}
+
+function executeJobsListeners(event: JobListenerEvent) {
+  for (const jobsListener of jobsListeners) {
+    jobsListener(event)
+  }
+}
+
+/**
+ * Notify listeners that a job has been submitted and should no longer appear in
+ * the jobs list.
+ *
+ * @param jobId
+ */
+export function notifyJobSubmitted(jobId: string) {
+  executeJobsListeners({ action: 'SUBMITTED', jobId })
+}
+
 async function removePendingSubmissions(
   jobList: SubmissionTypes.FormsAppJob[],
 ) {
