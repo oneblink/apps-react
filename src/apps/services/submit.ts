@@ -27,6 +27,13 @@ import serverValidateForm from './server-validation'
 import OneBlinkAppsError from './errors/oneBlinkAppsError'
 import { uploadFormSubmission } from './api/submissions'
 import { syncDrafts } from '../draft-service'
+import { notifyJobSubmitted } from '../job-service'
+
+function notifyJobSubmittedIfApplicable(formSubmission: FormSubmission) {
+  if (formSubmission.jobId) {
+    notifyJobSubmitted(formSubmission.jobId)
+  }
+}
 
 type SubmissionParams = {
   formSubmission: FormSubmission
@@ -106,6 +113,7 @@ export default async function submit({
         'Offline or always submitting via pending queue - saving submission to pending queue..',
       )
       await addFormSubmissionToPendingQueue(formSubmission)
+      notifyJobSubmittedIfApplicable(formSubmission)
       return Object.assign({}, formSubmission, {
         isOffline: isOffline(),
         isInPendingQueue: true,
@@ -144,6 +152,7 @@ export default async function submit({
         'Attachments still uploading - saving submission to pending queue..',
       )
       await addFormSubmissionToPendingQueue(formSubmission)
+      notifyJobSubmittedIfApplicable(formSubmission)
       return Object.assign({}, formSubmission, {
         isOffline: false,
         isInPendingQueue: true,
@@ -260,6 +269,8 @@ export default async function submit({
       await removePrefillFormData(formSubmission.preFillFormDataId)
     }
 
+    notifyJobSubmittedIfApplicable(formSubmission)
+
     return formSubmissionResult
   } catch (error: OneBlinkAppsError | unknown) {
     if (error instanceof OneBlinkAppsError) {
@@ -290,6 +301,7 @@ export default async function submit({
           error,
         )
         await addFormSubmissionToPendingQueue(formSubmission)
+        notifyJobSubmittedIfApplicable(formSubmission)
         return Object.assign({}, formSubmission, {
           isOffline: true,
           isInPendingQueue: true,

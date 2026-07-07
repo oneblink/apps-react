@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `jobService.registerJobsListener()` and `jobService.notifyJobSubmitted()` for reacting to job submissions
 - sms MFA setup support to `useMfa()` and `<MultiFactorAuthentication />`
 - `mfaService` for MFA setup APIs and MFA requirement helpers
 - export `LoadingWithMessage` component
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `submissionService.submit()` to notify job listeners when a submission includes a `jobId`
 - **[BREAKING]** `LoginAttemptResponse` to replace `mfaCodeCallback` with `mfa.codeCallback` and `mfa.method`
 - **[BREAKING]** `useLogin()` to remove `isMfaCodeRequired`; use `mfaMethod` as the source of truth for an active MFA step
 - **[BREAKING]** `useMfa()` to require an `mfaMethod` parameter for `beginMfaSetup(mfaMethod)`
