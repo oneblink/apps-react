@@ -48,6 +48,11 @@ function MfaMethodRow({
   onDisable,
   onSetPreferred,
 }: Props) {
+  const smsSetupDisabledTooltip =
+    cypressPrefix === 'mfa-sms' && !isEnabled
+      ? 'SMS MFA setup will be available in a future release. Please use Authenticator App in the meantime.'
+      : undefined
+
   return (
     <Box data-cypress={`${cypressPrefix}-method-row`}>
       <Grid container spacing={2} alignItems="center">
@@ -124,7 +129,7 @@ function MfaMethodRow({
                 title={
                   showSetupErrorTooltip
                     ? 'We are unable to load your MFA status. Please try again by clicking the reload button on the chip above.'
-                    : ''
+                    : smsSetupDisabledTooltip ?? ''
                 }
               >
                 <span>
