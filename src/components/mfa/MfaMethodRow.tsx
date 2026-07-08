@@ -22,7 +22,7 @@ type Props = {
   detail?: string
   mfaRequirementMessage?: string
   mfaRequirementMessageIsWarning?: boolean
-  cypressPrefix: string
+  cypressPrefix: 'mfa-authenticator' | 'mfa-sms'
   extraButtons?: React.ReactNode
   onSetup: () => void
   onDisable: () => void
