@@ -494,7 +494,7 @@ export default function useFormStoreTable({
           ),
         },
         {
-          id: 'CALENDER_EVENT_TITLE',
+          id: 'CALENDAR_EVENT_TITLE',
           header: 'Calendar Booking - Event Title',
           meta: {
             sorting: {
@@ -537,7 +537,7 @@ export default function useFormStoreTable({
           ),
         },
         {
-          id: 'CALENDER_EVENT_DATE_TIME',
+          id: 'CALENDAR_EVENT_DATE_TIME',
           header: 'Calendar Booking - Event Date Time',
           meta: {
             sorting: {
