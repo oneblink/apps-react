@@ -125,7 +125,7 @@ function MfaMethodList({
         isUsedForLogin={isMfaMethodUsedForLogin(mfaSettings, 'sms')}
         isSettingUp={isSettingUpMfa && settingUpMfaMethod === 'sms'}
         isSettingPreferredMfaMethod={isSettingPreferredMfaMethod}
-        isSetupDisabled={!!loadingError || isSettingUpMfa}
+        isSetupDisabled={!!loadingError || isSettingUpMfa || !mfaSettings.sms.enabled}
         showSetupErrorTooltip={!!loadingError}
         title="SMS"
         description="Receive a one-time verification code via SMS each time MFA is required."
