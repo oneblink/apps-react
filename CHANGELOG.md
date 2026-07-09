@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [11.0.0] - 2026-07-09
+
 ### Added
 
 - `jobService.registerJobsListener()` and `jobService.notifyJobSubmitted()` for reacting to job submissions
@@ -29,6 +31,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - barcode scanner not showing errors
+
+### Dependencies
+
+- update @oneblink/sdk-core to [9.2.2-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [9.2.1-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [7.1.2-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [7.1.1-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [10.3.1] - 2026-06-18
 
