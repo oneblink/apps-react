@@ -106,9 +106,13 @@ export default function usePages({
           }
         }
 
-        //blur prev/next buttons after they've been clicked
-        const activeElement = document?.activeElement as HTMLElement
-        activeElement.blur()
+        // Move focus to the active page container after prev/next navigation
+        window.requestAnimationFrame(() => {
+          const pageContainer = document.getElementById(pageId)
+          if (pageContainer) {
+            pageContainer.focus({ preventScroll: true })
+          }
+        })
       }
     },
     [
