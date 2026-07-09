@@ -155,6 +155,7 @@ function PageFormElements({
           })}
           aria-label={pageElement.label}
           role="region"
+          tabIndex={-1}
         >
           <OneBlinkFormElements
             formId={formId}
