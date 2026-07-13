@@ -109,7 +109,7 @@
     "dist"
   ],
   "homepage": "https://github.com/oneblink/apps-react#readme",
-  "license": "GPL-3.0-only",
+  "license": "Apache-2.0",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "peerDependencies": {
