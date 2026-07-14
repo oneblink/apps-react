@@ -591,6 +591,49 @@ export default function useFormStoreTable({
             )
           },
         },
+        {
+          id: 'CALENDAR_EVENT_CANCELLED_REASON',
+          header: 'Calendar Booking - Cancelled Reason',
+          meta: {
+            sorting: {
+              property: 'calendarEvent.cancelledReason',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'calendarEvent.cancelledReason',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.calendarEvent?.cancelledReason as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      calendarEvent: {
+                        ...currentParameters.filters?.calendarEvent,
+                        cancelledReason: newValue,
+                      },
+                    },
+                  }),
+                  true,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.calendarEvent?.cancelledReason}
+              {formStoreRecord.calendarEvent?.cancelledReason && (
+                <TableCellCopyButton
+                  text={formStoreRecord.calendarEvent?.cancelledReason}
+                />
+              )}
+            </>
+          ),
+        },
       ],
     })
   }, [
