@@ -71,6 +71,8 @@ export type FormStoreFilters = {
     dateTime?: FormStoreFilter<string>
     /** Filter results by the calendar event cancelled reason */
     cancelledReason?: FormStoreFilter<string>
+    /** Filter results by the calendar name */
+    calendarName?: FormStoreFilter<string>
   }
 }
 

@@ -60,7 +60,7 @@
     "@mui/material": "^7.3.7",
     "@mui/x-date-pickers": "^8.27.0",
     "@oneblink/release-cli": "^4.0.0",
-    "@oneblink/types": "github:oneblink/types",
+    "@oneblink/types": "github:oneblink/types#AP-9709",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
     "@types/file-saver": "^2.0.7",
@@ -140,7 +140,7 @@
     "release": "oneblink-release repository --no-name",
     "start": "tsc-watch",
     "test": "vitest",
-    "types": "npm i -D github:oneblink/types",
+    "types": "npm i -D github:oneblink/types#AP-9709",
     "typescript": "tsc --noEmit",
     "update-dependents": "oneblink-release update-dependents --force"
   }
