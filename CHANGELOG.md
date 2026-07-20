@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - calendar event columns to form store
+- `forms` and `title` to `FormSubmissionApprovalsResponse`
+- `title` to `FormApprovalFlowInstanceHistory` and `FormSubmissionApprovalResponse`
 
 ## [11.0.0] - 2026-07-09
 
