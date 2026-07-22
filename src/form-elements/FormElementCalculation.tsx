@@ -59,7 +59,9 @@ function FormElementCalculation({ element, onChange, value }: Props) {
 
   const registerProperty = React.useCallback(
     (
-      exprParser: typeof ExpressionParser,
+      exprParser: ExpressionParser<
+        SubmissionTypes.S3SubmissionData['submission']
+      >,
       {
         replacement,
         nestedElementNames,
@@ -217,7 +219,9 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   )
 
   const { calculation, hasError } = React.useMemo(() => {
-    const exprParser = new ExpressionParser()
+    const exprParser = new ExpressionParser<
+      SubmissionTypes.S3SubmissionData['submission']
+    >()
     exprParser.registerFunction('ROUND', (value: number, precision: number) => {
       if (!Number.isNaN(value) && Number.isFinite(value)) {
         return parseFloat(roundToFixed(value, precision))
@@ -290,7 +294,8 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         return
       }
       try {
-        return calculation.eval(formSubmissionModel)
+        const result = calculation.eval(formSubmissionModel)
+        return typeof result === 'number' ? result : undefined
       } catch {
         //do nothing
       }
@@ -302,10 +307,10 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   // MODEL LISTENER
   React.useEffect(() => {
     const newValue = calculateContent(formSubmissionModel)
-    if (value === newValue || (value === undefined && isNaN(newValue))) {
+    if (value === newValue || (value === undefined && Number.isNaN(newValue))) {
       return
     }
-    if (!isNaN(newValue)) {
+    if (typeof newValue === 'number' && !Number.isNaN(newValue)) {
       onChange(element, {
         value: newValue,
       })

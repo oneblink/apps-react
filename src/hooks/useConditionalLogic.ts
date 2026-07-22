@@ -5,6 +5,10 @@ import { conditionalLogicService } from '@oneblink/sdk-core'
 
 import { FormElementsConditionallyShown } from '../types/form'
 import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
+import {
+  addDaysToDate,
+  parseDate,
+} from '../apps/localisation-service'
 
 export default function useConditionalLogic({
   formElements,
@@ -52,6 +56,9 @@ export default function useConditionalLogic({
       conditionalPredicates,
       formElements,
       submission: model,
+      submissionTimestamp: new Date().toISOString(),
+      parseDate,
+      addDaysToDate,
     })
   }, [
     formElements,
