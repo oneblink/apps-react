@@ -88,11 +88,12 @@ export async function setSchedulingBooking(
 
 function checkForSchedulingSubmissionEvent(
   baseFormSubmission: BaseNewFormSubmission,
+  submissionTimestamp: string,
 ): SubmissionEventTypes.FormSchedulingEvent | undefined {
   const schedulingSubmissionEvent = schedulingService.checkForSchedulingEvent({
     definition: baseFormSubmission.definition,
     submission: baseFormSubmission.submission,
-    submissionTimestamp: new Date().toISOString(),
+    submissionTimestamp,
     parseDate,
     addDaysToDate,
   })

@@ -30,8 +30,10 @@ async function getPaymentConfiguration({
   }
 
   await setSchedulingBooking(schedulingBooking)
-  const paymentSubmissionEventConfiguration =
-    checkForPaymentSubmissionEvent(formSubmissionResult)
+  const paymentSubmissionEventConfiguration = checkForPaymentSubmissionEvent(
+    formSubmissionResult,
+    formSubmissionResult.submissionTimestamp ?? new Date().toISOString(),
+  )
   if (paymentSubmissionEventConfiguration) {
     return await handlePaymentSubmissionEvent({
       ...paymentSubmissionEventConfiguration,

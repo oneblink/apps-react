@@ -123,7 +123,10 @@ export async function handlePaymentQuerystring(
   }
 }
 
-export function checkForPaymentSubmissionEvent(formSubmission: FormSubmission):
+export function checkForPaymentSubmissionEvent(
+  formSubmission: FormSubmission,
+  submissionTimestamp: string,
+):
   | {
       paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
       amount: number
@@ -132,7 +135,7 @@ export function checkForPaymentSubmissionEvent(formSubmission: FormSubmission):
   const result = paymentService.checkForPaymentEvent({
     definition: formSubmission.definition,
     submission: formSubmission.submission,
-    submissionTimestamp: new Date().toISOString(),
+    submissionTimestamp,
     parseDate,
     addDaysToDate,
   })
