@@ -3,13 +3,6 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import { conditionalLogicService } from '@oneblink/sdk-core'
 
-import { FormElementsConditionallyShown } from '../types/form'
-import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
-import {
-  addDaysToDate,
-  parseDate,
-} from '../apps/localisation-service'
-
 export default function useConditionalLogic({
   formElements,
   submission,
@@ -29,43 +22,21 @@ export default function useConditionalLogic({
     setConditionalLogicError(error)
   }, [])
 
-  const formElementsConditionallyShown =
-    React.useMemo<FormElementsConditionallyShown>(() => {
-      return conditionalLogicService.generateFormElementsConditionallyShown({
-        formElements,
-        submission,
-        errorCallback,
-      })
-    }, [formElements, submission, errorCallback])
+  const { formElementsConditionallyShown, submissionConditionallyEnabled } =
+    React.useMemo(() => {
+      const { formElementsConditionallyShown, isSubmissionEnabled } =
+        conditionalLogicService.generateFormElementsConditionallyShown({
+          formElements,
+          submission,
+          enableSubmission,
+          errorCallback,
+        })
 
-  const submissionConditionallyEnabled = React.useMemo(() => {
-    if (!enableSubmission) {
-      return true
-    }
-    const { requiresAllConditionalPredicates, conditionalPredicates } =
-      enableSubmission
-    const { model } = cleanFormSubmissionModel(
-      submission,
-      formElements,
-      formElementsConditionallyShown,
-      true,
-    )
-    return conditionalLogicService.evaluateConditionalPredicates({
-      isConditional: true,
-      requiresAllConditionalPredicates,
-      conditionalPredicates,
-      formElements,
-      submission: model,
-      submissionTimestamp: new Date().toISOString(),
-      parseDate,
-      addDaysToDate,
-    })
-  }, [
-    formElements,
-    enableSubmission,
-    formElementsConditionallyShown,
-    submission,
-  ])
+      return {
+        formElementsConditionallyShown,
+        submissionConditionallyEnabled: isSubmissionEnabled,
+      }
+    }, [formElements, submission, enableSubmission, errorCallback])
 
   return {
     conditionalLogicError,
