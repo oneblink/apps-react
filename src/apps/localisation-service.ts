@@ -314,6 +314,8 @@ function generateDateOffset({
  * values (`YYYY-MM-DD`) are interpreted in the user's local timezone.
  */
 export function parseDate(value: string): Date {
+  // Always return a Date so callers can use Number.isNaN(date.getTime()) to
+  // detect unparseable values. generateDate returns undefined in that case.
   return (
     generateDate({
       value,
