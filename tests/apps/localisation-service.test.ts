@@ -1,6 +1,48 @@
 import tenants from '../../src/apps/tenants'
 import * as localisationService from '../../src/apps/localisation-service'
-import { expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
+
+describe('parseDate / generateDate', () => {
+  test('date-only values are parsed as local midnight', () => {
+    const date = localisationService.parseDate('2023-05-04')
+
+    expect(date.getFullYear()).toBe(2023)
+    expect(date.getMonth()).toBe(4)
+    expect(date.getDate()).toBe(4)
+    expect(date.getHours()).toBe(0)
+    expect(date.getMinutes()).toBe(0)
+    expect(date.getSeconds()).toBe(0)
+    expect(date.getMilliseconds()).toBe(0)
+  })
+
+  test('full ISO datetime strings preserve time (not date-only local midnight)', () => {
+    // Afternoon UTC often lands on the next local calendar day in positive offsets
+    // (e.g. AEST). Parsing as yyyy-MM-dd would lose the time and the correct day.
+    const iso = '2023-05-04T14:30:00.000Z'
+    const parsed = localisationService.parseDate(iso)
+    const generated = localisationService.generateDate({
+      value: iso,
+      daysOffset: undefined,
+    })
+    const dateOnlyLocalMidnight = localisationService.parseDate('2023-05-04')
+
+    expect(parsed.getTime()).toBe(new Date(iso).getTime())
+    expect(generated?.getTime()).toBe(new Date(iso).getTime())
+    expect(parsed.getTime()).not.toBe(dateOnlyLocalMidnight.getTime())
+    expect(parsed.getUTCHours()).toBe(14)
+    expect(parsed.getUTCMinutes()).toBe(30)
+  })
+
+  test('generateDate with daysOffset preserves ISO datetime time-of-day', () => {
+    const iso = '2023-05-04T14:30:00.000Z'
+    const generated = localisationService.generateDate({
+      value: iso,
+      daysOffset: 1,
+    })
+
+    expect(generated?.toISOString()).toBe('2023-05-05T14:30:00.000Z')
+  })
+})
 
 // Unfortunately this test will not with in Travis CI
 // as the locales are not supported, skipping for now.

@@ -7,6 +7,7 @@ import {
   BaseNewFormSubmission,
 } from '../types/submissions'
 import { SchedulingUrlConfiguration } from '../types/scheduling'
+import { addDaysToDate, parseDate } from '../localisation-service'
 
 const SCHEDULING_SUBMISSION_RESULT_KEY = 'SCHEDULING_SUBMISSION_RESULT'
 type SchedulingSubmissionResult = {
@@ -87,11 +88,15 @@ export async function setSchedulingBooking(
 
 function checkForSchedulingSubmissionEvent(
   baseFormSubmission: BaseNewFormSubmission,
+  submissionTimestamp: string,
 ): SubmissionEventTypes.FormSchedulingEvent | undefined {
-  const schedulingSubmissionEvent = schedulingService.checkForSchedulingEvent(
-    baseFormSubmission.definition,
-    baseFormSubmission.submission,
-  )
+  const schedulingSubmissionEvent = schedulingService.checkForSchedulingEvent({
+    definition: baseFormSubmission.definition,
+    submission: baseFormSubmission.submission,
+    submissionTimestamp,
+    parseDate,
+    addDaysToDate,
+  })
   if (schedulingSubmissionEvent) {
     console.log(
       'Form has a scheduling submission event',

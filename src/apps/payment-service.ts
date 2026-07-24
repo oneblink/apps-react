@@ -13,7 +13,11 @@ import BPOINTPaymentProvider from './services/payment-providers/BPOINTPaymentPro
 import CPPayPaymentProvider from './services/payment-providers/CPPayPaymentProvider'
 import NSWGovPayPaymentProvider from './services/payment-providers/NSWGovPayPaymentProvider'
 import WestpacQuickStreamPaymentProvider, * as westpacQuickStream from './services/payment-providers/WestpacQuickStreamPaymentProvider'
-import { replaceSubmissionFormatters } from './localisation-service'
+import {
+  addDaysToDate,
+  parseDate,
+  replaceSubmissionFormatters,
+} from './localisation-service'
 import {
   getSchedulingBooking,
   removeSchedulingBooking,
@@ -119,16 +123,22 @@ export async function handlePaymentQuerystring(
   }
 }
 
-export function checkForPaymentSubmissionEvent(formSubmission: FormSubmission):
+export function checkForPaymentSubmissionEvent(
+  formSubmission: FormSubmission,
+  submissionTimestamp: string,
+):
   | {
       paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
       amount: number
     }
   | undefined {
-  const result = paymentService.checkForPaymentEvent(
-    formSubmission.definition,
-    formSubmission.submission,
-  )
+  const result = paymentService.checkForPaymentEvent({
+    definition: formSubmission.definition,
+    submission: formSubmission.submission,
+    submissionTimestamp,
+    parseDate,
+    addDaysToDate,
+  })
   if (result) {
     console.log('Form has a payment submission event with amount', result)
   }

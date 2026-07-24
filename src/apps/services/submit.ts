@@ -67,11 +67,15 @@ export default async function submit({
 }: SubmissionParams & {
   completionTimestamp: string
 }): Promise<FormSubmissionResult> {
-  const paymentSubmissionEventConfiguration =
-    checkForPaymentSubmissionEvent(formSubmission)
+  const paymentSubmissionEventConfiguration = checkForPaymentSubmissionEvent(
+    formSubmission,
+    completionTimestamp,
+  )
 
-  const schedulingSubmissionEvent =
-    checkForSchedulingSubmissionEvent(formSubmission)
+  const schedulingSubmissionEvent = checkForSchedulingSubmissionEvent(
+    formSubmission,
+    completionTimestamp,
+  )
 
   try {
     if (pendingTimestamp) {

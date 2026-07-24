@@ -309,6 +309,28 @@ function generateDateOffset({
   return date
 }
 
+/**
+ * Parse a date/datetime string for conditional logic evaluation. Date-only
+ * values (`YYYY-MM-DD`) are interpreted in the user's local timezone.
+ */
+export function parseDate(value: string): Date {
+  // Always return a Date so callers can use Number.isNaN(date.getTime()) to
+  // detect unparseable values. generateDate returns undefined in that case.
+  return (
+    generateDate({
+      value,
+      daysOffset: undefined,
+    }) ?? new Date(NaN)
+  )
+}
+
+/**
+ * Add calendar days to a date for conditional logic evaluation.
+ */
+export function addDaysToDate(date: Date, days: number): Date {
+  return add(date, { days })
+}
+
 export const replaceSubmissionFormatters: submissionService.ReplaceInjectablesFormatters =
   {
     formatDate: (v) => {
