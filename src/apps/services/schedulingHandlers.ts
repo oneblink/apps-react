@@ -7,7 +7,12 @@ import {
   BaseNewFormSubmission,
 } from '../types/submissions'
 import { SchedulingUrlConfiguration } from '../types/scheduling'
-import { addDaysToDate, parseDate } from '../localisation-service'
+import {
+  addDaysToDate,
+  endOfDay,
+  parseDayOnlyDate,
+  startOfDay,
+} from '../localisation-service'
 
 const SCHEDULING_SUBMISSION_RESULT_KEY = 'SCHEDULING_SUBMISSION_RESULT'
 type SchedulingSubmissionResult = {
@@ -94,8 +99,10 @@ function checkForSchedulingSubmissionEvent(
     definition: baseFormSubmission.definition,
     submission: baseFormSubmission.submission,
     submissionTimestamp,
-    parseDate,
+    parseDayOnlyDate,
     addDaysToDate,
+    startOfDay,
+    endOfDay,
   })
   if (schedulingSubmissionEvent) {
     console.log(

@@ -15,7 +15,9 @@ import NSWGovPayPaymentProvider from './services/payment-providers/NSWGovPayPaym
 import WestpacQuickStreamPaymentProvider, * as westpacQuickStream from './services/payment-providers/WestpacQuickStreamPaymentProvider'
 import {
   addDaysToDate,
-  parseDate,
+  endOfDay,
+  parseDayOnlyDate,
+  startOfDay,
   replaceSubmissionFormatters,
 } from './localisation-service'
 import {
@@ -136,8 +138,10 @@ export function checkForPaymentSubmissionEvent(
     definition: formSubmission.definition,
     submission: formSubmission.submission,
     submissionTimestamp,
-    parseDate,
+    parseDayOnlyDate,
     addDaysToDate,
+    startOfDay,
+    endOfDay,
   })
   if (result) {
     console.log('Form has a payment submission event with amount', result)

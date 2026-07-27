@@ -1,7 +1,12 @@
 import { submissionService } from '@oneblink/sdk-core'
 import tenants from './tenants'
 import parser from 'ua-parser-js'
-import { add, parse } from 'date-fns'
+import {
+  add,
+  endOfDay as dateFnsEndOfDay,
+  parse,
+  startOfDay as dateFnsStartOfDay,
+} from 'date-fns'
 
 let iosVersion: number | undefined
 const parsedUserAgent: parser.IResult = parser(window.navigator.userAgent)
@@ -310,10 +315,10 @@ function generateDateOffset({
 }
 
 /**
- * Parse a date/datetime string for conditional logic evaluation. Date-only
- * values (`YYYY-MM-DD`) are interpreted in the user's local timezone.
+ * Parse a day-only (`YYYY-MM-DD`) string for conditional logic evaluation in
+ * the user's local timezone. sdk-core only calls this for day-only values.
  */
-export function parseDate(value: string): Date {
+export function parseDayOnlyDate(value: string): Date {
   // Always return a Date so callers can use Number.isNaN(date.getTime()) to
   // detect unparseable values. generateDate returns undefined in that case.
   return (
@@ -329,6 +334,20 @@ export function parseDate(value: string): Date {
  */
 export function addDaysToDate(date: Date, days: number): Date {
   return add(date, { days })
+}
+
+/**
+ * Start of calendar day in the user's local timezone for conditional logic.
+ */
+export function startOfDay(date: Date): Date {
+  return dateFnsStartOfDay(date)
+}
+
+/**
+ * End of calendar day in the user's local timezone for conditional logic.
+ */
+export function endOfDay(date: Date): Date {
+  return dateFnsEndOfDay(date)
 }
 
 export const replaceSubmissionFormatters: submissionService.ReplaceInjectablesFormatters =
