@@ -20,7 +20,9 @@ export type FormSubmissionApprovalsResponse = {
     latestSuccessfulFormSubmissionPayment:
       | SubmissionTypes.FormSubmissionPayment
       | undefined
+    title: string
   }>
+  forms: FormTypes.Form[]
 }
 
 export type FormApprovalFlowInstanceHistory = {
@@ -28,6 +30,7 @@ export type FormApprovalFlowInstanceHistory = {
   formSubmissionMeta: SubmissionTypes.FormSubmissionMeta
   formSubmissionApprovals: ApprovalTypes.FormSubmissionApproval[]
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
+  title: string
 }
 
 export type FormSubmissionApprovalResponse = {
@@ -37,6 +40,7 @@ export type FormSubmissionApprovalResponse = {
   form: FormTypes.Form
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
   history: FormApprovalFlowInstanceHistory[]
+  title: string
 }
 
 export type FormSubmissionsAdministrationApprovalsResponse = {
@@ -60,12 +64,8 @@ export type FormSubmissionsAdministrationApprovalsResponse = {
  *
  * ```js
  * const formsAppId = 1
- * const {
- *   formSubmissionApprovals,
- *   formApprovalFlowInstances,
- *   forms,
- *   formSubmissionMeta,
- * } = await approvalsService.getFormSubmissionApprovals(formAppId)
+ * const { approvals, forms } =
+ *   await approvalsService.getFormSubmissionApprovals(formAppId)
  * ```
  *
  * @param formsAppId
