@@ -537,6 +537,49 @@ export default function useFormStoreTable({
           ),
         },
         {
+          id: 'CALENDAR_EVENT_CALENDAR_NAME',
+          header: 'Calendar Booking - Calendar Name',
+          meta: {
+            sorting: {
+              property: 'calendarEvent.calendarName',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'calendarEvent.calendarName',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.calendarEvent?.calendarName as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      calendarEvent: {
+                        ...currentParameters.filters?.calendarEvent,
+                        calendarName: newValue,
+                      },
+                    },
+                  }),
+                  true,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.calendarEvent?.calendarName}
+              {formStoreRecord.calendarEvent?.calendarName && (
+                <TableCellCopyButton
+                  text={formStoreRecord.calendarEvent?.calendarName}
+                />
+              )}
+            </>
+          ),
+        },
+        {
           id: 'CALENDAR_EVENT_DATE_TIME',
           header: 'Calendar Booking - Event Date Time',
           meta: {
