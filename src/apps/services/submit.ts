@@ -254,7 +254,6 @@ export default async function submit({
       !data.preventPayment
     ) {
       formSubmissionResult.payment = await handlePaymentSubmissionEvent({
-        ...paymentSubmissionEventConfiguration,
         formSubmissionResult,
         paymentReceiptUrl,
         paymentFormUrl,

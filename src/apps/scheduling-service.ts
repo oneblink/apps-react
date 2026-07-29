@@ -36,7 +36,6 @@ async function getPaymentConfiguration({
   )
   if (paymentSubmissionEventConfiguration) {
     return await handlePaymentSubmissionEvent({
-      ...paymentSubmissionEventConfiguration,
       formSubmissionResult,
       paymentReceiptUrl,
       paymentFormUrl,

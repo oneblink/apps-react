@@ -3,9 +3,12 @@ import { FormSubmissionResult } from '../../../../src/apps/types/submissions'
 import OneBlinkAppsError from '../../../../src/apps/services/errors/oneBlinkAppsError'
 import { describe, expect, test, vi, beforeEach } from 'vitest'
 
-vi.mock('../../../../src/apps/services/replaceInjectablesWithSubmissionValues', () => ({
-  default: vi.fn((text: string) => ({ text })),
-}))
+vi.mock(
+  '../../../../src/apps/services/replaceInjectablesWithSubmissionValues',
+  () => ({
+    default: vi.fn((text: string) => ({ text })),
+  }),
+)
 
 vi.mock('../../../../src/apps', () => ({
   localisationService: {
@@ -75,85 +78,6 @@ describe('NSWGovPayPaymentProvider', () => {
     test('should set paymentSubmissionEvent and formSubmissionResult', () => {
       expect(provider.paymentSubmissionEvent).toBe(basePaymentEvent)
       expect(provider.formSubmissionResult).toBe(baseFormSubmissionResult)
-    })
-  })
-
-  describe('preparePaymentConfiguration', () => {
-    const basePayload = {
-      amount: 100,
-      redirectUrl: 'https://example.com/receipt',
-      submissionId: 'sub-123',
-    }
-
-    test('should return the correct path using the form id', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.path).toBe('/forms/1/nsw-gov-pay-payment')
-    })
-
-    test('should spread the base payload into the result payload', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.payload.amount).toBe(100)
-      expect(result.payload.redirectUrl).toBe('https://example.com/receipt')
-      expect(result.payload.submissionId).toBe('sub-123')
-    })
-
-    test('should include integrationPrimaryAgencyId from event configuration', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty(
-        'integrationPrimaryAgencyId',
-        'agency-1',
-      )
-    })
-
-    test('should include productDescription from replaceInjectables', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty(
-        'productDescription',
-        'Test Product',
-      )
-    })
-
-    test('should include customerReference when configured', () => {
-      const providerWithRef = new NSWGovPayPaymentProvider(
-        {
-          ...basePaymentEvent,
-          configuration: {
-            ...basePaymentEvent.configuration,
-            customerReference: 'REF-{ELEMENT:name}',
-          },
-        },
-        baseFormSubmissionResult,
-      )
-      const result = providerWithRef.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty(
-        'customerReference',
-        'REF-{ELEMENT:name}',
-      )
-    })
-
-    test('should not include customerReference when not configured', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty('customerReference', undefined)
-    })
-
-    test('should include subAgencyCode when configured', () => {
-      const providerWithCode = new NSWGovPayPaymentProvider(
-        {
-          ...basePaymentEvent,
-          configuration: {
-            ...basePaymentEvent.configuration,
-            subAgencyCode: 'SUB-001',
-          },
-        },
-        baseFormSubmissionResult,
-      )
-      const result = providerWithCode.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty('subAgencyCode', 'SUB-001')
-    })
-
-    test('should not include subAgencyCode when not configured', () => {
-      const result = provider.preparePaymentConfiguration(basePayload)
-      expect(result.payload).toHaveProperty('subAgencyCode', undefined)
     })
   })
 
@@ -433,18 +357,14 @@ describe('NSWGovPayPaymentProvider', () => {
         ...validQuery,
         amount: '99.95',
       })
-      const item = result.receiptItems.find(
-        (item) => item.label === 'Amount',
-      )
+      const item = result.receiptItems.find((item) => item.label === 'Amount')
       expect(item).toBeDefined()
       expect(item?.value).toBe('$99.95')
     })
 
     test('should not include amount when not provided', async () => {
       const result = await provider.verifyPaymentTransaction(validQuery)
-      const item = result.receiptItems.find(
-        (item) => item.label === 'Amount',
-      )
+      const item = result.receiptItems.find((item) => item.label === 'Amount')
       expect(item).toBeUndefined()
     })
 

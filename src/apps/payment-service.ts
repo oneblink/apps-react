@@ -1,6 +1,6 @@
 import { paymentService } from '@oneblink/sdk-core'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
-import { generatePaymentConfiguration } from './services/api/payment'
+import { createPaymentConfiguration } from './services/api/payment'
 import utilsService from './services/utils'
 import { SubmissionEventTypes, SubmissionTypes } from '@oneblink/types'
 import { FormSubmission, FormSubmissionResult } from './types/submissions'
@@ -128,12 +128,7 @@ export async function handlePaymentQuerystring(
 export function checkForPaymentSubmissionEvent(
   formSubmission: FormSubmission,
   submissionTimestamp: string,
-):
-  | {
-      paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
-      amount: number
-    }
-  | undefined {
+): boolean {
   const result = paymentService.checkForPaymentEvent({
     definition: formSubmission.definition,
     submission: formSubmission.submission,
@@ -144,9 +139,9 @@ export function checkForPaymentSubmissionEvent(
     endOfDay,
   })
   if (result) {
-    console.log('Form has a payment submission event with amount', result)
+    console.log('Form has a payment submission event')
   }
-  return result
+  return !!result
 }
 
 /**
@@ -193,44 +188,40 @@ export function checkForPaymentSubmissionEvent(
  * @returns
  */
 export async function handlePaymentSubmissionEvent({
-  amount,
   formSubmissionResult,
-  paymentSubmissionEvent,
   paymentReceiptUrl,
   paymentFormUrl,
 }: {
-  amount: number
   formSubmissionResult: FormSubmissionResult
-  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
   paymentReceiptUrl: string
   paymentFormUrl: string | undefined
-}): Promise<FormSubmissionResult['payment']> {
-  const paymentProvider = getPaymentProvider(
-    formSubmissionResult,
-    paymentSubmissionEvent,
-  )
-  if (!paymentProvider) {
+}): Promise<FormSubmissionResult['payment'] | null> {
+  // TODO come back to this
+  if (!formSubmissionResult.submissionId) {
     throw new OneBlinkAppsError(
-      'It looks like you are attempting to make a payment using an unsupported payment method.',
+      'It looks like you are attempting to make a payment for an unknown submission.',
     )
   }
-
-  const paymentConfiguration = await generatePaymentConfiguration(
-    paymentProvider,
-    {
-      amount,
-      redirectUrl: paymentReceiptUrl,
-      submissionId: formSubmissionResult.submissionId,
-      paymentFormUrl,
-    },
+  const paymentConfiguration = await createPaymentConfiguration(
+    formSubmissionResult.submissionId,
+    { redirectUrl: paymentReceiptUrl, paymentFormUrl },
   )
 
+  if (!paymentConfiguration) {
+    await utilsService.setLocalForageItem(KEY, {
+      ...formSubmissionResult,
+      scheduling: null,
+      payment: null,
+    })
+    return null
+  }
+
   const payment = {
-    submissionEvent: paymentSubmissionEvent,
+    submissionEvent: paymentConfiguration.paymentSubmissionEvent,
     paymentReceiptUrl,
     hostedFormUrl: paymentConfiguration.hostedFormUrl,
     paymentFormUrl,
-    amount,
+    amount: paymentConfiguration.amount,
   }
   console.log('Created Payment configuration to start transaction', payment)
 

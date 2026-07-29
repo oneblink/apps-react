@@ -1,8 +1,5 @@
 import { SubmissionEventTypes } from '@oneblink/types'
-import {
-  BasePaymentConfigurationPayload,
-  PaymentProvider,
-} from '../../types/payments'
+import { PaymentProvider } from '../../types/payments'
 import { FormSubmissionResult } from '../../types/submissions'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import {
@@ -17,9 +14,7 @@ import {
   prepareReceiptItems,
 } from './receipt-items'
 
-class CPPayPaymentProvider
-  implements PaymentProvider<SubmissionEventTypes.CPPaySubmissionEvent>
-{
+class CPPayPaymentProvider implements PaymentProvider<SubmissionEventTypes.CPPaySubmissionEvent> {
   constructor(
     paymentSubmissionEvent: SubmissionEventTypes.CPPaySubmissionEvent,
     formSubmissionResult: FormSubmissionResult,
@@ -30,17 +25,6 @@ class CPPayPaymentProvider
 
   paymentSubmissionEvent: SubmissionEventTypes.CPPaySubmissionEvent
   formSubmissionResult: FormSubmissionResult
-
-  preparePaymentConfiguration(basePayload: BasePaymentConfigurationPayload) {
-    return {
-      path: `/forms/${this.formSubmissionResult.definition.id}/cp-pay-payment`,
-      payload: {
-        ...basePayload,
-        integrationGatewayId:
-          this.paymentSubmissionEvent.configuration.gatewayId,
-      },
-    }
-  }
 
   async verifyPaymentTransaction(query: Record<string, unknown>) {
     const { transactionId, externalReferenceId: submissionId } = query
