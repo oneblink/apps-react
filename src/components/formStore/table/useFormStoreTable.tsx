@@ -677,6 +677,138 @@ export default function useFormStoreTable({
             </>
           ),
         },
+        {
+          id: 'PAYMENT_STATUS',
+          header: 'Payment - Status',
+          meta: {
+            sorting: {
+              property: 'payment.status',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'payment.status',
+              )?.direction,
+            },
+            filter: {
+              type: 'OPTIONS_SINGLE',
+              options: [
+                { id: 'PENDING', value: 'PENDING', label: 'Pending' },
+                { id: 'SUCCEEDED', value: 'SUCCEEDED', label: 'Succeeded' },
+                { id: 'FAILED', value: 'FAILED', label: 'Failed' },
+              ],
+              value: parameters.filters?.payment?.status as
+                | { $in: string[] }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      payment: {
+                        ...currentParameters.filters?.payment,
+                        status: newValue,
+                      },
+                    },
+                  }),
+                  false,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.payment?.status}
+              {formStoreRecord.payment?.status && (
+                <TableCellCopyButton text={formStoreRecord.payment.status} />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'PAYMENT_PROVIDER_TRANSACTION_ID',
+          header: 'Payment - Provider Transaction Id',
+          meta: {
+            sorting: {
+              property: 'payment.providerTransactionId',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'payment.providerTransactionId',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.payment?.providerTransactionId as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      payment: {
+                        ...currentParameters.filters?.payment,
+                        providerTransactionId: newValue,
+                      },
+                    },
+                  }),
+                  true,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.payment?.providerTransactionId}
+              {formStoreRecord.payment?.providerTransactionId && (
+                <TableCellCopyButton
+                  text={formStoreRecord.payment.providerTransactionId}
+                />
+              )}
+            </>
+          ),
+        },
+        {
+          id: 'PAYMENT_PROVIDER_RECEIPT_NUMBER',
+          header: 'Payment - Provider Receipt Number',
+          meta: {
+            sorting: {
+              property: 'payment.providerReceiptNumber',
+              direction: parameters.sorting?.find(
+                ({ property }) => property === 'payment.providerReceiptNumber',
+              )?.direction,
+            },
+            filter: {
+              type: 'TEXT',
+              value: parameters.filters?.payment?.providerReceiptNumber as
+                | { $regex: string }
+                | undefined,
+              onChange: (newValue) => {
+                onChangeParameters(
+                  (currentParameters) => ({
+                    ...currentParameters,
+                    filters: {
+                      ...currentParameters.filters,
+                      payment: {
+                        ...currentParameters.filters?.payment,
+                        providerReceiptNumber: newValue,
+                      },
+                    },
+                  }),
+                  true,
+                )
+              },
+            },
+          },
+          cell: ({ row: { original: formStoreRecord } }) => (
+            <>
+              {formStoreRecord.payment?.providerReceiptNumber}
+              {formStoreRecord.payment?.providerReceiptNumber && (
+                <TableCellCopyButton
+                  text={formStoreRecord.payment.providerReceiptNumber}
+                />
+              )}
+            </>
+          ),
+        },
       ],
     })
   }, [
