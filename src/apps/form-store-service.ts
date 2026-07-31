@@ -74,6 +74,15 @@ export type FormStoreFilters = {
     /** Filter results by the calendar name */
     calendarName?: FormStoreFilter<string>
   }
+  /** Filter results by the payment */
+  payment?: {
+    /** Filter results by the payment status */
+    status?: FormStoreFilter<string>
+    /** Filter results by the payment provider transaction id */
+    providerTransactionId?: FormStoreFilter<string>
+    /** Filter results by the payment provider receipt number */
+    providerReceiptNumber?: FormStoreFilter<string>
+  }
 }
 
 export type FormStoreParameters = {
