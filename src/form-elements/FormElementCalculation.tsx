@@ -74,7 +74,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   // MODEL LISTENER
   React.useEffect(() => {
     onChange(element, {
-      value: calculatedValue,
+      value: Number.isNaN(calculatedValue) ? undefined : calculatedValue,
     })
   }, [element, onChange, calculatedValue])
 
