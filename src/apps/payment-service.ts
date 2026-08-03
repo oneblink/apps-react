@@ -128,7 +128,7 @@ export async function handlePaymentQuerystring(
 export function checkForPaymentSubmissionEvent(
   formSubmission: FormSubmission,
   submissionTimestamp: string,
-): boolean {
+): SubmissionEventTypes.FormPaymentEvent | undefined {
   const result = paymentService.checkForPaymentEvent({
     definition: formSubmission.definition,
     submission: formSubmission.submission,
@@ -138,10 +138,11 @@ export function checkForPaymentSubmissionEvent(
     startOfDay,
     endOfDay,
   })
-  if (result) {
+  if (result && result.amount > 0) {
     console.log('Form has a payment submission event')
+    return result.paymentSubmissionEvent
   }
-  return !!result
+  return undefined
 }
 
 /**
