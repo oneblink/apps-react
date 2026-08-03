@@ -138,8 +138,8 @@ export function checkForPaymentSubmissionEvent(
     startOfDay,
     endOfDay,
   })
-  if (result && result.amount > 0) {
-    console.log('Form has a payment submission event')
+  if (result) {
+    console.log('Form has a payment submission event with amount', result)
     return result.paymentSubmissionEvent
   }
   return undefined
