@@ -196,7 +196,7 @@ export async function handlePaymentSubmissionEvent({
   formSubmissionResult: FormSubmissionResult
   paymentReceiptUrl: string
   paymentFormUrl: string | undefined
-}): Promise<FormSubmissionResult['payment'] | null> {
+}): Promise<FormSubmissionResult['payment']> {
   if (!formSubmissionResult.submissionId) {
     throw new OneBlinkAppsError(
       'It looks like you are attempting to make a payment for an unknown submission.',

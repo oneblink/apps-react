@@ -202,6 +202,11 @@ function PaymentReceipt({
         paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
         paymentFormUrl: submissionResult.payment.paymentFormUrl,
       })
+      // The API has decided that no payment is required on try again
+      if (!payment) {
+        // Do the success path
+        handleDone()
+      }
       await submissionService.executePostSubmissionAction(
         { ...submissionResult, payment },
         {
@@ -220,7 +225,7 @@ function PaymentReceipt({
         retryError: newError,
       })
     }
-  }, [history, isMounted, submissionResult])
+  }, [history, isMounted, submissionResult, handleDone])
 
   return (
     <div>
