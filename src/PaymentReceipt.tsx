@@ -206,15 +206,15 @@ function PaymentReceipt({
       if (!payment) {
         // Do the success path
         handleDone()
-        return
+      } else {
+        await submissionService.executePostSubmissionAction(
+          { ...submissionResult, payment },
+          {
+            onRedirectToRelativeUrl: (url) => history.push(url),
+            onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
+          },
+        )
       }
-      await submissionService.executePostSubmissionAction(
-        { ...submissionResult, payment },
-        {
-          onRedirectToRelativeUrl: (url) => history.push(url),
-          onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
-        },
-      )
     } catch (error) {
       console.warn('Error while attempting to retry transaction', error)
       newError = error as OneBlinkAppsError
