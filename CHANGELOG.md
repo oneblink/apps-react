@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - calculation element evaluation to use `calculationService.evaluateExpression()` from `@oneblink/sdk-core`
+- call generic `POST /form-submission-meta/${submissionId}/payment` to generate payment configuration
 
 ## [11.1.1] - 2026-07-28
 
