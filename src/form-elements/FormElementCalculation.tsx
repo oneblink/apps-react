@@ -25,9 +25,6 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     if (!isNaN(value as number)) {
       htmlTemplate = element.defaultValue
     } else {
-      console.log(
-        '[Calculation] Was not a number... setting pre-calculation display',
-      )
       htmlTemplate = element.preCalculationDisplay
     }
 
