@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - calendar name column to form store
 - payment status, provider transaction id, and provider receipt number columns to form store
 
+### Changed
+
+- calculation element evaluation to use `calculationService.evaluateExpression()` from `@oneblink/sdk-core`
+
 ## [11.1.1] - 2026-07-28
 
 ### Dependencies
