@@ -206,6 +206,7 @@ function PaymentReceipt({
       if (!payment) {
         // Do the success path
         handleDone()
+        return
       }
       await submissionService.executePostSubmissionAction(
         { ...submissionResult, payment },

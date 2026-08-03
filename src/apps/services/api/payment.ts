@@ -189,6 +189,69 @@ async function cancelWestpacQuickStreamPayment(
   }
 }
 
+async function createPaymentConfiguration(
+  submissionId: string,
+  payload: { redirectUrl: string; paymentFormUrl: string | undefined },
+) {
+  const url = `${tenants.current.apiOrigin}/form-submission-meta/${submissionId}/payment`
+  console.log('Attempting to get payment configuration', url)
+  return await postRequest<
+    | {
+        hostedFormUrl: string
+        paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+        amount: number
+      }
+    | undefined
+  >(url, payload).catch((error) => {
+    Sentry.captureException(error)
+    console.warn(
+      'Error occurred while attempting to generate configuration for payment',
+      error,
+    )
+    switch (error.status) {
+      case 401: {
+        throw new OneBlinkAppsError(
+          'You cannot make payments until you have logged in. Please login and try again.',
+          {
+            originalError: error,
+            httpStatusCode: error.status,
+            requiresLogin: true,
+          },
+        )
+      }
+      case 403: {
+        throw new OneBlinkAppsError(
+          'You do not have access make payments. Please contact your administrator to gain the correct level of access.',
+          {
+            originalError: error,
+            httpStatusCode: error.status,
+            requiresAccessRequest: true,
+          },
+        )
+      }
+      case 400:
+      case 404: {
+        throw new OneBlinkAppsError(
+          'We could not find the configuration required to make a payment. Please contact your administrator to ensure your application configuration has been completed successfully.',
+          {
+            originalError: error,
+            httpStatusCode: error.status,
+          },
+        )
+      }
+      default: {
+        throw new OneBlinkAppsError(
+          'An unknown error has occurred. Please contact support if the problem persists.',
+          {
+            originalError: error,
+            httpStatusCode: error.status,
+          },
+        )
+      }
+    }
+  })
+}
+
 const verifyPaymentTransaction = <T>(
   path: string,
   payload: unknown,
@@ -282,69 +345,6 @@ const acknowledgeCPPayTransaction = async (
       case 404: {
         throw new OneBlinkAppsError(
           'We could not find the configuration required to acknowledge your transaction. Please contact your administrator to ensure your application configuration has been completed successfully.',
-          {
-            originalError: error,
-            httpStatusCode: error.status,
-          },
-        )
-      }
-      default: {
-        throw new OneBlinkAppsError(
-          'An unknown error has occurred. Please contact support if the problem persists.',
-          {
-            originalError: error,
-            httpStatusCode: error.status,
-          },
-        )
-      }
-    }
-  })
-}
-
-async function createPaymentConfiguration(
-  submissionId: string,
-  payload: { redirectUrl: string; paymentFormUrl: string | undefined },
-) {
-  const url = `${tenants.current.apiOrigin}/form-submission-meta/${submissionId}/payment`
-  console.log('Attempting to get payment configuration', url)
-  return await postRequest<
-    | {
-        hostedFormUrl: string
-        paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
-        amount: number
-      }
-    | undefined
-  >(url, payload).catch((error) => {
-    Sentry.captureException(error)
-    console.warn(
-      'Error occurred while attempting to generate configuration for payment',
-      error,
-    )
-    switch (error.status) {
-      case 401: {
-        throw new OneBlinkAppsError(
-          'You cannot make payments until you have logged in. Please login and try again.',
-          {
-            originalError: error,
-            httpStatusCode: error.status,
-            requiresLogin: true,
-          },
-        )
-      }
-      case 403: {
-        throw new OneBlinkAppsError(
-          'You do not have access make payments. Please contact your administrator to gain the correct level of access.',
-          {
-            originalError: error,
-            httpStatusCode: error.status,
-            requiresAccessRequest: true,
-          },
-        )
-      }
-      case 400:
-      case 404: {
-        throw new OneBlinkAppsError(
-          'We could not find the configuration required to make a payment. Please contact your administrator to ensure your application configuration has been completed successfully.',
           {
             originalError: error,
             httpStatusCode: error.status,
