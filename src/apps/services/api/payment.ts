@@ -3,10 +3,6 @@ import { HTTPError, deleteRequest, getRequest, postRequest } from '../fetch'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import tenants from '../../tenants'
 import Sentry from '../../Sentry'
-import {
-  BasePaymentConfigurationPayload,
-  PaymentProvider,
-} from '../../types/payments'
 import { isOffline } from '../../offline-service'
 import { NewFormSubmission } from '../../submission-service'
 
@@ -193,15 +189,20 @@ async function cancelWestpacQuickStreamPayment(
   }
 }
 
-function generatePaymentConfiguration(
-  paymentProvider: PaymentProvider<SubmissionEventTypes.FormPaymentEvent>,
-  basePayload: BasePaymentConfigurationPayload,
-): Promise<{ hostedFormUrl: string }> {
-  const { path, payload } =
-    paymentProvider.preparePaymentConfiguration(basePayload)
-  const url = `${tenants.current.apiOrigin}${path}`
-  console.log('Attempting to generate payment configuration', url)
-  return postRequest<{ hostedFormUrl: string }>(url, payload).catch((error) => {
+async function createPaymentConfiguration(
+  submissionId: string,
+  payload: { redirectUrl: string; paymentFormUrl: string | undefined },
+) {
+  const url = `${tenants.current.apiOrigin}/form-submission-meta/${submissionId}/payment`
+  console.log('Attempting to get payment configuration', url)
+  return await postRequest<
+    | {
+        hostedFormUrl: string
+        paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+        amount: number
+      }
+    | undefined
+  >(url, payload).catch((error) => {
     Sentry.captureException(error)
     console.warn(
       'Error occurred while attempting to generate configuration for payment',
@@ -364,10 +365,10 @@ const acknowledgeCPPayTransaction = async (
 }
 
 export {
-  generatePaymentConfiguration,
   acknowledgeCPPayTransaction,
   verifyPaymentTransaction,
   getCustomFormPaymentConfiguration,
   completeWestpacQuickStreamTransaction,
   cancelWestpacQuickStreamPayment,
+  createPaymentConfiguration,
 }

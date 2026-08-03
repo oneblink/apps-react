@@ -67,7 +67,7 @@ export default async function submit({
 }: SubmissionParams & {
   completionTimestamp: string
 }): Promise<FormSubmissionResult> {
-  const paymentSubmissionEventConfiguration = checkForPaymentSubmissionEvent(
+  const paymentSubmissionEvent = checkForPaymentSubmissionEvent(
     formSubmission,
     completionTimestamp,
   )
@@ -82,10 +82,10 @@ export default async function submit({
       await deletePendingQueueSubmission(pendingTimestamp)
     }
     if (isOffline() || alwaysSubmitViaPendingQueue) {
-      if (paymentSubmissionEventConfiguration || schedulingSubmissionEvent) {
+      if (paymentSubmissionEvent || schedulingSubmissionEvent) {
         console.log(
           'Offline or always submitting via pending queue - form has a payment/scheduling submission event that has not been processed yet, return offline',
-          { paymentSubmissionEventConfiguration, schedulingSubmissionEvent },
+          { paymentSubmissionEvent, schedulingSubmissionEvent },
         )
         return Object.assign({}, formSubmission, {
           isOffline: true,
@@ -136,10 +136,10 @@ export default async function submit({
     )
 
     if (attachmentsStillUploading) {
-      if (paymentSubmissionEventConfiguration || schedulingSubmissionEvent) {
+      if (paymentSubmissionEvent || schedulingSubmissionEvent) {
         console.log(
           'Attachments still uploading - form has a payment/scheduling submission event that has not been processed yet, return isUploading',
-          { paymentSubmissionEventConfiguration, schedulingSubmissionEvent },
+          { paymentSubmissionEvent, schedulingSubmissionEvent },
         )
         return Object.assign({}, formSubmission, {
           isOffline: false,
@@ -249,12 +249,11 @@ export default async function submit({
         preventPayment: data.preventPayment,
       })
     } else if (
-      paymentSubmissionEventConfiguration &&
+      paymentSubmissionEvent &&
       paymentReceiptUrl &&
       !data.preventPayment
     ) {
       formSubmissionResult.payment = await handlePaymentSubmissionEvent({
-        ...paymentSubmissionEventConfiguration,
         formSubmissionResult,
         paymentReceiptUrl,
         paymentFormUrl,
@@ -282,7 +281,7 @@ export default async function submit({
         if (
           !isPendingQueueEnabled ||
           schedulingSubmissionEvent ||
-          paymentSubmissionEventConfiguration
+          paymentSubmissionEvent
         ) {
           console.warn(
             'Offline error thrown - app or form does not support pending queue, return offline',

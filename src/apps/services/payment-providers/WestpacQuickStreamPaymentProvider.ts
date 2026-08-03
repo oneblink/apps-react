@@ -1,8 +1,5 @@
 import { SubmissionEventTypes } from '@oneblink/types'
-import {
-  BasePaymentConfigurationPayload,
-  PaymentProvider,
-} from '../../types/payments'
+import { PaymentProvider } from '../../types/payments'
 import { FormSubmissionResult } from '../../types/submissions'
 import replaceInjectablesWithSubmissionValues from '../replaceInjectablesWithSubmissionValues'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
@@ -18,10 +15,7 @@ import {
   getCustomFormPaymentConfiguration,
 } from '../api/payment'
 
-export default class WestpacQuickStreamPaymentProvider
-  implements
-    PaymentProvider<SubmissionEventTypes.WestpacQuickStreamSubmissionEvent>
-{
+export default class WestpacQuickStreamPaymentProvider implements PaymentProvider<SubmissionEventTypes.WestpacQuickStreamSubmissionEvent> {
   constructor(
     paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent,
     formSubmissionResult: FormSubmissionResult,
@@ -32,23 +26,6 @@ export default class WestpacQuickStreamPaymentProvider
 
   formSubmissionResult: FormSubmissionResult
   paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent
-
-  preparePaymentConfiguration(payload: BasePaymentConfigurationPayload) {
-    if (!payload.submissionId) {
-      throw new Error(
-        'Westpac QuickStream Payments require the "submissionId" option.',
-      )
-    }
-    if (!payload.paymentFormUrl) {
-      throw new Error(
-        'Westpac QuickStream Payments require the "paymentFormUrl" option.',
-      )
-    }
-    return {
-      path: `/forms/${this.formSubmissionResult.definition.id}/westpac-quick-stream-payment`,
-      payload,
-    }
-  }
 
   async verifyPaymentTransaction(query: Record<string, unknown>) {
     const {

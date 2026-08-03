@@ -32,23 +32,11 @@ export type HandlePaymentResult = VerifiedPaymentTransaction & {
   schedulingBooking: SchedulingBooking | undefined
 }
 
-export type BasePaymentConfigurationPayload = {
-  amount: number
-  redirectUrl: string
-  submissionId: string | null
-  paymentFormUrl?: string
-}
-
 export interface PaymentProvider<
   T extends SubmissionEventTypes.FormPaymentEvent,
 > {
   formSubmissionResult: FormSubmissionResult
   paymentSubmissionEvent: T
-
-  preparePaymentConfiguration(basePayload: BasePaymentConfigurationPayload): {
-    path: string
-    payload: BasePaymentConfigurationPayload
-  }
 
   verifyPaymentTransaction(
     query: Record<string, unknown>,

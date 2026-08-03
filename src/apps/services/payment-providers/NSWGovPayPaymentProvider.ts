@@ -1,10 +1,6 @@
 import { SubmissionEventTypes, SubmissionTypes } from '@oneblink/types'
-import {
-  BasePaymentConfigurationPayload,
-  PaymentProvider,
-} from '../../types/payments'
+import { PaymentProvider } from '../../types/payments'
 import { FormSubmissionResult } from '../../types/submissions'
-import replaceInjectablesWithSubmissionValues from '../replaceInjectablesWithSubmissionValues'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import {
   generateAmountReceiptItem,
@@ -26,33 +22,6 @@ class NSWGovPayPaymentProvider implements PaymentProvider<SubmissionEventTypes.N
 
   paymentSubmissionEvent: SubmissionEventTypes.NSWGovPaySubmissionEvent
   formSubmissionResult: FormSubmissionResult
-
-  preparePaymentConfiguration(basePayload: BasePaymentConfigurationPayload) {
-    return {
-      path: `/forms/${this.formSubmissionResult.definition.id}/nsw-gov-pay-payment`,
-      payload: {
-        ...basePayload,
-        integrationPrimaryAgencyId:
-          this.paymentSubmissionEvent.configuration.primaryAgencyId,
-        productDescription: replaceInjectablesWithSubmissionValues(
-          this.paymentSubmissionEvent.configuration.productDescription,
-          this.formSubmissionResult,
-        ).text,
-        customerReference:
-          this.paymentSubmissionEvent.configuration.customerReference &&
-          replaceInjectablesWithSubmissionValues(
-            this.paymentSubmissionEvent.configuration.customerReference,
-            this.formSubmissionResult,
-          ).text,
-        subAgencyCode:
-          this.paymentSubmissionEvent.configuration.subAgencyCode &&
-          replaceInjectablesWithSubmissionValues(
-            this.paymentSubmissionEvent.configuration.subAgencyCode,
-            this.formSubmissionResult,
-          ).text,
-      },
-    }
-  }
 
   async verifyPaymentTransaction(query: Record<string, unknown>) {
     const {

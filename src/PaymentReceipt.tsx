@@ -187,7 +187,6 @@ function PaymentReceipt({
     if (!submissionResult || !submissionResult.payment) {
       return
     }
-    const paymentSubmissionEvent = submissionResult.payment.submissionEvent
 
     if (isMounted.current) {
       setRetryState({
@@ -199,16 +198,23 @@ function PaymentReceipt({
     let newError = null
     try {
       const payment = await handlePaymentSubmissionEvent({
-        amount: submissionResult.payment.amount,
         formSubmissionResult: submissionResult,
-        paymentSubmissionEvent,
         paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
         paymentFormUrl: submissionResult.payment.paymentFormUrl,
       })
-      await submissionService.executePostSubmissionAction({ ...submissionResult, payment }, {
-        onRedirectToRelativeUrl: (url) => history.push(url),
-        onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
-      })
+      // The API has decided that no payment is required on try again
+      if (!payment) {
+        // Do the success path
+        handleDone()
+        return
+      }
+      await submissionService.executePostSubmissionAction(
+        { ...submissionResult, payment },
+        {
+          onRedirectToRelativeUrl: (url) => history.push(url),
+          onRedirectToAbsoluteUrl: (url) => window.location.assign(url),
+        },
+      )
     } catch (error) {
       console.warn('Error while attempting to retry transaction', error)
       newError = error as OneBlinkAppsError
@@ -220,7 +226,7 @@ function PaymentReceipt({
         retryError: newError,
       })
     }
-  }, [history, isMounted, submissionResult])
+  }, [history, isMounted, submissionResult, handleDone])
 
   return (
     <div>
