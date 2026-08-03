@@ -1,12 +1,10 @@
 import * as React from 'react'
-import ExpressionParser from 'morph-expressions'
-import escapeString from 'escape-string-regexp'
 import useFormSubmissionModel from '../hooks/useFormSubmissionModelContext'
-import { FormTypes, SubmissionTypes } from '@oneblink/types'
+import { FormTypes } from '@oneblink/types'
 import { Sentry } from '../apps'
 import { localisationService } from '../apps'
 import { FormElementValueChangeHandler } from '../types/form'
-import { formElementsService } from '@oneblink/sdk-core'
+import { calculationService } from '@oneblink/sdk-core'
 import QuillHTML from '../components/QuillHTML'
 import MaterialIcon from '../components/MaterialIcon'
 import useFormDefinition from '../hooks/useFormDefinition'
@@ -15,21 +13,6 @@ type Props = {
   element: FormTypes.CalculationElement
   onChange: FormElementValueChangeHandler<number>
   value: unknown | undefined
-}
-
-const isUnenteredValue = (value: unknown | undefined) => {
-  return !value && value !== 0
-}
-
-const isObjectWithValue = (obj: unknown): obj is { value: unknown } => {
-  return typeof obj === 'object' && obj !== null && 'value' in obj
-}
-
-// workaround for .toFixed() not rounding floating point numbers correctly
-function roundToFixed(number: number, decimals: number) {
-  const multiplier = Math.pow(10, decimals)
-  const roundedNumber = Math.round(number * multiplier) / multiplier
-  return roundedNumber.toFixed(decimals)
 }
 
 function FormElementCalculation({ element, onChange, value }: Props) {
@@ -42,9 +25,6 @@ function FormElementCalculation({ element, onChange, value }: Props) {
     if (!isNaN(value as number)) {
       htmlTemplate = element.defaultValue
     } else {
-      console.log(
-        '[Calculation] Was not a number... setting pre-calculation display',
-      )
       htmlTemplate = element.preCalculationDisplay
     }
 
@@ -55,223 +35,26 @@ function FormElementCalculation({ element, onChange, value }: Props) {
         ? localisationService.formatCurrency(numberValue)
         : localisationService.formatNumber(numberValue),
     )
-  }, [element, value])
+  }, [
+    element.defaultValue,
+    element.displayAsCurrency,
+    element.preCalculationDisplay,
+    value,
+  ])
 
-  const registerProperty = React.useCallback(
-    (
-      exprParser: ExpressionParser<
-        SubmissionTypes.S3SubmissionData['submission']
-      >,
-      {
-        replacement,
-        nestedElementNames,
-      }: {
-        replacement: string
-        nestedElementNames: string[]
-      },
-    ) => {
-      exprParser.registerProperty(
-        replacement,
-        (submission: SubmissionTypes.S3SubmissionData['submission']) => {
-          const defaultAccumulator = submission[nestedElementNames[0]]
-          return nestedElementNames.reduce(
-            (
-              elementValue: unknown | undefined,
-              elementName: string,
-              index: number,
-            ) => {
-              // Numbers can just be returned as is
-              if (typeof elementValue === 'number') {
-                return elementValue
-              }
-
-              // attempt to get a number from the element value as a string.
-              // NaN is accounted for is the calculation
-              // so we can return that from here
-              if (typeof elementValue === 'string') {
-                // The string could be an iso date string, or a string
-                // resembling a date. We need to parse the value as an ISO string
-                // and as a date in the format below to cover all calculation checks
-                // with 'date', 'datetime' and 'time' elements. If the string is not
-                // one of these, then we want to parse it as a float.
-
-                const parsedIsoDate = localisationService.generateDate({
-                  value: elementValue,
-                  daysOffset: undefined,
-                })
-                if (parsedIsoDate) {
-                  return parsedIsoDate.getTime()
-                }
-                const parsedDate = localisationService.generateDate({
-                  value: elementValue,
-                  daysOffset: undefined,
-                })
-                if (parsedDate) {
-                  return parsedDate.getTime()
-                }
-
-                return parseFloat(elementValue)
-              }
-
-              if (Array.isArray(elementValue)) {
-                // If there are no entries, we can return null
-                // to prevent the calculation from running.
-                if (!elementValue.length) {
-                  return NaN
-                }
-
-                // An array could be an element that allows multiple
-                // values e.g. checkboxes. If thats that case, we just
-                // add them all together and move on
-                const elementValues = elementValue.map((entry) =>
-                  parseFloat(entry),
-                )
-                if (elementValues.every((entry) => !Number.isNaN(entry))) {
-                  return elementValues.reduce(
-                    (number, entry) => number + entry,
-                    0,
-                  )
-                }
-
-                // Other wise attempt to process it as a repeatable set
-                // If we found another repeatable set to process,
-                // pass it to the next element name to
-                // iterate over the entries
-
-                // If we are processing the entries in a repeatable set,
-                // we can sum the numbers elements in the entries
-                const nextElementName = nestedElementNames[index + 1]
-
-                let isNestedRepeatableSet = false
-                const nestedElementValues = elementValue.reduce(
-                  (nestedElementValues, entry) => {
-                    if (entry) {
-                      const nextElementValue = entry[nextElementName]
-                      if (Array.isArray(nextElementValue)) {
-                        if (nextElementValue.length) {
-                          nestedElementValues.push(...nextElementValue)
-                          isNestedRepeatableSet = true
-                        }
-                      } else {
-                        nestedElementValues.push(nextElementValue)
-                      }
-                    }
-                    return nestedElementValues
-                  },
-                  [],
-                )
-
-                // If the nested element values are all arrays, we can pass them on to the next iteration
-                if (isNestedRepeatableSet) {
-                  return nestedElementValues
-                }
-
-                return nestedElementValues.reduce(
-                  (total: number, nestedElementValue: unknown | undefined) => {
-                    if (Number.isNaN(total)) {
-                      return NaN
-                    }
-                    const value = parseFloat(nestedElementValue as string)
-                    if (Number.isNaN(value)) {
-                      return NaN
-                    }
-                    return total + value
-                  },
-                  0,
-                )
-              }
-
-              // if the value is an object, we take the element name and check to see
-              // if this element is a nested form element. If so, we take the next nested element name,
-              // find its value in the object and return it for the next iteration to handle
-              if (typeof elementValue === 'object') {
-                const formFormElement = formElementsService.findFormElement(
-                  form.elements,
-                  (e) =>
-                    e.type === 'form' && e.name === nestedElementNames[index],
-                )
-                const nextElementName = nestedElementNames[index + 1]
-                if (formFormElement && nextElementName) {
-                  return (elementValue as Record<string, unknown>)[
-                    nextElementName
-                  ]
-                }
-              }
-
-              // "compliance" form element has an object value with a "value" property.
-              if (
-                isObjectWithValue(elementValue) &&
-                typeof elementValue.value === 'string'
-              ) {
-                return parseFloat(elementValue.value)
-              }
-
-              // We did not find a number value from the known elements,
-              // we will assume we are at the end of the line.
-              return NaN
-            },
-            defaultAccumulator,
-          )
-        },
-      )
-    },
-    [form.elements],
-  )
-
-  const { calculation, hasError } = React.useMemo(() => {
-    const exprParser = new ExpressionParser<
-      SubmissionTypes.S3SubmissionData['submission']
-    >()
-    exprParser.registerFunction('ROUND', (value: number, precision: number) => {
-      if (!Number.isNaN(value) && Number.isFinite(value)) {
-        return parseFloat(roundToFixed(value, precision))
-      }
-      return null
-    })
-    exprParser.registerFunction('ROUND_DOWN', (value: number) => {
-      if (!Number.isNaN(value) && Number.isFinite(value)) {
-        return Math.floor(value)
-      }
-      return null
-    })
-    exprParser.registerFunction('ROUND_UP', (value: number) => {
-      if (!Number.isNaN(value) && Number.isFinite(value)) {
-        return Math.ceil(value)
-      }
-      return null
-    })
-    exprParser.registerFunction(
-      'ISNULL',
-      (value: unknown | undefined, defaultValue: number) => {
-        if (isUnenteredValue(value)) {
-          return defaultValue || 0
-        }
-        return value
-      },
-    )
-
+  const { calculatedValue, hasError } = React.useMemo(() => {
     try {
-      if (!element.calculation) throw new Error('Element has no calculation.')
-      const elementNames: string[] = []
-      formElementsService.matchElementsTagRegex(
-        element.calculation,
-        ({ elementName }) => {
-          elementNames.push(elementName)
-        },
-      )
-
-      const code = elementNames.reduce((code, elementName, index) => {
-        const regex = new RegExp(escapeString(`{ELEMENT:${elementName}}`), 'g')
-        const replacement = `a${index}`
-        registerProperty(exprParser, {
-          replacement,
-          nestedElementNames: elementName.split('|'),
-        })
-        return code.replace(regex, replacement)
-      }, element.calculation || '')
+      if (!element.calculation) {
+        throw new Error('Element has no calculation.')
+      }
 
       return {
-        calculation: exprParser.parse(code.trim()),
+        calculatedValue: calculationService.evaluateExpression({
+          expression: element.calculation,
+          submission: formSubmissionModel,
+          formElements: form.elements,
+          parseDayOnlyDate: localisationService.parseDayOnlyDate,
+        }),
         hasError: false,
       }
     } catch (e) {
@@ -282,44 +65,18 @@ function FormElementCalculation({ element, onChange, value }: Props) {
       )
       Sentry.captureException(e)
       return {
-        calculation: null,
+        calculatedValue: undefined,
         hasError: true,
       }
     }
-  }, [element, registerProperty])
-
-  const calculateContent = React.useCallback(
-    (formSubmissionModel: SubmissionTypes.S3SubmissionData['submission']) => {
-      if (!calculation) {
-        return
-      }
-      try {
-        const result = calculation.eval(formSubmissionModel)
-        return typeof result === 'number' ? result : undefined
-      } catch {
-        //do nothing
-      }
-      return
-    },
-    [calculation],
-  )
+  }, [element, form.elements, formSubmissionModel])
 
   // MODEL LISTENER
   React.useEffect(() => {
-    const newValue = calculateContent(formSubmissionModel)
-    if (value === newValue || (value === undefined && Number.isNaN(newValue))) {
-      return
-    }
-    if (typeof newValue === 'number' && !Number.isNaN(newValue)) {
-      onChange(element, {
-        value: newValue,
-      })
-    } else {
-      onChange(element, {
-        value: undefined,
-      })
-    }
-  }, [element, formSubmissionModel, onChange, value, calculateContent])
+    onChange(element, {
+      value: Number.isNaN(calculatedValue) ? undefined : calculatedValue,
+    })
+  }, [element, onChange, calculatedValue])
 
   return (
     <div className="cypress-calculation-element">
