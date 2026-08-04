@@ -44,18 +44,33 @@ function FormElementCalculation({ element, onChange, value }: Props) {
 
   const { calculatedValue, hasError } = React.useMemo(() => {
     try {
-      if (!element.calculation) {
-        throw new Error('Element has no calculation.')
-      }
+      const expressionResult = calculationService.evaluateExpression({
+        expression: element.calculation,
+        submission: formSubmissionModel,
+        formElements: form.elements,
+        parseDayOnlyDate: localisationService.parseDayOnlyDate,
+      })
 
-      return {
-        calculatedValue: calculationService.evaluateExpression({
-          expression: element.calculation,
-          submission: formSubmissionModel,
-          formElements: form.elements,
-          parseDayOnlyDate: localisationService.parseDayOnlyDate,
-        }),
-        hasError: false,
+      switch (expressionResult.type) {
+        case 'RESULT': {
+          return {
+            calculatedValue: expressionResult.value,
+            hasError: false,
+          }
+        }
+        case 'MISSING_VALUES': {
+          // Show pre-calculation display and do not surface an error.
+          return {
+            calculatedValue: undefined,
+            hasError: false,
+          }
+        }
+        case 'INVALID_EXPRESSION': {
+          return {
+            calculatedValue: undefined,
+            hasError: true,
+          }
+        }
       }
     } catch (e) {
       console.warn(
@@ -74,7 +89,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   // MODEL LISTENER
   React.useEffect(() => {
     onChange(element, {
-      value: Number.isNaN(calculatedValue) ? undefined : calculatedValue,
+      value: calculatedValue,
     })
   }, [element, onChange, calculatedValue])
 
