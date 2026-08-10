@@ -16,6 +16,7 @@ function FormElementHTML({ element }: Props) {
         <QuillHTML
           html={html}
           className="cypress-html-element-content ob-information__content"
+          role={element.screenReaderAlert ? 'alert' : undefined}
         />
       </div>
     </div>
