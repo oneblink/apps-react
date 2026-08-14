@@ -9,12 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `screenReaderAlert` support to information element
-
-### Added
-
 - calendar name column to form store
 - payment status, provider transaction id, and provider receipt number columns to form store
+- `screenReaderAlert` support to information element
 
 ### Changed
 

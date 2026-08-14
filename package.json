@@ -58,7 +58,7 @@
     "@mui/material": "^7.3.7",
     "@mui/x-date-pickers": "^8.27.0",
     "@oneblink/release-cli": "^4.0.0",
-    "@oneblink/types": "github:oneblink/types#AP-9958",
+    "@oneblink/types": "github:oneblink/types",
     "@types/blueimp-load-image": "^5.16.6",
     "@types/color": "^3.0.6",
     "@types/file-saver": "^2.0.7",
