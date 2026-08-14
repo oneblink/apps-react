@@ -12,11 +12,13 @@ function FormElementHTML({ element }: Props) {
 
   return (
     <div className="cypress-html-element">
-      <div className="ob-form__element ob-information cypress-html-element">
+      <div
+        className="ob-form__element ob-information cypress-html-element"
+        role={element.screenReaderAlert ? 'alert' : undefined}
+      >
         <QuillHTML
           html={html}
           className="cypress-html-element-content ob-information__content"
-          role={element.screenReaderAlert ? 'alert' : undefined}
         />
       </div>
     </div>
