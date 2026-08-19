@@ -63,6 +63,8 @@ import {
 
 import { FormSubmissionModelContextProvider } from '../../hooks/useFormSubmissionModelContext'
 import useBooleanState from '../../hooks/useBooleanState'
+import useFormAudience from '../../hooks/useFormAudience'
+import isElementHiddenForAudience from '../../services/isElementHiddenForAudience'
 import { FormElementBinaryStorageValue } from '../../types/attachments'
 import {
   FormElementConditionallyShown,
@@ -130,6 +132,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
   parentElement,
   sectionState,
 }: Props<T>) {
+  const audience = useFormAudience()
   return (
     <FormSubmissionModelContextProvider
       elements={parentElement.elements}
@@ -156,7 +159,7 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
                 'ob-element cypress-element-container',
                 element.customCssClasses,
                 {
-                  'is-hidden': element.isHidden,
+                  'is-hidden': isElementHiddenForAudience(element, audience),
                 },
               )}
               aria-labelledby={sectionHeaderId}
@@ -219,6 +222,7 @@ function FormElementSwitchContainer(
   props: Omit<FormElementSwitchProps, 'isDirty' | 'setIsDirty'>,
 ) {
   const { element, formElementValidation, displayValidationMessage } = props
+  const audience = useFormAudience()
   const [isDirty, setIsDirty] = useBooleanState(false)
   const elementDOMId = React.useMemo(
     () => new ElementDOMId(props.id),
@@ -249,7 +253,7 @@ function FormElementSwitchContainer(
         element.customCssClasses,
         validationClassName,
         {
-          'is-hidden': element.isHidden,
+          'is-hidden': isElementHiddenForAudience(element, audience),
         },
       )}
       data-cypress-element-name={element.name}

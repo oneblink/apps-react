@@ -208,6 +208,7 @@ export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
  *       onCancel={handleCancel}
  *       onSubmit={handleSubmit}
  *       onSaveDraft={handleSaveDraft}
+ *       audience="FORM_COMPLETER"
  *     />
  *   )
  * }
@@ -537,6 +538,7 @@ const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
  *       onSubmit={handleSubmit}
  *       onSaveDraft={handleSaveDraft}
  *       attachmentRetentionInDays={1}
+ *       audience="FORM_COMPLETER"
  *     />
  *   )
  * }
