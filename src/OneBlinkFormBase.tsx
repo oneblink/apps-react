@@ -40,6 +40,7 @@ import { GoogleMapsApiKeyContext } from './hooks/useGoogleMapsApiKey'
 import { AbnLookupAuthenticationGuidContext } from './hooks/useAbnLookupAuthenticationGuid'
 import { CaptchaContext } from './hooks/useCaptcha'
 import { FormIsReadOnlyContext } from './hooks/useFormIsReadOnly'
+import { FormAudienceContext } from './hooks/useFormAudience'
 import { AttachmentBlobsProvider } from './hooks/attachments/useAttachmentBlobs'
 import useIsOffline from './hooks/useIsOffline'
 import CustomisableButtonInner from './components/renderer/CustomisableButtonInner'
@@ -100,6 +101,13 @@ export type OneBlinkReadOnlyFormProps = {
    * element or a default value.
    */
   replaceInjectablesOverrides?: ReplaceInjectablesOverrides
+  /**
+   * Audience used to evaluate `isHidden` / `hiddenFrom` on form elements.
+   *
+   * - `FORM_COMPLETER` — users completing the form
+   * - `APPROVER` — approvers reviewing the form submission
+   */
+  audience: FormTypes.FormElementHiddenFromAudience
 }
 
 export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
@@ -266,6 +274,7 @@ function OneBlinkFormBase({
   scrollToTopOfPage,
   getCurrentSubmissionDuration,
   onBeforeUnload,
+  audience,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -1362,45 +1371,51 @@ function OneBlinkFormBase({
                                         <FormIsReadOnlyContext.Provider
                                           value={isReadOnly}
                                         >
-                                          <TaskContext.Provider
-                                            value={taskContextValue}
+                                          <FormAudienceContext.Provider
+                                            value={audience}
                                           >
-                                            <OnUploadAttachmentContext.Provider
-                                              value={onUploadAttachment}
+                                            <TaskContext.Provider
+                                              value={taskContextValue}
                                             >
-                                              {visiblePages.map(
-                                                (
-                                                  pageElement: FormTypes.PageElement,
-                                                ) => (
-                                                  <PageFormElements
-                                                    key={pageElement.id}
-                                                    isActive={
-                                                      pageElement.id ===
-                                                      currentPage.id
-                                                    }
-                                                    formId={definition.id}
-                                                    formElementsConditionallyShown={
-                                                      formElementsConditionallyShown
-                                                    }
-                                                    formElementsValidation={
-                                                      formElementsValidation
-                                                    }
-                                                    displayValidationMessages={
-                                                      hasAttemptedSubmit ||
-                                                      isDisplayingCurrentPageError
-                                                    }
-                                                    pageElement={pageElement}
-                                                    onChange={handleChange}
-                                                    model={submission}
-                                                    setFormSubmission={
-                                                      setFormSubmission
-                                                    }
-                                                    sectionState={sectionState}
-                                                  />
-                                                ),
-                                              )}
-                                            </OnUploadAttachmentContext.Provider>
-                                          </TaskContext.Provider>
+                                              <OnUploadAttachmentContext.Provider
+                                                value={onUploadAttachment}
+                                              >
+                                                {visiblePages.map(
+                                                  (
+                                                    pageElement: FormTypes.PageElement,
+                                                  ) => (
+                                                    <PageFormElements
+                                                      key={pageElement.id}
+                                                      isActive={
+                                                        pageElement.id ===
+                                                        currentPage.id
+                                                      }
+                                                      formId={definition.id}
+                                                      formElementsConditionallyShown={
+                                                        formElementsConditionallyShown
+                                                      }
+                                                      formElementsValidation={
+                                                        formElementsValidation
+                                                      }
+                                                      displayValidationMessages={
+                                                        hasAttemptedSubmit ||
+                                                        isDisplayingCurrentPageError
+                                                      }
+                                                      pageElement={pageElement}
+                                                      onChange={handleChange}
+                                                      model={submission}
+                                                      setFormSubmission={
+                                                        setFormSubmission
+                                                      }
+                                                      sectionState={
+                                                        sectionState
+                                                      }
+                                                    />
+                                                  ),
+                                                )}
+                                              </OnUploadAttachmentContext.Provider>
+                                            </TaskContext.Provider>
+                                          </FormAudienceContext.Provider>
                                         </FormIsReadOnlyContext.Provider>
                                       </AttachmentBlobsProvider>
                                     </CaptchaContext.Provider>

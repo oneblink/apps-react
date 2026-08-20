@@ -12,11 +12,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - calendar name column to form store
 - payment status, provider transaction id, and provider receipt number columns to form store
 - `screenReaderAlert` support to information element
+- `hiddenFrom` support so form elements can be hidden from form completers, approvers, or both
 
 ### Changed
 
 - calculation element evaluation to use `calculationService.evaluateExpression()` from `@oneblink/sdk-core`
 - call generic `POST /form-submission-meta/${submissionId}/payment` to generate payment configuration
+- **[BREAKING]** `audience` is now a required prop of `<OneBlinkForm />`, `<OneBlinkFormControlled />`, `<OneBlinkAutoSaveForm />` and `<OneBlinkReadOnlyForm />`. Pass `'FORM_COMPLETER'` when a user is completing a form, or `'APPROVER'` when an approver is reviewing a submission.
+
+```tsx
+<OneBlinkForm
+  audience="FORM_COMPLETER"
+  form={form}
+  onCancel={handleCancel}
+  onSubmit={handleSubmit}
+  isPendingQueueEnabled={false}
+/>
+
+<OneBlinkReadOnlyForm
+  audience="APPROVER"
+  form={form}
+  initialSubmission={submission}
+/>
+```
 
 ## [11.1.1] - 2026-07-28
 
