@@ -4,13 +4,13 @@ import isElementHiddenForAudience from '../../src/services/isElementHiddenForAud
 
 describe('isElementHiddenForAudience()', () => {
   test('is not hidden when isHidden is omitted', () => {
-    expect(isElementHiddenForAudience({}, 'FORM_COMPLETER')).toBe(false)
+    expect(isElementHiddenForAudience({}, 'SUBMITTER')).toBe(false)
     expect(isElementHiddenForAudience({}, 'APPROVER')).toBe(false)
   })
 
   test('is not hidden when isHidden is false', () => {
     expect(
-      isElementHiddenForAudience({ isHidden: false }, 'FORM_COMPLETER'),
+      isElementHiddenForAudience({ isHidden: false }, 'SUBMITTER'),
     ).toBe(false)
     expect(isElementHiddenForAudience({ isHidden: false }, 'APPROVER')).toBe(
       false,
@@ -19,7 +19,7 @@ describe('isElementHiddenForAudience()', () => {
 
   test('is hidden from all audiences when isHidden is true and hiddenFrom is omitted', () => {
     expect(
-      isElementHiddenForAudience({ isHidden: true }, 'FORM_COMPLETER'),
+      isElementHiddenForAudience({ isHidden: true }, 'SUBMITTER'),
     ).toBe(true)
     expect(isElementHiddenForAudience({ isHidden: true }, 'APPROVER')).toBe(
       true,
@@ -30,7 +30,7 @@ describe('isElementHiddenForAudience()', () => {
     expect(
       isElementHiddenForAudience(
         { isHidden: true, hiddenFrom: [] },
-        'FORM_COMPLETER',
+        'SUBMITTER',
       ),
     ).toBe(true)
     expect(
@@ -38,14 +38,14 @@ describe('isElementHiddenForAudience()', () => {
     ).toBe(true)
   })
 
-  test('is hidden from form completers only', () => {
+  test('is hidden from submitters only', () => {
     const element = {
       isHidden: true,
       hiddenFrom: [
-        'FORM_COMPLETER',
+        'SUBMITTER',
       ] as FormTypes.FormElementHiddenFromAudience[],
     }
-    expect(isElementHiddenForAudience(element, 'FORM_COMPLETER')).toBe(true)
+    expect(isElementHiddenForAudience(element, 'SUBMITTER')).toBe(true)
     expect(isElementHiddenForAudience(element, 'APPROVER')).toBe(false)
   })
 
@@ -54,7 +54,7 @@ describe('isElementHiddenForAudience()', () => {
       isHidden: true,
       hiddenFrom: ['APPROVER'] as FormTypes.FormElementHiddenFromAudience[],
     }
-    expect(isElementHiddenForAudience(element, 'FORM_COMPLETER')).toBe(false)
+    expect(isElementHiddenForAudience(element, 'SUBMITTER')).toBe(false)
     expect(isElementHiddenForAudience(element, 'APPROVER')).toBe(true)
   })
 
@@ -62,11 +62,11 @@ describe('isElementHiddenForAudience()', () => {
     const element = {
       isHidden: true,
       hiddenFrom: [
-        'FORM_COMPLETER',
+        'SUBMITTER',
         'APPROVER',
       ] as FormTypes.FormElementHiddenFromAudience[],
     }
-    expect(isElementHiddenForAudience(element, 'FORM_COMPLETER')).toBe(true)
+    expect(isElementHiddenForAudience(element, 'SUBMITTER')).toBe(true)
     expect(isElementHiddenForAudience(element, 'APPROVER')).toBe(true)
   })
 })

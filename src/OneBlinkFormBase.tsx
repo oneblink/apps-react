@@ -104,7 +104,7 @@ export type OneBlinkReadOnlyFormProps = {
   /**
    * Audience used to evaluate `isHidden` / `hiddenFrom` on form elements.
    *
-   * - `FORM_COMPLETER` — users completing the form
+   * - `SUBMITTER` — users submitting the form
    * - `APPROVER` — approvers reviewing the form submission
    */
   audience: FormTypes.FormElementHiddenFromAudience
