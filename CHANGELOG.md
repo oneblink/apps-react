@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [12.0.0] - 2026-08-26
+
 ### Added
 
 - calendar name column to form store
@@ -35,6 +37,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   initialSubmission={submission}
 />
 ```
+
+### Dependencies
+
+- update @oneblink/sdk-core to [10.1.0-beta.9](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [10.0.0-beta.3](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [8.0.0-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [7.1.2-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
+
+- no longer depend upon escape-string-regexp
+
+- no longer depend upon morph-expressions
 
 ## [11.1.1] - 2026-07-28
 
