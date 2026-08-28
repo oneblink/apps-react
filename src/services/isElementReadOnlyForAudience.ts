@@ -20,6 +20,29 @@ function hasApproverEditableElement(
 }
 
 /**
+ * Whether an audience can change this element or anything nested inside it.
+ *
+ * Approvers may only edit elements configured for approver editing, so a
+ * subtree containing none of them is entirely locked for them. Used to skip
+ * validating what an audience has no way to correct.
+ */
+export function isElementEditableForAudience(
+  element: FormTypes.FormElement,
+  audience: FormTypes.FormElementHiddenFromAudience,
+): boolean {
+  if (audience !== 'APPROVER') {
+    return true
+  }
+
+  return (
+    isApproverEditable(element) ||
+    ('elements' in element &&
+      Array.isArray(element.elements) &&
+      hasApproverEditableElement(element.elements))
+  )
+}
+
+/**
  * Determine whether a form element should be read only for a given audience.
  *
  * Approvers may only edit elements explicitly configured for approver editing,

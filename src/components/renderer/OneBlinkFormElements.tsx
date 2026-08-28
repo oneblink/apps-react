@@ -340,11 +340,13 @@ function FormElementSwitchContainer(
     return null
   }
 
-  // An approver edit is not a new submission, so captchas are not applicable.
-  if (
-    element.type === 'captcha' &&
-    (audience === 'APPROVER' || formIsReadOnly)
-  ) {
+  // A captcha proves a human is making a new submission, so it is omitted
+  // whenever this element cannot take new input: an approver edit (not a new
+  // submission), a read-only form, or a `readOnly` ancestor. The last case was
+  // previously handled by stripping captchas from the definition in
+  // `recursivelySetReadOnly`. `useFormValidation` drops the same captchas, so
+  // an omitted one can never block submission with an unreachable error.
+  if (element.type === 'captcha' && (audience === 'APPROVER' || readOnly)) {
     return null
   }
 

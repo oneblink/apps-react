@@ -28,6 +28,9 @@ import {
   generateArcGISAutomatedSnapshotFileName,
 } from '../../form-elements/FormElementArcGISWebMap'
 import { fileUploadService } from '@oneblink/sdk-core'
+import isElementReadOnlyForAudience, {
+  isElementEditableForAudience,
+} from '../isElementReadOnlyForAudience'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -69,6 +72,14 @@ export default function validateSubmission({
         return partialFormElementsValidation
       }
 
+      // An audience that cannot change this element, or anything nested inside
+      // it, has no way to resolve an error on it. Approvers still see the page
+      // navigation buttons and can submit the form by pressing Enter, either of
+      // which would otherwise reveal errors on fields locked to them.
+      if (!isElementEditableForAudience(formElement, audience)) {
+        return partialFormElementsValidation
+      }
+
       const value = submission?.[formElement.name]
 
       switch (formElement.type) {
@@ -101,8 +112,10 @@ export default function validateSubmission({
           break
         }
         case 'captcha': {
-          // An approver edit is not a new submission, so captchas are not
-          // rendered and must not be validated.
+          // An approver edit is not a new submission, so the renderer never
+          // shows a captcha to an approver, regardless of `approverEditability`.
+          // Mirror that unconditionally rather than relying on the editability
+          // check above.
           if (audience === 'APPROVER') {
             break
           }
@@ -577,32 +590,41 @@ export default function validateSubmission({
           break
         }
         case 'repeatableSet': {
-          const minSetEntries = getCleanRepeatableSetConfiguration(
-            formElement.minSetEntries,
-            elements,
-            submission,
-            formElementsConditionallyShown,
-          )
-          const maxSetEntries = getCleanRepeatableSetConfiguration(
-            formElement.maxSetEntries,
-            elements,
-            submission,
-            formElementsConditionallyShown,
-          )
-          const setErrorMessages = validators.length(value, {
-            minimum: minSetEntries,
-            maximum: maxSetEntries,
-            tooLong: 'Cannot have more than %{count} entry/entries',
-            tooShort: 'Must have at least %{count} entry/entries',
-          })
-          if (minSetEntries) {
+          const setErrorMessages: string[] = []
+          // The entry count can only be corrected by adding or removing
+          // entries, which requires the set itself to be editable. Its entries
+          // are still validated below, as they may contain elements this
+          // audience can edit even while the set is locked.
+          if (!isElementReadOnlyForAudience(formElement, audience)) {
+            const minSetEntries = getCleanRepeatableSetConfiguration(
+              formElement.minSetEntries,
+              elements,
+              submission,
+              formElementsConditionallyShown,
+            )
+            const maxSetEntries = getCleanRepeatableSetConfiguration(
+              formElement.maxSetEntries,
+              elements,
+              submission,
+              formElementsConditionallyShown,
+            )
             setErrorMessages.push(
-              ...validators.presence(value, {
-                message: `Must have at least ${minSetEntries} ${
-                  minSetEntries === 1 ? 'entry' : 'entries'
-                }`,
+              ...validators.length(value, {
+                minimum: minSetEntries,
+                maximum: maxSetEntries,
+                tooLong: 'Cannot have more than %{count} entry/entries',
+                tooShort: 'Must have at least %{count} entry/entries',
               }),
             )
+            if (minSetEntries) {
+              setErrorMessages.push(
+                ...validators.presence(value, {
+                  message: `Must have at least ${minSetEntries} ${
+                    minSetEntries === 1 ? 'entry' : 'entries'
+                  }`,
+                }),
+              )
+            }
           }
 
           const entries = Array.isArray(value) ? value : []

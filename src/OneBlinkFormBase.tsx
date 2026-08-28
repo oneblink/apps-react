@@ -868,7 +868,11 @@ function OneBlinkFormBase({
       continueWhilstAttachmentsAreUploading: boolean,
     ) => {
       event.preventDefault()
-      if (disabled || isReadOnly) return
+      // Approvers are not shown a submit button, so reaching here means the
+      // browser submitted the form implicitly (e.g. Enter in a text input).
+      // Approving is driven separately, and continuing would send a
+      // submission analytics event and display validation messages.
+      if (disabled || isReadOnly || audience === 'APPROVER') return
       setHasAttemptedSubmit(true)
 
       setIsPreparingToSubmit(true)
@@ -916,6 +920,7 @@ function OneBlinkFormBase({
     [
       disabled,
       isReadOnly,
+      audience,
       prepareSubmission,
       allowNavigation,
       definition,
