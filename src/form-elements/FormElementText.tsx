@@ -12,6 +12,7 @@ import { ValidationIcon } from '../components/renderer/FormElementValidationMess
 type Props = {
   id: string
   element: FormTypes.TextElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -22,6 +23,7 @@ type Props = {
 function FormElementText({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -60,14 +62,14 @@ function FormElementText({
                 })
               }
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
               aria-required={element.required}
             />
           </div>
-          {!!element.readOnly && !!value && (
+          {!!readOnly && !!value && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -76,6 +78,7 @@ function FormElementText({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

@@ -55,6 +55,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
       executedLookups: ExecutedLookups,
       captchaType: CaptchaType,
       isOffline: boolean,
+      audience: FormTypes.FormElementHiddenFromAudience,
     ) => {
       return validateSubmission({
         elements: formElementsWithoutName,
@@ -63,6 +64,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
         executedLookups,
         captchaType,
         isOffline,
+        audience,
       })
     },
     [formElementsWithoutName],

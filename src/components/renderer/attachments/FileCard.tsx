@@ -11,6 +11,7 @@ import DropdownMenu from './DropdownMenu'
 
 type Props = {
   element: FormTypes.FilesElement
+  readOnly: boolean
   isUploading?: boolean
   isUploadPaused?: boolean
   uploadErrorMessage?: string
@@ -31,6 +32,7 @@ type Props = {
 
 function FileCard({
   element,
+  readOnly,
   isUploading,
   isUploadPaused,
   uploadErrorMessage,
@@ -78,7 +80,7 @@ function FileCard({
           </a>
         </div>
         <DropdownMenu
-          element={element}
+          readOnly={readOnly}
           onDownload={onDownload}
           onRetry={onRetry}
           onRemove={onRemove}

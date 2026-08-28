@@ -21,6 +21,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.DrawElement
+  readOnly: boolean
   value: FormElementBinaryStorageValue
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
@@ -30,6 +31,7 @@ type Props = {
 function FormElementSignature({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -61,11 +63,16 @@ function FormElementSignature({
           {value ? (
             <SignatureDisplay
               element={element}
+              readOnly={readOnly}
               value={value}
               onChange={handleChange}
             />
           ) : isPageVisible ? (
-            <SignatureDrawing element={element} onChange={handleChange} />
+            <SignatureDrawing
+              element={element}
+              readOnly={readOnly}
+              onChange={handleChange}
+            />
           ) : null}
         </div>
 
@@ -81,9 +88,11 @@ export default React.memo(FormElementSignature)
 
 const SignatureDrawing = React.memo(function SignatureDrawing({
   element,
+  readOnly,
   onChange,
 }: {
   element: Props['element']
+  readOnly: boolean
   onChange: Props['onChange']
 }) {
   const canvasRef = React.useRef<SignatureCanvas>(null)
@@ -136,12 +145,12 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
   // REACTIVE DISABLING OF CANVAS
   React.useEffect(() => {
     if (!canvasRef.current) return
-    if (element.readOnly) {
+    if (readOnly) {
       canvasRef.current.off()
     } else {
       canvasRef.current.on()
     }
-  }, [canvasRef, element.readOnly])
+  }, [canvasRef, readOnly])
 
   return (
     <>
@@ -153,7 +162,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
             className:
               'input ob-signature__control cypress-signature-control signature-pad',
             // @ts-expect-error ???
-            disabled: element.readOnly,
+            disabled: readOnly,
           }}
           onEnd={handleEndDraw}
           onBegin={
@@ -167,7 +176,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
           type="button"
           className="button ob-button is-light ob-button__clear cypress-clear-signature"
           onClick={handleClear}
-          disabled={element.readOnly || isEmpty}
+          disabled={readOnly || isEmpty}
         >
           Clear
         </button>
@@ -175,7 +184,7 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
           type="button"
           className="button ob-button ob-button__done is-primary cypress-done-signature-button"
           onClick={handleDone}
-          disabled={element.readOnly || isEmpty}
+          disabled={readOnly || isEmpty}
         >
           Save Signature
         </button>
@@ -186,10 +195,12 @@ const SignatureDrawing = React.memo(function SignatureDrawing({
 
 const SignatureDisplay = React.memo(function SignatureDisplay({
   element,
+  readOnly,
   value,
   onChange,
 }: {
   element: Props['element']
+  readOnly: boolean
   value: Props['value']
   onChange: Props['onChange']
 }) {
@@ -248,7 +259,7 @@ const SignatureDisplay = React.memo(function SignatureDisplay({
               value: undefined,
             })
           }
-          disabled={element.readOnly}
+          disabled={readOnly}
         >
           Clear
         </button>

@@ -39,6 +39,7 @@ export default function validateSubmission({
   executedLookups,
   captchaType,
   isOffline,
+  audience,
 }: {
   elements: FormTypes.FormElementWithName[]
   submission: SubmissionTypes.S3SubmissionData['submission']
@@ -46,6 +47,7 @@ export default function validateSubmission({
   executedLookups: ExecutedLookups
   captchaType: CaptchaType
   isOffline: boolean
+  audience: FormTypes.FormElementHiddenFromAudience
 }): FormElementsValidation | undefined {
   const formElementsValidation = elements.reduce<FormElementsValidation>(
     (partialFormElementsValidation, formElement) => {
@@ -99,6 +101,11 @@ export default function validateSubmission({
           break
         }
         case 'captcha': {
+          // An approver edit is not a new submission, so captchas are not
+          // rendered and must not be validated.
+          if (audience === 'APPROVER') {
+            break
+          }
           switch (captchaType) {
             case 'INVISIBLE':
               break
@@ -621,6 +628,7 @@ export default function validateSubmission({
                   : undefined,
               captchaType,
               isOffline,
+              audience,
             })
 
             if (entryValidation) {
@@ -652,6 +660,7 @@ export default function validateSubmission({
               executedLookups,
               captchaType,
               isOffline,
+              audience,
             },
           )
           if (nestedFormValidation) {
@@ -672,6 +681,7 @@ export default function validateSubmission({
               executedLookups,
               captchaType,
               isOffline,
+              audience,
             },
           )
           if (nestedFormValidation) {
@@ -692,6 +702,7 @@ export default function validateSubmission({
               executedLookups,
               captchaType,
               isOffline,
+              audience,
             },
           )
           if (nestedFormValidation) {

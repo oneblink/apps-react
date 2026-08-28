@@ -101,6 +101,7 @@ const validationExtensions = {
       executedLookups,
       captchaType,
       isOffline,
+      audience,
     }: {
       formElement: FormTypes.FormElementWithName
       formElements: FormTypes.FormElementWithName[] | undefined
@@ -108,6 +109,7 @@ const validationExtensions = {
       executedLookups: ExecutedLookups
       captchaType: CaptchaType
       isOffline: boolean
+      audience: FormTypes.FormElementHiddenFromAudience
     },
   ) {
     if (formElements) {
@@ -134,6 +136,7 @@ const validationExtensions = {
             : {},
         captchaType,
         isOffline,
+        audience,
       })
       if (errors) {
         return {

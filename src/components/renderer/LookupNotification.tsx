@@ -14,7 +14,6 @@ import {
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
-import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import useIsMounted from '../../hooks/useIsMounted'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import mergeExecutedLookups from '../../utils/merge-executed-lookups'
@@ -32,6 +31,7 @@ type Props = {
   autoLookupValue?: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
   element: FormTypes.LookupFormElement
+  readOnly: boolean
   onLookup: FormElementLookupHandler
   children: React.ReactNode
 }
@@ -40,6 +40,7 @@ function LookupNotificationComponent({
   autoLookupValue,
   stringifyAutoLookupValue,
   element,
+  readOnly,
   onLookup,
   children,
 }: Props) {
@@ -61,7 +62,6 @@ function LookupNotificationComponent({
   const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
     null,
   )
-  const formIsReadOnly = useFormIsReadOnly()
   const { formSubmissionModel: model } = useFormSubmissionModel()
 
   const formElementElementLookup = React.useMemo(() => {
@@ -183,8 +183,8 @@ function LookupNotificationComponent({
     LookupNotificationContextValue['onLookup']
   >(
     async ({ newValue, abortController, continueLookupOnAbort }) => {
-      // No lookups for read only forms
-      if (formIsReadOnly) return
+      // No lookups for read only elements
+      if (readOnly) return
 
       setIsLookingUp(true)
 
@@ -289,7 +289,7 @@ function LookupNotificationComponent({
       excludeDefinition,
       formElementDataLookup,
       formElementElementLookup,
-      formIsReadOnly,
+      readOnly,
       isMounted,
       isNotStaticLookup,
       isOffline,

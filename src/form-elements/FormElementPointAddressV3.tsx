@@ -16,6 +16,7 @@ type Props = {
   formId: number
   id: string
   element: FormTypes.PointAddressV3Element
+  readOnly: boolean
   value: PointTypes.PointAddressV3GetAddressDetailsResponse | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -30,6 +31,7 @@ function FormElementPointAddressV3({
   formId,
   id,
   element,
+  readOnly,
   value,
   displayValidationMessage,
   validationMessage,
@@ -147,7 +149,7 @@ function FormElementPointAddressV3({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly || isLoadingAddressDetails}
+          disabled={readOnly || isLoadingAddressDetails}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

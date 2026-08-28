@@ -15,6 +15,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.NumberElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<number>
   displayValidationMessage: boolean
@@ -25,6 +26,7 @@ type Props = {
 function FormElementNumber({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -91,7 +93,7 @@ function FormElementNumber({
                 className="input ob-input cypress-number-control"
                 onChange={handleChange}
                 required={element.required}
-                disabled={element.readOnly}
+                disabled={readOnly}
                 onBlur={setIsDirty}
                 ref={htmlInputElementRef}
                 onWheel={handleWheel}
@@ -105,7 +107,7 @@ function FormElementNumber({
                 </MaterialIcon>
               </span>
             </div>
-            {!!element.readOnly && !!text && (
+            {!!readOnly && !!text && (
               <div className="control">
                 <CopyToClipboardButton
                   className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -114,6 +116,7 @@ function FormElementNumber({
               </div>
             )}
             <LookupButton
+              readOnly={readOnly}
               isInputButton
               value={value}
               validationMessage={validationMessage}
@@ -127,6 +130,7 @@ function FormElementNumber({
             text={text}
             value={value}
             element={element}
+            readOnly={readOnly}
             onChange={handleChange}
             onBlur={setIsDirty}
             ariaDescribedby={ariaDescribedby}
@@ -148,6 +152,7 @@ const SliderControl = React.memo(function SliderControl({
   text,
   value,
   element,
+  readOnly,
   onChange,
   onBlur,
   ariaDescribedby,
@@ -156,6 +161,7 @@ const SliderControl = React.memo(function SliderControl({
   text: string
   value: unknown
   element: FormTypes.NumberElement
+  readOnly: boolean
   ariaDescribedby: string | undefined
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => unknown
   onBlur: () => void
@@ -232,7 +238,7 @@ const SliderControl = React.memo(function SliderControl({
         required={element.required}
         aria-describedby={ariaDescribedby}
         aria-required={element.required}
-        disabled={element.readOnly}
+        disabled={readOnly}
         onBlur={onBlur}
       />
     </div>

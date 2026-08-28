@@ -17,6 +17,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.ABNElement
+  readOnly: boolean
   value: MiscTypes.ABNRecord | undefined
   onChange: FormElementValueChangeHandler<MiscTypes.ABNRecord>
   displayValidationMessage: boolean
@@ -27,6 +28,7 @@ type Props = {
 function FormElementABN({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -205,7 +207,7 @@ function FormElementABN({
       error) &&
     !isLookingUp
 
-  const hasCopyButton = !!value && !!element.readOnly
+  const hasCopyButton = !!value && !!readOnly
   const hasLookupButton = element.isDataLookup || element.isElementLookup
   return (
     <div className="cypress-abn-element">
@@ -243,7 +245,7 @@ function FormElementABN({
                 }
               }}
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onBlur={() => {
                 setIsDirty()
                 removeFocus()
@@ -266,6 +268,7 @@ function FormElementABN({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

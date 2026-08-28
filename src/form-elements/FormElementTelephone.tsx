@@ -13,6 +13,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.TelephoneElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -23,6 +24,7 @@ type Props = {
 function FormElementTelephone({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -61,7 +63,7 @@ function FormElementTelephone({
                 })
               }
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
@@ -71,7 +73,7 @@ function FormElementTelephone({
               <MaterialIcon className="is-size-5">phone</MaterialIcon>
             </span>
           </div>
-          {!!element.readOnly && !!value && (
+          {!!readOnly && !!value && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -80,6 +82,7 @@ function FormElementTelephone({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

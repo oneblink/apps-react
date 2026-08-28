@@ -12,6 +12,10 @@ export default class OneBlinkAppsError extends Error {
   httpStatusCode?: number
   /** The original error that was thrown */
   originalError?: Error
+  /**
+   * Machine-readable conflict from the API error payload, when present.
+   */
+  conflict?: string
 
   /**
    * Used to create an instance of the `OneBlinkAppsError` class.
@@ -34,6 +38,10 @@ export default class OneBlinkAppsError extends Error {
       httpStatusCode?: number
       /** The original error that was thrown */
       originalError?: Error
+      /**
+       * Machine-readable conflict from the API error payload, when present.
+       */
+      conflict?: string
     } = {},
   ) {
     super(message)
@@ -56,5 +64,6 @@ export default class OneBlinkAppsError extends Error {
     this.requiresLogin = options.requiresLogin || false
     this.originalError = options.originalError
     this.httpStatusCode = options.httpStatusCode
+    this.conflict = options.conflict
   }
 }

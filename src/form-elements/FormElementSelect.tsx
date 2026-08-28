@@ -19,6 +19,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.SelectElement
+  readOnly: boolean
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<string | string[]>
   displayValidationMessage: boolean
@@ -33,6 +34,7 @@ type Props = {
 function FormElementSelect({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -80,7 +82,7 @@ function FormElementSelect({
               element={element}
               options={filteredOptions}
               selected={selectedValuesAsArray}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onChange={onChange as FormElementValueChangeHandler<string[]>}
             />
           )}
@@ -99,7 +101,7 @@ function FormElementSelect({
                       })
                     }
                     required={element.required}
-                    disabled={element.readOnly}
+                    disabled={readOnly}
                     onBlur={setIsDirty}
                     aria-describedby={ariaDescribedby}
                     autoComplete={autocompleteAttributes}
@@ -133,7 +135,7 @@ function FormElementSelect({
                   })
                 }}
                 required={element.required}
-                disabled={element.readOnly}
+                disabled={readOnly}
                 onBlur={setIsDirty}
                 aria-describedby={ariaDescribedby}
                 aria-required={element.required}
@@ -146,6 +148,7 @@ function FormElementSelect({
               </select>
 
               <LookupButton
+                readOnly={readOnly}
                 hasMarginTop
                 value={value}
                 validationMessage={validationMessage}

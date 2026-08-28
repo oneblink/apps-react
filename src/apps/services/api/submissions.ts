@@ -7,6 +7,7 @@ import { getUserToken } from '../user-token'
 import generateOneBlinkUploader from '../generateOneBlinkUploader'
 import { OneBlinkStorageError } from '@oneblink/storage'
 import generateOneBlinkDownloader from '../generateOneBlinkDownloader'
+import { FormTypes, SubmissionTypes } from '@oneblink/types'
 
 const getBadRequestError = (error: OneBlinkStorageError) => {
   return new OneBlinkAppsError(error.message, {
@@ -78,6 +79,13 @@ const handleError = (error: OneBlinkStorageError) => {
     case 404: {
       return getNotFoundError(error)
     }
+    case 409: {
+      return new OneBlinkAppsError(error.message, {
+        originalError: error,
+        httpStatusCode: error.httpStatusCode,
+        conflict: error.conflict,
+      })
+    }
     default: {
       return getDefaultError(error)
     }
@@ -127,27 +135,66 @@ export async function uploadFormSubmission(
   }
 }
 
+export async function uploadFormSubmissionEdit({
+  submission,
+  definition,
+  submissionId,
+  context,
+  editedS3ObjectVersionId,
+  onProgress,
+  abortSignal,
+}: {
+  submission: SubmissionTypes.NewS3SubmissionData['submission']
+  definition: FormTypes.Form
+  submissionId: string
+  context: SubmissionTypes.FormSubmissionMetaEditContext
+  editedS3ObjectVersionId: string
+  onProgress?: ProgressListener
+  abortSignal?: AbortSignal
+}) {
+  try {
+    const oneblinkUploader = generateOneBlinkUploader()
+    return await oneblinkUploader.uploadFormSubmissionEdit({
+      submission,
+      definition,
+      device: getDeviceInformation(),
+      completionTimestamp: new Date().toISOString(),
+      submissionId,
+      context,
+      editedS3ObjectVersionId,
+      onProgress,
+      abortSignal,
+    })
+  } catch (error) {
+    throw handleError(error as OneBlinkStorageError)
+  }
+}
+
 export async function downloadFormSubmission({
   formId,
   submissionId,
   abortSignal,
+  versionId,
 }: {
   formId: number
   submissionId: string
   abortSignal?: AbortSignal
+  versionId?: string
 }) {
   try {
     console.log('Attempting to download form submission data:', {
       formId,
       submissionId,
+      versionId,
     })
     const oneblinkDownloader = generateOneBlinkDownloader()
-    const submissionData = await oneblinkDownloader.downloadSubmission({
+    const result = await oneblinkDownloader.downloadSubmission({
       formId,
       submissionId,
       abortSignal,
+      versionId,
     })
-    if (!submissionData) {
+    if (!result) {
       throw new OneBlinkAppsError(
         "This submission has been removed based on your administrator's retention policy.",
         {
@@ -155,7 +202,18 @@ export async function downloadFormSubmission({
         },
       )
     }
-    return submissionData
+    if (!result.versionId) {
+      throw new OneBlinkAppsError(
+        'The submission version could not be determined. Please reload and try again.',
+        {
+          title: 'Submission Version Unavailable',
+        },
+      )
+    }
+    return {
+      data: result.data,
+      versionId: result.versionId,
+    }
   } catch (error) {
     console.error('Error retrieving form submission data', error)
 

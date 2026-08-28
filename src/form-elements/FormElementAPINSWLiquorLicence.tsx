@@ -17,6 +17,7 @@ type Props = {
   formId: number
   id: string
   element: FormTypes.APINSWLiquorLicenceElement
+  readOnly: boolean
   value: APINSWTypes.LiquorLicenceDetails | undefined
   onChange: FormElementValueChangeHandler<APINSWTypes.LiquorLicenceDetails>
   displayValidationMessage: boolean
@@ -29,6 +30,7 @@ function FormElementAPINSWLiquorLicence({
   formId,
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -131,7 +133,7 @@ function FormElementAPINSWLiquorLicence({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly || isLoading}
+          disabled={readOnly || isLoading}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

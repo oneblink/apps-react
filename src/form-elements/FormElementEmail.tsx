@@ -13,6 +13,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.EmailElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -23,6 +24,7 @@ type Props = {
 function FormElementEmail({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -60,7 +62,7 @@ function FormElementEmail({
                 })
               }
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}
@@ -70,7 +72,7 @@ function FormElementEmail({
               <MaterialIcon className="is-size-5">email</MaterialIcon>
             </span>
           </div>
-          {!!element.readOnly && !!value && (
+          {!!readOnly && !!value && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -79,6 +81,7 @@ function FormElementEmail({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

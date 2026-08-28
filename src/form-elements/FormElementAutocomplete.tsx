@@ -18,6 +18,7 @@ import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 type _BaseProps = {
   id: string
   element: FormTypes.AutoCompleteElement
+  readOnly: boolean
   value: unknown | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -51,6 +52,7 @@ type Props = _BaseProps &
 const AutocompleteFilter = React.memo(function AutocompleteFilter({
   id,
   element,
+  readOnly,
   value,
   onChange,
   conditionallyShownOptionsElement,
@@ -126,7 +128,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
           <AutocompleteDropdown
             id={id}
             label={label}
-            disabled={element.readOnly}
+            disabled={readOnly}
             placeholder={element.placeholderValue}
             required={element.required}
             value={value}
@@ -151,6 +153,7 @@ const AutocompleteFilter = React.memo(function AutocompleteFilter({
 const AutocompleteFetch = React.memo(function AutocompleteFetch({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -204,7 +207,7 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly}
+          disabled={readOnly}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

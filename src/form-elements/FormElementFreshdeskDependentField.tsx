@@ -83,6 +83,7 @@ function FormElementFreshdeskDependentField({
   return (
     <FormElementForm
       element={formFormElement}
+      readOnlyOverrideChildren
       onUpdateFormElements={handleUpdateNestedFormElements}
       {...props}
     />

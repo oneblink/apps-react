@@ -18,6 +18,7 @@ const StyledTextareaAutosize = styled(TextareaAutosize)(() => ({
 type Props = {
   id: string
   element: FormTypes.TextareaElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -28,6 +29,7 @@ type Props = {
 function FormElementTextarea({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -38,7 +40,7 @@ function FormElementTextarea({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const text = typeof value === 'string' ? value : ''
-  const isDisplayingCopyButton = !!element.readOnly && !!value
+  const isDisplayingCopyButton = !!readOnly && !!value
   const isDisplayingLookupButton =
     !!element.isDataLookup || !!element.isElementLookup
 
@@ -67,7 +69,7 @@ function FormElementTextarea({
               })
             }
             required={element.required}
-            disabled={element.readOnly}
+            disabled={readOnly}
             onBlur={setIsDirty}
             aria-describedby={ariaDescribedby}
             autoComplete={autocompleteAttributes}
@@ -116,6 +118,7 @@ function FormElementTextarea({
             )}
             {isDisplayingLookupButton && (
               <LookupButton
+                readOnly={readOnly}
                 value={value}
                 validationMessage={validationMessage}
                 lookupButtonConfig={element.lookupButton}

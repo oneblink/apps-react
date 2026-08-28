@@ -546,6 +546,7 @@ function OneBlinkFormBase({
             executedLookups ?? {},
             recaptchaType,
             isOffline,
+            audience,
           )
         : undefined,
     [
@@ -556,6 +557,7 @@ function OneBlinkFormBase({
       executedLookups,
       recaptchaType,
       isOffline,
+      audience,
     ],
   )
 
@@ -1481,7 +1483,7 @@ function OneBlinkFormBase({
                             </div>
                           )}
                         </div>
-                        {!isReadOnly && (
+                        {!isReadOnly && audience !== 'APPROVER' && (
                           <div className="buttons ob-buttons ob-buttons-submit">
                             {onSaveDraft && !isInfoPage && (
                               <button
@@ -1555,7 +1557,10 @@ function OneBlinkFormBase({
                       </div>
                     </form>
 
-                    {!isReadOnly && !isPreview && (
+                    {/* Approvers have no submit or cancel buttons, and
+                    navigate via the approvals app's own actions, so the form
+                    must not guard navigation or prompt about submitting. */}
+                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
                       <React.Fragment>
                         <Prompt
                           when={isDirty && !isNavigationAllowed}

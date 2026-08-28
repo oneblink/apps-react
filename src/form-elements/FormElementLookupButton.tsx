@@ -21,6 +21,7 @@ type ValidationMessageProps = {
 type Props = {
   id: string
   element: FormTypes.LookupButtonFormElement
+  readOnly: boolean
 } & ValidationMessageProps
 
 function stringifyLookupButtonValue(v: unknown): string {
@@ -50,6 +51,7 @@ const FormElementLookupButtonValidationMessage = memo(
 function FormElementLookupButton({
   id,
   element,
+  readOnly,
   onChange,
   onLookup,
   validationMessage,
@@ -86,10 +88,13 @@ function FormElementLookupButton({
   }, [data])
 
   useEffect(() => {
+    if (readOnly) {
+      return
+    }
     onChange(element, {
       value: false,
     })
-  }, [element, onChange, stringifyData])
+  }, [element, onChange, readOnly, stringifyData])
 
   const value = useMemo(() => {
     // Want the value to be `true` if there is data or if there are
@@ -102,6 +107,7 @@ function FormElementLookupButton({
 
   return (
     <LookupNotification
+      readOnly={readOnly}
       autoLookupValue={isAutoLookup ? stringifyData : undefined}
       element={element}
       onLookup={handleLookup}
@@ -115,6 +121,7 @@ function FormElementLookupButton({
           required={false}
         >
           <LookupButton
+            readOnly={readOnly}
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
