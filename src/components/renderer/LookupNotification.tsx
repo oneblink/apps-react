@@ -14,6 +14,7 @@ import {
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
+import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import useIsMounted from '../../hooks/useIsMounted'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import mergeExecutedLookups from '../../utils/merge-executed-lookups'
@@ -31,7 +32,6 @@ type Props = {
   autoLookupValue?: unknown
   stringifyAutoLookupValue?: (autoLookupValue: unknown) => string
   element: FormTypes.LookupFormElement
-  readOnly: boolean
   onLookup: FormElementLookupHandler
   children: React.ReactNode
 }
@@ -40,7 +40,6 @@ function LookupNotificationComponent({
   autoLookupValue,
   stringifyAutoLookupValue,
   element,
-  readOnly,
   onLookup,
   children,
 }: Props) {
@@ -63,6 +62,7 @@ function LookupNotificationComponent({
     null,
   )
   const { formSubmissionModel: model } = useFormSubmissionModel()
+  const formIsReadOnly = useFormIsReadOnly()
 
   const formElementElementLookup = React.useMemo(() => {
     return formElementLookups.find(
@@ -183,8 +183,13 @@ function LookupNotificationComponent({
     LookupNotificationContextValue['onLookup']
   >(
     async ({ newValue, abortController, continueLookupOnAbort }) => {
-      // No lookups for read only elements
-      if (readOnly) return
+      // Skip lookups only when the whole form is locked (e.g. a read-only
+      // review). Do not use this element's `readOnly` flag: a locked field
+      // with a prefill or default value must still auto-lookup so related
+      // fields populate on a normal submitter form. The Lookup button is
+      // already disabled at the element level, which is the user-facing
+      // restriction.
+      if (formIsReadOnly) return
 
       setIsLookingUp(true)
 
@@ -289,7 +294,7 @@ function LookupNotificationComponent({
       excludeDefinition,
       formElementDataLookup,
       formElementElementLookup,
-      readOnly,
+      formIsReadOnly,
       isMounted,
       isNotStaticLookup,
       isOffline,

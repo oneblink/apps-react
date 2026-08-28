@@ -7,6 +7,7 @@ import { formElementsService } from '@oneblink/sdk-core'
 import { parseLocationValue } from '../../form-elements/FormElementLocation'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormDefinition from '../../hooks/useFormDefinition'
+import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormElementValueChangeHandler } from '../../types/form'
 
 type ReverseGeocodeContextValue = {
@@ -21,13 +22,11 @@ const ReverseGeocodeContext = React.createContext<ReverseGeocodeContextValue>({
 export default function ReverseGeocode({
   value,
   element,
-  readOnly,
   onChange,
   children,
 }: React.PropsWithChildren<{
   value: unknown
   element: FormTypes.LocationElement
-  readOnly: boolean
   onChange: FormElementValueChangeHandler<
     GeoscapeTypes.GeoscapeAddress | string
   >
@@ -40,6 +39,7 @@ export default function ReverseGeocode({
 
   const formDefinition = useFormDefinition()
   const formSubmissionModel = useFormSubmissionModel()
+  const formIsReadOnly = useFormIsReadOnly()
 
   const formattedAddressElement = React.useMemo(() => {
     if (element.reverseGeocoding?.formattedAddressElementId) {
@@ -55,7 +55,10 @@ export default function ReverseGeocode({
   ])
 
   React.useEffect(() => {
-    if (readOnly || !coords || !formattedAddressElement) {
+    // Skip reverse geocoding only when the whole form is locked. A location
+    // element with `readOnly: true` still reverse-geocodes from a prefill or
+    // default so the formatted-address field can populate on submitter forms.
+    if (formIsReadOnly || !coords || !formattedAddressElement) {
       return
     }
 
@@ -117,7 +120,7 @@ export default function ReverseGeocode({
   }, [
     coords,
     formDefinition.id,
-    readOnly,
+    formIsReadOnly,
     formattedAddressElement,
     onChange,
   ])

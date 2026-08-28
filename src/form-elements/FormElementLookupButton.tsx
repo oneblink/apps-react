@@ -107,7 +107,6 @@ function FormElementLookupButton({
 
   return (
     <LookupNotification
-      readOnly={readOnly}
       autoLookupValue={isAutoLookup ? stringifyData : undefined}
       element={element}
       onLookup={handleLookup}

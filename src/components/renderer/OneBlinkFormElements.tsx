@@ -418,7 +418,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'date': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -442,7 +441,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'email': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -467,7 +465,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'text': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -492,7 +489,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'abn': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -517,7 +513,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'bsb': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -543,7 +538,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'barcodeScanner': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -568,7 +562,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'textarea': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -593,7 +586,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'number': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -618,7 +610,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'telephone': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -643,7 +634,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'autocomplete': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -671,7 +661,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'select': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={!element.multi ? value : undefined}
           element={element}
           onLookup={onLookup}
@@ -699,7 +688,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'radio': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -789,7 +777,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'datetime': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -813,7 +800,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'time': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -837,7 +823,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'checkboxes': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
         >
@@ -863,7 +848,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'files': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           element={element}
           onLookup={onLookup}
           autoLookupValue={value}
@@ -964,7 +948,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'location': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           stringifyAutoLookupValue={
             stringifyLocation as React.ComponentProps<
@@ -975,7 +958,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
           onLookup={onLookup}
         >
           <ReverseGeocode
-            readOnly={readOnly}
             value={value}
             element={element}
             onChange={
@@ -1006,7 +988,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as GeoscapeTypes.GeoscapeAddress | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1033,7 +1014,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'compliance': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           stringifyAutoLookupValue={stringifyComplianceValue}
           element={element}
@@ -1088,7 +1068,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as PointTypes.PointCadastralParcelResponse | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1116,7 +1095,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as PointTypes.PointAddress | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1146,7 +1124,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
         | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1174,7 +1151,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as GoogleTypes.GoogleMapsAddress | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1201,7 +1177,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
     case 'boolean': {
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1227,7 +1202,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as CivicaTypes.CivicaStreetName | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1280,7 +1254,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as APINSWTypes.LiquorLicenceDetails | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}
@@ -1308,7 +1281,6 @@ const FormElementSwitch = React.memo(function OneBlinkFormElement({
       const v = value as ArcGISWebMapElementValue | undefined
       return (
         <LookupNotification
-          readOnly={readOnly}
           autoLookupValue={value}
           element={element}
           onLookup={onLookup}

@@ -46,6 +46,8 @@ function LookupButton({
       )}
       onClick={() => onLookup()}
       disabled={
+        // Element-level readOnly only disables the button. Auto-lookups still
+        // run from LookupNotification when the field is locked but has a value.
         readOnly ||
         isDisabled ||
         isLoading ||
