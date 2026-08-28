@@ -20,9 +20,12 @@ function textElement(
 
 describe('isElementReadOnlyForAudience', () => {
   test('never locks elements for submitters', () => {
-    expect(isElementReadOnlyForAudience(textElement('locked'), 'SUBMITTER')).toBe(
-      false,
-    )
+    expect(
+      isElementReadOnlyForAudience(
+        textElement('locked', { readOnly: true }),
+        'SUBMITTER',
+      ),
+    ).toBe(false)
   })
 
   test('locks elements not configured for approver editing', () => {

@@ -1,6 +1,10 @@
 import { FormTypes } from '@oneblink/types'
 
-export function isApproverEditable(element: FormTypes.FormElement): boolean {
+type ElementWithEditability =
+  | FormTypes.FormElement
+  | FormTypes.LookupFormElement
+
+export function isApproverEditable(element: ElementWithEditability): boolean {
   return (
     'approverEditability' in element &&
     element.approverEditability?.type === 'ALL_STEPS'
@@ -27,7 +31,7 @@ function hasApproverEditableElement(
  * validating what an audience has no way to correct.
  */
 export function isElementEditableForAudience(
-  element: FormTypes.FormElement,
+  element: ElementWithEditability,
   audience: FormTypes.FormElementHiddenFromAudience,
 ): boolean {
   if (audience !== 'APPROVER') {
@@ -50,14 +54,17 @@ export function isElementEditableForAudience(
  * interactive while they contain an approver editable element.
  */
 export default function isElementReadOnlyForAudience(
-  element: FormTypes.FormElement,
+  element: ElementWithEditability,
   audience: FormTypes.FormElementHiddenFromAudience,
 ): boolean {
   if (audience !== 'APPROVER') {
     return false
   }
 
-  if (element.type === 'form' || element.type === 'infoPage') {
+  if (
+    'type' in element &&
+    (element.type === 'form' || element.type === 'infoPage')
+  ) {
     return (
       !isApproverEditable(element) &&
       !hasApproverEditableElement(element.elements || [])
