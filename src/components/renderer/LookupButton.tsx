@@ -7,7 +7,6 @@ import MaterialIcon from '../MaterialIcon'
 
 type Props = {
   value: unknown | undefined
-  readOnly: boolean
   validationMessage: string | undefined
   hasMarginTop?: boolean
   isInputButton?: boolean
@@ -17,15 +16,20 @@ type Props = {
 
 function LookupButton({
   value,
-  readOnly,
   validationMessage,
   hasMarginTop,
   isInputButton,
   lookupButtonConfig,
   overrideRequiredMessage,
 }: Props) {
-  const { isLookup, onLookup, isDisabled, isLoading, allowLookupOnEmptyValue } =
-    useLookupNotification(value)
+  const {
+    isLookup,
+    onLookup,
+    isLookupRequestInFlight,
+    isLoading,
+    allowLookupOnEmptyValue,
+    areLookupsDisallowed,
+  } = useLookupNotification(value)
   if (!isLookup) {
     return null
   }
@@ -46,10 +50,11 @@ function LookupButton({
       )}
       onClick={() => onLookup()}
       disabled={
-        // Element-level readOnly only disables the button. Auto-lookups still
-        // run from LookupNotification when the field is locked but has a value.
-        readOnly ||
-        isDisabled ||
+        // Deliberately not the element's own `readOnly` flag: a locked field
+        // populated by a previous lookup still needs its button to run the
+        // next lookup in the chain.
+        areLookupsDisallowed ||
+        isLookupRequestInFlight ||
         isLoading ||
         (isEmptyValue && !allowLookupOnEmptyValue) ||
         (!isEmptyValue &&

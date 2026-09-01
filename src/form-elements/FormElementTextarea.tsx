@@ -118,7 +118,6 @@ function FormElementTextarea({
             )}
             {isDisplayingLookupButton && (
               <LookupButton
-                readOnly={readOnly}
                 value={value}
                 validationMessage={validationMessage}
                 lookupButtonConfig={element.lookupButton}

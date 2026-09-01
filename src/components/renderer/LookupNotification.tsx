@@ -59,7 +59,8 @@ function LookupNotificationComponent({
   const [hasLookupFailed, setHasLookupFailed] = React.useState(false)
   const [hasLookupSucceeded, setHasLookupSucceeded] = React.useState(false)
   const [isCancellable, setIsCancellable] = React.useState(false)
-  const [isDisabled, setIsDisabled] = React.useState(false)
+  const [isLookupRequestInFlight, setIsLookupRequestInFlight] =
+    React.useState(false)
   const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
     null,
   )
@@ -174,6 +175,15 @@ function LookupNotificationComponent({
     [element, injectPagesAfter, onLookup],
   )
 
+  // Definition-level `readOnly` must not suppress lookups for a submitter:
+  // prefills and defaults still need to populate related fields, and a locked
+  // field can still be the input to a chained lookup. Approver locks are
+  // different. Re-running a lookup from an existing submitted value could
+  // overwrite persisted answers merely by opening the review, so only approver
+  // editable elements may run one.
+  const areLookupsDisallowed =
+    formIsReadOnly || isElementReadOnlyForAudience(element, audience)
+
   const isNotStaticLookup = React.useMemo(() => {
     return (
       (formElementDataLookup && formElementDataLookup.type !== 'STATIC_DATA') ||
@@ -186,15 +196,7 @@ function LookupNotificationComponent({
     LookupNotificationContextValue['onLookup']
   >(
     async ({ newValue, abortController, continueLookupOnAbort }) => {
-      // Definition-level `readOnly` must not suppress auto-lookups for a
-      // submitter: prefills and defaults still need to populate related
-      // fields. Approver locks are different. Re-running a lookup from an
-      // existing submitted value could overwrite persisted answers merely by
-      // opening the review, so only approver-editable elements may run one.
-      if (
-        formIsReadOnly ||
-        isElementReadOnlyForAudience(element, audience)
-      ) {
+      if (areLookupsDisallowed) {
         return
       }
 
@@ -205,7 +207,7 @@ function LookupNotificationComponent({
         return
       }
 
-      setIsDisabled(true)
+      setIsLookupRequestInFlight(true)
       setIsCancellable(false)
       setHasLookupFailed(false)
       setHasLookupSucceeded(false)
@@ -290,19 +292,18 @@ function LookupNotificationComponent({
       } finally {
         clearTimeout(isCancellableTimeout)
         if (isMounted.current) {
-          setIsDisabled(false)
+          setIsLookupRequestInFlight(false)
           setOnCancelLookup(undefined)
         }
       }
     },
     [
-      audience,
       definition,
       element,
       excludeDefinition,
       formElementDataLookup,
       formElementElementLookup,
-      formIsReadOnly,
+      areLookupsDisallowed,
       isMounted,
       isNotStaticLookup,
       isOffline,
@@ -367,13 +368,21 @@ function LookupNotificationComponent({
   const contextValue = React.useMemo(
     () => ({
       isLookup: true,
-      isDisabled,
+      isLookupRequestInFlight,
       isLoading,
       onLookup: triggerLookup,
       allowLookupOnEmptyValue: runLookupOnClear,
       isLookingUp,
+      areLookupsDisallowed,
     }),
-    [isDisabled, isLoading, runLookupOnClear, triggerLookup, isLookingUp],
+    [
+      isLookupRequestInFlight,
+      isLoading,
+      runLookupOnClear,
+      triggerLookup,
+      isLookingUp,
+      areLookupsDisallowed,
+    ],
   )
 
   return (
@@ -444,7 +453,7 @@ function LookupNotificationComponent({
                             'fade-in button is-primary ob-lookup__retry-button cypress-retry-lookup-button has-margin-top-8',
                           )}
                           onClick={() => retryLookup()}
-                          disabled={isDisabled || isLoading}
+                          disabled={isLookupRequestInFlight || isLoading}
                           aria-label="lookup-retry-button"
                         >
                           <span></span>

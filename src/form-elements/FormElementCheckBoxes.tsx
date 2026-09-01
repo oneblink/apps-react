@@ -211,7 +211,6 @@ function FormElementCheckboxes({
           )}
 
           <LookupButton
-            readOnly={readOnly}
             hasMarginTop
             value={value}
             validationMessage={validationMessage}
