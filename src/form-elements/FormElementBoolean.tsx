@@ -10,6 +10,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.BooleanElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<boolean>
   displayValidationMessage: boolean
@@ -19,6 +20,7 @@ type Props = {
 function FormElementBoolean({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -54,7 +56,7 @@ function FormElementBoolean({
                   value: e.target.checked,
                 })
               }}
-              disabled={element.readOnly}
+              disabled={readOnly}
               edge="start"
               inputProps={{
                 'aria-describedby': ariaDescribedby,
@@ -73,7 +75,7 @@ function FormElementBoolean({
                 checked: 'ob-boolean__input-checked',
               }}
               checked={!!value}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onChange={(e) => {
                 setIsDirty()
                 onChange(element, {

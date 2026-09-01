@@ -327,9 +327,16 @@ export function useLoadDynamicOptionsEffect(
               break
             }
             case 'OPTIONS': {
+              const existingOptionsElement =
+                typeCastService.formElements.toOptionsElement(
+                  existingFormElement,
+                )
+              if (!existingOptionsElement) {
+                return existingFormElement
+              }
               return formService.parseFormElementOptions(
                 form,
-                formElement,
+                existingOptionsElement,
                 optionsSetResult.result.options,
               )
             }

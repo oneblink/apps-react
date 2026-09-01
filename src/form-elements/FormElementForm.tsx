@@ -11,12 +11,31 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import ElementDOMId from '../utils/elementDOMIds'
-import { recursivelySetReadOnly } from '../OneBlinkReadOnlyForm'
 
 export type Props = {
   formId: number
   id: string
   element: FormTypes.FormFormElement
+  /**
+   * Whether this nested form is locked for the current audience or inherited
+   * read-only state. Used as `readOnlyOverride` for synthetic children when
+   * `readOnlyOverrideChildren` is set. Nested fields do not inherit this
+   * value as a blanket lock so an `ALL_STEPS` child can stay editable.
+   */
+  readOnly: boolean
+  /**
+   * Lock to apply to nested fields (`OneBlinkFormElements.readOnly` /
+   * `parentReadOnly`). True when the whole form is read-only, a parent is
+   * read-only, or this element’s definition has `readOnly: true`. Does not
+   * include this nested form’s audience lock.
+   */
+  childrenReadOnly: boolean
+  /**
+   * When true, nested fields use this element’s `readOnly` (including
+   * audience lock) as `readOnlyOverride` instead of calculating their own.
+   * Used by Civica name records and Freshdesk dependent fields.
+   */
+  readOnlyOverrideChildren?: boolean
   value: SubmissionTypes.S3SubmissionData['submission'] | undefined
   onChange: NestedFormElementValueChangeHandler<
     SubmissionTypes.S3SubmissionData['submission']
@@ -32,6 +51,9 @@ export type Props = {
 function FormElementForm({
   formId,
   element,
+  readOnly,
+  childrenReadOnly,
+  readOnlyOverrideChildren,
   value,
   id,
   formElementValidation,
@@ -167,15 +189,12 @@ function FormElementForm({
       : undefined
   }, [formElementConditionallyShown])
 
-  const parentElement = React.useMemo(() => {
-    return {
-      elements: Array.isArray(element.elements)
-        ? element.readOnly
-          ? recursivelySetReadOnly(element.elements)
-          : element.elements
-        : [],
-    }
-  }, [element.elements, element.readOnly])
+  const parentElement = React.useMemo(
+    () => ({
+      elements: Array.isArray(element.elements) ? element.elements : [],
+    }),
+    [element.elements],
+  )
 
   const handleUpdateNestedFormElements =
     React.useCallback<UpdateFormElementsHandler>(
@@ -212,6 +231,8 @@ function FormElementForm({
       formElementsConditionallyShown={formElementsConditionallyShown}
       model={value || {}}
       parentElement={parentElement}
+      readOnly={childrenReadOnly}
+      readOnlyOverride={readOnlyOverrideChildren ? readOnly : undefined}
       idPrefix={elementDOMId.subFormDOMIdPrefix}
       onUpdateFormElements={handleUpdateNestedFormElements}
       sectionState={sectionState}

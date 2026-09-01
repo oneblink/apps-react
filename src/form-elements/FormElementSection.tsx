@@ -30,14 +30,21 @@ function sectionStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
 
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
+  childrenReadOnly,
   onLookup,
   displayValidationMessages,
   onUpdateFormElements,
   sectionHeaderId,
   sectionState = [],
   ...props
-}: Omit<Props<T>, 'elements'> & {
+}: Omit<Props<T>, 'elements' | 'readOnly'> & {
   element: FormTypes.SectionElement
+  /**
+   * Lock to apply to nested fields. True when the whole form is read-only
+   * or a parent is read-only. Does not include this section’s audience
+   * lock, so an `ALL_STEPS` child can stay editable.
+   */
+  childrenReadOnly: boolean
   sectionHeaderId: string
   sectionState?: SectionState
 }) {
@@ -214,6 +221,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
         >
           <OneBlinkFormElements
             {...props}
+            readOnly={childrenReadOnly}
             displayValidationMessages={displayValidationMessage}
             onLookup={handleLookup}
             elements={element.elements}

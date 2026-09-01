@@ -21,6 +21,7 @@ function FormElementPointCadastralParcel({
   id,
   formId,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -32,6 +33,7 @@ function FormElementPointCadastralParcel({
   id: string
   formId: number
   element: FormTypes.PointCadastralParcelElement
+  readOnly: boolean
   value: PointTypes.PointCadastralParcelResponse | undefined
   onChange: FormElementValueChangeHandler<PointTypes.PointCadastralParcelResponse>
   displayValidationMessage: boolean
@@ -118,7 +120,7 @@ function FormElementPointCadastralParcel({
       error) &&
     !isLookingUp
 
-  const hasCopyButton = !!value && !!element.readOnly
+  const hasCopyButton = !!value && !!readOnly
   return (
     <div className="cypress-point-cadastral-parcel-element">
       <FormElementLabelContainer
@@ -154,7 +156,7 @@ function FormElementPointCadastralParcel({
                 }
               }}
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onBlur={setIsDirty}
               aria-describedby={ariaDescribedby}
               autoComplete={autocompleteAttributes}

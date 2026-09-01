@@ -36,6 +36,7 @@ import Layer from '@arcgis/core/layers/Layer'
 
 type Props = {
   element: FormTypes.ArcGISWebMapElement
+  readOnly: boolean
   id: string
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
@@ -113,6 +114,7 @@ function DrawingOptionsList({
 
 function FormElementArcGISWebMap({
   element,
+  readOnly,
   id,
   value,
   onChange,
@@ -321,7 +323,7 @@ function FormElementArcGISWebMap({
   }, [])
 
   React.useEffect(() => {
-    if (element.readOnly) return
+    if (readOnly) return
     // event listeners for drawing tool creates/updates/deletes
     // these need to be removed and recreated when the submission value changes
     // to ensure they always have access to the latest submission value
@@ -461,6 +463,7 @@ function FormElementArcGISWebMap({
     updateDrawingInputSubmissionValue,
     updateMapViewSubmissionValue,
     element,
+    readOnly,
     selectedGraphicAttributes,
     addMeasurementLabels,
     clearMeasurementLabels,
@@ -617,7 +620,7 @@ function FormElementArcGISWebMap({
 
         let drawingLayerId: string | undefined
         let measurementLayerId: string | undefined
-        if (!element.readOnly && element.allowedDrawingTools?.length) {
+        if (!readOnly && element.allowedDrawingTools?.length) {
           drawingLayerId = uuid()
           const drawingLayer = new GraphicsLayer({
             id: drawingLayerId,
@@ -732,7 +735,14 @@ function FormElementArcGISWebMap({
       setIsLoading(true)
       loadMap()
     }
-  }, [drawingOptionsContainerId, element, isLoading, takeScreenShotRef, value])
+  }, [
+    drawingOptionsContainerId,
+    element,
+    isLoading,
+    readOnly,
+    takeScreenShotRef,
+    value,
+  ])
 
   React.useEffect(() => {
     if (!isLoading) {

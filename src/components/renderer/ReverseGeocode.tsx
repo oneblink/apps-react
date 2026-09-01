@@ -9,6 +9,8 @@ import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormElementValueChangeHandler } from '../../types/form'
+import useFormAudience from '../../hooks/useFormAudience'
+import isElementReadOnlyForAudience from '../../services/isElementReadOnlyForAudience'
 
 type ReverseGeocodeContextValue = {
   isReverseGeocoding: boolean
@@ -40,6 +42,7 @@ export default function ReverseGeocode({
   const formDefinition = useFormDefinition()
   const formSubmissionModel = useFormSubmissionModel()
   const formIsReadOnly = useFormIsReadOnly()
+  const audience = useFormAudience()
 
   const formattedAddressElement = React.useMemo(() => {
     if (element.reverseGeocoding?.formattedAddressElementId) {
@@ -55,7 +58,16 @@ export default function ReverseGeocode({
   ])
 
   React.useEffect(() => {
-    if (formIsReadOnly || !coords || !formattedAddressElement) {
+    // Definition-level `readOnly` still allows a submitter's prefill or
+    // default location to populate its formatted-address field. An
+    // approver-locked location must not do so: opening a review should never
+    // replace the address saved with the original submission.
+    if (
+      formIsReadOnly ||
+      isElementReadOnlyForAudience(element, audience) ||
+      !coords ||
+      !formattedAddressElement
+    ) {
       return
     }
 
@@ -115,7 +127,9 @@ export default function ReverseGeocode({
 
     return () => abortController.abort()
   }, [
+    audience,
     coords,
+    element,
     formDefinition.id,
     formIsReadOnly,
     formattedAddressElement,

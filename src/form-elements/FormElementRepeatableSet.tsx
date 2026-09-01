@@ -34,6 +34,18 @@ type Props = {
   id: string
   isEven: boolean
   element: FormTypes.RepeatableSetElement
+  /**
+   * Whether this set’s own controls (add/remove entries) are locked.
+   * Includes audience lock, so an approver may be unable to add or remove
+   * entries even when a nested `ALL_STEPS` field is still editable.
+   */
+  readOnly: boolean
+  /**
+   * Lock to apply to fields inside each entry. True when the whole form is
+   * read-only, a parent is read-only, or this element’s definition has
+   * `readOnly: true`. Does not include this set’s audience lock.
+   */
+  childrenReadOnly: boolean
   value: Array<SubmissionTypes.S3SubmissionData['submission']> | undefined
   onChange: NestedFormElementValueChangeHandler<
     SubmissionTypes.S3SubmissionData['submission'][]
@@ -118,6 +130,8 @@ export function useRepeatableSetIndexText(text: string) {
 function FormElementRepeatableSet({
   formId,
   element,
+  readOnly,
+  childrenReadOnly,
   value,
   formElementValidation,
   id,
@@ -407,6 +421,7 @@ function FormElementRepeatableSet({
           <AddButton
             onAdd={() => handleAddEntry(0)}
             element={element}
+            readOnly={readOnly}
             classes={['ob-button-repeatable-set-layout__multiple-add-buttons']}
             id={id}
           />
@@ -421,6 +436,8 @@ function FormElementRepeatableSet({
               isEven={isEven}
               entry={entry}
               element={element}
+              readOnly={readOnly}
+              childrenReadOnly={childrenReadOnly}
               showAddButton={
                 element.layout === 'MULTIPLE_ADD_BUTTONS' && showAddButton
               }
@@ -446,6 +463,7 @@ function FormElementRepeatableSet({
             <AddButton
               onAdd={() => handleAddEntry(entries.length)}
               element={element}
+              readOnly={readOnly}
               id={id}
             />
           )}
@@ -470,6 +488,16 @@ type RepeatableSetEntryProps = {
   isEven: boolean
   entry: SubmissionTypes.S3SubmissionData['submission']
   element: FormTypes.RepeatableSetElement
+  /**
+   * Whether this entry’s add/remove controls are locked. See
+   * `FormElementRepeatableSet` `readOnly`.
+   */
+  readOnly: boolean
+  /**
+   * Lock to apply to fields in this entry. See `FormElementRepeatableSet`
+   * `childrenReadOnly`.
+   */
+  childrenReadOnly: boolean
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined
   formElementsValidation: FormElementsValidation | undefined
   displayValidationMessages: boolean
@@ -502,6 +530,8 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     isEven,
     entry,
     element,
+    readOnly,
+    childrenReadOnly,
     formElementsConditionallyShown,
     displayValidationMessages,
     formElementsValidation,
@@ -691,6 +721,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                 <RemoveButton
                   onConfirmRemove={confirmRemove}
                   element={element}
+                  readOnly={readOnly}
                   className="ob-repeatable-set__button-remove-top"
                   index={index}
                 />
@@ -707,6 +738,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                 onLookup={handleLookup}
                 model={entry}
                 parentElement={element}
+                readOnly={childrenReadOnly}
                 formElementsConditionallyShown={formElementsConditionallyShown}
                 onUpdateFormElements={handleUpdateNestedFormElements}
                 sectionState={sectionState}
@@ -715,6 +747,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
                 <RemoveButton
                   onConfirmRemove={confirmRemove}
                   element={element}
+                  readOnly={readOnly}
                   index={index}
                   className="ob-repeatable-set__button-remove-bottom"
                 />
@@ -724,6 +757,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
               <AddButton
                 onAdd={() => onAdd(index + 1)}
                 element={element}
+                readOnly={readOnly}
                 classes={[
                   'ob-button-repeatable-set-layout__multiple-add-buttons',
                 ]}
@@ -740,11 +774,13 @@ function AddButton({
   id,
   onAdd,
   element,
+  readOnly,
   classes,
 }: {
   id?: string
   onAdd: () => void
   element: FormTypes.RepeatableSetElement
+  readOnly: boolean
   isPrimary?: boolean
   classes?: string[]
 }) {
@@ -756,7 +792,7 @@ function AddButton({
         classes,
       )}
       onClick={onAdd}
-      disabled={element.readOnly}
+      disabled={readOnly}
       aria-label={element.addSetEntryLabel ? undefined : 'Add Entry'}
       id={id}
     >
@@ -771,11 +807,13 @@ function AddButton({
 function RemoveButton({
   onConfirmRemove,
   element,
+  readOnly,
   className,
   index,
 }: {
   onConfirmRemove: () => void
   element: FormTypes.RepeatableSetElement
+  readOnly: boolean
   className?: string
   index: number
 }) {
@@ -787,7 +825,7 @@ function RemoveButton({
         className,
       )}
       onClick={onConfirmRemove}
-      disabled={element.readOnly}
+      disabled={readOnly}
       aria-label={`${element.removeSetEntryLabel ?? 'Remove Entry'} ${index + 1}`}
     >
       <span className="icon">

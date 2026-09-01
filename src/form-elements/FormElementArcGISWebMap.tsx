@@ -25,6 +25,7 @@ export const defaultAutoSnapshotButtonLabel = 'Finish Drawing'
 type Props = {
   id: string
   element: FormTypes.ArcGISWebMapElement
+  readOnly: boolean
   value: ArcGISWebMapElementValue | undefined
   onChange: FormElementValueChangeHandler<ArcGISWebMapElementValue>
   displayValidationMessage: boolean
@@ -46,6 +47,7 @@ export function generateArcGISAutomatedSnapshotFileName(
 function FormElementArcGISWebMap({
   id,
   element,
+  readOnly,
   value,
   onChange,
   displayValidationMessage,
@@ -207,6 +209,7 @@ function FormElementArcGISWebMap({
             >
               <ArcGISWebMap
                 element={element}
+                readOnly={readOnly}
                 id={id}
                 aria-describedby={ariaDescribedby}
                 value={value}
@@ -233,7 +236,7 @@ function FormElementArcGISWebMap({
                   )}
                   onClick={takeManualSnapshot}
                   disabled={
-                    element.readOnly ||
+                    readOnly ||
                     isTakingManualSnapshot ||
                     (!!element.maxManualSnapshots &&
                       (value?.snapshotImages?.filter(
@@ -262,7 +265,7 @@ function FormElementArcGISWebMap({
                   )}
                   onClick={takeAutoSnapshots}
                   disabled={
-                    element.readOnly ||
+                    readOnly ||
                     isTakingAutoSnapshots ||
                     value?.snapshotImages?.some(
                       (snapshotImage) =>
@@ -294,6 +297,7 @@ function FormElementArcGISWebMap({
                     <FormElementFile
                       key={attachment.type ? attachment._id : attachment.id}
                       element={filesElement}
+                      readOnly={readOnly}
                       onRemove={
                         snapshotImage.fileName !== automatedSnapshotFileName
                           ? removeAttachment

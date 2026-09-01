@@ -67,6 +67,12 @@ function FormElementCivicaNameRecord({
     }
   }, [props.formId])
 
-  return <FormElementForm element={formElement} {...props} />
+  return (
+    <FormElementForm
+      element={formElement}
+      readOnlyOverrideChildren
+      {...props}
+    />
+  )
 }
 export default React.memo(FormElementCivicaNameRecord)

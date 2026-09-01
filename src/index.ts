@@ -1,6 +1,7 @@
 export {
   OneBlinkFormBaseProps,
   OneBlinkFormControlledProps,
+  OneBlinkFormProps,
   OneBlinkFormUncontrolled as OneBlinkForm,
   OneBlinkFormControlled,
 } from './OneBlinkForm'

@@ -2,12 +2,12 @@ import * as React from 'react'
 import clsx from 'clsx'
 import useLookupNotification from '../../hooks/useLookupNotification'
 import { generateLookupValidationMessage } from '../../services/form-validation/validators'
-import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { EnvironmentTypes } from '@oneblink/types'
 import MaterialIcon from '../MaterialIcon'
 
 type Props = {
   value: unknown | undefined
+  readOnly: boolean
   validationMessage: string | undefined
   hasMarginTop?: boolean
   isInputButton?: boolean
@@ -17,6 +17,7 @@ type Props = {
 
 function LookupButton({
   value,
+  readOnly,
   validationMessage,
   hasMarginTop,
   isInputButton,
@@ -25,7 +26,6 @@ function LookupButton({
 }: Props) {
   const { isLookup, onLookup, isDisabled, isLoading, allowLookupOnEmptyValue } =
     useLookupNotification(value)
-  const formIsReadOnly = useFormIsReadOnly()
   if (!isLookup) {
     return null
   }
@@ -46,7 +46,9 @@ function LookupButton({
       )}
       onClick={() => onLookup()}
       disabled={
-        formIsReadOnly ||
+        // Element-level readOnly only disables the button. Auto-lookups still
+        // run from LookupNotification when the field is locked but has a value.
+        readOnly ||
         isDisabled ||
         isLoading ||
         (isEmptyValue && !allowLookupOnEmptyValue) ||

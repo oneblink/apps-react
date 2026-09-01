@@ -9,7 +9,27 @@ import useFormSubmissionState from './hooks/useFormSubmissionState'
 import useFormSubmissionDuration from './hooks/useFormSubmissionDuration'
 import { SectionState } from './types/form'
 
-export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
+type OneBlinkApproverFormBaseProps = Omit<
+  OneBlinkFormBaseProps,
+  'audience' | 'onCancel' | 'onSaveDraft' | 'onSubmit'
+> & {
+  audience: 'APPROVER'
+}
+
+type OneBlinkFormAudienceProps =
+  | (OneBlinkFormBaseProps & { audience: 'SUBMITTER' })
+  | OneBlinkApproverFormBaseProps
+
+export type OneBlinkFormControlledComponentProps =
+  OneBlinkFormControlledProps & OneBlinkFormAudienceProps
+
+const noop = () => {}
+
+export {
+  OneBlinkFormBaseProps,
+  OneBlinkFormControlledProps,
+  OneBlinkFormUncontrolledProps,
+}
 
 /**
  * Similar to {@link OneBlinkForm}, however requires props to control the
@@ -336,9 +356,18 @@ export { OneBlinkFormBaseProps, OneBlinkFormControlledProps }
  * @group Components
  */
 const OneBlinkFormControlled = React.memo(function OneBlinkFormControlled(
-  props: OneBlinkFormBaseProps & OneBlinkFormControlledProps,
+  props: OneBlinkFormControlledComponentProps,
 ) {
-  return <OneBlinkFormBase {...props} isReadOnly={false} />
+  const isApprover = props.audience === 'APPROVER'
+
+  return (
+    <OneBlinkFormBase
+      {...props}
+      isReadOnly={false}
+      onCancel={isApprover ? noop : props.onCancel}
+      onSubmit={isApprover ? noop : props.onSubmit}
+    />
+  )
 })
 
 /**
@@ -568,8 +597,8 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
   resumeSectionState,
   resumePreviousElapsedDurationSeconds,
   ...props
-}: OneBlinkFormBaseProps &
-  OneBlinkFormUncontrolledProps & {
+}: OneBlinkFormUncontrolledProps &
+  OneBlinkFormAudienceProps & {
     /** The element to resume the form at. */
     resumeAtElement?: FormTypes.FormElement
     resumeSectionState?: SectionState
@@ -593,6 +622,8 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
     resumeAtElement,
     resumeSectionState,
   )
+  const isApprover = props.audience === 'APPROVER'
+
   return (
     <OneBlinkFormBase
       {...props}
@@ -604,8 +635,14 @@ const OneBlinkFormUncontrolled = React.memo(function OneBlinkFormUncontrolled({
       executedLookups={executedLookups}
       sectionState={sectionState}
       getCurrentSubmissionDuration={getCurrentSubmissionDuration}
+      onCancel={isApprover ? noop : props.onCancel}
+      onSubmit={isApprover ? noop : props.onSubmit}
     />
   )
 })
+
+export type OneBlinkFormProps = React.ComponentProps<
+  typeof OneBlinkFormUncontrolled
+>
 
 export { OneBlinkFormControlled, OneBlinkFormUncontrolled }

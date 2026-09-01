@@ -18,6 +18,8 @@ import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import useIsMounted from '../../hooks/useIsMounted'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import mergeExecutedLookups from '../../utils/merge-executed-lookups'
+import useFormAudience from '../../hooks/useFormAudience'
+import isElementReadOnlyForAudience from '../../services/isElementReadOnlyForAudience'
 
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
@@ -61,8 +63,9 @@ function LookupNotificationComponent({
   const [lookupErrorHTML, setLookupErrorHTML] = React.useState<string | null>(
     null,
   )
-  const formIsReadOnly = useFormIsReadOnly()
   const { formSubmissionModel: model } = useFormSubmissionModel()
+  const formIsReadOnly = useFormIsReadOnly()
+  const audience = useFormAudience()
 
   const formElementElementLookup = React.useMemo(() => {
     return formElementLookups.find(
@@ -183,8 +186,17 @@ function LookupNotificationComponent({
     LookupNotificationContextValue['onLookup']
   >(
     async ({ newValue, abortController, continueLookupOnAbort }) => {
-      // No lookups for read only forms
-      if (formIsReadOnly) return
+      // Definition-level `readOnly` must not suppress auto-lookups for a
+      // submitter: prefills and defaults still need to populate related
+      // fields. Approver locks are different. Re-running a lookup from an
+      // existing submitted value could overwrite persisted answers merely by
+      // opening the review, so only approver-editable elements may run one.
+      if (
+        formIsReadOnly ||
+        isElementReadOnlyForAudience(element, audience)
+      ) {
+        return
+      }
 
       setIsLookingUp(true)
 
@@ -284,6 +296,7 @@ function LookupNotificationComponent({
       }
     },
     [
+      audience,
       definition,
       element,
       excludeDefinition,

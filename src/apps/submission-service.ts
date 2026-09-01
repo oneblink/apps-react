@@ -34,7 +34,10 @@ import {
   DraftSubmissionInput,
 } from './types/submissions'
 import { deleteAutoSaveData } from './auto-save-service'
-import { downloadFormSubmission } from './services/api/submissions'
+import {
+  downloadFormSubmission,
+  uploadFormSubmissionEdit,
+} from './services/api/submissions'
 import { getSubmissionAttachmentDetails } from './attachments-service'
 import getPostSubmissionAttachments from './services/api/post-submission-attachment-urls'
 
@@ -573,7 +576,10 @@ async function getSubmissionData({
   formId: number
   submissionId: string
   abortSignal?: AbortSignal
-}): Promise<SubmissionTypes.S3SubmissionData> {
+}): Promise<{
+  data: SubmissionTypes.S3SubmissionData
+  versionId: string
+}> {
   return await downloadFormSubmission({
     formId,
     submissionId,
@@ -608,5 +614,6 @@ export {
   PendingQueueListener,
   PendingQueueAction,
   getSubmissionData,
+  uploadFormSubmissionEdit,
   getPostSubmissionAttachments,
 }

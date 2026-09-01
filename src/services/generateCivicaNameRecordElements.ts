@@ -20,7 +20,6 @@ function generateCivicaNameRecordAddressElements(
         name: 'address1',
         label: element.address1Label || 'Address',
         required: element.required,
-        readOnly: element.readOnly,
       },
     ]
   }
@@ -31,7 +30,6 @@ function generateCivicaNameRecordAddressElements(
       name: 'address1',
       label: element.address1Label || 'Address 1',
       required: element.required,
-      readOnly: element.readOnly,
     },
     {
       ...createFormElement(),
@@ -39,7 +37,6 @@ function generateCivicaNameRecordAddressElements(
       name: 'address2',
       label: element.address2Label || 'Address 2',
       required: element.required,
-      readOnly: element.readOnly,
     },
     {
       ...createFormElement(),
@@ -47,7 +44,6 @@ function generateCivicaNameRecordAddressElements(
       name: 'postcode',
       label: element.postcodeLabel || 'Postcode',
       required: element.required,
-      readOnly: element.readOnly,
     },
   ]
 }
@@ -65,7 +61,6 @@ export default function generateCivicaNameRecordElements(
       name: 'title',
       label: element.titleLabel || 'Title',
       required: element.required,
-      readOnly: element.readOnly,
       optionsType: 'CUSTOM',
       options: titleCodeOptions || [],
       multi: false,
@@ -76,7 +71,6 @@ export default function generateCivicaNameRecordElements(
       name: 'givenName1',
       label: element.givenName1Label || 'Given Name 1',
       required: !!element.givenName1IsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.givenName1IsHidden,
     },
     {
@@ -85,7 +79,6 @@ export default function generateCivicaNameRecordElements(
       name: 'familyName',
       label: element.familyNameLabel || 'Family Name',
       required: element.required,
-      readOnly: element.readOnly,
     },
     {
       ...createFormElement(),
@@ -93,7 +86,6 @@ export default function generateCivicaNameRecordElements(
       name: 'emailAddress',
       label: element.emailAddressLabel || 'Email Address',
       required: !!element.emailAddressIsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.emailAddressIsHidden,
     },
     {
@@ -102,7 +94,6 @@ export default function generateCivicaNameRecordElements(
       name: 'homePhone',
       label: element.homePhoneLabel || 'Home Phone',
       required: !!element.homePhoneIsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.homePhoneIsHidden,
     },
     {
@@ -111,7 +102,6 @@ export default function generateCivicaNameRecordElements(
       name: 'businessPhone',
       label: element.businessPhoneLabel || 'Business Phone',
       required: !!element.businessPhoneIsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.businessPhoneIsHidden,
     },
     {
@@ -120,7 +110,6 @@ export default function generateCivicaNameRecordElements(
       name: 'mobilePhone',
       label: element.mobilePhoneLabel || 'Mobile Phone',
       required: !!element.mobilePhoneIsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.mobilePhoneIsHidden,
     },
     {
@@ -129,7 +118,6 @@ export default function generateCivicaNameRecordElements(
       name: 'faxPhone',
       label: element.faxPhoneLabel || 'Fax Phone',
       required: !!element.faxPhoneIsRequired,
-      readOnly: element.readOnly,
       civicaIsHidden: element.faxPhoneIsHidden,
     },
     {
@@ -138,7 +126,6 @@ export default function generateCivicaNameRecordElements(
       name: 'streetAddress',
       label: element.streetAddressesLabel || 'Street Addresses',
       minSetEntries: element.required ? 1 : undefined,
-      readOnly: element.readOnly,
       elements: generateCivicaNameRecordAddressElements(element),
     },
   ]

@@ -16,6 +16,7 @@ import { PercentCrop } from 'react-image-crop'
 
 type Props = {
   element: FormTypes.FilesElement
+  readOnly: boolean
   /** If set to `undefined`, the remove button will be hidden */
   onRemove: ((id: string) => void) | undefined
   file: attachmentsService.Attachment
@@ -26,6 +27,7 @@ type Props = {
 
 const FormElementFile = ({
   element,
+  readOnly,
   onRemove,
   file,
   onChange,
@@ -151,6 +153,7 @@ const FormElementFile = ({
     <>
       <FileCard
         element={element}
+        readOnly={readOnly}
         isUploading={isUploading}
         isUploadPaused={disableUpload}
         uploadErrorMessage={uploadErrorMessage}

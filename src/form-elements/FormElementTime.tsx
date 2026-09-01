@@ -18,6 +18,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.TimeElement
+  readOnly: boolean
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -29,6 +30,7 @@ const timeFormat = localisationService.getDateFnsFormats().time
 function FormElementTime({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -46,7 +48,7 @@ function FormElementTime({
     ariaDescribedby,
     placeholder: element.placeholderValue,
     className: 'cypress-time-control',
-    disabled: element.readOnly,
+    disabled: readOnly,
     required: element.required,
     onBlur: setIsDirty,
     onChange: (newDate) => {
@@ -89,14 +91,14 @@ function FormElementTime({
             {...timeProps}
             timeSteps={{ minutes: 1 }}
           />
-          {!element.readOnly && (
+          {!readOnly && (
             <PickerInputButton
               tooltip="Select time"
               onClick={openTimePicker}
               icon="schedule"
             />
           )}
-          {!!element.readOnly && !!text && (
+          {!!readOnly && !!text && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -105,6 +107,7 @@ function FormElementTime({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

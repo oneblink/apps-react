@@ -546,6 +546,7 @@ function OneBlinkFormBase({
             executedLookups ?? {},
             recaptchaType,
             isOffline,
+            audience,
           )
         : undefined,
     [
@@ -556,6 +557,7 @@ function OneBlinkFormBase({
       executedLookups,
       recaptchaType,
       isOffline,
+      audience,
     ],
   )
 
@@ -866,7 +868,11 @@ function OneBlinkFormBase({
       continueWhilstAttachmentsAreUploading: boolean,
     ) => {
       event.preventDefault()
-      if (disabled || isReadOnly) return
+      // Approvers are not shown a submit button, so reaching here means the
+      // browser submitted the form implicitly (e.g. Enter in a text input).
+      // Approving is driven separately, and continuing would send a
+      // submission analytics event and display validation messages.
+      if (disabled || isReadOnly || audience === 'APPROVER') return
       setHasAttemptedSubmit(true)
 
       setIsPreparingToSubmit(true)
@@ -914,6 +920,7 @@ function OneBlinkFormBase({
     [
       disabled,
       isReadOnly,
+      audience,
       prepareSubmission,
       allowNavigation,
       definition,
@@ -1481,7 +1488,7 @@ function OneBlinkFormBase({
                             </div>
                           )}
                         </div>
-                        {!isReadOnly && (
+                        {!isReadOnly && audience !== 'APPROVER' && (
                           <div className="buttons ob-buttons ob-buttons-submit">
                             {onSaveDraft && !isInfoPage && (
                               <button
@@ -1555,7 +1562,10 @@ function OneBlinkFormBase({
                       </div>
                     </form>
 
-                    {!isReadOnly && !isPreview && (
+                    {/* Approvers have no submit or cancel buttons, and
+                    navigate via the approvals app's own actions, so the form
+                    must not guard navigation or prompt about submitting. */}
+                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
                       <React.Fragment>
                         <Prompt
                           when={isDirty && !isNavigationAllowed}

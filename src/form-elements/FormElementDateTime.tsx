@@ -20,6 +20,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.DateTimeElement
+  readOnly: boolean
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -29,6 +30,7 @@ type Props = {
 function FormElementDateTime({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -68,7 +70,7 @@ function FormElementDateTime({
     ariaDescribedby,
     placeholder: element.placeholderValue,
     className: 'cypress-date-time-control',
-    disabled: element.readOnly,
+    disabled: readOnly,
     required: element.required,
     onBlur: setIsDirty,
     onChange: (newDate) => {
@@ -104,14 +106,14 @@ function FormElementDateTime({
             {...commonProps}
             timeSteps={{ minutes: 1 }}
           />
-          {!element.readOnly && (
+          {!readOnly && (
             <PickerInputButton
               tooltip="Select date and time"
               onClick={openDateTimePicker}
               icon="date_range"
             />
           )}
-          {!!element.readOnly && !!text && (
+          {!!readOnly && !!text && (
             <div className="control">
               <CopyToClipboardButton
                 className="button is-input-addon copy-button cypress-copy-to-clipboard-button"
@@ -120,6 +122,7 @@ function FormElementDateTime({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

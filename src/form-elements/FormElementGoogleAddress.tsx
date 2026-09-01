@@ -14,6 +14,7 @@ type Props = {
   formId: number
   id: string
   element: FormTypes.GoogleAddressElement
+  readOnly: boolean
   value: GoogleTypes.GoogleMapsAddress | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -24,6 +25,7 @@ type Props = {
 function FormElementGoogleAddress({
   id,
   element,
+  readOnly,
   value,
   displayValidationMessage,
   validationMessage,
@@ -227,7 +229,7 @@ function FormElementGoogleAddress({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly || isLoadingAddressDetails}
+          disabled={readOnly || isLoadingAddressDetails}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

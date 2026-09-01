@@ -20,6 +20,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.RadioButtonElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string>
   displayValidationMessage: boolean
@@ -33,6 +34,7 @@ type Props = {
 function FormElementRadio({
   id,
   element,
+  readOnly,
   value,
   onChange,
   conditionallyShownOptionsElement,
@@ -88,7 +90,7 @@ function FormElementRadio({
                       }}
                       value={option.value || ''}
                       id={`${id}_${option.value}`}
-                      disabled={element.readOnly}
+                      disabled={readOnly}
                       checked={value === option.value}
                       onChange={(e) => {
                         setIsDirty()
@@ -115,7 +117,7 @@ function FormElementRadio({
                 return (
                   <div className="ob-button-radio-container" key={option.value}>
                     <OptionButton
-                      element={element}
+                      readOnly={readOnly}
                       option={option}
                       isSelected={isSelected}
                       onClick={() => {

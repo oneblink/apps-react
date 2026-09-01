@@ -12,6 +12,7 @@ type Props = {
   formId: number
   id: string
   element: FormTypes.CivicaStreetNameElement
+  readOnly: boolean
   value: CivicaTypes.CivicaStreetName | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -23,6 +24,7 @@ function FormElementCivicaStreetName({
   formId,
   id,
   element,
+  readOnly,
   value,
   displayValidationMessage,
   validationMessage,
@@ -88,7 +90,7 @@ function FormElementCivicaStreetName({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly}
+          disabled={readOnly}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

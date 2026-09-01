@@ -25,6 +25,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 interface Props extends IsDirtyProps {
   id: string
   element: FormTypes.ComplianceElement
+  readOnly: boolean
   value: unknown
   onChange: NestedFormElementValueChangeHandler<Value>
   displayValidationMessage: boolean
@@ -61,6 +62,7 @@ export function stringifyComplianceValue(value: unknown): string {
 function FormElementCompliance({
   id,
   element,
+  readOnly,
   value,
   onChange,
   conditionallyShownOptionsElement,
@@ -77,24 +79,17 @@ function FormElementCompliance({
   const notesElement = React.useMemo<FormTypes.TextareaElement>(
     () => ({
       ...baseElement,
-      readOnly: element.readOnly,
       id: `${element.id}-notes`,
       label: 'Notes',
       name: `${element.name}_notes`,
       type: 'textarea',
       autocompleteAttributes: element.autocompleteAttributes,
     }),
-    [
-      element.autocompleteAttributes,
-      element.id,
-      element.name,
-      element.readOnly,
-    ],
+    [element.autocompleteAttributes, element.id, element.name],
   )
   const filesElement = React.useMemo<FormTypes.FilesElement>(
     () => ({
       ...baseElement,
-      readOnly: element.readOnly,
       id: `${element.id}-files`,
       label: 'Media',
       name: `${element.name}_files`,
@@ -104,7 +99,7 @@ function FormElementCompliance({
       restrictFileTypes: false,
       storageType: element.storageType,
     }),
-    [element.id, element.name, element.readOnly, element.storageType],
+    [element.id, element.name, element.storageType],
   )
 
   const handleValueChange = React.useCallback<
@@ -242,7 +237,7 @@ function FormElementCompliance({
                 return (
                   <div className="ob-button-radio-container" key={option.value}>
                     <OptionButton
-                      element={element}
+                      readOnly={readOnly}
                       option={option}
                       isSelected={isSelected}
                       onClick={() => {
@@ -275,7 +270,7 @@ function FormElementCompliance({
               isActive={isShowingNotes}
               icon="notes"
               onClick={toggleIsShowingNotes}
-              disabled={element.readOnly || !typedValue?.value}
+              disabled={readOnly || !typedValue?.value}
             >
               Notes
             </ComplianceButton>
@@ -283,7 +278,7 @@ function FormElementCompliance({
               isActive={isShowingFiles}
               icon="perm_media"
               onClick={toggleIsShowingFiles}
-              disabled={element.readOnly || !typedValue?.value}
+              disabled={readOnly || !typedValue?.value}
             >
               Media
             </ComplianceButton>
@@ -297,6 +292,7 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.notes}
                 element={notesElement}
+                readOnly={readOnly}
                 isDirty={isDirty}
                 setIsDirty={setIsDirty}
                 autocompleteAttributes={notesElement.autocompleteAttributes?.join(
@@ -314,6 +310,7 @@ function FormElementCompliance({
                 validationMessage={undefined}
                 value={typedValue?.files}
                 element={filesElement}
+                readOnly={readOnly}
                 isDirty={isDirty}
                 setIsDirty={setIsDirty}
               />

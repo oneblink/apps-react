@@ -34,6 +34,7 @@ import { PercentCrop } from 'react-image-crop'
 type Props = {
   id: string
   element: FormTypes.CameraElement
+  readOnly: boolean
   value: FormElementBinaryStorageValue
   onChange: FormElementValueChangeHandler<FormElementBinaryStorageValue>
   displayValidationMessage: boolean
@@ -43,6 +44,7 @@ type Props = {
 function FormElementCamera({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -322,6 +324,7 @@ function FormElementCamera({
                   loadAttachmentUrlError={loadAttachmentUrlError}
                   isLoading={isLoading}
                   element={element}
+                  readOnly={readOnly}
                   onAnnotate={setIsAnnotating}
                   onCrop={setIsCropping}
                   canDownload={canDownload}
@@ -341,7 +344,7 @@ function FormElementCamera({
             id={id}
             name={element.name}
             required={element.required}
-            disabled={element.readOnly}
+            disabled={readOnly}
             onChange={fileChange}
             aria-required={element.required}
           />
@@ -361,7 +364,7 @@ function FormElementCamera({
                   type="button"
                   className="button ob-button ob-button__clear is-light cypress-clear-camera"
                   onClick={clearImage}
-                  disabled={element.readOnly || isLoading}
+                  disabled={readOnly || isLoading}
                 >
                   Clear
                 </button>
@@ -383,7 +386,7 @@ function FormElementCamera({
                 type="button"
                 className="button ob-button ob-button__open is-primary cypress-open-camera"
                 onClick={openCamera}
-                disabled={element.readOnly || isLoading}
+                disabled={readOnly || isLoading}
                 aria-describedby={ariaDescribedby}
                 onBlur={setIsDirty}
               >
@@ -455,11 +458,13 @@ const DisplayImage = React.memo(function DisplayImage({
   loadAttachmentUrlError,
   isLoading,
   element,
+  readOnly,
   onAnnotate,
   onCrop,
   progress,
 }: Omit<ReturnType<typeof useAttachment>, 'contentType'> & {
   element: FormTypes.CameraElement
+  readOnly: boolean
   isLoading: boolean
   onAnnotate: () => void
   onCrop: () => void
@@ -517,7 +522,7 @@ const DisplayImage = React.memo(function DisplayImage({
             type="button"
             className="button is-primary ob-camera__crop-button cypress-crop-button"
             onClick={onCrop}
-            disabled={element.readOnly}
+            disabled={readOnly}
           >
             <span className="icon">
               <MaterialIcon>crop</MaterialIcon>
@@ -527,7 +532,7 @@ const DisplayImage = React.memo(function DisplayImage({
             type="button"
             className="button is-primary ob-camera__annotate-button cypress-annotate-button"
             onClick={onAnnotate}
-            disabled={element.readOnly}
+            disabled={readOnly}
           >
             <span className="icon">
               <MaterialIcon>brush</MaterialIcon>

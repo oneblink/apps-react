@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- optional `versionId` on `downloadFormSubmission()` to download a specific S3 submission version
+
+### Changed
+
+- **[BREAKING]** `submissionService.getSubmissionData()` now returns `{ data, versionId }` instead of `S3SubmissionData`
+- `approverEditability` on a form element now overrides `readOnly` for approvers, so a field can be locked for submitters and still editable during review
+
 ## [12.0.0] - 2026-08-26
 
 ### Added

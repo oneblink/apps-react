@@ -1,12 +1,11 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { FormTypes } from '@oneblink/types'
 import useBooleanState from '../../../hooks/useBooleanState'
 import useClickOutsideElement from '../../../hooks/useClickOutsideElement'
 import MaterialIcon from '../../MaterialIcon'
 
 interface Props {
-  element: FormTypes.FilesElement
+  readOnly: boolean
   /** If set to `undefined`, the remove button will be hidden */
   onRemove: (() => void) | undefined
   onDownload?: () => void
@@ -17,7 +16,7 @@ interface Props {
 }
 
 const DropdownMenu = ({
-  element,
+  readOnly,
   onRemove,
   onDownload,
   onRetry,
@@ -100,11 +99,9 @@ const DropdownMenu = ({
               <MaterialIcon className="icon-small">open_in_new</MaterialIcon>
             </a>
           )}
-          {onRemove && (
+          {onRemove && !readOnly && (
             <a
-              className={clsx('dropdown-item cypress-file-remove-button', {
-                'ob-files__menu-remove-hidden': element.readOnly,
-              })}
+              className="dropdown-item cypress-file-remove-button"
               onClick={() => {
                 hideMore()
                 onRemove()
@@ -114,11 +111,9 @@ const DropdownMenu = ({
               Remove
             </a>
           )}
-          {onAnnotate && (
+          {onAnnotate && !readOnly && (
             <a
-              className={clsx('dropdown-item cypress-file-annotate-button', {
-                'ob-files__menu-annotate-hidden': element.readOnly,
-              })}
+              className="dropdown-item cypress-file-annotate-button"
               onClick={() => {
                 hideMore()
                 onAnnotate()
@@ -128,11 +123,9 @@ const DropdownMenu = ({
               Annotate
             </a>
           )}
-          {onCrop && (
+          {onCrop && !readOnly && (
             <a
-              className={clsx('dropdown-item cypress-file-crop-button', {
-                'ob-files__menu-crop-hidden': element.readOnly,
-              })}
+              className="dropdown-item cypress-file-crop-button"
               onClick={() => {
                 hideMore()
                 onCrop()

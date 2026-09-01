@@ -16,6 +16,7 @@ type Props = {
   id: string
   formId: number
   element: FormTypes.BSBElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<
     string | { isInvalid: boolean; isValidating: boolean }
@@ -29,6 +30,7 @@ function FormElementBSB({
   id,
   formId,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -128,7 +130,7 @@ function FormElementBSB({
       errorMessage) &&
     !isLookingUp
 
-  const hasCopyButton = !!value && !!element.readOnly
+  const hasCopyButton = !!value && !!readOnly
   const hasLookupButton = element.isDataLookup || element.isElementLookup
   return (
     <div className="cypress-bsb-element">
@@ -162,7 +164,7 @@ function FormElementBSB({
                 setText(e.target.value)
               }}
               required={element.required}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onFocus={setHasFocus}
               onBlur={() => {
                 removeFocus()
@@ -194,6 +196,7 @@ function FormElementBSB({
             </div>
           )}
           <LookupButton
+            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

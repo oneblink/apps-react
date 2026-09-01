@@ -13,6 +13,7 @@ type Props = {
   formId: number
   id: string
   element: FormTypes.GeoscapeAddressElement
+  readOnly: boolean
   value: GeoscapeTypes.GeoscapeAddress | undefined
   displayValidationMessage: boolean
   validationMessage: string | undefined
@@ -24,6 +25,7 @@ function FormElementGeoscapeAddress({
   formId,
   id,
   element,
+  readOnly,
   value,
   displayValidationMessage,
   validationMessage,
@@ -120,7 +122,7 @@ function FormElementGeoscapeAddress({
         <AutocompleteDropdown
           id={id}
           label={label}
-          disabled={element.readOnly || isLoadingAddressDetails}
+          disabled={readOnly || isLoadingAddressDetails}
           placeholder={element.placeholderValue}
           required={element.required}
           value={value}

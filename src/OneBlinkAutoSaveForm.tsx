@@ -5,21 +5,10 @@ import OneBlinkFormBase from './OneBlinkFormBase'
 import useFormSubmissionAutoSaveState from './hooks/useFormSubmissionAutoSaveState'
 import { OneBlinkFormUncontrolled } from './OneBlinkForm'
 
-function OneBlinkAutoSaveForm({
-  form,
-  initialSubmission,
-  resumeAtElement,
-  autoSaveKey,
-  removeAutoSaveDataBeforeSubmit,
-  removeAutoSaveDataBeforeSaveDraft,
-  disabled,
-  onCancel,
-  onSubmit,
-  onSaveDraft,
-  resumeSectionState,
-  resumePreviousElapsedDurationSeconds,
-  ...props
-}: React.ComponentProps<typeof OneBlinkFormUncontrolled> & {
+type OneBlinkAutoSaveFormProps = Extract<
+  React.ComponentProps<typeof OneBlinkFormUncontrolled>,
+  { audience: 'SUBMITTER' }
+> & {
   /** Pass a unique key for this submission e.g. the `externalId` the parameter */
   autoSaveKey: string
   /**
@@ -34,7 +23,23 @@ function OneBlinkAutoSaveForm({
    * later, pass `false`.
    */
   removeAutoSaveDataBeforeSaveDraft?: boolean
-}) {
+}
+
+function OneBlinkAutoSaveForm({
+  form,
+  initialSubmission,
+  resumeAtElement,
+  autoSaveKey,
+  removeAutoSaveDataBeforeSubmit,
+  removeAutoSaveDataBeforeSaveDraft,
+  disabled,
+  onCancel,
+  onSubmit,
+  onSaveDraft,
+  resumeSectionState,
+  resumePreviousElapsedDurationSeconds,
+  ...props
+}: OneBlinkAutoSaveFormProps) {
   const {
     definition,
     submission,

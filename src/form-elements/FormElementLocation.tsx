@@ -22,6 +22,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.LocationElement
+  readOnly: boolean
   value: unknown | undefined
   onChange: FormElementValueChangeHandler<Coords>
   displayValidationMessage: boolean
@@ -64,6 +65,7 @@ const apiUrl = 'https://maps.googleapis.com/maps/api/staticmap'
 function FormElementLocation({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -159,7 +161,7 @@ function FormElementLocation({
                   type="button"
                   className="is-light button ob-button ob-button__cancel ob-location__button ob-location__button-cancel cypress-cancel-location-button"
                   onClick={onCancel}
-                  disabled={element.readOnly || isReverseGeocoding}
+                  disabled={readOnly || isReverseGeocoding}
                 >
                   Cancel
                 </button>
@@ -172,7 +174,7 @@ function FormElementLocation({
                     },
                   )}
                   onClick={onConfirm}
-                  disabled={element.readOnly || !location || isReverseGeocoding}
+                  disabled={readOnly || !location || isReverseGeocoding}
                 >
                   Confirm
                 </button>
@@ -183,7 +185,7 @@ function FormElementLocation({
                   type="button"
                   className="is-light button ob-button ob-button__clear ob-button-clear ob-location__button ob-location__button-clear cypress-clear-location-button"
                   onClick={onClear}
-                  disabled={element.readOnly}
+                  disabled={readOnly}
                 >
                   Clear
                 </button>
@@ -191,7 +193,7 @@ function FormElementLocation({
                   type="button"
                   className="is-primary button ob-button ob-button__edit ob-location__button ob-location__button-edit cypress-locate-button"
                   onClick={onLocate}
-                  disabled={element.readOnly}
+                  disabled={readOnly}
                   onBlur={setIsDirty}
                   id={id}
                   aria-describedby={ariaDescribedby}

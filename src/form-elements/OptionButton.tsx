@@ -4,10 +4,7 @@ import { FormTypes } from '@oneblink/types'
 import { Box } from '@mui/material'
 
 type Props = {
-  element:
-    | FormTypes.RadioButtonElement
-    | FormTypes.CheckboxElement
-    | FormTypes.ComplianceElement
+  readOnly: boolean
   option: FormTypes.ChoiceElementOption
   isSelected: boolean
   onClick: () => void
@@ -16,7 +13,7 @@ type Props = {
   'aria-describedby'?: string
 }
 const OptionButton = ({
-  element,
+  readOnly,
   option,
   isSelected,
   onClick,
@@ -39,7 +36,7 @@ const OptionButton = ({
             }
           : { height: 'auto' }
       }
-      disabled={element.readOnly}
+      disabled={readOnly}
       onClick={onClick}
       aria-describedby={props['aria-describedby']}
       onBlur={onBlur}

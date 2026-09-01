@@ -26,6 +26,7 @@ export function stringifyAttachments(
 function FormElementFiles({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -35,6 +36,7 @@ function FormElementFiles({
 }: {
   id: string
   element: FormTypes.FilesElement
+  readOnly: boolean
   value?: attachmentsService.Attachment[]
   onChange: FormElementValueChangeHandler<attachmentsService.Attachment[]>
   displayValidationMessage: boolean
@@ -76,7 +78,7 @@ function FormElementFiles({
           name={element.name}
           className="file-input ob-input"
           multiple={element.maxEntries !== 1}
-          disabled={element.readOnly}
+          disabled={readOnly}
           onChange={(event) =>
             addAttachments(
               event.target.files ? Array.from(event.target.files) : [],
@@ -90,6 +92,7 @@ function FormElementFiles({
                 <FormElementFile
                   key={attachment.type ? attachment._id : attachment.id}
                   element={element}
+                  readOnly={readOnly}
                   onRemove={removeAttachment}
                   file={attachment}
                   onChange={changeAttachment}
@@ -103,7 +106,7 @@ function FormElementFiles({
                 />
               )
             })}
-            {!element.readOnly &&
+            {!readOnly &&
               (!element.maxEntries ||
                 attachments.length < element.maxEntries) && (
                 <div className="column is-one-quarter-ob">

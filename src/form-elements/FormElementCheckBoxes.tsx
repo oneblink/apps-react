@@ -22,6 +22,7 @@ import FormElementValidationMessage from '../components/renderer/FormElementVali
 type Props = {
   id: string
   element: FormTypes.CheckboxElement
+  readOnly: boolean
   value: unknown
   onChange: FormElementValueChangeHandler<string[]>
   displayValidationMessage: boolean
@@ -35,6 +36,7 @@ type Props = {
 function FormElementCheckboxes({
   id,
   element,
+  readOnly,
   value,
   onChange,
   validationMessage,
@@ -126,7 +128,7 @@ function FormElementCheckboxes({
               element={element}
               options={filteredOptions}
               selected={selectedValues}
-              disabled={element.readOnly}
+              disabled={readOnly}
               onChange={onChange}
             />
           )}
@@ -142,7 +144,7 @@ function FormElementCheckboxes({
                 return (
                   <div className="ob-button-radio-container" key={option.value}>
                     <OptionButton
-                      element={element}
+                      readOnly={readOnly}
                       option={option}
                       isSelected={isSelected}
                       onClick={() => changeValues(option.value, isSelected)}
@@ -189,7 +191,7 @@ function FormElementCheckboxes({
                         id={`${id}_${option.value}`}
                         checked={isSelected}
                         onChange={() => changeValues(option.value, isSelected)}
-                        disabled={element.readOnly}
+                        disabled={readOnly}
                         edge="start"
                         inputProps={{
                           'aria-describedby': ariaDescribedby,
@@ -209,6 +211,7 @@ function FormElementCheckboxes({
           )}
 
           <LookupButton
+            readOnly={readOnly}
             hasMarginTop
             value={value}
             validationMessage={validationMessage}
