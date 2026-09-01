@@ -78,7 +78,6 @@ function FormElementText({
             </div>
           )}
           <LookupButton
-            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

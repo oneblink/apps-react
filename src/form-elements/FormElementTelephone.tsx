@@ -82,7 +82,6 @@ function FormElementTelephone({
             </div>
           )}
           <LookupButton
-            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

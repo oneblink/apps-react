@@ -81,7 +81,6 @@ function FormElementEmail({
             </div>
           )}
           <LookupButton
-            readOnly={readOnly}
             isInputButton
             value={value}
             validationMessage={validationMessage}

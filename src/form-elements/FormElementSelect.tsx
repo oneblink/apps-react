@@ -148,7 +148,6 @@ function FormElementSelect({
               </select>
 
               <LookupButton
-                readOnly={readOnly}
                 hasMarginTop
                 value={value}
                 validationMessage={validationMessage}

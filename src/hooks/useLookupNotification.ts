@@ -2,9 +2,19 @@ import * as React from 'react'
 
 export type LookupNotificationContextValue = {
   isLookup: boolean
-  isDisabled: boolean
+  /**
+   * A lookup HTTP request is in flight. Used to disable lookup/retry buttons
+   * so a second request cannot be started until the current one finishes.
+   */
+  isLookupRequestInFlight: boolean
   isLoading: boolean
   allowLookupOnEmptyValue: boolean
+  /**
+   * Lookups must not run for this element, e.g. a read-only form or a field
+   * an approver cannot edit. The lookup button is disabled and `onLookup` is
+   * a no-op.
+   */
+  areLookupsDisallowed: boolean
   onLookup: (options: {
     newValue: unknown
     abortController: AbortController
@@ -15,9 +25,10 @@ export type LookupNotificationContextValue = {
 
 const defaultContext = {
   isLookup: false,
-  isDisabled: false,
+  isLookupRequestInFlight: false,
   isLoading: false,
   allowLookupOnEmptyValue: false,
+  areLookupsDisallowed: false,
   onLookup: async () => undefined,
   isLookingUp: false,
 }

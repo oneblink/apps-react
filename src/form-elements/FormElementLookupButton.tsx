@@ -120,7 +120,6 @@ function FormElementLookupButton({
           required={false}
         >
           <LookupButton
-            readOnly={readOnly}
             value={value}
             validationMessage={validationMessage}
             lookupButtonConfig={element.lookupButton}
