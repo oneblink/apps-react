@@ -578,7 +578,7 @@ async function getSubmissionData({
   abortSignal?: AbortSignal
 }): Promise<{
   data: SubmissionTypes.S3SubmissionData
-  versionId: string
+  versionId: string | undefined
 }> {
   return await downloadFormSubmission({
     formId,

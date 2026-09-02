@@ -202,14 +202,6 @@ export async function downloadFormSubmission({
         },
       )
     }
-    if (!result.versionId) {
-      throw new OneBlinkAppsError(
-        'The submission version could not be determined. Please reload and try again.',
-        {
-          title: 'Submission Version Unavailable',
-        },
-      )
-    }
     return {
       data: result.data,
       versionId: result.versionId,
