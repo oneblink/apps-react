@@ -19,12 +19,11 @@ function textElement(
   }
 }
 
-const approverEditable = { type: 'ALL_STEPS' } as const
-
 function validate(
   elements: FormTypes.FormElement[],
   submission: Record<string, unknown>,
   audience: FormTypes.FormElementHiddenFromAudience,
+  editableFormElementIds?: string[],
 ) {
   return validateSubmission({
     elements: elements as FormTypes.FormElementWithName[],
@@ -34,36 +33,37 @@ function validate(
     captchaType: 'CHECKBOX',
     isOffline: false,
     audience,
+    editableFormElementIds,
   })
 }
 
 describe('validateSubmission audience', () => {
-  test('validates a locked required element for a submitter', () => {
+  test('validates a required element when no editable ids are provided', () => {
     expect(validate([textElement('locked')], {}, 'SUBMITTER')).toEqual({
       locked: 'Please enter a value',
     })
   })
 
-  test('skips a locked required element for an approver', () => {
-    expect(validate([textElement('locked')], {}, 'APPROVER')).toBeUndefined()
+  test('skips a required element that is not in the editable ids', () => {
+    expect(
+      validate([textElement('locked')], {}, 'APPROVER', ['another-element']),
+    ).toBeUndefined()
   })
 
-  test('validates an approver editable element for an approver', () => {
+  test('validates an element included in the editable ids', () => {
     expect(
       validate(
-        [
-          textElement('locked'),
-          textElement('editable', { approverEditability: approverEditable }),
-        ],
+        [textElement('locked'), textElement('editable')],
         {},
         'APPROVER',
+        ['editable'],
       ),
     ).toEqual({
       editable: 'Please enter a value',
     })
   })
 
-  test('validates an approver editable element nested in a locked form', () => {
+  test('validates an editable element nested in a locked form', () => {
     const nestedForm = {
       id: 'nested-form',
       name: 'nestedForm',
@@ -71,15 +71,14 @@ describe('validateSubmission audience', () => {
       type: 'form',
       conditionallyShow: false,
       formId: 1,
-      elements: [
-        textElement('nestedLocked'),
-        textElement('nestedEditable', {
-          approverEditability: approverEditable,
-        }),
-      ],
+      elements: [textElement('nestedLocked'), textElement('nestedEditable')],
     } as FormTypes.FormFormElement
 
-    expect(validate([nestedForm], { nestedForm: {} }, 'APPROVER')).toEqual({
+    expect(
+      validate([nestedForm], { nestedForm: {} }, 'APPROVER', [
+        'nestedEditable',
+      ]),
+    ).toEqual({
       nestedForm: {
         type: 'formElements',
         formElements: {
@@ -89,7 +88,7 @@ describe('validateSubmission audience', () => {
     })
   })
 
-  test('skips a nested form with nothing an approver can edit', () => {
+  test('skips a nested form with nothing listed as editable', () => {
     const nestedForm = {
       id: 'nested-form',
       name: 'nestedForm',
@@ -101,7 +100,9 @@ describe('validateSubmission audience', () => {
     } as FormTypes.FormFormElement
 
     expect(
-      validate([nestedForm], { nestedForm: {} }, 'APPROVER'),
+      validate([nestedForm], { nestedForm: {} }, 'APPROVER', [
+        'another-element',
+      ]),
     ).toBeUndefined()
   })
 
@@ -113,16 +114,13 @@ describe('validateSubmission audience', () => {
       type: 'repeatableSet',
       conditionallyShow: false,
       minSetEntries: 2,
-      elements: [
-        textElement('nestedLocked'),
-        textElement('nestedEditable', {
-          approverEditability: approverEditable,
-        }),
-      ],
+      elements: [textElement('nestedLocked'), textElement('nestedEditable')],
     } as FormTypes.RepeatableSetElement
 
     expect(
-      validate([repeatableSet], { repeatableSet: [{}] }, 'APPROVER'),
+      validate([repeatableSet], { repeatableSet: [{}] }, 'APPROVER', [
+        'nestedEditable',
+      ]),
     ).toEqual({
       repeatableSet: {
         type: 'repeatableSet',
@@ -136,7 +134,7 @@ describe('validateSubmission audience', () => {
     })
   })
 
-  test('validates the entry count of a set for a submitter', () => {
+  test('validates the entry count of a set when no editable ids are provided', () => {
     const repeatableSet = {
       id: 'repeatable-set',
       name: 'repeatableSet',

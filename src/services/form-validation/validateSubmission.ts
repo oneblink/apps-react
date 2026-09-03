@@ -28,9 +28,10 @@ import {
   generateArcGISAutomatedSnapshotFileName,
 } from '../../form-elements/FormElementArcGISWebMap'
 import { fileUploadService } from '@oneblink/sdk-core'
-import isElementReadOnlyForAudience, {
-  isElementEditableForAudience,
-} from '../isElementReadOnlyForAudience'
+import {
+  checkIsFormElementEditable,
+  checkIsFormElementIdEditable,
+} from '../../utils/read-only-form-elements'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -43,6 +44,7 @@ export default function validateSubmission({
   captchaType,
   isOffline,
   audience,
+  editableFormElementIds,
 }: {
   elements: FormTypes.FormElementWithName[]
   submission: SubmissionTypes.S3SubmissionData['submission']
@@ -51,6 +53,7 @@ export default function validateSubmission({
   captchaType: CaptchaType
   isOffline: boolean
   audience: FormTypes.FormElementHiddenFromAudience
+  editableFormElementIds?: string[]
 }): FormElementsValidation | undefined {
   const formElementsValidation = elements.reduce<FormElementsValidation>(
     (partialFormElementsValidation, formElement) => {
@@ -72,11 +75,11 @@ export default function validateSubmission({
         return partialFormElementsValidation
       }
 
-      // An audience that cannot change this element, or anything nested inside
-      // it, has no way to resolve an error on it. Approvers still see the page
+      // A user that cannot change this element, or anything nested inside it,
+      // has no way to resolve an error on it. Reviewers still see the page
       // navigation buttons and can submit the form by pressing Enter, either of
       // which would otherwise reveal errors on fields locked to them.
-      if (!isElementEditableForAudience(formElement, audience)) {
+      if (!checkIsFormElementEditable(formElement, editableFormElementIds)) {
         return partialFormElementsValidation
       }
 
@@ -113,7 +116,7 @@ export default function validateSubmission({
         }
         case 'captcha': {
           // An approver edit is not a new submission, so the renderer never
-          // shows a captcha to an approver, regardless of `approverEditability`.
+          // shows a captcha to an approver, regardless of editable element ids.
           // Mirror that unconditionally rather than relying on the editability
           // check above.
           if (audience === 'APPROVER') {
@@ -593,9 +596,15 @@ export default function validateSubmission({
           const setErrorMessages: string[] = []
           // The entry count can only be corrected by adding or removing
           // entries, which requires the set itself to be editable. Its entries
-          // are still validated below, as they may contain elements this
-          // audience can edit even while the set is locked.
-          if (!isElementReadOnlyForAudience(formElement, audience)) {
+          // are still validated below, as they may contain elements that are
+          // listed even while the set is locked.
+          if (
+            editableFormElementIds === undefined ||
+            checkIsFormElementIdEditable(
+              formElement,
+              editableFormElementIds,
+            )
+          ) {
             const minSetEntries = getCleanRepeatableSetConfiguration(
               formElement.minSetEntries,
               elements,
@@ -651,6 +660,7 @@ export default function validateSubmission({
               captchaType,
               isOffline,
               audience,
+              editableFormElementIds,
             })
 
             if (entryValidation) {
@@ -683,6 +693,7 @@ export default function validateSubmission({
               captchaType,
               isOffline,
               audience,
+              editableFormElementIds,
             },
           )
           if (nestedFormValidation) {
@@ -704,6 +715,7 @@ export default function validateSubmission({
               captchaType,
               isOffline,
               audience,
+              editableFormElementIds,
             },
           )
           if (nestedFormValidation) {
@@ -725,6 +737,7 @@ export default function validateSubmission({
               captchaType,
               isOffline,
               audience,
+              editableFormElementIds,
             },
           )
           if (nestedFormValidation) {

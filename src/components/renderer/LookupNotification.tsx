@@ -14,12 +14,10 @@ import {
 import useFormDefinition from '../../hooks/useFormDefinition'
 import useInjectPages from '../../hooks/useInjectPages'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
-import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import useIsMounted from '../../hooks/useIsMounted'
 import useFormElementLookups from '../../hooks/useFormElementLookups'
 import mergeExecutedLookups from '../../utils/merge-executed-lookups'
-import useFormAudience from '../../hooks/useFormAudience'
-import isElementReadOnlyForAudience from '../../services/isElementReadOnlyForAudience'
+import useAreLookupsDisallowed from '../../hooks/useAreLookupsDisallowed'
 
 import { FormElementLookupHandler, ExecutedLookups } from '../../types/form'
 import ErrorMessage from '../messages/ErrorMessage'
@@ -65,8 +63,13 @@ function LookupNotificationComponent({
     null,
   )
   const { formSubmissionModel: model } = useFormSubmissionModel()
-  const formIsReadOnly = useFormIsReadOnly()
-  const audience = useFormAudience()
+  // Definition-level `readOnly` must not suppress lookups for a submitter:
+  // prefills and defaults still need to populate related fields, and a locked
+  // field can still be the input to a chained lookup. Approver locks and a
+  // fully read-only form are different: re-running a lookup from an existing
+  // submitted value could overwrite persisted answers merely by opening the
+  // review.
+  const areLookupsDisallowed = useAreLookupsDisallowed(element)
 
   const formElementElementLookup = React.useMemo(() => {
     return formElementLookups.find(
@@ -174,15 +177,6 @@ function LookupNotificationComponent({
     },
     [element, injectPagesAfter, onLookup],
   )
-
-  // Definition-level `readOnly` must not suppress lookups for a submitter:
-  // prefills and defaults still need to populate related fields, and a locked
-  // field can still be the input to a chained lookup. Approver locks are
-  // different. Re-running a lookup from an existing submitted value could
-  // overwrite persisted answers merely by opening the review, so only approver
-  // editable elements may run one.
-  const areLookupsDisallowed =
-    formIsReadOnly || isElementReadOnlyForAudience(element, audience)
 
   const isNotStaticLookup = React.useMemo(() => {
     return (

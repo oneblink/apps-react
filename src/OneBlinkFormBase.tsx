@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { flushSync } from 'react-dom'
 import { createTheme as createMuiTheme, ThemeProvider } from '@mui/material'
 import Tooltip from './components/renderer/Tooltip'
 import { Prompt, useHistory } from 'react-router-dom'
@@ -71,8 +72,10 @@ import {
 import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfileForInjectables'
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
 import { Clickable } from './components/Clickable'
+import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds'
+import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
 
-export type OneBlinkReadOnlyFormProps = {
+type OneBlinkFormDisplayProps = {
   /**
    * A [Google Maps API
    * Key](https://developers.google.com/maps/documentation/javascript/get-api-key).
@@ -110,7 +113,32 @@ export type OneBlinkReadOnlyFormProps = {
   audience: FormTypes.FormElementHiddenFromAudience
 }
 
-export type OneBlinkFormBaseProps = OneBlinkReadOnlyFormProps & {
+export type OneBlinkReadOnlyFormProps = OneBlinkFormDisplayProps &
+  (
+    | (OneBlinkFormControlledProps & {
+        /**
+         * Element ids that remain editable. All other elements are read-only.
+         * Requires the same controlled submission props as
+         * `OneBlinkFormControlled`.
+         */
+        editableFormElementIds: string[]
+        form?: never
+        initialSubmission?: never
+      })
+    | (OneBlinkFormUncontrolledProps & {
+        /** Omit to render every form element as read-only. */
+        editableFormElementIds?: never
+        definition?: never
+        submission?: never
+        setFormSubmission?: never
+        lastElementUpdated?: never
+        executedLookups?: never
+        sectionState?: never
+      })
+  )
+
+export type OneBlinkFormBaseProps = OneBlinkFormDisplayProps & {
+  editableFormElementIds?: string[]
   /** The function to call when the user cancels the form */
   onCancel: () => unknown
   /**
@@ -275,6 +303,7 @@ function OneBlinkFormBase({
   getCurrentSubmissionDuration,
   onBeforeUnload,
   audience,
+  editableFormElementIds,
 }: Props) {
   const isOffline = useIsOffline()
   const { isUsingFormsKey } = useAuth()
@@ -498,6 +527,14 @@ function OneBlinkFormBase({
     }))
   }, [])
 
+  const allowNavigationAfterHostAction = React.useCallback(() => {
+    // React Router DOM v5's <Prompt> has no imperative "proceed" API, so the
+    // guard must rerender as disabled before the host navigates in the same
+    // tick. Migrating to the React Router DOM v6 blocker APIs would allow the
+    // blocked transition to proceed directly without flushSync().
+    flushSync(allowNavigation)
+  }, [allowNavigation])
+
   // #endregion Unsaved Changed
   //
   //
@@ -539,7 +576,7 @@ function OneBlinkFormBase({
     FormElementsValidation | undefined
   >(
     () =>
-      !isReadOnly
+      !isReadOnly || editableFormElementIds !== undefined
         ? validate(
             submission,
             formElementsConditionallyShown,
@@ -547,6 +584,7 @@ function OneBlinkFormBase({
             recaptchaType,
             isOffline,
             audience,
+            editableFormElementIds,
           )
         : undefined,
     [
@@ -558,6 +596,7 @@ function OneBlinkFormBase({
       recaptchaType,
       isOffline,
       audience,
+      editableFormElementIds,
     ],
   )
 
@@ -858,6 +897,26 @@ function OneBlinkFormBase({
       setFormSubmission,
       shouldUseNavigableValidationErrorsNotification,
     ],
+  )
+
+  const attemptFormSubmission = React.useCallback(async () => {
+    setHasAttemptedSubmit(true)
+    setIsPreparingToSubmit(true)
+    try {
+      if (!(await prepareSubmission(false))) {
+        return false
+      }
+      // The host must call this after it has persisted the edits. Calling it
+      // here would let the user cancel a later confirmation dialog and leave
+      // without being prompted.
+      return allowNavigationAfterHostAction
+    } finally {
+      setIsPreparingToSubmit(false)
+    }
+  }, [allowNavigationAfterHostAction, prepareSubmission])
+
+  useRegisterFormSubmissionAttempt(
+    editableFormElementIds === undefined ? undefined : attemptFormSubmission,
   )
 
   const handleSubmit = React.useCallback(
@@ -1378,51 +1437,57 @@ function OneBlinkFormBase({
                                         <FormIsReadOnlyContext.Provider
                                           value={isReadOnly}
                                         >
-                                          <FormAudienceContext.Provider
-                                            value={audience}
+                                          <EditableFormElementIdsContext.Provider
+                                            value={editableFormElementIds}
                                           >
-                                            <TaskContext.Provider
-                                              value={taskContextValue}
+                                            <FormAudienceContext.Provider
+                                              value={audience}
                                             >
-                                              <OnUploadAttachmentContext.Provider
-                                                value={onUploadAttachment}
+                                              <TaskContext.Provider
+                                                value={taskContextValue}
                                               >
-                                                {visiblePages.map(
-                                                  (
-                                                    pageElement: FormTypes.PageElement,
-                                                  ) => (
-                                                    <PageFormElements
-                                                      key={pageElement.id}
-                                                      isActive={
-                                                        pageElement.id ===
-                                                        currentPage.id
-                                                      }
-                                                      formId={definition.id}
-                                                      formElementsConditionallyShown={
-                                                        formElementsConditionallyShown
-                                                      }
-                                                      formElementsValidation={
-                                                        formElementsValidation
-                                                      }
-                                                      displayValidationMessages={
-                                                        hasAttemptedSubmit ||
-                                                        isDisplayingCurrentPageError
-                                                      }
-                                                      pageElement={pageElement}
-                                                      onChange={handleChange}
-                                                      model={submission}
-                                                      setFormSubmission={
-                                                        setFormSubmission
-                                                      }
-                                                      sectionState={
-                                                        sectionState
-                                                      }
-                                                    />
-                                                  ),
-                                                )}
-                                              </OnUploadAttachmentContext.Provider>
-                                            </TaskContext.Provider>
-                                          </FormAudienceContext.Provider>
+                                                <OnUploadAttachmentContext.Provider
+                                                  value={onUploadAttachment}
+                                                >
+                                                  {visiblePages.map(
+                                                    (
+                                                      pageElement: FormTypes.PageElement,
+                                                    ) => (
+                                                      <PageFormElements
+                                                        key={pageElement.id}
+                                                        isActive={
+                                                          pageElement.id ===
+                                                          currentPage.id
+                                                        }
+                                                        formId={definition.id}
+                                                        formElementsConditionallyShown={
+                                                          formElementsConditionallyShown
+                                                        }
+                                                        formElementsValidation={
+                                                          formElementsValidation
+                                                        }
+                                                        displayValidationMessages={
+                                                          hasAttemptedSubmit ||
+                                                          isDisplayingCurrentPageError
+                                                        }
+                                                        pageElement={
+                                                          pageElement
+                                                        }
+                                                        onChange={handleChange}
+                                                        model={submission}
+                                                        setFormSubmission={
+                                                          setFormSubmission
+                                                        }
+                                                        sectionState={
+                                                          sectionState
+                                                        }
+                                                      />
+                                                    ),
+                                                  )}
+                                                </OnUploadAttachmentContext.Provider>
+                                              </TaskContext.Provider>
+                                            </FormAudienceContext.Provider>
+                                          </EditableFormElementIdsContext.Provider>
                                         </FormIsReadOnlyContext.Provider>
                                       </AttachmentBlobsProvider>
                                     </CaptchaContext.Provider>
@@ -1561,72 +1626,80 @@ function OneBlinkFormBase({
                         )}
                       </div>
                     </form>
-
-                    {/* Approvers have no submit or cancel buttons, and
-                    navigate via the approvals app's own actions, so the form
-                    must not guard navigation or prompt about submitting. */}
-                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
-                      <React.Fragment>
-                        <Prompt
-                          when={isDirty && !isNavigationAllowed}
-                          message={handleBlockedNavigation}
-                        />
-                        <Modal
-                          isOpen={hasConfirmedNavigation === false}
-                          title="Unsaved Changes"
-                          cardClassName="cypress-cancel-confirm"
-                          titleClassName="cypress-cancel-confirm-title"
-                          bodyClassName="cypress-cancel-confirm-body"
-                          actions={
-                            <>
-                              {onSaveDraft && (
+                    {/* Unsaved changes prompt when navigating away */}
+                    {!isPreview &&
+                      (editableFormElementIds !== undefined || !isReadOnly) && (
+                        <React.Fragment>
+                          <Prompt
+                            when={isDirty && !isNavigationAllowed}
+                            message={handleBlockedNavigation}
+                          />
+                          <Modal
+                            isOpen={hasConfirmedNavigation === false}
+                            title="Unsaved Changes"
+                            cardClassName="cypress-cancel-confirm"
+                            titleClassName="cypress-cancel-confirm-title"
+                            bodyClassName="cypress-cancel-confirm-body"
+                            actions={
+                              <>
+                                {onSaveDraft && (
+                                  <button
+                                    type="button"
+                                    className="button ob-button is-success cypress-cancel-confirm-save-draft"
+                                    onClick={() => handleSaveDraft(false)}
+                                  >
+                                    <CustomisableButtonInner
+                                      label={
+                                        buttons?.saveDraft?.label ||
+                                        'Save Draft'
+                                      }
+                                      icon={buttons?.saveDraft?.icon}
+                                    />
+                                  </button>
+                                )}
+                                <span style={{ flex: 1 }}></span>
                                 <button
                                   type="button"
-                                  className="button ob-button is-success cypress-cancel-confirm-save-draft"
-                                  onClick={() => handleSaveDraft(false)}
+                                  className="button ob-button is-light cypress-cancel-confirm-back"
+                                  onClick={handleKeepGoing}
                                 >
                                   <CustomisableButtonInner
                                     label={
-                                      buttons?.saveDraft?.label || 'Save Draft'
+                                      buttons?.cancelPromptNo?.label || 'Back'
                                     }
-                                    icon={buttons?.saveDraft?.icon}
+                                    icon={buttons?.cancelPromptNo?.icon}
                                   />
                                 </button>
-                              )}
-                              <span style={{ flex: 1 }}></span>
-                              <button
-                                type="button"
-                                className="button ob-button is-light cypress-cancel-confirm-back"
-                                onClick={handleKeepGoing}
-                              >
-                                <CustomisableButtonInner
-                                  label={
-                                    buttons?.cancelPromptNo?.label || 'Back'
-                                  }
-                                  icon={buttons?.cancelPromptNo?.icon}
-                                />
-                              </button>
-                              <button
-                                type="button"
-                                className="button ob-button is-primary cypress-cancel-confirm-discard"
-                                onClick={handleDiscardUnsavedChanges}
-                                autoFocus
-                              >
-                                <CustomisableButtonInner
-                                  label={
-                                    buttons?.cancelPromptYes?.label || 'Discard'
-                                  }
-                                  icon={buttons?.cancelPromptYes?.icon}
-                                />
-                              </button>
-                            </>
-                          }
-                        >
-                          <p>
-                            You have unsaved changes, are you sure you want
-                            discard them?
-                          </p>
-                        </Modal>
+                                <button
+                                  type="button"
+                                  className="button ob-button is-primary cypress-cancel-confirm-discard"
+                                  onClick={handleDiscardUnsavedChanges}
+                                  autoFocus
+                                >
+                                  <CustomisableButtonInner
+                                    label={
+                                      buttons?.cancelPromptYes?.label ||
+                                      'Discard'
+                                    }
+                                    icon={buttons?.cancelPromptYes?.icon}
+                                  />
+                                </button>
+                              </>
+                            }
+                          >
+                            <p>
+                              You have unsaved changes, are you sure you want
+                              discard them?
+                            </p>
+                          </Modal>
+                        </React.Fragment>
+                      )}
+
+                    {/* Approvers have no submit button, and action their
+                    review via the approvals app, so the form must not prompt
+                    them about submitting. */}
+                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
+                      <React.Fragment>
                         <Modal
                           isOpen={promptUploadingAttachments === true}
                           title="Attachment upload in progress"

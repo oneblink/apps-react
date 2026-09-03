@@ -1,22 +1,23 @@
 import * as React from 'react'
 import OneBlinkFormBase, {
-  OneBlinkFormUncontrolledProps,
   OneBlinkReadOnlyFormProps,
 } from './OneBlinkFormBase'
 import useFormSubmissionState from './hooks/useFormSubmissionState'
+import { FormTypes } from '@oneblink/types'
 
-function OneBlinkReadOnlyForm({
+const noop = () => {}
+
+function UncontrolledOneBlinkReadOnlyForm({
   form,
   initialSubmission,
   ...rest
-}: OneBlinkReadOnlyFormProps & OneBlinkFormUncontrolledProps) {
+}: Extract<OneBlinkReadOnlyFormProps, { form: FormTypes.Form }>) {
   const [{ submission, definition, executedLookups }, setFormSubmission] =
     useFormSubmissionState(form, initialSubmission)
 
-  const noop = React.useCallback(() => {}, [])
-
   return (
     <OneBlinkFormBase
+      {...rest}
       definition={definition}
       submission={submission}
       disabled={true}
@@ -27,15 +28,33 @@ function OneBlinkReadOnlyForm({
       isPendingQueueEnabled={false}
       executedLookups={executedLookups}
       sectionState={[]}
-      {...rest}
     />
   )
 }
 
+function OneBlinkReadOnlyForm(props: OneBlinkReadOnlyFormProps) {
+  if (props.editableFormElementIds) {
+    return (
+      <OneBlinkFormBase
+        {...props}
+        disabled={false}
+        isReadOnly={true}
+        onCancel={noop}
+        onSubmit={noop}
+        isPendingQueueEnabled={false}
+      />
+    )
+  }
+
+  return <UncontrolledOneBlinkReadOnlyForm {...props} />
+}
+
 /**
- * Component for rendering a OneBlink Form in read-only mode. This component
- * will render the form with all inputs disabled but will **not** render the
- * submit, cancel and save draft buttons.
+ * Component for rendering a OneBlink Form in read-only mode. By default, all
+ * inputs are read-only. Pass `editableFormElementIds` with controlled
+ * submission props (`definition`, `submission`, `setFormSubmission`,
+ * `executedLookups`) to keep selected inputs editable. This component does
+ * **not** render the submit, cancel or save draft buttons.
  *
  * It is also recommended to import the `css` from this library as well.
  *
@@ -53,6 +72,7 @@ function OneBlinkReadOnlyForm({
  * FormTypes
  *   IsOfflineContextProvider,
  *   OneBlinkReadOnlyForm,
+ *   useFormSubmissionState,
  *   useIsMounted,
  * } from '@oneblink/apps-react'
  * import '@oneblink/apps-react/dist/styles.css'
@@ -79,6 +99,10 @@ function OneBlinkReadOnlyForm({
  *
  * function FormContainer() {
  *   const isMounted = useIsMounted()
+ *   const [
+ *     { definition, submission, executedLookups },
+ *     setFormSubmission,
+ *   ] = useFormSubmissionState(form)
  *
  *   const handleFormError = React.useCallback(() => {
  *     // handle form rendering error caused by a misconfigured form here...
@@ -87,9 +111,12 @@ function OneBlinkReadOnlyForm({
  *   return (
  *     <OneBlinkReadOnlyForm
  *       googleMapsApiKey={googleMapsApiKey}
- *       initialSubmission={null}
- *       form={form}
+ *       definition={definition}
+ *       submission={submission}
+ *       setFormSubmission={setFormSubmission}
+ *       executedLookups={executedLookups}
  *       audience="APPROVER"
+ *       editableFormElementIds={['element-id']}
  *     />
  *   )
  * }

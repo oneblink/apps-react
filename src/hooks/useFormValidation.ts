@@ -71,6 +71,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
       captchaType: CaptchaType,
       isOffline: boolean,
       audience: FormTypes.FormElementHiddenFromAudience,
+      editableFormElementIds?: string[],
     ) => {
       return validateSubmission({
         elements: formElementsWithName,
@@ -80,6 +81,7 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
         captchaType,
         isOffline,
         audience,
+        editableFormElementIds,
       })
     },
     [formElementsWithName],

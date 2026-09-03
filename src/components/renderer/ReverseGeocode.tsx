@@ -7,10 +7,8 @@ import { formElementsService } from '@oneblink/sdk-core'
 import { parseLocationValue } from '../../form-elements/FormElementLocation'
 import useFormSubmissionModel from '../../hooks/useFormSubmissionModelContext'
 import useFormDefinition from '../../hooks/useFormDefinition'
-import useFormIsReadOnly from '../../hooks/useFormIsReadOnly'
 import { FormElementValueChangeHandler } from '../../types/form'
-import useFormAudience from '../../hooks/useFormAudience'
-import isElementReadOnlyForAudience from '../../services/isElementReadOnlyForAudience'
+import useAreLookupsDisallowed from '../../hooks/useAreLookupsDisallowed'
 
 type ReverseGeocodeContextValue = {
   isReverseGeocoding: boolean
@@ -41,8 +39,7 @@ export default function ReverseGeocode({
 
   const formDefinition = useFormDefinition()
   const formSubmissionModel = useFormSubmissionModel()
-  const formIsReadOnly = useFormIsReadOnly()
-  const audience = useFormAudience()
+  const areLookupsDisallowed = useAreLookupsDisallowed(element)
 
   const formattedAddressElement = React.useMemo(() => {
     if (element.reverseGeocoding?.formattedAddressElementId) {
@@ -62,12 +59,7 @@ export default function ReverseGeocode({
     // default location to populate its formatted-address field. An
     // approver-locked location must not do so: opening a review should never
     // replace the address saved with the original submission.
-    if (
-      formIsReadOnly ||
-      isElementReadOnlyForAudience(element, audience) ||
-      !coords ||
-      !formattedAddressElement
-    ) {
+    if (areLookupsDisallowed || !coords || !formattedAddressElement) {
       return
     }
 
@@ -127,12 +119,11 @@ export default function ReverseGeocode({
 
     return () => abortController.abort()
   }, [
-    audience,
     coords,
     element,
     formDefinition.id,
-    formIsReadOnly,
     formattedAddressElement,
+    areLookupsDisallowed,
     onChange,
   ])
 

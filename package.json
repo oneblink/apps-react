@@ -68,6 +68,7 @@
     "@types/lodash.orderby": "^4.6.9",
     "@types/lodash.throttle": "^4.1.9",
     "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.5",
     "@types/react-google-recaptcha": "^2.1.9",
     "@types/react-router-dom": "^5.3.3",
     "@types/react-signature-canvas": "^1.0.7",
