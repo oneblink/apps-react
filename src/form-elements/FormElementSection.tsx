@@ -40,9 +40,9 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
 }: Omit<Props<T>, 'elements' | 'readOnly'> & {
   element: FormTypes.SectionElement
   /**
-   * Lock to apply to nested fields. True when the whole form is read-only
-   * or a parent is read-only. Does not include this section’s audience
-   * lock, so an `ALL_STEPS` child can stay editable.
+   * Lock to apply to nested fields. True when the whole form is read-only or a
+   * parent is read-only. A child included in `editableFormElementIds` can stay
+   * editable.
    */
   childrenReadOnly: boolean
   sectionHeaderId: string

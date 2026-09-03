@@ -17,23 +17,22 @@ export type Props = {
   id: string
   element: FormTypes.FormFormElement
   /**
-   * Whether this nested form is locked for the current audience or inherited
-   * read-only state. Used as `readOnlyOverride` for synthetic children when
-   * `readOnlyOverrideChildren` is set. Nested fields do not inherit this
-   * value as a blanket lock so an `ALL_STEPS` child can stay editable.
+   * Whether this nested form is locked. Used as `readOnlyOverride` for
+   * synthetic children when `readOnlyOverrideChildren` is set. Nested fields
+   * do not inherit this value as a blanket lock so a child included in
+   * `editableFormElementIds` can stay editable.
    */
   readOnly: boolean
   /**
    * Lock to apply to nested fields (`OneBlinkFormElements.readOnly` /
    * `parentReadOnly`). True when the whole form is read-only, a parent is
-   * read-only, or this element’s definition has `readOnly: true`. Does not
-   * include this nested form’s audience lock.
+   * read-only, or this element’s definition has `readOnly: true`.
    */
   childrenReadOnly: boolean
   /**
-   * When true, nested fields use this element’s `readOnly` (including
-   * audience lock) as `readOnlyOverride` instead of calculating their own.
-   * Used by Civica name records and Freshdesk dependent fields.
+   * When true, nested fields use this element’s `readOnly` as
+   * `readOnlyOverride` instead of calculating their own. Used by Civica name
+   * records and Freshdesk dependent fields.
    */
   readOnlyOverrideChildren?: boolean
   value: SubmissionTypes.S3SubmissionData['submission'] | undefined

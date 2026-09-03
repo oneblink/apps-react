@@ -35,15 +35,15 @@ type Props = {
   isEven: boolean
   element: FormTypes.RepeatableSetElement
   /**
-   * Whether this set’s own controls (add/remove entries) are locked.
-   * Includes audience lock, so an approver may be unable to add or remove
-   * entries even when a nested `ALL_STEPS` field is still editable.
+   * Whether this set’s own controls (add/remove entries) are locked. The set
+   * itself must be listed in `editableFormElementIds` to add or remove entries;
+   * a nested field being listed is not enough.
    */
   readOnly: boolean
   /**
    * Lock to apply to fields inside each entry. True when the whole form is
    * read-only, a parent is read-only, or this element’s definition has
-   * `readOnly: true`. Does not include this set’s audience lock.
+   * `readOnly: true`.
    */
   childrenReadOnly: boolean
   value: Array<SubmissionTypes.S3SubmissionData['submission']> | undefined

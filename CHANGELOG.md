@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - optional `versionId` on `downloadFormSubmission()` to download a specific S3 submission version
+- `<FormSubmissionAttemptContextProvider />` and `useFormSubmissionAttempt()` to allow a host application (e.g. an approval action) to run the rendered form's validation before actioning approver edits. On success the attempt resolves with a callback the host must call after persisting the edits, which clears the unsaved-changes navigation guard.
 
 ### Changed
 
 - **[BREAKING]** `submissionService.getSubmissionData()` now returns `{ data, versionId }` instead of `S3SubmissionData`
-- `approverEditability` on a form element now overrides `readOnly` for approvers, so a field can be locked for submitters and still editable during review
+- `<OneBlinkReadOnlyForm />` accepts `editableFormElementIds` with controlled submission props (`definition`, `submission`, `setFormSubmission`, `executedLookups`) to keep selected elements editable while the rest of the form remains read-only
+- unsaved changes are now prompted about when navigating away from a form rendered with `editableFormElementIds`
 
 ## [12.0.0] - 2026-08-26
 
