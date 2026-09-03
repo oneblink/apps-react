@@ -75,6 +75,15 @@ import { Clickable } from './components/Clickable'
 import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds'
 import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
 
+const PROMPT_UPLOADING_ATTACHMENTS = 'PROMPT_UPLOADING_ATTACHMENTS'
+const PROMPT_OFFLINE_SUBMISSION = 'PROMPT_OFFLINE_SUBMISSION'
+
+type SubmissionPreparationPrompt =
+  | typeof PROMPT_UPLOADING_ATTACHMENTS
+  | typeof PROMPT_OFFLINE_SUBMISSION
+
+type HostSubmissionPreparationChoice = 'CONTINUE' | 'RETRY' | 'CANCEL'
+
 type OneBlinkFormDisplayProps = {
   /**
    * A [Google Maps API
@@ -436,6 +445,33 @@ function OneBlinkFormBase({
     React.useState<boolean>(false)
   const [promptUploadingAttachments, setPromptUploadingAttachments] =
     React.useState<boolean>(false)
+  const hostSubmissionPreparationPromptResolverRef = React.useRef<
+    ((choice: HostSubmissionPreparationChoice) => void) | undefined
+  >(undefined)
+  const showHostSubmissionPreparationPrompt = React.useCallback(
+    (prompt: SubmissionPreparationPrompt) =>
+      new Promise<HostSubmissionPreparationChoice>((resolve) => {
+        hostSubmissionPreparationPromptResolverRef.current = resolve
+        if (prompt === PROMPT_UPLOADING_ATTACHMENTS) {
+          setPromptUploadingAttachments(true)
+        } else {
+          setPromptOfflineSubmissionAttempt(true)
+        }
+      }),
+    [],
+  )
+  const resolveHostSubmissionPreparationPrompt = React.useCallback(
+    (choice: HostSubmissionPreparationChoice): boolean => {
+      const resolve = hostSubmissionPreparationPromptResolverRef.current
+      if (!resolve) {
+        return false
+      }
+      hostSubmissionPreparationPromptResolverRef.current = undefined
+      resolve(choice)
+      return true
+    },
+    [],
+  )
   const handleBlockedNavigation = React.useCallback<
     (location: H.Location, action: H.Action) => string | boolean
   >((location) => {
@@ -712,8 +748,7 @@ function OneBlinkFormBase({
           })
           return false
         } else {
-          setPromptUploadingAttachments(true)
-          return false
+          return PROMPT_UPLOADING_ATTACHMENTS
         }
       }
 
@@ -790,7 +825,11 @@ function OneBlinkFormBase({
   const prepareSubmission = React.useCallback(
     async (
       continueWhilstAttachmentsAreUploading: boolean,
-    ): Promise<ReturnType<typeof getCurrentSubmissionData> | undefined> => {
+    ): Promise<
+      | ReturnType<typeof getCurrentSubmissionData>
+      | SubmissionPreparationPrompt
+      | undefined
+    > => {
       const submissionData = getCurrentSubmissionData(false)
       if (!checkBsbAreValidating(submissionData.submission)) {
         return
@@ -823,10 +862,7 @@ function OneBlinkFormBase({
 
       if (captchaType === 'INVISIBLE') {
         if (captchasRef.current.length) {
-          if (isOffline) {
-            setPromptOfflineSubmissionAttempt(true)
-            return
-          }
+          if (isOffline) return PROMPT_OFFLINE_SUBMISSION
           const tokenResults = await Promise.allSettled(
             captchasRef.current.map((captcha) => captcha.executeAsync()),
           )
@@ -878,8 +914,7 @@ function OneBlinkFormBase({
 
       if (isOffline && !isPendingQueueEnabled) {
         console.log('User is offline and form does not support a pending queue')
-        setPromptOfflineSubmissionAttempt(true)
-        return
+        return PROMPT_OFFLINE_SUBMISSION
       }
       return submissionData
     },
@@ -898,22 +933,51 @@ function OneBlinkFormBase({
       shouldUseNavigableValidationErrorsNotification,
     ],
   )
+  // A host attempt can remain pending while a prompt is open. Retrying must
+  // use the latest preparation callback so changes such as going online are
+  // observed instead of being read from the original attempt's closure.
+  const prepareSubmissionRef = React.useRef(prepareSubmission)
+  React.useLayoutEffect(() => {
+    prepareSubmissionRef.current = prepareSubmission
+  }, [prepareSubmission])
 
   const attemptFormSubmission = React.useCallback(async () => {
     setHasAttemptedSubmit(true)
     setIsPreparingToSubmit(true)
     try {
-      if (!(await prepareSubmission(false))) {
-        return false
+      const runPreparation = async (
+        continueWhilstAttachmentsAreUploading: boolean,
+      ): Promise<false | (() => void)> => {
+        const result = await prepareSubmissionRef.current(
+          continueWhilstAttachmentsAreUploading,
+        )
+        if (result === PROMPT_UPLOADING_ATTACHMENTS) {
+          const choice = await showHostSubmissionPreparationPrompt(result)
+          if (choice !== 'CONTINUE') {
+            return false
+          }
+          return runPreparation(true)
+        }
+        if (result === PROMPT_OFFLINE_SUBMISSION) {
+          const choice = await showHostSubmissionPreparationPrompt(result)
+          if (choice !== 'RETRY') {
+            return false
+          }
+          return runPreparation(continueWhilstAttachmentsAreUploading)
+        }
+        if (!result) {
+          return false
+        }
+        // The host must call this after it has persisted the edits. Calling it
+        // here would let the user cancel a later confirmation dialog and leave
+        // without being prompted.
+        return allowNavigationAfterHostAction
       }
-      // The host must call this after it has persisted the edits. Calling it
-      // here would let the user cancel a later confirmation dialog and leave
-      // without being prompted.
-      return allowNavigationAfterHostAction
+      return runPreparation(false)
     } finally {
       setIsPreparingToSubmit(false)
     }
-  }, [allowNavigationAfterHostAction, prepareSubmission])
+  }, [allowNavigationAfterHostAction, showHostSubmissionPreparationPrompt])
 
   useRegisterFormSubmissionAttempt(
     editableFormElementIds === undefined ? undefined : attemptFormSubmission,
@@ -940,6 +1004,16 @@ function OneBlinkFormBase({
         continueWhilstAttachmentsAreUploading,
       )
 
+      if (submissionData === PROMPT_UPLOADING_ATTACHMENTS) {
+        setPromptUploadingAttachments(true)
+        setIsPreparingToSubmit(false)
+        return
+      }
+      if (submissionData === PROMPT_OFFLINE_SUBMISSION) {
+        setPromptOfflineSubmissionAttempt(true)
+        setIsPreparingToSubmit(false)
+        return
+      }
       if (!submissionData) {
         setIsPreparingToSubmit(false)
         return
@@ -1005,11 +1079,16 @@ function OneBlinkFormBase({
         if (!checkBsbAreValidating(submission)) {
           return
         }
-        if (
-          !continueWhilstAttachmentsAreUploading &&
-          !checkAttachmentsCanBeSubmitted(submission)
-        ) {
-          return
+        if (!continueWhilstAttachmentsAreUploading) {
+          const attachmentCheckResult =
+            checkAttachmentsCanBeSubmitted(submission)
+          if (attachmentCheckResult === PROMPT_UPLOADING_ATTACHMENTS) {
+            setPromptUploadingAttachments(true)
+            return
+          }
+          if (!attachmentCheckResult) {
+            return
+          }
         }
         onSaveDraft({
           definition,
@@ -1038,6 +1117,9 @@ function OneBlinkFormBase({
   const handleContinueWithAttachments = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setPromptUploadingAttachments(false)
+      if (resolveHostSubmissionPreparationPrompt('CONTINUE')) {
+        return
+      }
       if (hasAttemptedSubmit) {
         handleSubmit(e, true)
       } else {
@@ -1047,13 +1129,37 @@ function OneBlinkFormBase({
     [
       handleSubmit,
       setPromptUploadingAttachments,
+      resolveHostSubmissionPreparationPrompt,
       hasAttemptedSubmit,
       handleSaveDraft,
     ],
   )
   const handleWaitForAttachments = React.useCallback(() => {
     setPromptUploadingAttachments(false)
-  }, [setPromptUploadingAttachments])
+    resolveHostSubmissionPreparationPrompt('CANCEL')
+  }, [resolveHostSubmissionPreparationPrompt, setPromptUploadingAttachments])
+
+  const handleCancelOfflineSubmission = React.useCallback(() => {
+    setPromptOfflineSubmissionAttempt(false)
+    resolveHostSubmissionPreparationPrompt('CANCEL')
+  }, [
+    resolveHostSubmissionPreparationPrompt,
+    setPromptOfflineSubmissionAttempt,
+  ])
+
+  const handleRetryOfflineSubmission = React.useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      setPromptOfflineSubmissionAttempt(false)
+      if (!resolveHostSubmissionPreparationPrompt('RETRY')) {
+        handleSubmit(e, false)
+      }
+    },
+    [
+      handleSubmit,
+      resolveHostSubmissionPreparationPrompt,
+      setPromptOfflineSubmissionAttempt,
+    ],
+  )
 
   // #endregion
   //
@@ -1692,115 +1798,106 @@ function OneBlinkFormBase({
                               discard them?
                             </p>
                           </Modal>
-                        </React.Fragment>
-                      )}
 
-                    {/* Approvers have no submit button, and action their
-                    review via the approvals app, so the form must not prompt
-                    them about submitting. */}
-                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
-                      <React.Fragment>
-                        <Modal
-                          isOpen={promptUploadingAttachments === true}
-                          title="Attachment upload in progress"
-                          cardClassName="cypress-attachments-wait-continue"
-                          titleClassName="cypress-attachments-confirm-wait-title"
-                          bodyClassName="cypress-attachments-confirm-wait-body"
-                          actions={
-                            <>
-                              <span style={{ flex: 1 }}></span>
-                              <button
-                                type="button"
-                                className="button ob-button is-light cypress-attachments-confirm-wait"
-                                onClick={handleWaitForAttachments}
-                              >
-                                Wait
-                              </button>
-                              <button
-                                type="button"
-                                className="button ob-button is-primary cypress-attachments-confirm-continue"
-                                onClick={handleContinueWithAttachments}
-                                autoFocus
-                              >
-                                Continue
-                              </button>
-                            </>
-                          }
-                        >
-                          <p>
-                            Your attachments are still uploading, do you want to
-                            wait for the uploads to complete or continue using
-                            the app? If you click continue the attachments will
-                            upload in the background. Do not close the app until
-                            the upload has been completed.
-                          </p>
-                        </Modal>
-
-                        <Modal
-                          isOpen={promptOfflineSubmissionAttempt}
-                          title="It looks like you're Offline"
-                          className="ob-modal__offline-submission-attempt"
-                          cardClassName="cypress-submission-offline has-text-centered"
-                          titleClassName="cypress-offline-title"
-                          bodyClassName="cypress-offline-body"
-                          actions={
-                            <>
-                              {onSaveDraft && (
+                          {/* Submission preparation can be triggered by either this
+                          form's submit button or a host action such as approval. */}
+                          <Modal
+                            isOpen={promptUploadingAttachments === true}
+                            title="Attachment upload in progress"
+                            cardClassName="cypress-attachments-wait-continue"
+                            titleClassName="cypress-attachments-confirm-wait-title"
+                            bodyClassName="cypress-attachments-confirm-wait-body"
+                            actions={
+                              <>
+                                <span style={{ flex: 1 }}></span>
                                 <button
                                   type="button"
-                                  className="button ob-button ob-button__offline-submission-attempt-save-draft is-success"
-                                  onClick={() => handleSaveDraft(false)}
+                                  className="button ob-button is-light cypress-attachments-confirm-wait"
+                                  onClick={handleWaitForAttachments}
                                 >
-                                  <CustomisableButtonInner
-                                    label={
-                                      buttons?.saveDraft?.label || 'Save Draft'
-                                    }
-                                    icon={buttons?.saveDraft?.icon}
-                                  />
+                                  Wait
                                 </button>
+                                <button
+                                  type="button"
+                                  className="button ob-button is-primary cypress-attachments-confirm-continue"
+                                  onClick={handleContinueWithAttachments}
+                                  autoFocus
+                                >
+                                  Continue
+                                </button>
+                              </>
+                            }
+                          >
+                            <p>
+                              Your attachments are still uploading, do you want
+                              to wait for the uploads to complete or continue
+                              using the app? If you click continue the
+                              attachments will upload in the background. Do not
+                              close the app until the upload has been completed.
+                            </p>
+                          </Modal>
+
+                          <Modal
+                            isOpen={promptOfflineSubmissionAttempt}
+                            title="It looks like you're Offline"
+                            className="ob-modal__offline-submission-attempt"
+                            cardClassName="cypress-submission-offline has-text-centered"
+                            titleClassName="cypress-offline-title"
+                            bodyClassName="cypress-offline-body"
+                            actions={
+                              <>
+                                {onSaveDraft && (
+                                  <button
+                                    type="button"
+                                    className="button ob-button ob-button__offline-submission-attempt-save-draft is-success"
+                                    onClick={() => handleSaveDraft(false)}
+                                  >
+                                    <CustomisableButtonInner
+                                      label={
+                                        buttons?.saveDraft?.label ||
+                                        'Save Draft'
+                                      }
+                                      icon={buttons?.saveDraft?.icon}
+                                    />
+                                  </button>
+                                )}
+                                <span style={{ flex: 1 }}></span>
+                                <button
+                                  className="button ob-button ob-button__offline-submission-attempt-cancel is-light cypress-offline-submission-cancel"
+                                  onClick={handleCancelOfflineSubmission}
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  className="button ob-button ob-button__offline-submission-attempt-try-again is-primary cypress-offline-submission-try-again"
+                                  onClick={handleRetryOfflineSubmission}
+                                  autoFocus
+                                >
+                                  Try Again
+                                </button>
+                              </>
+                            }
+                          >
+                            <p className="ob-modal__offline-submission-attempt-message">
+                              You cannot submit this form while offline, please
+                              try again when connectivity is restored.
+                              {onSaveDraft && (
+                                <span className="ob-modal__offline-submission-attempt-save-draft-message">
+                                  {' '}
+                                  Alternatively, click the{' '}
+                                  <b>
+                                    {buttons?.saveDraft?.label || 'Save Draft'}
+                                  </b>{' '}
+                                  button below to come back to this later.
+                                </span>
                               )}
-                              <span style={{ flex: 1 }}></span>
-                              <button
-                                className="button ob-button ob-button__offline-submission-attempt-cancel is-light"
-                                onClick={() =>
-                                  setPromptOfflineSubmissionAttempt(false)
-                                }
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="button ob-button ob-button__offline-submission-attempt-try-again is-primary"
-                                onClick={(e) => {
-                                  setPromptOfflineSubmissionAttempt(false)
-                                  handleSubmit(e, false)
-                                }}
-                                autoFocus
-                              >
-                                Try Again
-                              </button>
-                            </>
-                          }
-                        >
-                          <p className="ob-modal__offline-submission-attempt-message">
-                            You cannot submit this form while offline, please
-                            try again when connectivity is restored.
-                            {onSaveDraft && (
-                              <span className="ob-modal__offline-submission-attempt-save-draft-message">
-                                {' '}
-                                Alternatively, click the{' '}
-                                <b>
-                                  {buttons?.saveDraft?.label || 'Save Draft'}
-                                </b>{' '}
-                                button below to come back to this later.
-                              </span>
-                            )}
-                          </p>
-                          <MaterialIcon className="has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
-                            wifi_off
-                          </MaterialIcon>
-                        </Modal>
-                      </React.Fragment>
-                    )}
+                            </p>
+                            <MaterialIcon className="has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
+                              wifi_off
+                            </MaterialIcon>
+                          </Modal>
+                        </React.Fragment>
+                      )}
                     {shouldUseNavigableValidationErrorsNotification &&
                       isShowingValidationErrorsCard && (
                         <ValidationErrorsCard
