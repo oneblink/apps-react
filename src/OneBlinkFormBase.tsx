@@ -75,12 +75,16 @@ import { Clickable } from './components/Clickable'
 import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds'
 import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
 
-const PROMPT_UPLOADING_ATTACHMENTS = 'PROMPT_UPLOADING_ATTACHMENTS'
-const PROMPT_OFFLINE_SUBMISSION = 'PROMPT_OFFLINE_SUBMISSION'
+enum AttachmentUploadStatus {
+  ATTACHMENTS_UPLOADED = 'ATTACHMENTS_UPLOADED',
+  ATTACHMENTS_UPLOAD_BLOCKING = 'ATTACHMENTS_UPLOAD_BLOCKING',
+  ATTACHMENTS_UPLOAD_NON_BLOCKING = 'ATTACHMENTS_UPLOAD_NON_BLOCKING',
+}
 
-type SubmissionPreparationPrompt =
-  | typeof PROMPT_UPLOADING_ATTACHMENTS
-  | typeof PROMPT_OFFLINE_SUBMISSION
+enum SubmissionPreparationStatus {
+  OFFLINE_SUBMISSION = 'OFFLINE_SUBMISSION',
+  SUBMISSION_READY = 'SUBMISSION_READY',
+}
 
 type HostSubmissionPreparationChoice = 'CONTINUE' | 'RETRY' | 'CANCEL'
 
@@ -449,10 +453,14 @@ function OneBlinkFormBase({
     ((choice: HostSubmissionPreparationChoice) => void) | undefined
   >(undefined)
   const showHostSubmissionPreparationPrompt = React.useCallback(
-    (prompt: SubmissionPreparationPrompt) =>
+    (
+      prompt:
+        | AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING
+        | SubmissionPreparationStatus.OFFLINE_SUBMISSION,
+    ) =>
       new Promise<HostSubmissionPreparationChoice>((resolve) => {
         hostSubmissionPreparationPromptResolverRef.current = resolve
-        if (prompt === PROMPT_UPLOADING_ATTACHMENTS) {
+        if (prompt === AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING) {
           setPromptUploadingAttachments(true)
         } else {
           setPromptOfflineSubmissionAttempt(true)
@@ -721,13 +729,15 @@ function OneBlinkFormBase({
   }, [])
 
   const checkAttachmentsCanBeSubmitted = React.useCallback(
-    (submission: SubmissionTypes.S3SubmissionData['submission']) => {
+    (
+      submission: SubmissionTypes.S3SubmissionData['submission'],
+    ): AttachmentUploadStatus => {
       // Prevent submission until all attachment uploads are finished
       // Unless the user is offline, in which case, the uploads will
       // be taken care of by a pending queue if enabled, otherwise
       // the user will be prompted to try again or save a draft.
       if (isOffline) {
-        return true
+        return AttachmentUploadStatus.ATTACHMENTS_UPLOADED
       }
       const attachmentsAreUploading =
         attachmentsService.checkIfAttachmentsAreUploading(
@@ -746,13 +756,13 @@ function OneBlinkFormBase({
             pauseOnHover: true,
             closeOnClick: true,
           })
-          return false
+          return AttachmentUploadStatus.ATTACHMENTS_UPLOAD_BLOCKING
         } else {
-          return PROMPT_UPLOADING_ATTACHMENTS
+          return AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING
         }
       }
 
-      return true
+      return AttachmentUploadStatus.ATTACHMENTS_UPLOADED
     },
     [definition, isOffline, isPendingQueueEnabled, isUsingFormsKey],
   )
@@ -826,8 +836,16 @@ function OneBlinkFormBase({
     async (
       continueWhilstAttachmentsAreUploading: boolean,
     ): Promise<
-      | ReturnType<typeof getCurrentSubmissionData>
-      | SubmissionPreparationPrompt
+      | {
+          status: SubmissionPreparationStatus.OFFLINE_SUBMISSION
+        }
+      | {
+          status: AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING
+        }
+      | {
+          status: SubmissionPreparationStatus.SUBMISSION_READY
+          submissionData: ReturnType<typeof getCurrentSubmissionData>
+        }
       | undefined
     > => {
       const submissionData = getCurrentSubmissionData(false)
@@ -853,16 +871,31 @@ function OneBlinkFormBase({
       if (!checkBsbsCanBeSubmitted(submissionData.submission)) {
         return
       }
-      if (
-        !continueWhilstAttachmentsAreUploading &&
-        !checkAttachmentsCanBeSubmitted(submissionData.submission)
-      ) {
-        return
+      if (!continueWhilstAttachmentsAreUploading) {
+        const attachmentStatus = checkAttachmentsCanBeSubmitted(
+          submissionData.submission,
+        )
+        switch (attachmentStatus) {
+          case AttachmentUploadStatus.ATTACHMENTS_UPLOAD_BLOCKING:
+            // The submitter cannot upload attachments in the background and must wait for them to upload before submitting
+            return
+          case AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING:
+            // We can display a prompt allowing the submitter to upload attachments in the background
+            return {
+              status: attachmentStatus,
+            }
+          case AttachmentUploadStatus.ATTACHMENTS_UPLOADED:
+            break
+          default:
+            return
+        }
       }
 
       if (captchaType === 'INVISIBLE') {
         if (captchasRef.current.length) {
-          if (isOffline) return PROMPT_OFFLINE_SUBMISSION
+          if (isOffline) {
+            return { status: SubmissionPreparationStatus.OFFLINE_SUBMISSION }
+          }
           const tokenResults = await Promise.allSettled(
             captchasRef.current.map((captcha) => captcha.executeAsync()),
           )
@@ -914,9 +947,12 @@ function OneBlinkFormBase({
 
       if (isOffline && !isPendingQueueEnabled) {
         console.log('User is offline and form does not support a pending queue')
-        return PROMPT_OFFLINE_SUBMISSION
+        return { status: SubmissionPreparationStatus.OFFLINE_SUBMISSION }
       }
-      return submissionData
+      return {
+        status: SubmissionPreparationStatus.SUBMISSION_READY,
+        submissionData: submissionData,
+      }
     },
     [
       attachmentRetentionInDays,
@@ -951,27 +987,36 @@ function OneBlinkFormBase({
         const result = await prepareSubmissionRef.current(
           continueWhilstAttachmentsAreUploading,
         )
-        if (result === PROMPT_UPLOADING_ATTACHMENTS) {
-          const choice = await showHostSubmissionPreparationPrompt(result)
-          if (choice !== 'CONTINUE') {
-            return false
-          }
-          return runPreparation(true)
-        }
-        if (result === PROMPT_OFFLINE_SUBMISSION) {
-          const choice = await showHostSubmissionPreparationPrompt(result)
-          if (choice !== 'RETRY') {
-            return false
-          }
-          return runPreparation(continueWhilstAttachmentsAreUploading)
-        }
         if (!result) {
           return false
         }
-        // The host must call this after it has persisted the edits. Calling it
-        // here would let the user cancel a later confirmation dialog and leave
-        // without being prompted.
-        return allowNavigationAfterHostAction
+        switch (result.status) {
+          case AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING: {
+            const choice = await showHostSubmissionPreparationPrompt(
+              result.status,
+            )
+            if (choice !== 'CONTINUE') {
+              return false
+            }
+            return runPreparation(true)
+          }
+          case SubmissionPreparationStatus.OFFLINE_SUBMISSION: {
+            const choice = await showHostSubmissionPreparationPrompt(
+              result.status,
+            )
+            if (choice !== 'RETRY') {
+              return false
+            }
+            return runPreparation(continueWhilstAttachmentsAreUploading)
+          }
+          case SubmissionPreparationStatus.SUBMISSION_READY: {
+            return allowNavigationAfterHostAction
+          }
+          default: {
+            const never: never = result
+            return never
+          }
+        }
       }
       return runPreparation(false)
     } finally {
@@ -1000,55 +1045,69 @@ function OneBlinkFormBase({
 
       setIsPreparingToSubmit(true)
 
-      const submissionData = await prepareSubmission(
+      const submissionResult = await prepareSubmission(
         continueWhilstAttachmentsAreUploading,
       )
 
-      if (submissionData === PROMPT_UPLOADING_ATTACHMENTS) {
-        setPromptUploadingAttachments(true)
-        setIsPreparingToSubmit(false)
-        return
-      }
-      if (submissionData === PROMPT_OFFLINE_SUBMISSION) {
-        setPromptOfflineSubmissionAttempt(true)
-        setIsPreparingToSubmit(false)
-        return
-      }
-      if (!submissionData) {
+      if (!submissionResult) {
         setIsPreparingToSubmit(false)
         return
       }
 
-      allowNavigation()
+      switch (submissionResult.status) {
+        case AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING: {
+          setPromptUploadingAttachments(true)
+          setIsPreparingToSubmit(false)
+          return
+        }
+        case SubmissionPreparationStatus.OFFLINE_SUBMISSION: {
+          setPromptOfflineSubmissionAttempt(true)
+          setIsPreparingToSubmit(false)
+          return
+        }
+        case SubmissionPreparationStatus.SUBMISSION_READY: {
+          allowNavigation()
 
-      // transplant injected options on the definition
-      const elementsWithInjectedOptions = injectOptionsAcrossAllElements({
-        contextElements: definition.elements,
-        elements: definition.elements,
-        submission: submissionData.submission,
-        taskContext: taskContextValue,
-        userProfile: userProfileForInjectables,
-      })
-      setIsPreparingToSubmit(false)
-      resetRecaptchas()
-      onSubmit({
-        definition: {
-          ...definition,
-          elements: elementsWithInjectedOptions,
-        },
-        submission: submissionData.submission,
-        recaptchas: submissionData.captchaTokens.map((token) => ({
-          token,
-          siteKey: captchaSiteKey as string,
-        })),
-      })
-      sendGoogleAnalyticsEvent('oneblink_form_submit', {
-        formId: definition.id,
-        formName: definition.name,
-        lastElementUpdated:
-          getElementDisplayNameForAnalyticsEvent(lastElementUpdated),
-        durationUntilSubmission: getCurrentSubmissionDuration?.(),
-      })
+          const submissionData = submissionResult.submissionData
+
+          // transplant injected options on the definition
+          const elementsWithInjectedOptions = injectOptionsAcrossAllElements({
+            contextElements: definition.elements,
+            elements: definition.elements,
+            submission: submissionData.submission,
+            taskContext: taskContextValue,
+            userProfile: userProfileForInjectables,
+          })
+          setIsPreparingToSubmit(false)
+          resetRecaptchas()
+          onSubmit({
+            definition: {
+              ...definition,
+              elements: elementsWithInjectedOptions,
+            },
+            submission: submissionData.submission,
+            recaptchas: submissionData.captchaTokens.map((token) => ({
+              token,
+              siteKey: captchaSiteKey as string,
+            })),
+          })
+          sendGoogleAnalyticsEvent('oneblink_form_submit', {
+            formId: definition.id,
+            formName: definition.name,
+            lastElementUpdated:
+              getElementDisplayNameForAnalyticsEvent(lastElementUpdated),
+            durationUntilSubmission: getCurrentSubmissionDuration?.(),
+          })
+
+          return
+        }
+
+        default: {
+          const never: never = submissionResult
+          setIsPreparingToSubmit(false)
+          return never
+        }
+      }
     },
     [
       disabled,
@@ -1082,11 +1141,18 @@ function OneBlinkFormBase({
         if (!continueWhilstAttachmentsAreUploading) {
           const attachmentCheckResult =
             checkAttachmentsCanBeSubmitted(submission)
-          if (attachmentCheckResult === PROMPT_UPLOADING_ATTACHMENTS) {
+          if (
+            attachmentCheckResult ===
+            AttachmentUploadStatus.ATTACHMENTS_UPLOAD_NON_BLOCKING
+          ) {
             setPromptUploadingAttachments(true)
             return
           }
-          if (!attachmentCheckResult) {
+          if (
+            attachmentCheckResult ===
+            AttachmentUploadStatus.ATTACHMENTS_UPLOAD_BLOCKING
+          ) {
+            // The submitter cannot upload attachments in the background and must wait for them to upload before saving draft
             return
           }
         }
