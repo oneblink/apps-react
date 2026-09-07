@@ -108,6 +108,7 @@ function LookupNotificationComponent({
       dataLookupResult,
       elementLookupResult,
       executedLookup,
+      isDerivedChange,
     }: {
       newValue: unknown
       dataLookupResult:
@@ -115,6 +116,7 @@ function LookupNotificationComponent({
         | undefined
       elementLookupResult: FormTypes.FormElement[] | undefined
       executedLookup: ExecutedLookups
+      isDerivedChange?: boolean
     }) => {
       const executedLookupResult = executedLookup?.[element.name]
       if (elementLookupResult && executedLookupResult !== false) {
@@ -123,57 +125,61 @@ function LookupNotificationComponent({
             element,
             elementLookupResult as FormTypes.PageElement[],
             dataLookupResult,
+            { isDerivedChange },
           )
           return
         }
       }
 
-      onLookup(({ submission, elements, executedLookups }) => {
-        let allElements: FormTypes.FormElement[] = elements
-        if (
-          Array.isArray(elementLookupResult) &&
-          executedLookupResult !== false
-        ) {
-          const indexOfElement = elements.findIndex(
-            ({ id }) => id === element.id,
-          )
-          if (indexOfElement === -1) {
-            console.log('Could not find element', element)
-          } else {
-            // Filter out already injected elements if lookup was successful
-            allElements = elements.filter(
-              // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
-              (e) => e.injectedByElementId !== element.id,
+      onLookup(
+        ({ submission, elements, executedLookups }) => {
+          let allElements: FormTypes.FormElement[] = elements
+          if (
+            Array.isArray(elementLookupResult) &&
+            executedLookupResult !== false
+          ) {
+            const indexOfElement = elements.findIndex(
+              ({ id }) => id === element.id,
             )
-            allElements.splice(
-              indexOfElement + 1,
-              0,
-              ...elementLookupResult.map((e) => {
+            if (indexOfElement === -1) {
+              console.log('Could not find element', element)
+            } else {
+              // Filter out already injected elements if lookup was successful
+              allElements = elements.filter(
                 // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
-                e.injectedByElementId = element.id
-                return e
-              }),
-            )
+                (e) => e.injectedByElementId !== element.id,
+              )
+              allElements.splice(
+                indexOfElement + 1,
+                0,
+                ...elementLookupResult.map((e) => {
+                  // @ts-expect-error Sorry typescript, we need to check a property you don't approve of :(
+                  e.injectedByElementId = element.id
+                  return e
+                }),
+              )
+            }
           }
-        }
 
-        return {
-          elements: allElements,
-          submission: generateDefaultData(allElements, {
-            ...submission,
-            [element.name]: newValue,
-            ...dataLookupResult,
-          }),
-          executedLookups: mergeExecutedLookups({
-            dataLookupResult,
-            currentSubmission: submission,
-            executedLookups: {
-              ...executedLookups,
-              ...executedLookup,
-            },
-          }),
-        }
-      })
+          return {
+            elements: allElements,
+            submission: generateDefaultData(allElements, {
+              ...submission,
+              [element.name]: newValue,
+              ...dataLookupResult,
+            }),
+            executedLookups: mergeExecutedLookups({
+              dataLookupResult,
+              currentSubmission: submission,
+              executedLookups: {
+                ...executedLookups,
+                ...executedLookup,
+              },
+            }),
+          }
+        },
+        { isDerivedChange },
+      )
     },
     [element, injectPagesAfter, onLookup],
   )
@@ -189,7 +195,12 @@ function LookupNotificationComponent({
   const triggerLookup = React.useCallback<
     LookupNotificationContextValue['onLookup']
   >(
-    async ({ newValue, abortController, continueLookupOnAbort }) => {
+    async ({
+      newValue,
+      abortController,
+      continueLookupOnAbort,
+      isDerivedChange,
+    }) => {
       if (areLookupsDisallowed) {
         return
       }
@@ -246,6 +257,7 @@ function LookupNotificationComponent({
             | FormTypes.FormElement[]
             | undefined,
           executedLookup: { [element.name]: true },
+          isDerivedChange,
         })
 
         if (isMounted.current) {
@@ -277,6 +289,7 @@ function LookupNotificationComponent({
           dataLookupResult: {},
           elementLookupResult: [],
           executedLookup: { [element.name]: false },
+          isDerivedChange,
         })
         setLookupErrorHTML(
           typeof error === 'string'
@@ -339,6 +352,7 @@ function LookupNotificationComponent({
       newValue: autoLookupValue,
       abortController,
       continueLookupOnAbort: true,
+      isDerivedChange: true,
     })
     return () => {
       abortController.abort()

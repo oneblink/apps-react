@@ -294,6 +294,7 @@ function FormElementRepeatableSet({
         value,
         executedLookups,
         sectionState,
+        isDerivedChange,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
       idPrefix?: string,
     ) => {
@@ -350,6 +351,7 @@ function FormElementRepeatableSet({
           return newExecutedLookups
         },
         sectionState,
+        isDerivedChange,
       })
     },
     [element, onChange],
@@ -548,7 +550,11 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
 
     const handleChange: NestedFormElementValueChangeHandler = React.useCallback(
-      (nestedElement, { value, executedLookups, sectionState }, idPrefix) => {
+      (
+        nestedElement,
+        { value, executedLookups, sectionState, isDerivedChange },
+        idPrefix,
+      ) => {
         onChange(
           index,
           nestedElement,
@@ -556,6 +562,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             value,
             executedLookups,
             sectionState,
+            isDerivedChange,
           },
           idPrefix,
         )
@@ -564,7 +571,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
     )
 
     const handleLookup = React.useCallback<FormElementLookupHandler>(
-      (mergeLookupResults) => {
+      (mergeLookupResults, options) => {
         onLookup((currentFormSubmission) => {
           let newEntry = {}
           const entries = currentFormSubmission.submission[
@@ -633,7 +640,7 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
             submission,
             executedLookups: updatedExecutedLookups,
           }
-        })
+        }, options)
       },
       [element.name, index, onLookup],
     )

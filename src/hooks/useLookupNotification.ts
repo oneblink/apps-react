@@ -19,6 +19,7 @@ export type LookupNotificationContextValue = {
     newValue: unknown
     abortController: AbortController
     continueLookupOnAbort: boolean
+    isDerivedChange?: boolean
   }) => Promise<void>
   isLookingUp: boolean
 }

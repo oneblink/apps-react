@@ -96,7 +96,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   })
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
-    (mergeLookupResults) => {
+    (mergeLookupResults, options) => {
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission
         let newExecutedLookups: ExecutedLookups = {}
@@ -127,7 +127,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           executedLookups: newExecutedLookups,
           sectionState: currentFormSubmission.sectionState,
         }
-      })
+      }, options)
     },
     [element.id, onLookup],
   )

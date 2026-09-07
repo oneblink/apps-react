@@ -70,12 +70,12 @@ function FormElementLookupButton({
   }, [element.elementDependencies, elements, formSubmissionModel])
 
   const handleLookup = useCallback<FormElementLookupHandler>(
-    (setter) => {
+    (setter, options) => {
       onLookup((data) => {
         const dataAfterSetting = setter(data)
         dataAfterSetting.submission[element.name] = true
         return dataAfterSetting
-      })
+      }, options)
     },
     [element.name, onLookup],
   )
@@ -93,6 +93,7 @@ function FormElementLookupButton({
     }
     onChange(element, {
       value: false,
+      isDerivedChange: true,
     })
   }, [element, onChange, readOnly, stringifyData])
 

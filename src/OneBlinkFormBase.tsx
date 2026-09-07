@@ -74,6 +74,10 @@ import { ValidationIconConfigurationContext } from './hooks/useValidationIconCon
 import { Clickable } from './components/Clickable'
 import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds'
 import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
+import {
+  useRegisterFormIsDirty,
+  FormMarkDirtyContextProvider,
+} from './hooks/useFormIsDirty'
 
 type OneBlinkFormDisplayProps = {
   /**
@@ -918,6 +922,7 @@ function OneBlinkFormBase({
   useRegisterFormSubmissionAttempt(
     editableFormElementIds === undefined ? undefined : attemptFormSubmission,
   )
+  useRegisterFormIsDirty(definition.id, isDirty)
 
   const handleSubmit = React.useCallback(
     async (
@@ -1061,83 +1066,92 @@ function OneBlinkFormBase({
 
   //
   //
+  // #region Submission/Definition Changes
+
+  const markFormDirty = React.useCallback(() => {
+    setUnsavedChangesState((current) => ({
+      ...current,
+      isDirty: true,
+    }))
+  }, [])
+
+  //
+  //
   // #region Lookups
 
   const { handlePagesLookupResult } = useLookups(
     definition.id,
     setFormSubmission,
+    markFormDirty,
   )
 
   // #endregion
   //
   //
 
-  //
-  //
-  // #region Submission/Definition Changes
-
   const handleChange = React.useCallback<NestedFormElementValueChangeHandler>(
-    (element, { value, executedLookups, deleteSection, sectionState }) => {
+    (
+      element,
+      { value, executedLookups, deleteSection, sectionState, isDerivedChange },
+    ) => {
       if (
-        //This will ensure on a read only form that the summary and calculation elements
-        //can still be displayed as it needs handleChange so it can render
-        //due to the dynamic nature of the summary element.
-        (disabled &&
-          element.type !== 'summary' &&
-          element.type !== 'calculation') ||
+        // Disabled forms still need derived writers (calculation, summary, …)
+        // so those elements can recompute and display from the current model.
+        (disabled && !isDerivedChange) ||
         element.type === 'page'
       ) {
         return
       }
 
-      switch (element.type) {
-        case 'section': {
-          setFormSubmission((currentFormSubmission) => {
-            const currentSectionState = currentFormSubmission.sectionState || []
-            const existingSectionIndex = currentSectionState.findIndex(
-              (section) => section.id === element.id,
+      if (element.type === 'section') {
+        setFormSubmission((currentFormSubmission) => {
+          const currentSectionState = currentFormSubmission.sectionState || []
+          const existingSectionIndex = currentSectionState.findIndex(
+            (section) => section.id === element.id,
+          )
+          const sectionIsInState = existingSectionIndex >= 0
+          let newSectionState: SectionState
+          if (sectionIsInState && deleteSection) {
+            newSectionState = currentSectionState.filter(
+              (section) => section.id !== element.id,
             )
-            const sectionIsInState = existingSectionIndex >= 0
-            let newSectionState: SectionState
-            if (sectionIsInState && deleteSection) {
-              newSectionState = currentSectionState.filter(
-                (section) => section.id !== element.id,
-              )
-            } else if (sectionIsInState) {
-              // Update state of the section
-              newSectionState = currentSectionState.map((section, index) =>
-                index === existingSectionIndex
-                  ? {
-                      ...section,
-                      state:
-                        section.state === 'COLLAPSED'
-                          ? 'EXPANDED'
-                          : 'COLLAPSED',
-                    }
-                  : section,
-              )
-            } else {
-              // Add the section to state
-              newSectionState = [
-                ...currentSectionState,
-                {
-                  id: element.id,
-                  state: element.isCollapsed ? 'EXPANDED' : 'COLLAPSED',
-                },
-              ]
-            }
+          } else if (sectionIsInState) {
+            // Update state of the section
+            newSectionState = currentSectionState.map((section, index) =>
+              index === existingSectionIndex
+                ? {
+                    ...section,
+                    state:
+                      section.state === 'COLLAPSED' ? 'EXPANDED' : 'COLLAPSED',
+                  }
+                : section,
+            )
+          } else {
+            // Add the section to state
+            newSectionState = [
+              ...currentSectionState,
+              {
+                id: element.id,
+                state: element.isCollapsed ? 'EXPANDED' : 'COLLAPSED',
+              },
+            ]
+          }
 
-            return {
-              ...currentFormSubmission,
-              sectionState: newSectionState,
-            }
-          })
-          break
-        }
-        // Don't update the last element updated for elements the user cannot set the value of
-        case 'summary':
-        case 'calculation': {
-          setFormSubmission((currentFormSubmission) => ({
+          return {
+            ...currentFormSubmission,
+            sectionState: newSectionState,
+          }
+        })
+        return
+      }
+
+      if (!isDerivedChange) {
+        markFormDirty()
+      }
+
+      setFormSubmission(
+        (currentFormSubmission) => {
+          return {
             ...currentFormSubmission,
             submission: {
               ...currentFormSubmission.submission,
@@ -1146,46 +1160,29 @@ function OneBlinkFormBase({
                   ? value(currentFormSubmission.submission[element.name])
                   : value,
             },
-          }))
-          break
-        }
-        default: {
-          setUnsavedChangesState((current) => ({
-            ...current,
-            isDirty: true,
-          }))
-
-          setFormSubmission((currentFormSubmission) => {
-            return {
-              ...currentFormSubmission,
-              submission: {
-                ...currentFormSubmission.submission,
-                [element.name]:
-                  typeof value === 'function'
-                    ? value(currentFormSubmission.submission[element.name])
-                    : value,
-              },
-              lastElementUpdated: element,
-              executedLookups: {
-                ...currentFormSubmission.executedLookups,
-                [element.name]:
-                  typeof executedLookups === 'function'
-                    ? executedLookups(
-                        currentFormSubmission.executedLookups?.[element.name],
-                      )
-                    : executedLookups,
-              },
-              sectionState: sectionState
-                ? typeof sectionState === 'function'
-                  ? sectionState(currentFormSubmission.sectionState)
-                  : sectionState
-                : currentFormSubmission.sectionState,
-            }
-          })
-        }
-      }
+            lastElementUpdated: isDerivedChange
+              ? currentFormSubmission.lastElementUpdated
+              : element,
+            executedLookups: {
+              ...currentFormSubmission.executedLookups,
+              [element.name]:
+                typeof executedLookups === 'function'
+                  ? executedLookups(
+                      currentFormSubmission.executedLookups?.[element.name],
+                    )
+                  : executedLookups,
+            },
+            sectionState: sectionState
+              ? typeof sectionState === 'function'
+                ? sectionState(currentFormSubmission.sectionState)
+                : sectionState
+              : currentFormSubmission.sectionState,
+          }
+        },
+        { isDerivedChange },
+      )
     },
-    [disabled, setFormSubmission],
+    [disabled, markFormDirty, setFormSubmission],
   )
 
   // #endregion
@@ -1266,386 +1263,497 @@ function OneBlinkFormBase({
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <ReplaceInjectablesOverridesContext.Provider
-          value={replaceInjectablesOverrides}
-        >
-          <FormDefinitionContext.Provider value={definition}>
-            <FormElementOptionsContextProvider formIsReadOnly={isReadOnly}>
-              <FormElementLookupsContextProvider>
-                <OneBlinkFormContainerContext.Provider
-                  value={obFormContainerHTMLElementRef}
-                >
-                  <div
-                    className={clsx('ob-form-container', {
-                      'is-showing-pages': isShowingMultiplePages,
-                    })}
-                    ref={obFormContainerHTMLElementRef}
+    <FormMarkDirtyContextProvider markDirty={markFormDirty}>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <ReplaceInjectablesOverridesContext.Provider
+            value={replaceInjectablesOverrides}
+          >
+            <FormDefinitionContext.Provider value={definition}>
+              <FormElementOptionsContextProvider formIsReadOnly={isReadOnly}>
+                <FormElementLookupsContextProvider>
+                  <OneBlinkFormContainerContext.Provider
+                    value={obFormContainerHTMLElementRef}
                   >
-                    <form
-                      name="obForm"
-                      className={`ob-form cypress-ob-form ob-form__page-${
-                        currentPageIndex + 1
-                      }`}
-                      noValidate
-                      onSubmit={(e) => handleSubmit(e, false)}
+                    <div
+                      className={clsx('ob-form-container', {
+                        'is-showing-pages': isShowingMultiplePages,
+                      })}
+                      ref={obFormContainerHTMLElementRef}
                     >
-                      <div>
-                        <div ref={scrollToTopOfPageHTMLElementRef} />
-                        {isShowingMultiplePages && (
+                      <form
+                        name="obForm"
+                        className={`ob-form cypress-ob-form ob-form__page-${
+                          currentPageIndex + 1
+                        }`}
+                        noValidate
+                        onSubmit={(e) => handleSubmit(e, false)}
+                      >
+                        <div>
+                          <div ref={scrollToTopOfPageHTMLElementRef} />
+                          {isShowingMultiplePages && (
+                            <div
+                              className={clsx('ob-steps-navigation', {
+                                'is-active': isStepsHeaderActive,
+                              })}
+                            >
+                              <Clickable
+                                className={clsx('ob-steps-navigation__header', {
+                                  'is-active': isStepsHeaderActive,
+                                })}
+                                onClick={toggleStepsNavigation}
+                              >
+                                <span className="icon is-invisible">
+                                  <MaterialIcon>
+                                    keyboard_arrow_down
+                                  </MaterialIcon>
+                                </span>
+                                <div className="steps-header-active-page">
+                                  {isDisplayingCurrentPageError ? (
+                                    <span className="icon">
+                                      <MaterialIcon className="has-text-danger is-size-4">
+                                        warning
+                                      </MaterialIcon>
+                                    </span>
+                                  ) : (
+                                    <span className="steps-header-active-page-icon">
+                                      {currentPageNumber}
+                                    </span>
+                                  )}
+                                  <span className="steps-header-active-page-label cypress-tablet-step-title">
+                                    {currentPage ? currentPage.label : ''}
+                                  </span>
+                                </div>
+                                <span className="dropdown icon">
+                                  <MaterialIcon>
+                                    keyboard_arrow_down
+                                  </MaterialIcon>
+                                </span>
+                              </Clickable>
+
+                              <div
+                                role="navigation"
+                                className={clsx('ob-steps-navigation__steps', {
+                                  'is-active': isStepsHeaderActive,
+                                })}
+                              >
+                                <div className="steps is-small is-horizontal-tablet cypress-steps">
+                                  {visiblePages.map(
+                                    (
+                                      page: FormTypes.PageElement,
+                                      index: number,
+                                    ) => {
+                                      const hasErrors =
+                                        checkDisplayPageError(page)
+                                      return (
+                                        <Clickable
+                                          key={page.id}
+                                          id={`steps-navigation-step-${page.id}`}
+                                          aria-label={`${page.label}, page ${index + 1} of ${visiblePages.length}`}
+                                          aria-current={
+                                            currentPage.id === page.id
+                                              ? 'step'
+                                              : undefined
+                                          }
+                                          className={clsx(
+                                            'step-item cypress-step-item',
+                                            {
+                                              'is-active':
+                                                currentPage.id === page.id,
+                                              'is-completed':
+                                                currentPageIndex > index,
+                                              'is-error': hasErrors,
+                                            },
+                                          )}
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            if (page.id !== currentPage.id) {
+                                              setPageId(page.id)
+                                            }
+                                          }}
+                                        >
+                                          <div
+                                            className="step-marker step-marker-error ob-step-marker cypress-step-marker"
+                                            // @ts-expect-error ???
+                                            name={`cypress-page-stepper-${index + 1}`}
+                                            value={index + 1}
+                                          >
+                                            {hasErrors ? (
+                                              <Tooltip title="Page has errors">
+                                                <span className="icon tooltip has-tooltip-top cypress-page-error">
+                                                  <MaterialIcon className="has-text-danger is-size-3">
+                                                    warning
+                                                  </MaterialIcon>
+                                                </span>
+                                              </Tooltip>
+                                            ) : (
+                                              <span>{index + 1}</span>
+                                            )}
+                                          </div>
+                                          <div className="step-details ob-step-details">
+                                            <p
+                                              className="step-title ob-step-title cypress-desktop-step-title"
+                                              id={`steps-navigation-step-label-${page.id}`}
+                                            >
+                                              {page.label}
+                                            </p>
+                                          </div>
+                                        </Clickable>
+                                      )
+                                    },
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
                           <div
-                            className={clsx('ob-steps-navigation', {
+                            className={clsx('ob-steps-navigation__background', {
                               'is-active': isStepsHeaderActive,
                             })}
-                          >
-                            <Clickable
-                              className={clsx('ob-steps-navigation__header', {
-                                'is-active': isStepsHeaderActive,
-                              })}
-                              onClick={toggleStepsNavigation}
-                            >
-                              <span className="icon is-invisible">
-                                <MaterialIcon>keyboard_arrow_down</MaterialIcon>
-                              </span>
-                              <div className="steps-header-active-page">
-                                {isDisplayingCurrentPageError ? (
-                                  <span className="icon">
-                                    <MaterialIcon className="has-text-danger is-size-4">
-                                      warning
-                                    </MaterialIcon>
-                                  </span>
-                                ) : (
-                                  <span className="steps-header-active-page-icon">
-                                    {currentPageNumber}
-                                  </span>
-                                )}
-                                <span className="steps-header-active-page-label cypress-tablet-step-title">
-                                  {currentPage ? currentPage.label : ''}
-                                </span>
-                              </div>
-                              <span className="dropdown icon">
-                                <MaterialIcon>keyboard_arrow_down</MaterialIcon>
-                              </span>
-                            </Clickable>
+                            onClick={toggleStepsNavigation}
+                          />
 
+                          <div className="steps">
                             <div
-                              role="navigation"
-                              className={clsx('ob-steps-navigation__steps', {
-                                'is-active': isStepsHeaderActive,
+                              className={clsx('steps-content', {
+                                'is-single-step': !isShowingMultiplePages,
                               })}
                             >
-                              <div className="steps is-small is-horizontal-tablet cypress-steps">
-                                {visiblePages.map(
-                                  (
-                                    page: FormTypes.PageElement,
-                                    index: number,
-                                  ) => {
-                                    const hasErrors =
-                                      checkDisplayPageError(page)
-                                    return (
-                                      <Clickable
+                              <InjectPagesContext.Provider
+                                value={handlePagesLookupResult}
+                              >
+                                <GoogleMapsApiKeyContext.Provider
+                                  value={googleMapsApiKey}
+                                >
+                                  <AbnLookupAuthenticationGuidContext.Provider
+                                    value={abnLookupAuthenticationGuid}
+                                  >
+                                    <ValidationIconConfigurationContext.Provider
+                                      value={validationIcon}
+                                    >
+                                      <CaptchaContext.Provider
+                                        value={captchaContextValue}
+                                      >
+                                        <AttachmentBlobsProvider>
+                                          <FormIsReadOnlyContext.Provider
+                                            value={isReadOnly}
+                                          >
+                                            <EditableFormElementIdsContext.Provider
+                                              value={editableFormElementIds}
+                                            >
+                                              <FormAudienceContext.Provider
+                                                value={audience}
+                                              >
+                                                <TaskContext.Provider
+                                                  value={taskContextValue}
+                                                >
+                                                  <OnUploadAttachmentContext.Provider
+                                                    value={onUploadAttachment}
+                                                  >
+                                                    {visiblePages.map(
+                                                      (
+                                                        pageElement: FormTypes.PageElement,
+                                                      ) => (
+                                                        <PageFormElements
+                                                          key={pageElement.id}
+                                                          isActive={
+                                                            pageElement.id ===
+                                                            currentPage.id
+                                                          }
+                                                          formId={definition.id}
+                                                          formElementsConditionallyShown={
+                                                            formElementsConditionallyShown
+                                                          }
+                                                          formElementsValidation={
+                                                            formElementsValidation
+                                                          }
+                                                          displayValidationMessages={
+                                                            hasAttemptedSubmit ||
+                                                            isDisplayingCurrentPageError
+                                                          }
+                                                          pageElement={
+                                                            pageElement
+                                                          }
+                                                          onChange={
+                                                            handleChange
+                                                          }
+                                                          model={submission}
+                                                          setFormSubmission={
+                                                            setFormSubmission
+                                                          }
+                                                          sectionState={
+                                                            sectionState
+                                                          }
+                                                        />
+                                                      ),
+                                                    )}
+                                                  </OnUploadAttachmentContext.Provider>
+                                                </TaskContext.Provider>
+                                              </FormAudienceContext.Provider>
+                                            </EditableFormElementIdsContext.Provider>
+                                          </FormIsReadOnlyContext.Provider>
+                                        </AttachmentBlobsProvider>
+                                      </CaptchaContext.Provider>
+                                    </ValidationIconConfigurationContext.Provider>
+                                  </AbnLookupAuthenticationGuidContext.Provider>
+                                </GoogleMapsApiKeyContext.Provider>
+                              </InjectPagesContext.Provider>
+                            </div>
+
+                            {isShowingMultiplePages && (
+                              <div className="steps-actions">
+                                <div className="steps-action">
+                                  <button
+                                    type="button"
+                                    onClick={goToPreviousPage}
+                                    disabled={isFirstVisiblePage}
+                                    className="button is-light cypress-pages-previous"
+                                  >
+                                    <span className="icon">
+                                      <MaterialIcon>
+                                        keyboard_arrow_left
+                                      </MaterialIcon>
+                                    </span>
+                                    <span>Back</span>
+                                  </button>
+                                </div>
+                                <div className="step-progress-mobile cypress-steps-mobile">
+                                  {visiblePages.map(
+                                    (page: FormTypes.PageElement, index) => (
+                                      <div
                                         key={page.id}
-                                        id={`steps-navigation-step-${page.id}`}
-                                        aria-label={`${page.label}, page ${index + 1} of ${visiblePages.length}`}
-                                        aria-current={
-                                          currentPage.id === page.id
-                                            ? 'step'
-                                            : undefined
-                                        }
                                         className={clsx(
-                                          'step-item cypress-step-item',
+                                          'step-progress-mobile-dot',
                                           {
                                             'is-active':
                                               currentPage.id === page.id,
                                             'is-completed':
                                               currentPageIndex > index,
-                                            'is-error': hasErrors,
+                                            'has-background-danger':
+                                              currentPage.id !== page.id &&
+                                              checkDisplayPageError(page),
                                           },
                                         )}
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          if (page.id !== currentPage.id) {
-                                            setPageId(page.id)
-                                          }
-                                        }}
-                                      >
-                                        <div
-                                          className="step-marker step-marker-error ob-step-marker cypress-step-marker"
-                                          // @ts-expect-error ???
-                                          name={`cypress-page-stepper-${index + 1}`}
-                                          value={index + 1}
-                                        >
-                                          {hasErrors ? (
-                                            <Tooltip title="Page has errors">
-                                              <span className="icon tooltip has-tooltip-top cypress-page-error">
-                                                <MaterialIcon className="has-text-danger is-size-3">
-                                                  warning
-                                                </MaterialIcon>
-                                              </span>
-                                            </Tooltip>
-                                          ) : (
-                                            <span>{index + 1}</span>
-                                          )}
-                                        </div>
-                                        <div className="step-details ob-step-details">
-                                          <p
-                                            className="step-title ob-step-title cypress-desktop-step-title"
-                                            id={`steps-navigation-step-label-${page.id}`}
-                                          >
-                                            {page.label}
-                                          </p>
-                                        </div>
-                                      </Clickable>
-                                    )
-                                  },
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div
-                          className={clsx('ob-steps-navigation__background', {
-                            'is-active': isStepsHeaderActive,
-                          })}
-                          onClick={toggleStepsNavigation}
-                        />
-
-                        <div className="steps">
-                          <div
-                            className={clsx('steps-content', {
-                              'is-single-step': !isShowingMultiplePages,
-                            })}
-                          >
-                            <InjectPagesContext.Provider
-                              value={handlePagesLookupResult}
-                            >
-                              <GoogleMapsApiKeyContext.Provider
-                                value={googleMapsApiKey}
-                              >
-                                <AbnLookupAuthenticationGuidContext.Provider
-                                  value={abnLookupAuthenticationGuid}
-                                >
-                                  <ValidationIconConfigurationContext.Provider
-                                    value={validationIcon}
+                                      />
+                                    ),
+                                  )}
+                                </div>
+                                <div className="steps-action">
+                                  <button
+                                    type="button"
+                                    onClick={goToNextPage}
+                                    disabled={isLastVisiblePage}
+                                    className="button is-light cypress-pages-next"
                                   >
-                                    <CaptchaContext.Provider
-                                      value={captchaContextValue}
-                                    >
-                                      <AttachmentBlobsProvider>
-                                        <FormIsReadOnlyContext.Provider
-                                          value={isReadOnly}
-                                        >
-                                          <EditableFormElementIdsContext.Provider
-                                            value={editableFormElementIds}
-                                          >
-                                            <FormAudienceContext.Provider
-                                              value={audience}
-                                            >
-                                              <TaskContext.Provider
-                                                value={taskContextValue}
-                                              >
-                                                <OnUploadAttachmentContext.Provider
-                                                  value={onUploadAttachment}
-                                                >
-                                                  {visiblePages.map(
-                                                    (
-                                                      pageElement: FormTypes.PageElement,
-                                                    ) => (
-                                                      <PageFormElements
-                                                        key={pageElement.id}
-                                                        isActive={
-                                                          pageElement.id ===
-                                                          currentPage.id
-                                                        }
-                                                        formId={definition.id}
-                                                        formElementsConditionallyShown={
-                                                          formElementsConditionallyShown
-                                                        }
-                                                        formElementsValidation={
-                                                          formElementsValidation
-                                                        }
-                                                        displayValidationMessages={
-                                                          hasAttemptedSubmit ||
-                                                          isDisplayingCurrentPageError
-                                                        }
-                                                        pageElement={
-                                                          pageElement
-                                                        }
-                                                        onChange={handleChange}
-                                                        model={submission}
-                                                        setFormSubmission={
-                                                          setFormSubmission
-                                                        }
-                                                        sectionState={
-                                                          sectionState
-                                                        }
-                                                      />
-                                                    ),
-                                                  )}
-                                                </OnUploadAttachmentContext.Provider>
-                                              </TaskContext.Provider>
-                                            </FormAudienceContext.Provider>
-                                          </EditableFormElementIdsContext.Provider>
-                                        </FormIsReadOnlyContext.Provider>
-                                      </AttachmentBlobsProvider>
-                                    </CaptchaContext.Provider>
-                                  </ValidationIconConfigurationContext.Provider>
-                                </AbnLookupAuthenticationGuidContext.Provider>
-                              </GoogleMapsApiKeyContext.Provider>
-                            </InjectPagesContext.Provider>
+                                    <span>Next</span>
+                                    <span className="icon">
+                                      <MaterialIcon>
+                                        keyboard_arrow_right
+                                      </MaterialIcon>
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
-
-                          {isShowingMultiplePages && (
-                            <div className="steps-actions">
-                              <div className="steps-action">
+                          {!isReadOnly && audience !== 'APPROVER' && (
+                            <div className="buttons ob-buttons ob-buttons-submit">
+                              {onSaveDraft && !isInfoPage && (
                                 <button
                                   type="button"
-                                  onClick={goToPreviousPage}
-                                  disabled={isFirstVisiblePage}
-                                  className="button is-light cypress-pages-previous"
+                                  className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
+                                  onClick={() => handleSaveDraft(false)}
+                                  disabled={isPreview || disabled}
                                 >
-                                  <span className="icon">
-                                    <MaterialIcon>
-                                      keyboard_arrow_left
-                                    </MaterialIcon>
-                                  </span>
-                                  <span>Back</span>
+                                  <CustomisableButtonInner
+                                    label={
+                                      buttons?.saveDraft?.label || 'Save Draft'
+                                    }
+                                    icon={buttons?.saveDraft?.icon}
+                                  />
                                 </button>
-                              </div>
-                              <div className="step-progress-mobile cypress-steps-mobile">
-                                {visiblePages.map(
-                                  (page: FormTypes.PageElement, index) => (
-                                    <div
-                                      key={page.id}
+                              )}
+                              <span className="ob-buttons-submit__spacer"></span>
+                              {!isInfoPage && (
+                                <button
+                                  type="button"
+                                  className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
+                                  onClick={handleCancel}
+                                  disabled={isPreview || disabled}
+                                >
+                                  <CustomisableButtonInner
+                                    label={buttons?.cancel?.label || 'Cancel'}
+                                    icon={buttons?.cancel?.icon}
+                                  />
+                                </button>
+                              )}
+                              {isLastVisiblePage && (
+                                <Tooltip
+                                  title={
+                                    submissionConditionallyEnabled
+                                      ? ''
+                                      : 'Submission disabled: Your inputs have not met the criteria for submission'
+                                  }
+                                >
+                                  <span>
+                                    <button
+                                      type="submit"
                                       className={clsx(
-                                        'step-progress-mobile-dot',
+                                        'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
+                                        { 'is-loading': isPreparingToSubmit },
                                         {
-                                          'is-active':
-                                            currentPage.id === page.id,
-                                          'is-completed':
-                                            currentPageIndex > index,
-                                          'has-background-danger':
-                                            currentPage.id !== page.id &&
-                                            checkDisplayPageError(page),
+                                          'ob-button-submit-is-disabled':
+                                            submissionConditionallyEnabled,
                                         },
                                       )}
-                                    />
-                                  ),
-                                )}
-                              </div>
-                              <div className="steps-action">
-                                <button
-                                  type="button"
-                                  onClick={goToNextPage}
-                                  disabled={isLastVisiblePage}
-                                  className="button is-light cypress-pages-next"
-                                >
-                                  <span>Next</span>
-                                  <span className="icon">
-                                    <MaterialIcon>
-                                      keyboard_arrow_right
-                                    </MaterialIcon>
+                                      disabled={
+                                        isPreview ||
+                                        disabled ||
+                                        isPreparingToSubmit ||
+                                        !submissionConditionallyEnabled
+                                      }
+                                    >
+                                      <CustomisableButtonInner
+                                        label={
+                                          isInfoPage
+                                            ? 'Done'
+                                            : buttons?.submit?.label || 'Submit'
+                                        }
+                                        icon={buttons?.submit?.icon}
+                                      />
+                                    </button>
                                   </span>
-                                </button>
-                              </div>
+                                </Tooltip>
+                              )}
                             </div>
                           )}
                         </div>
-                        {!isReadOnly && audience !== 'APPROVER' && (
-                          <div className="buttons ob-buttons ob-buttons-submit">
-                            {onSaveDraft && !isInfoPage && (
-                              <button
-                                type="button"
-                                className="button ob-button is-primary ob-button-save-draft cypress-save-draft-form"
-                                onClick={() => handleSaveDraft(false)}
-                                disabled={isPreview || disabled}
-                              >
-                                <CustomisableButtonInner
-                                  label={
-                                    buttons?.saveDraft?.label || 'Save Draft'
-                                  }
-                                  icon={buttons?.saveDraft?.icon}
-                                />
-                              </button>
-                            )}
-                            <span className="ob-buttons-submit__spacer"></span>
-                            {!isInfoPage && (
-                              <button
-                                type="button"
-                                className="button ob-button is-light ob-button-submit-cancel cypress-cancel-form"
-                                onClick={handleCancel}
-                                disabled={isPreview || disabled}
-                              >
-                                <CustomisableButtonInner
-                                  label={buttons?.cancel?.label || 'Cancel'}
-                                  icon={buttons?.cancel?.icon}
-                                />
-                              </button>
-                            )}
-                            {isLastVisiblePage && (
-                              <Tooltip
-                                title={
-                                  submissionConditionallyEnabled
-                                    ? ''
-                                    : 'Submission disabled: Your inputs have not met the criteria for submission'
-                                }
-                              >
-                                <span>
+                      </form>
+                      {/* Unsaved changes prompt when navigating away */}
+                      {!isPreview &&
+                        (editableFormElementIds !== undefined ||
+                          !isReadOnly) && (
+                          <React.Fragment>
+                            <Prompt
+                              when={isDirty && !isNavigationAllowed}
+                              message={handleBlockedNavigation}
+                            />
+                            <Modal
+                              isOpen={hasConfirmedNavigation === false}
+                              title="Unsaved Changes"
+                              cardClassName="cypress-cancel-confirm"
+                              titleClassName="cypress-cancel-confirm-title"
+                              bodyClassName="cypress-cancel-confirm-body"
+                              actions={
+                                <>
+                                  {onSaveDraft && (
+                                    <button
+                                      type="button"
+                                      className="button ob-button is-success cypress-cancel-confirm-save-draft"
+                                      onClick={() => handleSaveDraft(false)}
+                                    >
+                                      <CustomisableButtonInner
+                                        label={
+                                          buttons?.saveDraft?.label ||
+                                          'Save Draft'
+                                        }
+                                        icon={buttons?.saveDraft?.icon}
+                                      />
+                                    </button>
+                                  )}
+                                  <span style={{ flex: 1 }}></span>
                                   <button
-                                    type="submit"
-                                    className={clsx(
-                                      'button ob-button is-success ob-button-submit cypress-submit-form-button cypress-submit-form',
-                                      { 'is-loading': isPreparingToSubmit },
-                                      {
-                                        'ob-button-submit-is-disabled':
-                                          submissionConditionallyEnabled,
-                                      },
-                                    )}
-                                    disabled={
-                                      isPreview ||
-                                      disabled ||
-                                      isPreparingToSubmit ||
-                                      !submissionConditionallyEnabled
-                                    }
+                                    type="button"
+                                    className="button ob-button is-light cypress-cancel-confirm-back"
+                                    onClick={handleKeepGoing}
                                   >
                                     <CustomisableButtonInner
                                       label={
-                                        isInfoPage
-                                          ? 'Done'
-                                          : buttons?.submit?.label || 'Submit'
+                                        buttons?.cancelPromptNo?.label || 'Back'
                                       }
-                                      icon={buttons?.submit?.icon}
+                                      icon={buttons?.cancelPromptNo?.icon}
                                     />
                                   </button>
-                                </span>
-                              </Tooltip>
-                            )}
-                          </div>
+                                  <button
+                                    type="button"
+                                    className="button ob-button is-primary cypress-cancel-confirm-discard"
+                                    onClick={handleDiscardUnsavedChanges}
+                                    autoFocus
+                                  >
+                                    <CustomisableButtonInner
+                                      label={
+                                        buttons?.cancelPromptYes?.label ||
+                                        'Discard'
+                                      }
+                                      icon={buttons?.cancelPromptYes?.icon}
+                                    />
+                                  </button>
+                                </>
+                              }
+                            >
+                              <p>
+                                You have unsaved changes, are you sure you want
+                                discard them?
+                              </p>
+                            </Modal>
+                          </React.Fragment>
                         )}
-                      </div>
-                    </form>
-                    {/* Unsaved changes prompt when navigating away */}
-                    {!isPreview &&
-                      (editableFormElementIds !== undefined || !isReadOnly) && (
+
+                      {/* Approvers have no submit button, and action their
+                    review via the approvals app, so the form must not prompt
+                    them about submitting. */}
+                      {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
                         <React.Fragment>
-                          <Prompt
-                            when={isDirty && !isNavigationAllowed}
-                            message={handleBlockedNavigation}
-                          />
                           <Modal
-                            isOpen={hasConfirmedNavigation === false}
-                            title="Unsaved Changes"
-                            cardClassName="cypress-cancel-confirm"
-                            titleClassName="cypress-cancel-confirm-title"
-                            bodyClassName="cypress-cancel-confirm-body"
+                            isOpen={promptUploadingAttachments === true}
+                            title="Attachment upload in progress"
+                            cardClassName="cypress-attachments-wait-continue"
+                            titleClassName="cypress-attachments-confirm-wait-title"
+                            bodyClassName="cypress-attachments-confirm-wait-body"
+                            actions={
+                              <>
+                                <span style={{ flex: 1 }}></span>
+                                <button
+                                  type="button"
+                                  className="button ob-button is-light cypress-attachments-confirm-wait"
+                                  onClick={handleWaitForAttachments}
+                                >
+                                  Wait
+                                </button>
+                                <button
+                                  type="button"
+                                  className="button ob-button is-primary cypress-attachments-confirm-continue"
+                                  onClick={handleContinueWithAttachments}
+                                  autoFocus
+                                >
+                                  Continue
+                                </button>
+                              </>
+                            }
+                          >
+                            <p>
+                              Your attachments are still uploading, do you want
+                              to wait for the uploads to complete or continue
+                              using the app? If you click continue the
+                              attachments will upload in the background. Do not
+                              close the app until the upload has been completed.
+                            </p>
+                          </Modal>
+
+                          <Modal
+                            isOpen={promptOfflineSubmissionAttempt}
+                            title="It looks like you're Offline"
+                            className="ob-modal__offline-submission-attempt"
+                            cardClassName="cypress-submission-offline has-text-centered"
+                            titleClassName="cypress-offline-title"
+                            bodyClassName="cypress-offline-body"
                             actions={
                               <>
                                 {onSaveDraft && (
                                   <button
                                     type="button"
-                                    className="button ob-button is-success cypress-cancel-confirm-save-draft"
+                                    className="button ob-button ob-button__offline-submission-attempt-save-draft is-success"
                                     onClick={() => handleSaveDraft(false)}
                                   >
                                     <CustomisableButtonInner
@@ -1659,175 +1767,74 @@ function OneBlinkFormBase({
                                 )}
                                 <span style={{ flex: 1 }}></span>
                                 <button
-                                  type="button"
-                                  className="button ob-button is-light cypress-cancel-confirm-back"
-                                  onClick={handleKeepGoing}
+                                  className="button ob-button ob-button__offline-submission-attempt-cancel is-light"
+                                  onClick={() =>
+                                    setPromptOfflineSubmissionAttempt(false)
+                                  }
                                 >
-                                  <CustomisableButtonInner
-                                    label={
-                                      buttons?.cancelPromptNo?.label || 'Back'
-                                    }
-                                    icon={buttons?.cancelPromptNo?.icon}
-                                  />
+                                  Cancel
                                 </button>
                                 <button
-                                  type="button"
-                                  className="button ob-button is-primary cypress-cancel-confirm-discard"
-                                  onClick={handleDiscardUnsavedChanges}
+                                  className="button ob-button ob-button__offline-submission-attempt-try-again is-primary"
+                                  onClick={(e) => {
+                                    setPromptOfflineSubmissionAttempt(false)
+                                    handleSubmit(e, false)
+                                  }}
                                   autoFocus
                                 >
-                                  <CustomisableButtonInner
-                                    label={
-                                      buttons?.cancelPromptYes?.label ||
-                                      'Discard'
-                                    }
-                                    icon={buttons?.cancelPromptYes?.icon}
-                                  />
+                                  Try Again
                                 </button>
                               </>
                             }
                           >
-                            <p>
-                              You have unsaved changes, are you sure you want
-                              discard them?
+                            <p className="ob-modal__offline-submission-attempt-message">
+                              You cannot submit this form while offline, please
+                              try again when connectivity is restored.
+                              {onSaveDraft && (
+                                <span className="ob-modal__offline-submission-attempt-save-draft-message">
+                                  {' '}
+                                  Alternatively, click the{' '}
+                                  <b>
+                                    {buttons?.saveDraft?.label || 'Save Draft'}
+                                  </b>{' '}
+                                  button below to come back to this later.
+                                </span>
+                              )}
                             </p>
+                            <MaterialIcon className="has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
+                              wifi_off
+                            </MaterialIcon>
                           </Modal>
                         </React.Fragment>
                       )}
-
-                    {/* Approvers have no submit button, and action their
-                    review via the approvals app, so the form must not prompt
-                    them about submitting. */}
-                    {!isReadOnly && !isPreview && audience !== 'APPROVER' && (
-                      <React.Fragment>
-                        <Modal
-                          isOpen={promptUploadingAttachments === true}
-                          title="Attachment upload in progress"
-                          cardClassName="cypress-attachments-wait-continue"
-                          titleClassName="cypress-attachments-confirm-wait-title"
-                          bodyClassName="cypress-attachments-confirm-wait-body"
-                          actions={
-                            <>
-                              <span style={{ flex: 1 }}></span>
-                              <button
-                                type="button"
-                                className="button ob-button is-light cypress-attachments-confirm-wait"
-                                onClick={handleWaitForAttachments}
-                              >
-                                Wait
-                              </button>
-                              <button
-                                type="button"
-                                className="button ob-button is-primary cypress-attachments-confirm-continue"
-                                onClick={handleContinueWithAttachments}
-                                autoFocus
-                              >
-                                Continue
-                              </button>
-                            </>
-                          }
-                        >
-                          <p>
-                            Your attachments are still uploading, do you want to
-                            wait for the uploads to complete or continue using
-                            the app? If you click continue the attachments will
-                            upload in the background. Do not close the app until
-                            the upload has been completed.
-                          </p>
-                        </Modal>
-
-                        <Modal
-                          isOpen={promptOfflineSubmissionAttempt}
-                          title="It looks like you're Offline"
-                          className="ob-modal__offline-submission-attempt"
-                          cardClassName="cypress-submission-offline has-text-centered"
-                          titleClassName="cypress-offline-title"
-                          bodyClassName="cypress-offline-body"
-                          actions={
-                            <>
-                              {onSaveDraft && (
-                                <button
-                                  type="button"
-                                  className="button ob-button ob-button__offline-submission-attempt-save-draft is-success"
-                                  onClick={() => handleSaveDraft(false)}
-                                >
-                                  <CustomisableButtonInner
-                                    label={
-                                      buttons?.saveDraft?.label || 'Save Draft'
-                                    }
-                                    icon={buttons?.saveDraft?.icon}
-                                  />
-                                </button>
-                              )}
-                              <span style={{ flex: 1 }}></span>
-                              <button
-                                className="button ob-button ob-button__offline-submission-attempt-cancel is-light"
-                                onClick={() =>
-                                  setPromptOfflineSubmissionAttempt(false)
-                                }
-                              >
-                                Cancel
-                              </button>
-                              <button
-                                className="button ob-button ob-button__offline-submission-attempt-try-again is-primary"
-                                onClick={(e) => {
-                                  setPromptOfflineSubmissionAttempt(false)
-                                  handleSubmit(e, false)
-                                }}
-                                autoFocus
-                              >
-                                Try Again
-                              </button>
-                            </>
-                          }
-                        >
-                          <p className="ob-modal__offline-submission-attempt-message">
-                            You cannot submit this form while offline, please
-                            try again when connectivity is restored.
-                            {onSaveDraft && (
-                              <span className="ob-modal__offline-submission-attempt-save-draft-message">
-                                {' '}
-                                Alternatively, click the{' '}
-                                <b>
-                                  {buttons?.saveDraft?.label || 'Save Draft'}
-                                </b>{' '}
-                                button below to come back to this later.
-                              </span>
-                            )}
-                          </p>
-                          <MaterialIcon className="has-text-warning icon-x-large ob-modal__offline-submission-attempt-icon">
-                            wifi_off
-                          </MaterialIcon>
-                        </Modal>
-                      </React.Fragment>
-                    )}
-                    {shouldUseNavigableValidationErrorsNotification &&
-                      isShowingValidationErrorsCard && (
-                        <ValidationErrorsCard
-                          visiblePages={visiblePages}
-                          formElementsValidation={formElementsValidation}
-                          setPageId={setPageId}
-                          currentPage={currentPage}
-                          navigationTopOffset={
-                            navigableValidationErrorsNotificationSettings?.navigationTopOffset ??
-                            'CALCULATE'
-                          }
-                          scrollableContainerId={
-                            navigableValidationErrorsNotificationSettings?.scrollableContainerId
-                          }
-                          validationErrorToastFocusElementRef={
-                            validationErrorToastFocusElementRef
-                          }
-                        />
-                      )}
-                  </div>
-                </OneBlinkFormContainerContext.Provider>
-              </FormElementLookupsContextProvider>
-            </FormElementOptionsContextProvider>
-          </FormDefinitionContext.Provider>
-        </ReplaceInjectablesOverridesContext.Provider>
-      </LocalizationProvider>
-    </ThemeProvider>
+                      {shouldUseNavigableValidationErrorsNotification &&
+                        isShowingValidationErrorsCard && (
+                          <ValidationErrorsCard
+                            visiblePages={visiblePages}
+                            formElementsValidation={formElementsValidation}
+                            setPageId={setPageId}
+                            currentPage={currentPage}
+                            navigationTopOffset={
+                              navigableValidationErrorsNotificationSettings?.navigationTopOffset ??
+                              'CALCULATE'
+                            }
+                            scrollableContainerId={
+                              navigableValidationErrorsNotificationSettings?.scrollableContainerId
+                            }
+                            validationErrorToastFocusElementRef={
+                              validationErrorToastFocusElementRef
+                            }
+                          />
+                        )}
+                    </div>
+                  </OneBlinkFormContainerContext.Provider>
+                </FormElementLookupsContextProvider>
+              </FormElementOptionsContextProvider>
+            </FormDefinitionContext.Provider>
+          </ReplaceInjectablesOverridesContext.Provider>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </FormMarkDirtyContextProvider>
   )
 }
 

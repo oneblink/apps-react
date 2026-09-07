@@ -79,6 +79,7 @@ export default function ReverseGeocode({
             if (reverseGeocodeResult.addressDetails?.formattedAddress) {
               onChange(formattedAddressElement, {
                 value: reverseGeocodeResult.addressDetails?.formattedAddress,
+                isDerivedChange: true,
               })
             }
             break
@@ -86,6 +87,7 @@ export default function ReverseGeocode({
           case 'geoscapeAddress': {
             onChange(formattedAddressElement, {
               value: reverseGeocodeResult,
+              isDerivedChange: true,
             })
             break
           }

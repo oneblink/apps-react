@@ -18,8 +18,8 @@ export type Props = {
   element: FormTypes.FormFormElement
   /**
    * Whether this nested form is locked. Used as `readOnlyOverride` for
-   * synthetic children when `readOnlyOverrideChildren` is set. Nested fields
-   * do not inherit this value as a blanket lock so a child included in
+   * synthetic children when `readOnlyOverrideChildren` is set. Nested fields do
+   * not inherit this value as a blanket lock so a child included in
    * `editableFormElementIds` can stay editable.
    */
   readOnly: boolean
@@ -70,6 +70,7 @@ function FormElementForm({
         value: nestedElementValue,
         executedLookups: nestedExecutedLookups,
         sectionState,
+        isDerivedChange,
       }: Parameters<NestedFormElementValueChangeHandler>[1],
       idPrefix?: string,
     ) => {
@@ -114,13 +115,14 @@ function FormElementForm({
           }
         },
         sectionState,
+        isDerivedChange,
       })
     },
     [element, onChange],
   )
 
   const handleLookup = React.useCallback<FormElementLookupHandler>(
-    (mergeLookupResults) => {
+    (mergeLookupResults, options) => {
       onLookup((currentFormSubmission) => {
         let model = currentFormSubmission.submission[
           element.name
@@ -168,7 +170,7 @@ function FormElementForm({
           },
           sectionState: currentFormSubmission.sectionState,
         }
-      })
+      }, options)
     },
     [element.name, onLookup],
   )

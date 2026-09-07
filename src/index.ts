@@ -56,6 +56,10 @@ export {
   FormSubmissionAttempt,
   FormSubmissionAttemptAllowNavigation,
 } from './hooks/useFormSubmissionAttempt'
+export {
+  FormIsDirtyContextProvider,
+  useFormIsDirty,
+} from './hooks/useFormIsDirty'
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as LoadingWithMessage } from './components/LoadingWithMessage'
