@@ -3,22 +3,29 @@ import { formElementsService } from '@oneblink/sdk-core'
 
 import generateDefaultData from '../services/generate-default-data'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import { SetFormSubmission } from '../types/form'
+import { SetFormSubmission, SetFormSubmissionOptions } from '../types/form'
 
 export default function useLookups(
   formId: number,
   setFormSubmission: SetFormSubmission,
+  markFormDirty: () => void,
 ) {
   const handlePagesLookupResult = React.useCallback(
     (
       element: FormTypes.LookupFormElement,
       elementLookupData: FormTypes.PageElement[],
-      dataLookupResult?: SubmissionTypes.S3SubmissionData['submission'],
+      dataLookupResult:
+        | SubmissionTypes.S3SubmissionData['submission']
+        | undefined,
+      options: SetFormSubmissionOptions,
     ) => {
       const newPageElements = elementLookupData.map((e) => ({
         ...e,
         injectedByElementId: element.id,
       }))
+      if (!options.isDerivedChange) {
+        markFormDirty()
+      }
       setFormSubmission((currentFormSubmission) => {
         const definition: FormTypes.Form = {
           ...currentFormSubmission.definition,
@@ -85,9 +92,9 @@ export default function useLookups(
           },
           sectionState: currentFormSubmission.sectionState,
         }
-      })
+      }, options)
     },
-    [formId, setFormSubmission],
+    [formId, markFormDirty, setFormSubmission],
   )
 
   return {

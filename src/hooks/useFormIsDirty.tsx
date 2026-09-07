@@ -1,13 +1,12 @@
 import * as React from 'react'
 
-type FormIsDirtyContextValue = {
-  register: (isDirty: boolean) => () => void
-  isDirty: () => boolean
-}
+const FormIsDirtyContext = React.createContext<boolean>(false)
 
-const FormIsDirtyContext = React.createContext<FormIsDirtyContextValue | null>(
-  null,
-)
+// Kept separate from the value so registering does not re-render the form
+// every time the flag changes.
+const RegisterFormIsDirtyContext = React.createContext<
+  ((isDirty: boolean) => () => void) | undefined
+>(undefined)
 
 const FormMarkDirtyContext = React.createContext<() => void>(() => {})
 
@@ -47,32 +46,23 @@ export function FormIsDirtyContextProvider({
 }: {
   children: React.ReactNode
 }) {
-  const isDirtyRef = React.useRef(false)
-  const [, forceRender] = React.useReducer((count: number) => count + 1, 0)
+  // Must be state, not a ref. Hosts reading this are siblings of the form, so
+  // they only re-render if the context value itself changes.
+  const [isDirty, setIsDirty] = React.useState(false)
 
   const register = React.useCallback((isDirty: boolean) => {
-    isDirtyRef.current = isDirty
-    forceRender()
+    setIsDirty(isDirty)
     return () => {
-      isDirtyRef.current = false
-      forceRender()
+      setIsDirty(false)
     }
   }, [])
 
-  const isDirty = React.useCallback(() => isDirtyRef.current, [])
-
-  const value = React.useMemo(
-    () => ({
-      register,
-      isDirty,
-    }),
-    [isDirty, register],
-  )
-
   return (
-    <FormIsDirtyContext.Provider value={value}>
-      {children}
-    </FormIsDirtyContext.Provider>
+    <RegisterFormIsDirtyContext.Provider value={register}>
+      <FormIsDirtyContext.Provider value={isDirty}>
+        {children}
+      </FormIsDirtyContext.Provider>
+    </RegisterFormIsDirtyContext.Provider>
   )
 }
 
@@ -84,8 +74,7 @@ export function FormIsDirtyContextProvider({
  * @group Hooks
  */
 export function useFormIsDirty(): boolean {
-  const context = React.useContext(FormIsDirtyContext)
-  return context?.isDirty() ?? false
+  return React.useContext(FormIsDirtyContext)
 }
 
 /**
@@ -93,9 +82,9 @@ export function useFormIsDirty(): boolean {
  * {@link FormIsDirtyContextProvider}. Used internally by `OneBlinkFormBase`.
  */
 export function useRegisterFormIsDirty(isDirty: boolean): void {
-  const context = React.useContext(FormIsDirtyContext)
+  const register = React.useContext(RegisterFormIsDirtyContext)
 
   React.useLayoutEffect(() => {
-    return context?.register(isDirty)
-  }, [context, isDirty])
+    return register?.(isDirty)
+  }, [register, isDirty])
 }

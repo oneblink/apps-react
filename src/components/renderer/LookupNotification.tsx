@@ -125,6 +125,7 @@ function LookupNotificationComponent({
             element,
             elementLookupResult as FormTypes.PageElement[],
             dataLookupResult,
+            { isDerivedChange },
           )
           return
         }
@@ -177,7 +178,7 @@ function LookupNotificationComponent({
             }),
           }
         },
-        isDerivedChange ? { isDerivedChange: true } : undefined,
+        { isDerivedChange },
       )
     },
     [element, injectPagesAfter, onLookup],
@@ -288,6 +289,7 @@ function LookupNotificationComponent({
           dataLookupResult: {},
           elementLookupResult: [],
           executedLookup: { [element.name]: false },
+          isDerivedChange,
         })
         setLookupErrorHTML(
           typeof error === 'string'

@@ -1066,19 +1066,6 @@ function OneBlinkFormBase({
 
   //
   //
-  // #region Lookups
-
-  const { handlePagesLookupResult } = useLookups(
-    definition.id,
-    setFormSubmission,
-  )
-
-  // #endregion
-  //
-  //
-
-  //
-  //
   // #region Submission/Definition Changes
 
   const markFormDirty = React.useCallback(() => {
@@ -1087,6 +1074,20 @@ function OneBlinkFormBase({
       isDirty: true,
     }))
   }, [])
+
+  //
+  //
+  // #region Lookups
+
+  const { handlePagesLookupResult } = useLookups(
+    definition.id,
+    setFormSubmission,
+    markFormDirty,
+  )
+
+  // #endregion
+  //
+  //
 
   const handleChange = React.useCallback<NestedFormElementValueChangeHandler>(
     (
