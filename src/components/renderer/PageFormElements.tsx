@@ -13,6 +13,7 @@ import {
   SectionState,
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
+import { useMarkFormDirty } from '../../hooks/useFormIsDirty'
 
 export type Props = {
   formId: number
@@ -39,8 +40,12 @@ function PageFormElements({
   onChange,
   setFormSubmission,
 }: Props) {
+  const markFormDirty = useMarkFormDirty()
   const handleLookup = React.useCallback<FormElementLookupHandler>(
-    (mergeLookupResults) => {
+    (mergeLookupResults, options) => {
+      if (!options?.isDerivedChange) {
+        markFormDirty()
+      }
       setFormSubmission((currentFormSubmission) => {
         if (pageElement.id === formId.toString()) {
           const { submission, elements, executedLookups } = mergeLookupResults({
@@ -99,9 +104,9 @@ function PageFormElements({
             },
           },
         )
-      })
+      }, options)
     },
-    [formId, pageElement.id, setFormSubmission],
+    [formId, markFormDirty, pageElement.id, setFormSubmission],
   )
 
   const form = useFormDefinition()

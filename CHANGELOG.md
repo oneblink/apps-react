@@ -11,12 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - optional `versionId` on `downloadFormSubmission()` to download a specific S3 submission version
 - `<FormSubmissionAttemptContextProvider />` and `useFormSubmissionAttempt()` to allow a host application (e.g. an approval action) to run the rendered form's validation before actioning approver edits. On success the attempt resolves with a callback the host must call after persisting the edits, which clears the unsaved-changes navigation guard.
+- optional `isDerivedChange` on element `onChange` and `setFormSubmission` so derived writes update the model without treating them as user edits (no unsaved-changes flag, `lastElementUpdated`, or auto-save). Calculation, summary, reverse geocode, auto-lookups, and invalid-option clearing pass the flag; user-started lookups omit it.
+- `<FormIsDirtyContextProvider />` and `useFormIsDirty()` so a host can read whether the rendered form has unsaved user edits. Wrap both the form and the host actions so they share one registry.
 
 ### Changed
 
 - **[BREAKING]** `submissionService.getSubmissionData()` now returns `{ data, versionId }` instead of `S3SubmissionData`
 - `<OneBlinkReadOnlyForm />` accepts `editableFormElementIds` with controlled submission props (`definition`, `submission`, `setFormSubmission`, `executedLookups`) to keep selected elements editable while the rest of the form remains read-only
 - unsaved changes are now prompted about when navigating away from a form rendered with `editableFormElementIds`
+- `handleChange` to write calculation and summary values through the default path (only `section` remains a special case). On a disabled form, writes with `isDerivedChange` still update the model so those elements can recompute.
 
 ## [12.0.0] - 2026-08-26
 

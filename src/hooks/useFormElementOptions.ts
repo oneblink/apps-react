@@ -105,6 +105,7 @@ export default function useFormElementOptions<T>({
     ) {
       onChange(element, {
         value: undefined,
+        isDerivedChange: true,
       })
       return
     }
@@ -117,6 +118,7 @@ export default function useFormElementOptions<T>({
         const newValueArray = newValue.length ? newValue : undefined
         onChange(element, {
           value: newValueArray as T | undefined,
+          isDerivedChange: true,
         })
       }
     }

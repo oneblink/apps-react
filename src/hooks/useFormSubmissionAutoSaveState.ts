@@ -5,7 +5,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
 import useFormSubmissionDuration from './useFormSubmissionDuration'
 import { FormElement } from '@oneblink/types/typescript/forms'
-import { SectionState } from '../types/form'
+import { SectionState, SetFormSubmission } from '../types/form'
 import {
   getElementDisplayNameForAnalyticsEvent,
   sendGoogleAnalyticsEvent,
@@ -266,19 +266,21 @@ export default function useFormSubmissionAutoSaveState({
     }
   }, [cancelAutoSave])
 
-  const setFormSubmissionAutoSave: typeof setFormSubmission = React.useCallback(
-    (formSubmission) => {
+  const setFormSubmissionAutoSave: SetFormSubmission = React.useCallback(
+    (formSubmission, options) => {
       setFormSubmission((currentFormSubmission) => {
         const newFormSubmission =
           typeof formSubmission === 'function'
             ? formSubmission(currentFormSubmission)
             : formSubmission
 
-        throttledAutoSave(
-          newFormSubmission.submission,
-          newFormSubmission.lastElementUpdated,
-          newFormSubmission.sectionState,
-        )
+        if (!options?.isDerivedChange) {
+          throttledAutoSave(
+            newFormSubmission.submission,
+            newFormSubmission.lastElementUpdated,
+            newFormSubmission.sectionState,
+          )
+        }
 
         return newFormSubmission
       })

@@ -90,6 +90,7 @@ function FormElementCalculation({ element, onChange, value }: Props) {
   React.useEffect(() => {
     onChange(element, {
       value: calculatedValue,
+      isDerivedChange: true,
     })
   }, [element, onChange, calculatedValue])
 

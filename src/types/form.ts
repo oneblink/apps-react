@@ -51,6 +51,11 @@ type ValueChangeHandler<U extends Record<string, unknown>> = (
 
 export type FormElementValueChangeHandler<T = unknown> = ValueChangeHandler<{
   value?: T | ((existingValue?: T) => T | undefined)
+  /**
+   * When true, the value is written without treating it as a user edit (no
+   * unsaved-changes flag, last-element tracking, or auto-save).
+   */
+  isDerivedChange?: boolean
 }>
 
 export type SectionState = NewS3SubmissionData['sectionState']
@@ -73,7 +78,16 @@ export type NestedFormElementValueChangeHandler<T = unknown> =
     sectionState:
       | SectionState
       | ((currentSectionState: SectionState) => SectionState)
+    /**
+     * When true, the value is written without treating it as a user edit (no
+     * unsaved-changes flag, last-element tracking, or auto-save).
+     */
+    isDerivedChange?: boolean
   }>
+
+export type SetFormSubmissionOptions = {
+  isDerivedChange?: boolean
+}
 
 export type FormElementLookupHandler = (
   setter: (data: {
@@ -87,21 +101,25 @@ export type FormElementLookupHandler = (
     elements: FormTypes.FormElement[]
     executedLookups: ExecutedLookups
   },
+  options?: SetFormSubmissionOptions,
 ) => void
 
 export type UpdateFormElementsHandler = (
   setter: (element: FormTypes.FormElement[]) => FormTypes.FormElement[],
 ) => void
 
-export type SetFormSubmission = React.Dispatch<
-  React.SetStateAction<{
-    definition: FormTypes.Form
-    submission: SubmissionTypes.S3SubmissionData['submission']
-    lastElementUpdated: FormTypes.FormElement | undefined
-    executedLookups: ExecutedLookups
-    sectionState: SectionState | undefined
-  }>
->
+export type FormSubmissionState = {
+  definition: FormTypes.Form
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  lastElementUpdated: FormTypes.FormElement | undefined
+  executedLookups: ExecutedLookups
+  sectionState: SectionState | undefined
+}
+
+export type SetFormSubmission = (
+  value: React.SetStateAction<FormSubmissionState>,
+  options?: SetFormSubmissionOptions,
+) => void
 
 export type IsDirtyProps = {
   isDirty: boolean

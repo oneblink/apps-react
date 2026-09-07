@@ -188,10 +188,12 @@ function FormElementSummary({ element, onChange, value }: Props) {
     if (summary.length) {
       onChange(element, {
         value: summary,
+        isDerivedChange: true,
       })
     } else {
       onChange(element, {
         value: undefined,
+        isDerivedChange: true,
       })
     }
   }, [
