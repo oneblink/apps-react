@@ -922,7 +922,7 @@ function OneBlinkFormBase({
   useRegisterFormSubmissionAttempt(
     editableFormElementIds === undefined ? undefined : attemptFormSubmission,
   )
-  useRegisterFormIsDirty(isDirty)
+  useRegisterFormIsDirty(definition.id, isDirty)
 
   const handleSubmit = React.useCallback(
     async (

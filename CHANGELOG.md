@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - optional `versionId` on `downloadFormSubmission()` to download a specific S3 submission version
 - `<FormSubmissionAttemptContextProvider />` and `useFormSubmissionAttempt()` to allow a host application (e.g. an approval action) to run the rendered form's validation before actioning approver edits. On success the attempt resolves with a callback the host must call after persisting the edits, which clears the unsaved-changes navigation guard.
 - optional `isDerivedChange` on element `onChange` and `setFormSubmission` so derived writes update the model without treating them as user edits (no unsaved-changes flag, `lastElementUpdated`, or auto-save). Calculation, summary, reverse geocode, auto-lookups, and invalid-option clearing pass the flag; user-started lookups omit it.
-- `<FormIsDirtyContextProvider />` and `useFormIsDirty()` so a host can read whether the rendered form has unsaved user edits. Wrap both the form and the host actions so they share one registry.
+- `<FormIsDirtyContextProvider />` and `useFormIsDirty(formId)` so a host can read whether a rendered form has unsaved user edits. Wrap both the form and the host actions so they share one registry. Each form registers under its `formId`, so multiple forms under the same provider keep independent flags.
 
 ### Changed
 
