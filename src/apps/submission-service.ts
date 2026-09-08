@@ -563,19 +563,23 @@ async function executeAction(
  * })
  * ```
  *
- * @param formId
- * @param submissionId
- * @param abortSignal
+ * @param options
+ * @param options.formId
+ * @param options.submissionId
+ * @param options.abortSignal
+ * @param options.versionId
  * @returns
  */
 async function getSubmissionData({
   formId,
   submissionId,
   abortSignal,
+  versionId,
 }: {
   formId: number
   submissionId: string
   abortSignal?: AbortSignal
+  versionId?: string
 }): Promise<{
   data: SubmissionTypes.S3SubmissionData
   versionId: string | undefined
@@ -584,6 +588,7 @@ async function getSubmissionData({
     formId,
     submissionId,
     abortSignal,
+    versionId,
   })
 }
 
