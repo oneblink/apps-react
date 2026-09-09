@@ -568,6 +568,7 @@ async function executeAction(
  * @param options.submissionId
  * @param options.abortSignal
  * @param options.versionId
+ * @param options.asSubmitted
  * @returns
  */
 async function getSubmissionData({
@@ -575,11 +576,14 @@ async function getSubmissionData({
   submissionId,
   abortSignal,
   versionId,
+  asSubmitted,
 }: {
   formId: number
   submissionId: string
   abortSignal?: AbortSignal
   versionId?: string
+  /** Download the submission data as it was originally submitted. */
+  asSubmitted?: boolean
 }): Promise<{
   data: SubmissionTypes.S3SubmissionData
   versionId: string | undefined
@@ -589,6 +593,7 @@ async function getSubmissionData({
     submissionId,
     abortSignal,
     versionId,
+    asSubmitted,
   })
 }
 

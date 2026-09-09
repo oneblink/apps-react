@@ -175,17 +175,20 @@ export async function downloadFormSubmission({
   submissionId,
   abortSignal,
   versionId,
+  asSubmitted,
 }: {
   formId: number
   submissionId: string
   abortSignal?: AbortSignal
   versionId?: string
+  asSubmitted?: boolean
 }) {
   try {
     console.log('Attempting to download form submission data:', {
       formId,
       submissionId,
       versionId,
+      asSubmitted,
     })
     const oneblinkDownloader = generateOneBlinkDownloader()
     const result = await oneblinkDownloader.downloadSubmission({
@@ -193,6 +196,7 @@ export async function downloadFormSubmission({
       submissionId,
       abortSignal,
       versionId,
+      asSubmitted,
     })
     if (!result) {
       throw new OneBlinkAppsError(
