@@ -103,6 +103,7 @@ const validationExtensions = {
       isOffline,
       audience,
       editableFormElementIds,
+      approverEditableFormElementIds,
     }: {
       formElement: FormTypes.FormElementWithName
       formElements: FormTypes.FormElementWithName[] | undefined
@@ -112,6 +113,7 @@ const validationExtensions = {
       isOffline: boolean
       audience: FormTypes.FormElementHiddenFromAudience
       editableFormElementIds?: string[]
+      approverEditableFormElementIds?: string[]
     },
   ) {
     if (formElements) {
@@ -140,6 +142,7 @@ const validationExtensions = {
         isOffline,
         audience,
         editableFormElementIds,
+        approverEditableFormElementIds,
       })
       if (errors) {
         return {

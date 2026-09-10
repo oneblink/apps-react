@@ -630,7 +630,7 @@ function OneBlinkFormBase({
     React.useRef<HTMLButtonElement | null>(null)
   const [isShowingValidationErrorsCard, setIsShowingValidationErrorsCard] =
     React.useState(false)
-  const { validate } = useFormValidation(pages)
+  const { validate } = useFormValidation(pages, definition.approvalSteps)
 
   const recaptchaType = React.useMemo(
     () => captchaType ?? 'CHECKBOX',
