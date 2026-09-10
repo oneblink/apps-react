@@ -14,10 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - optional `isDerivedChange` on element `onChange` and `setFormSubmission` so derived writes update the model without treating them as user edits (no unsaved-changes flag, `lastElementUpdated`, or auto-save). Calculation, summary, reverse geocode, auto-lookups, and invalid-option clearing pass the flag; user-started lookups omit it.
 - `<FormIsDirtyContextProvider />` and `useFormIsDirty(formId)` so a host can read whether a rendered form has unsaved user edits. Wrap both the form and the host actions so they share one registry. Each form registers under its `formId`, so multiple forms under the same provider keep independent flags.
 - `formSubmissionMetaEdits` property to `history` array on `FormApprovalFlowInstanceHistory` type
+- optional `currentlyViewingFormSubmissionApprovalId` on `getFlowInstanceNodesWithMeta()` so a host can keep the pending concurrent step being viewed next to already actioned siblings
 
 ### Changed
 
 - **[BREAKING]** `submissionService.getSubmissionData()` now returns `{ data, versionId }` instead of `S3SubmissionData`
+- concurrent nodes from `getFlowInstanceNodesWithMeta()` are ordered by the time they were actioned
 - `<OneBlinkReadOnlyForm />` accepts `editableFormElementIds` with controlled submission props (`definition`, `submission`, `setFormSubmission`, `executedLookups`) to keep selected elements editable while the rest of the form remains read-only
 - unsaved changes are now prompted about when navigating away from a form rendered with `editableFormElementIds`
 - `handleChange` to write calculation and summary values through the default path (only `section` remains a special case). On a disabled form, writes with `isDerivedChange` still update the model so those elements can recompute.
