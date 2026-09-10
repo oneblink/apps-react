@@ -59,6 +59,7 @@ export {
 export {
   FormIsDirtyContextProvider,
   useFormIsDirty,
+  useAllowFormNavigation,
 } from './hooks/useFormIsDirty'
 
 export { default as ProgressBar } from './components/renderer/ProgressBar'
