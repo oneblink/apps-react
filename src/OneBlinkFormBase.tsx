@@ -76,6 +76,7 @@ import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds
 import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
 import {
   useRegisterFormIsDirty,
+  useRegisterAllowFormNavigation,
   FormMarkDirtyContextProvider,
 } from './hooks/useFormIsDirty'
 
@@ -1050,6 +1051,7 @@ function OneBlinkFormBase({
     editableFormElementIds === undefined ? undefined : attemptFormSubmission,
   )
   useRegisterFormIsDirty(definition.id, isDirty)
+  useRegisterAllowFormNavigation(definition.id, allowNavigationAfterHostAction)
 
   const handleSubmit = React.useCallback(
     async (
