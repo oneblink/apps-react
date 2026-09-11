@@ -32,6 +32,7 @@ import {
   checkIsFormElementEditable,
   checkIsFormElementIdEditable,
 } from '../../utils/read-only-form-elements'
+import isElementHiddenForAudience from '../isElementHiddenForAudience'
 
 export const RECAPTCHA_OFFLINE_MESSAGE =
   'We could not verify you are human while you are offline.'
@@ -45,6 +46,7 @@ export default function validateSubmission({
   isOffline,
   audience,
   editableFormElementIds,
+  approverEditableFormElementIds,
 }: {
   elements: FormTypes.FormElementWithName[]
   submission: SubmissionTypes.S3SubmissionData['submission']
@@ -54,6 +56,7 @@ export default function validateSubmission({
   isOffline: boolean
   audience: FormTypes.FormElementHiddenFromAudience
   editableFormElementIds?: string[]
+  approverEditableFormElementIds?: string[]
 }): FormElementsValidation | undefined {
   const formElementsValidation = elements.reduce<FormElementsValidation>(
     (partialFormElementsValidation, formElement) => {
@@ -72,6 +75,16 @@ export default function validateSubmission({
       const formElementConditionallyShown =
         formElementsConditionallyShown?.[formElement.name]
       if (formElementConditionallyShown?.isHidden) {
+        return partialFormElementsValidation
+      }
+
+      // Approver-editable elements hidden from submitters are completed later.
+      // Ignore all validation here, including invalid prefilled values.
+      if (
+        audience === 'SUBMITTER' &&
+        isElementHiddenForAudience(formElement, audience) &&
+        approverEditableFormElementIds?.includes(formElement.id)
+      ) {
         return partialFormElementsValidation
       }
 
@@ -661,6 +674,7 @@ export default function validateSubmission({
               isOffline,
               audience,
               editableFormElementIds,
+              approverEditableFormElementIds,
             })
 
             if (entryValidation) {
@@ -694,6 +708,7 @@ export default function validateSubmission({
               isOffline,
               audience,
               editableFormElementIds,
+              approverEditableFormElementIds,
             },
           )
           if (nestedFormValidation) {
@@ -716,6 +731,7 @@ export default function validateSubmission({
               isOffline,
               audience,
               editableFormElementIds,
+              approverEditableFormElementIds,
             },
           )
           if (nestedFormValidation) {
@@ -738,6 +754,7 @@ export default function validateSubmission({
               isOffline,
               audience,
               editableFormElementIds,
+              approverEditableFormElementIds,
             },
           )
           if (nestedFormValidation) {

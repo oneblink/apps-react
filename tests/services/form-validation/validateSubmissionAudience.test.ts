@@ -24,6 +24,7 @@ function validate(
   submission: Record<string, unknown>,
   audience: FormTypes.FormElementHiddenFromAudience,
   editableFormElementIds?: string[],
+  approverEditableFormElementIds?: string[],
 ) {
   return validateSubmission({
     elements: elements as FormTypes.FormElementWithName[],
@@ -34,6 +35,7 @@ function validate(
     isOffline: false,
     audience,
     editableFormElementIds,
+    approverEditableFormElementIds,
   })
 }
 
@@ -60,6 +62,67 @@ describe('validateSubmission audience', () => {
       ),
     ).toEqual({
       editable: 'Please enter a value',
+    })
+  })
+
+  test('skips a required approver-editable element hidden from the submitter', () => {
+    const element = textElement('approver-field', {
+      isHidden: true,
+      hiddenFrom: ['SUBMITTER'],
+    })
+
+    expect(
+      validate([element], {}, 'SUBMITTER', undefined, ['approver-field']),
+    ).toBeUndefined()
+  })
+
+  test('skips all validation of a prefilled approver-editable element hidden from the submitter', () => {
+    const element = textElement('approver-field', {
+      isHidden: true,
+      hiddenFrom: ['SUBMITTER'],
+      regexPattern: '^valid$',
+    })
+
+    expect(
+      validate(
+        [element],
+        { 'approver-field': 'invalid' },
+        'SUBMITTER',
+        undefined,
+        ['approver-field'],
+      ),
+    ).toBeUndefined()
+  })
+
+  test('validates a hidden submitter element that is not approver-editable', () => {
+    const element = textElement('hidden-field', {
+      isHidden: true,
+      hiddenFrom: ['SUBMITTER'],
+    })
+
+    expect(
+      validate([element], {}, 'SUBMITTER', undefined, ['another-element']),
+    ).toEqual({
+      'hidden-field': 'Please enter a value',
+    })
+  })
+
+  test('validates the element when it is being edited by an approver', () => {
+    const element = textElement('approver-field', {
+      isHidden: true,
+      hiddenFrom: ['SUBMITTER'],
+    })
+
+    expect(
+      validate(
+        [element],
+        {},
+        'APPROVER',
+        ['approver-field'],
+        ['approver-field'],
+      ),
+    ).toEqual({
+      'approver-field': 'Please enter a value',
     })
   })
 

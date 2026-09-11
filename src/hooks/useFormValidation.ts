@@ -2,6 +2,7 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 
 import validateSubmission from '../services/form-validation/validateSubmission'
+import getApproverEditableFormElementIds from '../services/form-validation/getApproverEditableFormElementIds'
 import {
   CaptchaType,
   ExecutedLookups,
@@ -58,10 +59,17 @@ function stripFormElementsWithoutName(
   )
 }
 
-export default function useFormValidation(pages: FormTypes.PageElement[]) {
+export default function useFormValidation(
+  pages: FormTypes.PageElement[],
+  approvalSteps: FormTypes.Form['approvalSteps'],
+) {
   const formElementsWithName = React.useMemo(() => {
     return stripFormElementsWithoutName(pages, false)
   }, [pages])
+  const approverEditableFormElementIds = React.useMemo(
+    () => getApproverEditableFormElementIds(approvalSteps),
+    [approvalSteps],
+  )
 
   const handleValidate = React.useCallback(
     (
@@ -82,9 +90,10 @@ export default function useFormValidation(pages: FormTypes.PageElement[]) {
         isOffline,
         audience,
         editableFormElementIds,
+        approverEditableFormElementIds,
       })
     },
-    [formElementsWithName],
+    [approverEditableFormElementIds, formElementsWithName],
   )
 
   return {
