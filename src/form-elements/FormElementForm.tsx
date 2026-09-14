@@ -1,6 +1,9 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import OneBlinkFormElements from '../components/renderer/OneBlinkFormElements'
+import useEditableFormElementIds, {
+  EditableFormElementIdsContext,
+} from '../hooks/useEditableFormElementIds'
 import {
   ExecutedLookups,
   FormElementConditionallyShown,
@@ -11,6 +14,7 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import ElementDOMId from '../utils/elementDOMIds'
+import { getNestedEditableFormElementIds } from '../utils/read-only-form-elements'
 
 export type Props = {
   formId: number
@@ -220,24 +224,36 @@ function FormElementForm({
     )
 
   const elementDOMId = React.useMemo(() => new ElementDOMId(id), [id])
+  const editableFormElementIds = useEditableFormElementIds()
+  const nestedEditableFormElementIds = React.useMemo(
+    () =>
+      readOnlyOverrideChildren
+        ? editableFormElementIds
+        : getNestedEditableFormElementIds(element, editableFormElementIds),
+    [editableFormElementIds, element, readOnlyOverrideChildren],
+  )
 
   return (
-    <OneBlinkFormElements
-      formId={formId}
-      formElementsValidation={validation}
-      displayValidationMessages={displayValidationMessages}
-      elements={parentElement.elements}
-      onChange={handleNestedChange}
-      onLookup={handleLookup}
-      formElementsConditionallyShown={formElementsConditionallyShown}
-      model={value || {}}
-      parentElement={parentElement}
-      readOnly={childrenReadOnly}
-      readOnlyOverride={readOnlyOverrideChildren ? readOnly : undefined}
-      idPrefix={elementDOMId.subFormDOMIdPrefix}
-      onUpdateFormElements={handleUpdateNestedFormElements}
-      sectionState={sectionState}
-    />
+    <EditableFormElementIdsContext.Provider
+      value={nestedEditableFormElementIds}
+    >
+      <OneBlinkFormElements
+        formId={formId}
+        formElementsValidation={validation}
+        displayValidationMessages={displayValidationMessages}
+        elements={parentElement.elements}
+        onChange={handleNestedChange}
+        onLookup={handleLookup}
+        formElementsConditionallyShown={formElementsConditionallyShown}
+        model={value || {}}
+        parentElement={parentElement}
+        readOnly={childrenReadOnly}
+        readOnlyOverride={readOnlyOverrideChildren ? readOnly : undefined}
+        idPrefix={elementDOMId.subFormDOMIdPrefix}
+        onUpdateFormElements={handleUpdateNestedFormElements}
+        sectionState={sectionState}
+      />
+    </EditableFormElementIdsContext.Provider>
   )
 }
 

@@ -37,4 +37,18 @@ describe('getApproverEditableFormElementIds()', () => {
   test('returns no ids when approval steps are omitted', () => {
     expect(getApproverEditableFormElementIds(undefined)).toEqual([])
   })
+
+  test('keeps a configured nested form id on the root list', () => {
+    const approvalSteps = [
+      {
+        type: 'STANDARD',
+        label: 'Standard',
+        group: 'Group 1',
+        editableFormElementIds: ['nested-form'],
+      },
+    ] satisfies ApprovalTypes.FormApprovalFlowStep[]
+    expect(getApproverEditableFormElementIds(approvalSteps)).toEqual([
+      'nested-form',
+    ])
+  })
 })

@@ -1248,17 +1248,13 @@ function OneBlinkFormBase({
       if (hostAttemptPhase.status === 'prompt-offline') {
         setHostAttemptPhase({
           status: 'preparing',
-          continueWithAttachments:
-            hostAttemptPhase.continueWithAttachments,
+          continueWithAttachments: hostAttemptPhase.continueWithAttachments,
         })
       } else {
         handleSubmit(e, false)
       }
     },
-    [
-      handleSubmit,
-      hostAttemptPhase,
-    ],
+    [handleSubmit, hostAttemptPhase],
   )
 
   // #endregion

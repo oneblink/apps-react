@@ -79,7 +79,7 @@ export default function useFormValidation(
       captchaType: CaptchaType,
       isOffline: boolean,
       audience: FormTypes.FormElementHiddenFromAudience,
-      editableFormElementIds?: string[],
+      editableFormElementIds: string[] | undefined,
     ) => {
       return validateSubmission({
         elements: formElementsWithName,

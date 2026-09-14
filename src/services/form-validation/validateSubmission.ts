@@ -31,6 +31,7 @@ import { fileUploadService } from '@oneblink/sdk-core'
 import {
   checkIsFormElementEditable,
   checkIsFormElementIdEditable,
+  getNestedEditableFormElementIds,
 } from '../../utils/read-only-form-elements'
 import isElementHiddenForAudience from '../isElementHiddenForAudience'
 
@@ -613,10 +614,7 @@ export default function validateSubmission({
           // listed even while the set is locked.
           if (
             editableFormElementIds === undefined ||
-            checkIsFormElementIdEditable(
-              formElement,
-              editableFormElementIds,
-            )
+            checkIsFormElementIdEditable(formElement, editableFormElementIds)
           ) {
             const minSetEntries = getCleanRepeatableSetConfiguration(
               formElement.minSetEntries,
@@ -719,6 +717,15 @@ export default function validateSubmission({
         }
         case 'infoPage':
         case 'form': {
+          const nestedEditableFormElementIds = getNestedEditableFormElementIds(
+            formElement,
+            editableFormElementIds,
+          )
+          const nestedApproverEditableFormElementIds =
+            getNestedEditableFormElementIds(
+              formElement,
+              approverEditableFormElementIds,
+            )
           const nestedFormValidation = validationExtensions.nestedElements(
             value,
             {
@@ -730,8 +737,9 @@ export default function validateSubmission({
               captchaType,
               isOffline,
               audience,
-              editableFormElementIds,
-              approverEditableFormElementIds,
+              editableFormElementIds: nestedEditableFormElementIds,
+              approverEditableFormElementIds:
+                nestedApproverEditableFormElementIds,
             },
           )
           if (nestedFormValidation) {

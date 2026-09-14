@@ -11,6 +11,38 @@ export function checkIsFormElementIdEditable(
   return editableFormElementIds?.includes(element.id) === true
 }
 
+/**
+ * Returns the editable ids to provide while rendering or validating a nested
+ * form. Nested forms get their own whitelist so an id reused by the parent form
+ * cannot unlock a nested element (or vice versa).
+ *
+ * Selecting the nested form itself makes all of its descendants editable.
+ */
+export function getNestedEditableFormElementIds(
+  formElement: FormTypes.FormFormElement,
+  editableFormElementIds: string[] | undefined,
+): string[] | undefined {
+  if (editableFormElementIds === undefined) {
+    return undefined
+  }
+
+  if (!editableFormElementIds.includes(formElement.id)) {
+    return []
+  }
+
+  const nestedIds = new Set<string>()
+  const addIds = (elements: FormTypes.FormElement[]) => {
+    for (const element of elements) {
+      nestedIds.add(element.id)
+      if ('elements' in element && Array.isArray(element.elements)) {
+        addIds(element.elements)
+      }
+    }
+  }
+  addIds(formElement.elements || [])
+  return [...nestedIds]
+}
+
 function checkHasEditableFormElement(
   elements: FormTypes.FormElement[],
   editableFormElementIds?: string[],
@@ -20,10 +52,7 @@ function checkHasEditableFormElement(
       checkIsFormElementIdEditable(element, editableFormElementIds) ||
       ('elements' in element &&
         Array.isArray(element.elements) &&
-        checkHasEditableFormElement(
-          element.elements,
-          editableFormElementIds,
-        )),
+        checkHasEditableFormElement(element.elements, editableFormElementIds)),
   )
 }
 
