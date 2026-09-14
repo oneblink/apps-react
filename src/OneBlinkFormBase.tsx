@@ -632,8 +632,12 @@ function OneBlinkFormBase({
   const [isShowingValidationErrorsCard, setIsShowingValidationErrorsCard] =
     React.useState(false)
   const expandedEditableFormElementIds = React.useMemo(
-    () => expandEditableFormElementIds(editableFormElementIds, pages),
-    [editableFormElementIds, pages],
+    () =>
+      expandEditableFormElementIds(
+        editableFormElementIds,
+        pagesWithDynamicElements,
+      ),
+    [editableFormElementIds, pagesWithDynamicElements],
   )
   const { validate } = useFormValidation(pages, definition.approvalSteps)
 

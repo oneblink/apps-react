@@ -6,6 +6,10 @@ import {
   checkIsFormElementReadOnly,
   expandEditableFormElementIds,
 } from '../src/utils/read-only-form-elements'
+import {
+  generateConfirmationFormElementName,
+  injectDynamicElements,
+} from '../src/services/dynamic-elements'
 
 function textElement(
   id: string,
@@ -218,6 +222,37 @@ describe('expandEditableFormElementIds()', () => {
     expect(
       expandEditableFormElementIds(['nested-info-page'], formElements),
     ).toEqual(['nested-info-page', 'info-page-text'])
+  })
+
+  test('includes injected confirmation fields inside a listed form', () => {
+    const contactEmail = {
+      id: 'emergency-contact-email',
+      name: 'contactEmail',
+      label: 'Contact email',
+      type: 'email',
+      conditionallyShow: false,
+      isDataLookup: false,
+      isElementLookup: false,
+      requiresConfirmation: true,
+    } as FormTypes.EmailElement
+    const formElements = injectDynamicElements([
+      {
+        id: 'nested-form',
+        name: 'nestedForm',
+        type: 'form',
+        formId: 2,
+        conditionallyShow: false,
+        elements: [contactEmail],
+      },
+    ] as FormTypes.FormElement[])
+
+    expect(expandEditableFormElementIds(['nested-form'], formElements)).toEqual(
+      [
+        'nested-form',
+        'emergency-contact-email',
+        generateConfirmationFormElementName(contactEmail),
+      ],
+    )
   })
 
   test('does not include descendants of an unlisted form', () => {
