@@ -73,6 +73,7 @@ import { useUserProfileForInjectablesOutsideContext } from './hooks/useUserProfi
 import { ValidationIconConfigurationContext } from './hooks/useValidationIconConfiguration'
 import { Clickable } from './components/Clickable'
 import { EditableFormElementIdsContext } from './hooks/useEditableFormElementIds'
+import { expandEditableFormElementIds } from './utils/read-only-form-elements'
 import { useRegisterFormSubmissionAttempt } from './hooks/useFormSubmissionAttempt'
 import {
   useRegisterFormIsDirty,
@@ -466,6 +467,15 @@ function OneBlinkFormBase({
     return injectDynamicElements(pages) as FormTypes.PageElement[]
   }, [pages])
 
+  const expandedEditableFormElementIds = React.useMemo(
+    () =>
+      expandEditableFormElementIds(
+        editableFormElementIds,
+        pagesWithDynamicElements,
+      ),
+    [editableFormElementIds, pagesWithDynamicElements],
+  )
+
   // #endregion
   //
   //
@@ -641,7 +651,7 @@ function OneBlinkFormBase({
     FormElementsValidation | undefined
   >(
     () =>
-      !isReadOnly || editableFormElementIds !== undefined
+      !isReadOnly || expandedEditableFormElementIds !== undefined
         ? validate(
             submission,
             formElementsConditionallyShown,
@@ -649,7 +659,7 @@ function OneBlinkFormBase({
             recaptchaType,
             isOffline,
             audience,
-            editableFormElementIds,
+            expandedEditableFormElementIds,
           )
         : undefined,
     [
@@ -661,7 +671,7 @@ function OneBlinkFormBase({
       recaptchaType,
       isOffline,
       audience,
-      editableFormElementIds,
+      expandedEditableFormElementIds,
     ],
   )
 
@@ -1637,7 +1647,9 @@ function OneBlinkFormBase({
                                             value={isReadOnly}
                                           >
                                             <EditableFormElementIdsContext.Provider
-                                              value={editableFormElementIds}
+                                              value={
+                                                expandedEditableFormElementIds
+                                              }
                                             >
                                               <FormAudienceContext.Provider
                                                 value={audience}

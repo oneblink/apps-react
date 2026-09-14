@@ -1,4 +1,5 @@
 import { FormTypes } from '@oneblink/types'
+import { getGeneratedByFormElementId } from '../services/dynamic-elements'
 
 type FormElementWithEditability =
   | FormTypes.FormElement
@@ -41,6 +42,69 @@ export function getNestedEditableFormElementIds(
   }
   addIds(formElement.elements || [])
   return [...nestedIds]
+}
+
+/**
+ * Expands a whitelist to cover the elements a lookup has injected into the
+ * form. An element naming an editable id in `injectedByElementId` becomes
+ * editable, as do its descendants, so an approver can correct answers that only
+ * appeared after a lookup they are allowed to re-run. A dynamic element is
+ * included whenever the element it was generated from is editable, since it
+ * sits beside that element rather than within it.
+ *
+ * Only applies to the root whitelist; ids inside a nested form are scoped by
+ * `getNestedEditableFormElementIds`. Returns `undefined` when no whitelist was
+ * provided, matching the “everything is editable” convention used by the rest
+ * of these helpers.
+ */
+export function expandEditableFormElementIds(
+  editableFormElementIds: string[] | undefined,
+  formElements: FormTypes.FormElement[],
+): string[] | undefined {
+  if (editableFormElementIds === undefined) {
+    return undefined
+  }
+
+  const expanded = new Set(editableFormElementIds)
+
+  const addInjected = (
+    elements: FormTypes.FormElement[],
+    isWithinInjectedElement = false,
+  ) => {
+    for (const element of elements) {
+      const injectedByElementId = getInjectedByElementId(element)
+      const generatedByFormElementId = getGeneratedByFormElementId(element)
+      const isInjected =
+        isWithinInjectedElement ||
+        (injectedByElementId !== undefined && expanded.has(injectedByElementId))
+
+      if (
+        isInjected ||
+        (generatedByFormElementId !== undefined &&
+          expanded.has(generatedByFormElementId))
+      ) {
+        expanded.add(element.id)
+      }
+
+      if ('elements' in element && Array.isArray(element.elements)) {
+        addInjected(element.elements, isInjected)
+      }
+    }
+  }
+  addInjected(formElements)
+
+  return [...expanded]
+}
+
+function getInjectedByElementId(
+  element: FormTypes.FormElement,
+): string | undefined {
+  if (
+    'injectedByElementId' in element &&
+    typeof element.injectedByElementId === 'string'
+  ) {
+    return element.injectedByElementId
+  }
 }
 
 function checkHasEditableFormElement(
