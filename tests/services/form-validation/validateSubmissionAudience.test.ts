@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { FormTypes } from '@oneblink/types'
 import validateSubmission from '../../../src/services/form-validation/validateSubmission'
-import { expandEditableFormElementIds } from '../../../src/utils/read-only-form-elements'
 
 function textElement(
   id: string,
@@ -95,6 +94,29 @@ describe('validateSubmission audience', () => {
     ).toBeUndefined()
   })
 
+  test('skips a hidden submitter field inside an approver-editable nested form', () => {
+    const nestedForm = {
+      id: 'nested-form',
+      name: 'nestedForm',
+      label: 'Nested form',
+      type: 'form',
+      conditionallyShow: false,
+      formId: 1,
+      elements: [
+        textElement('approver-field', {
+          isHidden: true,
+          hiddenFrom: ['SUBMITTER'],
+        }),
+      ],
+    } as FormTypes.FormFormElement
+
+    expect(
+      validate([nestedForm], { nestedForm: {} }, 'SUBMITTER', undefined, [
+        'nested-form',
+      ]),
+    ).toBeUndefined()
+  })
+
   test('validates a hidden submitter element that is not approver-editable', () => {
     const element = textElement('hidden-field', {
       isHidden: true,
@@ -127,7 +149,7 @@ describe('validateSubmission audience', () => {
     })
   })
 
-  test('validates an editable element nested in a locked form', () => {
+  test('does not apply a root id whitelist inside an unlisted nested form', () => {
     const nestedForm = {
       id: 'nested-form',
       name: 'nestedForm',
@@ -135,21 +157,12 @@ describe('validateSubmission audience', () => {
       type: 'form',
       conditionallyShow: false,
       formId: 1,
-      elements: [textElement('nestedLocked'), textElement('nestedEditable')],
+      elements: [textElement('collidingId')],
     } as FormTypes.FormFormElement
 
     expect(
-      validate([nestedForm], { nestedForm: {} }, 'APPROVER', [
-        'nestedEditable',
-      ]),
-    ).toEqual({
-      nestedForm: {
-        type: 'formElements',
-        formElements: {
-          nestedEditable: 'Please enter a value',
-        },
-      },
-    })
+      validate([nestedForm], { nestedForm: {} }, 'APPROVER', ['collidingId']),
+    ).toBeUndefined()
   })
 
   test('validates every child when the nested form is editable', () => {
@@ -168,7 +181,7 @@ describe('validateSubmission audience', () => {
         [nestedForm],
         { nestedForm: {} },
         'APPROVER',
-        expandEditableFormElementIds(['nested-form'], [nestedForm]),
+        ['nested-form'],
       ),
     ).toEqual({
       nestedForm: {

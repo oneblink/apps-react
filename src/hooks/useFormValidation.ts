@@ -67,8 +67,8 @@ export default function useFormValidation(
     return stripFormElementsWithoutName(pages, false)
   }, [pages])
   const approverEditableFormElementIds = React.useMemo(
-    () => getApproverEditableFormElementIds(approvalSteps, pages),
-    [approvalSteps, pages],
+    () => getApproverEditableFormElementIds(approvalSteps),
+    [approvalSteps],
   )
 
   const handleValidate = React.useCallback(

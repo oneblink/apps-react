@@ -12,42 +12,35 @@ export function checkIsFormElementIdEditable(
 }
 
 /**
- * Selecting a `form` or `infoPage` element makes every descendant editable.
- * Returns `undefined` when no whitelist was provided, matching the “everything
- * is editable” convention used by the rest of these helpers.
+ * Returns the editable ids to provide while rendering or validating a nested
+ * form. Nested forms get their own whitelist so an id reused by the parent form
+ * cannot unlock a nested element (or vice versa).
+ *
+ * Selecting the nested form itself makes all of its descendants editable.
  */
-export function expandEditableFormElementIds(
+export function getNestedEditableFormElementIds(
+  formElement: FormTypes.FormFormElement,
   editableFormElementIds: string[] | undefined,
-  formElements: FormTypes.FormElement[],
 ): string[] | undefined {
   if (editableFormElementIds === undefined) {
     return undefined
   }
 
-  const expanded = new Set(editableFormElementIds)
+  if (!editableFormElementIds.includes(formElement.id)) {
+    return []
+  }
 
-  const addDescendants = (
-    elements: FormTypes.FormElement[],
-    isWithinEditableForm = false,
-  ) => {
+  const nestedIds = new Set<string>()
+  const addIds = (elements: FormTypes.FormElement[]) => {
     for (const element of elements) {
-      if (isWithinEditableForm) {
-        expanded.add(element.id)
-      }
-
+      nestedIds.add(element.id)
       if ('elements' in element && Array.isArray(element.elements)) {
-        addDescendants(
-          element.elements,
-          isWithinEditableForm ||
-            ((element.type === 'form' || element.type === 'infoPage') &&
-              expanded.has(element.id)),
-        )
+        addIds(element.elements)
       }
     }
   }
-  addDescendants(formElements)
-
-  return [...expanded]
+  addIds(formElement.elements || [])
+  return [...nestedIds]
 }
 
 function checkHasEditableFormElement(

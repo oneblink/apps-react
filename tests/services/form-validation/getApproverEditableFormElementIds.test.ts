@@ -1,4 +1,4 @@
-import { ApprovalTypes, FormTypes } from '@oneblink/types'
+import { ApprovalTypes } from '@oneblink/types'
 import { describe, expect, test } from 'vitest'
 import getApproverEditableFormElementIds from '../../../src/services/form-validation/getApproverEditableFormElementIds'
 
@@ -38,7 +38,7 @@ describe('getApproverEditableFormElementIds()', () => {
     expect(getApproverEditableFormElementIds(undefined)).toEqual([])
   })
 
-  test('includes every descendant when a form element is editable', () => {
+  test('keeps a configured nested form id on the root list', () => {
     const approvalSteps = [
       {
         type: 'STANDARD',
@@ -47,47 +47,8 @@ describe('getApproverEditableFormElementIds()', () => {
         editableFormElementIds: ['nested-form'],
       },
     ] satisfies ApprovalTypes.FormApprovalFlowStep[]
-    const formElements = [
-      {
-        id: 'nested-form',
-        name: 'nestedForm',
-        type: 'form',
-        formId: 2,
-        conditionallyShow: false,
-        elements: [
-          {
-            id: 'nested-text',
-            name: 'nestedText',
-            label: 'Nested text',
-            type: 'text',
-            conditionallyShow: false,
-            isDataLookup: false,
-            isElementLookup: false,
-          },
-          {
-            id: 'nested-set',
-            name: 'nestedSet',
-            label: 'Nested set',
-            type: 'repeatableSet',
-            conditionallyShow: false,
-            elements: [
-              {
-                id: 'set-text',
-                name: 'setText',
-                label: 'Set text',
-                type: 'text',
-                conditionallyShow: false,
-                isDataLookup: false,
-                isElementLookup: false,
-              },
-            ],
-          },
-        ],
-      },
-    ] as FormTypes.FormElement[]
-
-    expect(
-      getApproverEditableFormElementIds(approvalSteps, formElements),
-    ).toEqual(['nested-form', 'nested-text', 'nested-set', 'set-text'])
+    expect(getApproverEditableFormElementIds(approvalSteps)).toEqual([
+      'nested-form',
+    ])
   })
 })
