@@ -12,9 +12,9 @@ export function checkIsFormElementIdEditable(
 }
 
 /**
- * Selecting a `form` element makes every descendant editable. Returns
- * `undefined` when no whitelist was provided, matching the “everything is
- * editable” convention used by the rest of these helpers.
+ * Selecting a `form` or `infoPage` element makes every descendant editable.
+ * Returns `undefined` when no whitelist was provided, matching the “everything
+ * is editable” convention used by the rest of these helpers.
  */
 export function expandEditableFormElementIds(
   editableFormElementIds: string[] | undefined,
@@ -39,7 +39,8 @@ export function expandEditableFormElementIds(
         addDescendants(
           element.elements,
           isWithinEditableForm ||
-            (element.type === 'form' && expanded.has(element.id)),
+            ((element.type === 'form' || element.type === 'infoPage') &&
+              expanded.has(element.id)),
         )
       }
     }

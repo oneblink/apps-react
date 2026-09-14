@@ -203,6 +203,23 @@ describe('expandEditableFormElementIds()', () => {
     )
   })
 
+  test('includes every descendant when an info page is listed', () => {
+    const formElements = [
+      {
+        id: 'nested-info-page',
+        name: 'nestedInfoPage',
+        type: 'infoPage',
+        formId: 3,
+        conditionallyShow: false,
+        elements: [textElement('info-page-text')],
+      },
+    ] as FormTypes.FormElement[]
+
+    expect(
+      expandEditableFormElementIds(['nested-info-page'], formElements),
+    ).toEqual(['nested-info-page', 'info-page-text'])
+  })
+
   test('does not include descendants of an unlisted form', () => {
     const formElements = [
       {
