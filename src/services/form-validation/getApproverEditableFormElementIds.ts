@@ -1,7 +1,9 @@
-import { ApprovalTypes } from '@oneblink/types'
+import { ApprovalTypes, FormTypes } from '@oneblink/types'
+import { expandEditableFormElementIds } from '../../utils/read-only-form-elements'
 
 export default function getApproverEditableFormElementIds(
   approvalSteps: ApprovalTypes.FormApprovalFlowStep[] | undefined,
+  formElements: FormTypes.FormElement[] = [],
 ): string[] {
   const editableFormElementIds = new Set<string>()
 
@@ -14,5 +16,8 @@ export default function getApproverEditableFormElementIds(
     }
   }
 
-  return [...editableFormElementIds]
+  return (
+    expandEditableFormElementIds([...editableFormElementIds], formElements) ??
+    []
+  )
 }

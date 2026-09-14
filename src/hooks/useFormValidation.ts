@@ -67,8 +67,8 @@ export default function useFormValidation(
     return stripFormElementsWithoutName(pages, false)
   }, [pages])
   const approverEditableFormElementIds = React.useMemo(
-    () => getApproverEditableFormElementIds(approvalSteps),
-    [approvalSteps],
+    () => getApproverEditableFormElementIds(approvalSteps, pages),
+    [approvalSteps, pages],
   )
 
   const handleValidate = React.useCallback(
@@ -79,7 +79,7 @@ export default function useFormValidation(
       captchaType: CaptchaType,
       isOffline: boolean,
       audience: FormTypes.FormElementHiddenFromAudience,
-      editableFormElementIds?: string[],
+      editableFormElementIds: string[] | undefined,
     ) => {
       return validateSubmission({
         elements: formElementsWithName,

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { FormTypes } from '@oneblink/types'
 import validateSubmission from '../../../src/services/form-validation/validateSubmission'
+import { expandEditableFormElementIds } from '../../../src/utils/read-only-form-elements'
 
 function textElement(
   id: string,
@@ -146,6 +147,35 @@ describe('validateSubmission audience', () => {
         type: 'formElements',
         formElements: {
           nestedEditable: 'Please enter a value',
+        },
+      },
+    })
+  })
+
+  test('validates every child when the nested form is editable', () => {
+    const nestedForm = {
+      id: 'nested-form',
+      name: 'nestedForm',
+      label: 'Nested form',
+      type: 'form',
+      conditionallyShow: false,
+      formId: 1,
+      elements: [textElement('firstChild'), textElement('secondChild')],
+    } as FormTypes.FormFormElement
+
+    expect(
+      validate(
+        [nestedForm],
+        { nestedForm: {} },
+        'APPROVER',
+        expandEditableFormElementIds(['nested-form'], [nestedForm]),
+      ),
+    ).toEqual({
+      nestedForm: {
+        type: 'formElements',
+        formElements: {
+          firstChild: 'Please enter a value',
+          secondChild: 'Please enter a value',
         },
       },
     })

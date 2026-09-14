@@ -4,6 +4,7 @@ import {
   checkAreLookupsDisallowed,
   checkIsFormElementEditable,
   checkIsFormElementReadOnly,
+  expandEditableFormElementIds,
 } from '../src/utils/read-only-form-elements'
 
 function textElement(
@@ -41,13 +42,10 @@ describe('checkIsFormElementReadOnly()', () => {
 
   test('unlocks an id in the whitelist, including over element readOnly and form read-only', () => {
     expect(
-      checkIsFormElementReadOnly(
-        textElement('editable', { readOnly: true }),
-        {
-          isFormReadOnly: true,
-          editableFormElementIds: ['editable'],
-        },
-      ),
+      checkIsFormElementReadOnly(textElement('editable', { readOnly: true }), {
+        isFormReadOnly: true,
+        editableFormElementIds: ['editable'],
+      }),
     ).toBe(false)
   })
 
@@ -113,9 +111,7 @@ describe('checkAreLookupsDisallowed()', () => {
 describe('checkIsFormElementEditable()', () => {
   test('treats every element as editable when no whitelist is provided', () => {
     expect(
-      checkIsFormElementEditable(
-        textElement('locked', { readOnly: true }),
-      ),
+      checkIsFormElementEditable(textElement('locked', { readOnly: true })),
     ).toBe(true)
   })
 
@@ -139,9 +135,9 @@ describe('checkIsFormElementEditable()', () => {
       elements: [textElement('nested-locked'), textElement('nested-editable')],
     } as FormTypes.FormFormElement
 
-    expect(
-      checkIsFormElementEditable(nestedForm, ['nested-editable']),
-    ).toBe(true)
+    expect(checkIsFormElementEditable(nestedForm, ['nested-editable'])).toBe(
+      true,
+    )
   })
 
   test('is false for a nested form with no listed descendants', () => {
@@ -155,9 +151,9 @@ describe('checkIsFormElementEditable()', () => {
       elements: [textElement('nested-locked')],
     } as FormTypes.FormFormElement
 
-    expect(
-      checkIsFormElementEditable(nestedForm, ['another-element']),
-    ).toBe(false)
+    expect(checkIsFormElementEditable(nestedForm, ['another-element'])).toBe(
+      false,
+    )
   })
 
   test('treats info pages the same as nested forms', () => {
@@ -171,8 +167,56 @@ describe('checkIsFormElementEditable()', () => {
       elements: [textElement('nested-editable')],
     } as FormTypes.FormFormElement
 
+    expect(checkIsFormElementEditable(infoPage, ['nested-editable'])).toBe(true)
+  })
+})
+
+describe('expandEditableFormElementIds()', () => {
+  test('returns undefined when no whitelist is provided', () => {
+    expect(expandEditableFormElementIds(undefined, [])).toBeUndefined()
+  })
+
+  test('includes every descendant when a form element is listed', () => {
+    const formElements = [
+      {
+        id: 'nested-form',
+        name: 'nestedForm',
+        type: 'form',
+        formId: 2,
+        conditionallyShow: false,
+        elements: [
+          textElement('nested-text'),
+          {
+            id: 'nested-set',
+            name: 'nestedSet',
+            label: 'Nested set',
+            type: 'repeatableSet',
+            conditionallyShow: false,
+            elements: [textElement('set-text')],
+          },
+        ],
+      },
+    ] as FormTypes.FormElement[]
+
+    expect(expandEditableFormElementIds(['nested-form'], formElements)).toEqual(
+      ['nested-form', 'nested-text', 'nested-set', 'set-text'],
+    )
+  })
+
+  test('does not include descendants of an unlisted form', () => {
+    const formElements = [
+      {
+        id: 'nested-form',
+        name: 'nestedForm',
+        type: 'form',
+        formId: 2,
+        conditionallyShow: false,
+        elements: [textElement('nested-text')],
+      },
+    ] as FormTypes.FormElement[]
+
     expect(
-      checkIsFormElementEditable(infoPage, ['nested-editable']),
-    ).toBe(true)
+      expandEditableFormElementIds(['another-element'], formElements),
+    ).toEqual(['another-element'])
   })
 })

@@ -25,6 +25,7 @@ import Modal from './components/renderer/Modal'
 import cleanFormSubmissionModel from './services/cleanFormSubmissionModel'
 import PageFormElements from './components/renderer/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
+import { expandEditableFormElementIds } from './utils/read-only-form-elements'
 import useConditionalLogic from './hooks/useConditionalLogic'
 import usePages from './hooks/usePages'
 import useLookups from './hooks/useLookups'
@@ -630,6 +631,10 @@ function OneBlinkFormBase({
     React.useRef<HTMLButtonElement | null>(null)
   const [isShowingValidationErrorsCard, setIsShowingValidationErrorsCard] =
     React.useState(false)
+  const expandedEditableFormElementIds = React.useMemo(
+    () => expandEditableFormElementIds(editableFormElementIds, pages),
+    [editableFormElementIds, pages],
+  )
   const { validate } = useFormValidation(pages, definition.approvalSteps)
 
   const recaptchaType = React.useMemo(
@@ -641,7 +646,7 @@ function OneBlinkFormBase({
     FormElementsValidation | undefined
   >(
     () =>
-      !isReadOnly || editableFormElementIds !== undefined
+      !isReadOnly || expandedEditableFormElementIds !== undefined
         ? validate(
             submission,
             formElementsConditionallyShown,
@@ -649,7 +654,7 @@ function OneBlinkFormBase({
             recaptchaType,
             isOffline,
             audience,
-            editableFormElementIds,
+            expandedEditableFormElementIds,
           )
         : undefined,
     [
@@ -661,7 +666,7 @@ function OneBlinkFormBase({
       recaptchaType,
       isOffline,
       audience,
-      editableFormElementIds,
+      expandedEditableFormElementIds,
     ],
   )
 
@@ -1248,17 +1253,13 @@ function OneBlinkFormBase({
       if (hostAttemptPhase.status === 'prompt-offline') {
         setHostAttemptPhase({
           status: 'preparing',
-          continueWithAttachments:
-            hostAttemptPhase.continueWithAttachments,
+          continueWithAttachments: hostAttemptPhase.continueWithAttachments,
         })
       } else {
         handleSubmit(e, false)
       }
     },
-    [
-      handleSubmit,
-      hostAttemptPhase,
-    ],
+    [handleSubmit, hostAttemptPhase],
   )
 
   // #endregion
@@ -1641,7 +1642,9 @@ function OneBlinkFormBase({
                                             value={isReadOnly}
                                           >
                                             <EditableFormElementIdsContext.Provider
-                                              value={editableFormElementIds}
+                                              value={
+                                                expandedEditableFormElementIds
+                                              }
                                             >
                                               <FormAudienceContext.Provider
                                                 value={audience}

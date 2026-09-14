@@ -53,8 +53,9 @@ function OneBlinkReadOnlyForm(props: OneBlinkReadOnlyFormProps) {
  * Component for rendering a OneBlink Form in read-only mode. By default, all
  * inputs are read-only. Pass `editableFormElementIds` with controlled
  * submission props (`definition`, `submission`, `setFormSubmission`,
- * `executedLookups`) to keep selected inputs editable. This component does
- * **not** render the submit, cancel or save draft buttons.
+ * `executedLookups`) to keep selected inputs editable. Selecting a `form`
+ * element makes all of its descendants editable. This component does **not**
+ * render the submit, cancel or save draft buttons.
  *
  * It is also recommended to import the `css` from this library as well.
  *

@@ -11,6 +11,44 @@ export function checkIsFormElementIdEditable(
   return editableFormElementIds?.includes(element.id) === true
 }
 
+/**
+ * Selecting a `form` element makes every descendant editable. Returns
+ * `undefined` when no whitelist was provided, matching the “everything is
+ * editable” convention used by the rest of these helpers.
+ */
+export function expandEditableFormElementIds(
+  editableFormElementIds: string[] | undefined,
+  formElements: FormTypes.FormElement[],
+): string[] | undefined {
+  if (editableFormElementIds === undefined) {
+    return undefined
+  }
+
+  const expanded = new Set(editableFormElementIds)
+
+  const addDescendants = (
+    elements: FormTypes.FormElement[],
+    isWithinEditableForm = false,
+  ) => {
+    for (const element of elements) {
+      if (isWithinEditableForm) {
+        expanded.add(element.id)
+      }
+
+      if ('elements' in element && Array.isArray(element.elements)) {
+        addDescendants(
+          element.elements,
+          isWithinEditableForm ||
+            (element.type === 'form' && expanded.has(element.id)),
+        )
+      }
+    }
+  }
+  addDescendants(formElements)
+
+  return [...expanded]
+}
+
 function checkHasEditableFormElement(
   elements: FormTypes.FormElement[],
   editableFormElementIds?: string[],
@@ -20,10 +58,7 @@ function checkHasEditableFormElement(
       checkIsFormElementIdEditable(element, editableFormElementIds) ||
       ('elements' in element &&
         Array.isArray(element.elements) &&
-        checkHasEditableFormElement(
-          element.elements,
-          editableFormElementIds,
-        )),
+        checkHasEditableFormElement(element.elements, editableFormElementIds)),
   )
 }
 
