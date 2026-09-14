@@ -4,6 +4,7 @@ import {
   checkAreLookupsDisallowed,
   checkIsFormElementEditable,
   checkIsFormElementReadOnly,
+  expandEditableFormElementIds,
   getNestedEditableFormElementIds,
 } from '../src/utils/read-only-form-elements'
 import {
@@ -246,5 +247,107 @@ describe('getNestedEditableFormElementIds()', () => {
     expect(
       getNestedEditableFormElementIds(nestedForm, ['colliding-id']),
     ).toEqual([])
+  })
+})
+
+describe('expandEditableFormElementIds()', () => {
+  test('includes elements injected by a listed lookup', () => {
+    const formElements = [
+      textElement('lookup-source'),
+      {
+        ...textElement('lookup-returned'),
+        injectedByElementId: 'lookup-source',
+      },
+    ] as FormTypes.FormElement[]
+
+    expect(
+      expandEditableFormElementIds(['lookup-source'], formElements),
+    ).toEqual(['lookup-source', 'lookup-returned'])
+  })
+
+  test('includes descendants of a page injected by a listed lookup', () => {
+    const formElements = [
+      textElement('lookup-source'),
+      {
+        id: 'injected-page',
+        type: 'page',
+        label: 'Injected page',
+        conditionallyShow: false,
+        requiresAllConditionallyShowPredicates: false,
+        injectedByElementId: 'lookup-source',
+        elements: [textElement('injected-text')],
+      },
+    ] as FormTypes.FormElement[]
+
+    expect(
+      expandEditableFormElementIds(['lookup-source'], formElements),
+    ).toEqual(['lookup-source', 'injected-page', 'injected-text'])
+  })
+
+  test('does not include elements injected by an unlisted lookup', () => {
+    const formElements = [
+      textElement('lookup-source'),
+      {
+        ...textElement('lookup-returned'),
+        injectedByElementId: 'lookup-source',
+      },
+    ] as FormTypes.FormElement[]
+
+    expect(
+      expandEditableFormElementIds(['another-element'], formElements),
+    ).toEqual(['another-element'])
+  })
+
+  test('includes the confirmation sibling of an injected email', () => {
+    const injectedEmail = {
+      id: 'lookup-returned',
+      name: 'returnedEmail',
+      label: 'Returned email',
+      type: 'email',
+      conditionallyShow: false,
+      isDataLookup: false,
+      isElementLookup: false,
+      requiresConfirmation: true,
+      injectedByElementId: 'lookup-source',
+    } as FormTypes.EmailElement
+    const formElements = injectDynamicElements([
+      textElement('lookup-source'),
+      injectedEmail,
+    ] as FormTypes.FormElement[])
+    const confirmationElement = formElements.find(
+      (element) =>
+        element.id === generateConfirmationFormElementName(injectedEmail),
+    )
+    if (confirmationElement && 'injectedByElementId' in confirmationElement) {
+      delete confirmationElement.injectedByElementId
+    }
+
+    expect(
+      expandEditableFormElementIds(['lookup-source'], formElements),
+    ).toEqual([
+      'lookup-source',
+      'lookup-returned',
+      generateConfirmationFormElementName(injectedEmail),
+    ])
+  })
+
+  test('includes the confirmation field of a listed email', () => {
+    const listedEmail = {
+      id: 'listed-email',
+      name: 'listedEmail',
+      label: 'Listed email',
+      type: 'email',
+      conditionallyShow: false,
+      isDataLookup: false,
+      isElementLookup: false,
+      requiresConfirmation: true,
+    } as FormTypes.EmailElement
+
+    expect(
+      expandEditableFormElementIds(
+        ['listed-email'],
+        injectDynamicElements([listedEmail]),
+      ),
+    ).toEqual(['listed-email', generateConfirmationFormElementName(listedEmail)])
   })
 })
