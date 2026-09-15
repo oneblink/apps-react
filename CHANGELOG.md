@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0] - 2026-09-15
+
 ### Added
 
 - optional `asSubmitted` and `versionId` options to `submissionService.getSubmissionData()`
@@ -24,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `<OneBlinkReadOnlyForm />` accepts `editableFormElementIds` with controlled submission props (`definition`, `submission`, `setFormSubmission`, `executedLookups`) to keep selected elements editable while the rest of the form remains read-only
 - unsaved changes are now prompted about when navigating away from a form rendered with `editableFormElementIds`
 - `handleChange` to write calculation and summary values through the default path (only `section` remains a special case). On a disabled form, writes with `isDerivedChange` still update the model so those elements can recompute.
+
+### Dependencies
+
+- update @oneblink/storage to [9.0.0-beta.4](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [8.0.0-beta.2](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [12.0.0] - 2026-08-26
 
