@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- hide calendar booking and payment columns in form store if no corresponding events exist
+
 ## [13.0.0] - 2026-09-15
 
 ### Added

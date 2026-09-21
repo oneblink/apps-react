@@ -1,4 +1,5 @@
 import { TableState, VisibilityState } from '@tanstack/react-table'
+import { FormTypes } from '@oneblink/types'
 
 const defaultHiddenColumns = [
   {
@@ -13,6 +14,28 @@ const defaultHiddenColumns = [
     version: 'V2',
     hiddenColumns: ['COMPLETED_AT'],
   },
+  {
+    version: 'V3',
+    hiddenColumns: (form: FormTypes.Form) => {
+      const columns = []
+      if (!form.schedulingEvents?.length) {
+        columns.push(
+          'CALENDAR_EVENT_TITLE',
+          'CALENDAR_EVENT_CALENDAR_NAME',
+          'CALENDAR_EVENT_DATE_TIME',
+          'CALENDAR_EVENT_CANCELLED_REASON',
+        )
+      }
+      if (!form.paymentEvents?.length) {
+        columns.push(
+          'PAYMENT_STATUS',
+          'PAYMENT_PROVIDER_TRANSACTION_ID',
+          'PAYMENT_PROVIDER_RECEIPT_NUMBER',
+        )
+      }
+      return columns
+    },
+  },
 ]
 
 export const latestStateVersion =
@@ -25,9 +48,13 @@ export type FormTableState = Partial<TableState> & {
   formId: number
 }
 
-export const getVersionedFormTableState = (
-  initialState: FormTableState,
-): FormTableState => {
+export const getVersionedFormTableState = ({
+  form,
+  initialState,
+}: {
+  form: FormTypes.Form
+  initialState: FormTableState
+}): FormTableState => {
   const state = { ...initialState }
 
   // carry over deprecated hiddenColumns to columnVisibility
@@ -44,7 +71,12 @@ export const getVersionedFormTableState = (
   if (!state.columnVisibility) {
     state.columnVisibility = defaultHiddenColumns.reduce<VisibilityState>(
       (memo, defaultHiddenColumn) => {
-        defaultHiddenColumn.hiddenColumns.forEach((column) => {
+        const hiddenColumns =
+          typeof defaultHiddenColumn.hiddenColumns === 'function'
+            ? defaultHiddenColumn.hiddenColumns(form)
+            : defaultHiddenColumn.hiddenColumns
+
+        hiddenColumns.forEach((column) => {
           memo[column] = false
         })
         return memo
@@ -62,8 +94,13 @@ export const getVersionedFormTableState = (
         continue
       }
 
+      const hiddenColumns =
+        typeof defaultHiddenColumn.hiddenColumns === 'function'
+          ? defaultHiddenColumn.hiddenColumns(form)
+          : defaultHiddenColumn.hiddenColumns
+
       if (foundVersion) {
-        for (const hiddenColumn of defaultHiddenColumn.hiddenColumns) {
+        for (const hiddenColumn of hiddenColumns) {
           columnsSet.add(hiddenColumn)
         }
       }
