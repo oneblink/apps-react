@@ -822,13 +822,12 @@ export default function useFormStoreTable({
 
   const [initialState] = React.useState<FormTableState | undefined>(() => {
     const text = localStorage.getItem(localStorageKey(form.id))
-    return getVersionedFormTableState(
-      text
-        ? JSON.parse(text)
-        : {
-            formId: form.id,
-          },
-    )
+    const initialState = text
+      ? JSON.parse(text)
+      : {
+          formId: form.id,
+        }
+    return getVersionedFormTableState({ form, initialState })
   })
 
   const transformedSorting = React.useMemo(() => {
