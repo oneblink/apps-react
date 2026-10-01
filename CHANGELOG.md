@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.1.0] - 2026-10-01
+
 ### Changed
 
 - hide calendar booking and payment columns in form store if no corresponding events exist
+
+### Dependencies
+
+- update query-string to [9.5.1](https://github.com/sindresorhus/query-string/releases/tag/v9.5.1) (from [8.2.0](https://github.com/sindresorhus/query-string/releases/tag/v8.2.0))
+
+- update uuid to [14.0.2](https://github.com/uuidjs/uuid/releases/tag/v14.0.2) (from [9.0.1](https://github.com/uuidjs/uuid/blob/master/CHANGELOG.md))
 
 ## [13.0.0] - 2026-09-15
 
