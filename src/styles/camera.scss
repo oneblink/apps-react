@@ -6,6 +6,34 @@
   gap: $size-8;
 }
 
+// The image is the only in-flow child of .ob-figure. Without it, the
+// absolutely positioned status and actions collapse the figure and overlap
+// the Clear and Download buttons.
+.ob-camera__hidden-preview {
+  display: flex;
+  align-items: center;
+  gap: $size-8;
+  text-align: left;
+
+  .ob-figure__status,
+  .ob-image-file__actions {
+    position: static;
+    flex: 0 0 auto;
+  }
+
+  .ob-figure__status {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.ob-camera__file-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+
 .ob-camera__input-hidden {
   display: none;
 }

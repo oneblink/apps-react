@@ -329,6 +329,11 @@ function FormElementCamera({
                   onCrop={setIsCropping}
                   canDownload={canDownload}
                   progress={progress}
+                  fileName={
+                    value && typeof value === 'object'
+                      ? value.fileName
+                      : undefined
+                  }
                 />
                 <ProgressBar isShowing={isUploading} progress={progress} />
               </figure>
@@ -462,6 +467,7 @@ const DisplayImage = React.memo(function DisplayImage({
   onAnnotate,
   onCrop,
   progress,
+  fileName,
 }: Omit<ReturnType<typeof useAttachment>, 'contentType'> & {
   element: FormTypes.CameraElement
   readOnly: boolean
@@ -469,6 +475,7 @@ const DisplayImage = React.memo(function DisplayImage({
   onAnnotate: () => void
   onCrop: () => void
   progress: number | undefined
+  fileName: string | undefined
 }) {
   if (uploadErrorMessage) {
     return (
@@ -500,47 +507,64 @@ const DisplayImage = React.memo(function DisplayImage({
   }
 
   if (attachmentUrl) {
+    const status = (
+      <span className="ob-figure__status">
+        <AttachmentStatus
+          isLoadingAttachmentUrl={isLoadingAttachmentUrl}
+          loadAttachmentUrlError={loadAttachmentUrlError}
+          isUploading={isUploading}
+          attachmentUrl={attachmentUrl}
+          progress={progress}
+        />
+      </span>
+    )
+    const actions = (
+      <div className="ob-image-file__actions">
+        <button
+          type="button"
+          className="button is-primary ob-camera__crop-button cypress-crop-button"
+          onClick={onCrop}
+          disabled={readOnly}
+        >
+          <span className="icon">
+            <MaterialIcon>crop</MaterialIcon>
+          </span>
+        </button>
+        <button
+          type="button"
+          className="button is-primary ob-camera__annotate-button cypress-annotate-button"
+          onClick={onAnnotate}
+          disabled={readOnly}
+        >
+          <span className="icon">
+            <MaterialIcon>brush</MaterialIcon>
+          </span>
+        </button>
+      </div>
+    )
+
+    if (element.hideImagePreview) {
+      return (
+        <div className="ob-camera__hidden-preview">
+          <span className="ob-camera__file-name cypress-camera-file-name">
+            {fileName}
+          </span>
+          {status}
+          {actions}
+        </div>
+      )
+    }
+
     return (
       <>
-        <span className="ob-figure__status">
-          <AttachmentStatus
-            isLoadingAttachmentUrl={isLoadingAttachmentUrl}
-            loadAttachmentUrlError={loadAttachmentUrlError}
-            isUploading={isUploading}
-            attachmentUrl={attachmentUrl}
-            progress={progress}
-          />
-        </span>
-        {!element.hideImagePreview && (
-          <img
-            src={attachmentUrl}
-            className="cypress-camera-image ob-camera__img"
-            crossOrigin="anonymous"
-            alt={`${element.label}: Attachment`}
-          />
-        )}
-        <div className="ob-image-file__actions">
-          <button
-            type="button"
-            className="button is-primary ob-camera__crop-button cypress-crop-button"
-            onClick={onCrop}
-            disabled={readOnly}
-          >
-            <span className="icon">
-              <MaterialIcon>crop</MaterialIcon>
-            </span>
-          </button>
-          <button
-            type="button"
-            className="button is-primary ob-camera__annotate-button cypress-annotate-button"
-            onClick={onAnnotate}
-            disabled={readOnly}
-          >
-            <span className="icon">
-              <MaterialIcon>brush</MaterialIcon>
-            </span>
-          </button>
-        </div>
+        {status}
+        <img
+          src={attachmentUrl}
+          className="cypress-camera-image ob-camera__img"
+          crossOrigin="anonymous"
+          alt={`${element.label}: Attachment`}
+        />
+        {actions}
       </>
     )
   }
