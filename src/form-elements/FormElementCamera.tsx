@@ -511,12 +511,14 @@ const DisplayImage = React.memo(function DisplayImage({
             progress={progress}
           />
         </span>
-        <img
-          src={attachmentUrl}
-          className="cypress-camera-image ob-camera__img"
-          crossOrigin="anonymous"
-          alt={`${element.label}: Attachment`}
-        />
+        {!element.hideImagePreview && (
+          <img
+            src={attachmentUrl}
+            className="cypress-camera-image ob-camera__img"
+            crossOrigin="anonymous"
+            alt={`${element.label}: Attachment`}
+          />
+        )}
         <div className="ob-image-file__actions">
           <button
             type="button"
