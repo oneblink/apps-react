@@ -98,8 +98,9 @@ function FormElementCompliance({
       minEntries: undefined,
       restrictFileTypes: false,
       storageType: element.storageType,
+      hideImagePreview: element.hideImagePreview,
     }),
-    [element.id, element.name, element.storageType],
+    [element.hideImagePreview, element.id, element.name, element.storageType],
   )
 
   const handleValueChange = React.useCallback<
