@@ -20,6 +20,7 @@ import {
 } from '../components/renderer/FormElementLabelContainer'
 import useValidationClass from '../hooks/useValidationClass'
 import MaterialIcon from '../components/MaterialIcon'
+import { IsSectionExpandedProvider } from '../hooks/useIsSectionExpanded'
 
 function sectionStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
   if (state === 'COLLAPSED') {
@@ -219,15 +220,17 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
           element={element}
           onCollapse={handleClickBottomCollapseButton}
         >
-          <OneBlinkFormElements
-            {...props}
-            readOnly={childrenReadOnly}
-            displayValidationMessages={displayValidationMessage}
-            onLookup={handleLookup}
-            elements={element.elements}
-            onUpdateFormElements={handleUpdateNestedFormElements}
-            sectionState={sectionState}
-          />
+          <IsSectionExpandedProvider isExpanded={!isCollapsed}>
+            <OneBlinkFormElements
+              {...props}
+              readOnly={childrenReadOnly}
+              displayValidationMessages={displayValidationMessage}
+              onLookup={handleLookup}
+              elements={element.elements}
+              onUpdateFormElements={handleUpdateNestedFormElements}
+              sectionState={sectionState}
+            />
+          </IsSectionExpandedProvider>
         </SectionElementsWrapper>
       </Collapse>
     </div>
