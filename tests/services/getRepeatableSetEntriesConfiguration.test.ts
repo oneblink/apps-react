@@ -61,6 +61,16 @@ describe('getRepeatableSetEntriesConfiguration()', () => {
     expect(result).toBe(2)
   })
 
+  test('resolves zero from a radio element (string option value)', () => {
+    const result = getRepeatableSetEntriesConfiguration(
+      { type: 'FORM_ELEMENT', elementId: radioElementId },
+      elements,
+      { min_entries_radio: '0' },
+    )
+
+    expect(result).toBe(0)
+  })
+
   test('returns undefined when mapped element has no numeric value', () => {
     const result = getRepeatableSetEntriesConfiguration(
       { type: 'FORM_ELEMENT', elementId: radioElementId },
@@ -75,5 +85,11 @@ describe('getRepeatableSetEntriesConfiguration()', () => {
     const result = getRepeatableSetEntriesConfiguration(3, elements, {})
 
     expect(result).toBe(3)
+  })
+
+  test('returns static zero when configured as a number', () => {
+    const result = getRepeatableSetEntriesConfiguration(0, elements, {})
+
+    expect(result).toBe(0)
   })
 })

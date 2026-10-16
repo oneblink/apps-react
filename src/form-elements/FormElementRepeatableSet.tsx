@@ -386,7 +386,8 @@ function FormElementRepeatableSet({
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
   const showAddButton = React.useMemo(
-    () => !maxSetEntries || entries.length < maxSetEntries,
+    () =>
+      maxSetEntries === undefined || entries.length < maxSetEntries,
     [maxSetEntries, entries.length],
   )
 
