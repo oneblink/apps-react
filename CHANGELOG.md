@@ -7,11 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed 
+### Fixed
 
 - repeatable set min/max not allowing strings as numbers
-
-## [13.3.0] - 2026-10-16
+- fix for screen readers re-reading old alerts again
 
 ## [13.2.0] - 2026-10-15
 
