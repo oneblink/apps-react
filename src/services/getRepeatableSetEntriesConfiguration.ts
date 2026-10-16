@@ -2,6 +2,24 @@ import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { RepeatableSetElement } from '@oneblink/types/typescript/forms'
 import { submissionService } from '@oneblink/sdk-core'
 
+function coerceMappedElementValueToNumber(
+  value: unknown,
+): number | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined
+  }
+  if (typeof value === 'number' && !isNaN(value)) {
+    return value
+  }
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    if (!isNaN(parsed)) {
+      return parsed
+    }
+  }
+  return undefined
+}
+
 export default function getRepeatableSetEntriesConfiguration(
   setEntries: RepeatableSetElement['minSetEntries'],
   elements: FormTypes.FormElement[],
@@ -13,9 +31,7 @@ export default function getRepeatableSetEntriesConfiguration(
       elements,
       formSubmissionModel,
     )
-    if (value) {
-      return value as number
-    }
+    return coerceMappedElementValueToNumber(value)
   }
   if (typeof setEntries === 'number') {
     return setEntries
