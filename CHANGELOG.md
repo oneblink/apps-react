@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- show `postSubmissionReceipt` HTML on payment receipt page
+
 ### Fixed
 
 - repeatable set min/max not allowing strings as numbers
