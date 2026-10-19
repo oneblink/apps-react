@@ -4,6 +4,7 @@ import { autoSaveService, submissionService, Sentry } from '../apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionState from './useFormSubmissionState'
 import useFormSubmissionDuration from './useFormSubmissionDuration'
+import generateDefaultData from '../services/generate-default-data'
 import { FormElement } from '@oneblink/types/typescript/forms'
 import { SectionState, SetFormSubmission } from '../types/form'
 import {
@@ -318,7 +319,10 @@ export default function useFormSubmissionAutoSaveState({
     if (autoSaveSubmission) {
       setFormSubmission((currentFormSubmission) => ({
         ...currentFormSubmission,
-        submission: autoSaveSubmission,
+        submission: generateDefaultData(
+          currentFormSubmission.definition.elements,
+          autoSaveSubmission,
+        ),
         lastElementUpdated: autoSaveElement ? autoSaveElement : undefined,
         sectionState: autoSaveSectionState || [],
       }))

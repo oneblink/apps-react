@@ -2341,5 +2341,44 @@ describe('generateDefaultData()', () => {
         },
       })
     })
+
+    test('it should set valid pre-fill data with a view at zero', () => {
+      const result = generateDefaultData([element], {
+        arcGISWebMap: {
+          view: {
+            zoom: 0,
+            latitude: 0,
+            longitude: 0,
+          },
+        },
+      })
+
+      expect(result).toEqual({
+        arcGISWebMap: {
+          view: {
+            zoom: 0,
+            latitude: 0,
+            longitude: 0,
+          },
+        },
+      })
+    })
+
+    test('it should remove a view with a missing coordinate', () => {
+      const result = generateDefaultData([element], {
+        arcGISWebMap: {
+          view: {
+            zoom: 0,
+            latitude: 0,
+          },
+        },
+      })
+
+      expect(result).toEqual({
+        arcGISWebMap: {
+          view: undefined,
+        },
+      })
+    })
   })
 })

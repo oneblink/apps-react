@@ -438,9 +438,9 @@ function parsePreFillData(
           }),
           view: parseUnknownAsRecord(record.view, (view) => {
             if (
-              parseNumberValue(view.latitude) &&
-              parseNumberValue(view.longitude) &&
-              parseNumberValue(view.zoom)
+              parseNumberValue(view.latitude) !== undefined &&
+              parseNumberValue(view.longitude) !== undefined &&
+              parseNumberValue(view.zoom) !== undefined
             ) {
               return view
             }
