@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - repeatable set min/max not allowing strings as numbers
 - fix for screen readers re-reading old alerts again
 - resumed auto save data not being validated against the current form definition (e.g. outdated point address data not being dropped)
+- dead google logo
 
 ## [13.2.0] - 2026-10-15
 
