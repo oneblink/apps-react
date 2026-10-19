@@ -19,7 +19,9 @@ import {
   ReceiptButton,
 } from './components/receipts'
 import MaterialIcon from './components/MaterialIcon'
+import QuillHTML from './components/QuillHTML'
 import DownloadableFiles from './components/downloadable-files'
+import replaceInjectablesWithSubmissionValues from './apps/services/replaceInjectablesWithSubmissionValues'
 
 const { handlePaymentQuerystring, handlePaymentSubmissionEvent } =
   paymentService
@@ -228,6 +230,15 @@ function PaymentReceipt({
     }
   }, [history, isMounted, submissionResult, handleDone])
 
+  const postSubmissionSuccessHtml = React.useMemo(() => {
+    const html = submissionResult?.definition.postSubmissionReceipt?.html
+    if (!transaction?.isSuccess || !submissionResult || !html) {
+      return undefined
+    }
+
+    return replaceInjectablesWithSubmissionValues(html, submissionResult).text
+  }, [submissionResult, transaction?.isSuccess])
+
   return (
     <div>
       {isLoading && (
@@ -254,6 +265,18 @@ function PaymentReceipt({
                 : transaction.errorMessage || undefined
             }
           >
+            {postSubmissionSuccessHtml && (
+              <div className="ob-list__item ob-payment-receipt__success-message">
+                <div className="ob-list__content-wrapper">
+                  <div className="ob-list__content">
+                    <QuillHTML
+                      html={postSubmissionSuccessHtml}
+                      className="cypress-payment-receipt-success-message"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             {receiptItems &&
               receiptItems.length &&
               receiptItems.map((receiptItem, i) => {
