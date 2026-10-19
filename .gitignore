@@ -3,3 +3,4 @@ node_modules
 .eslintcache
 scripts
 dist
+CLAUDE.md
