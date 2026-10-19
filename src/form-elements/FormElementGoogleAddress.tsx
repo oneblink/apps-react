@@ -9,6 +9,7 @@ import useIsMounted from '../hooks/useIsMounted'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
+import GoogleMapsLogo from '../components/GoogleMapsLogo'
 
 type Props = {
   formId: number
@@ -247,8 +248,7 @@ function FormElementGoogleAddress({
           aria-describedby={ariaDescribedby}
           branding={
             <a className="dropdown-item cypress-powered-by-google ob-autocomplete__drop-down-item-powered-by-google">
-              powered by{' '}
-              <img src="https://developers.google.com/static/maps/documentation/images/google_on_white.png" />
+              <GoogleMapsLogo />
             </a>
           }
           autoComplete={autocompleteAttributes}
