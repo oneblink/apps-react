@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix for screen readers re-reading old alerts again
 - resumed auto save data not being validated against the current form definition (e.g. outdated point address data not being dropped)
 - Outdated Google logo link
+- forms with many repeatable set entries becoming sluggish because every entry re-rendered on each change
 
 ## [13.2.0] - 2026-10-15
 

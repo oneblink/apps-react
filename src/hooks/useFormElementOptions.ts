@@ -6,10 +6,14 @@ import {
   UpdateFormElementsHandler,
 } from '../types/form'
 import { useLoadDynamicOptionsEffect } from './useDynamicOptionsLoaderState'
-import useFormSubmissionModel from './useFormSubmissionModelContext'
+import { useFormSubmissionModelWithParent } from './useFormSubmissionModelContext'
 import processInjectableOption from '../services/injectableOptions'
 import useTaskContext from './useTaskContext'
 import useUserProfileForInjectables from './useUserProfileForInjectables'
+
+function isInjectableText(text: unknown) {
+  return typeof text === 'string' && text.includes('{')
+}
 
 export default function useFormElementOptions<T>({
   element,
@@ -31,7 +35,16 @@ export default function useFormElementOptions<T>({
   const taskContext = useTaskContext()
   const userProfileForInjectables = useUserProfileForInjectables()
 
-  const { formSubmissionModel, elements, parent } = useFormSubmissionModel()
+  const hasInjectableOptions = React.useMemo(
+    () =>
+      !!element.options?.some(
+        (option) =>
+          isInjectableText(option.label) || isInjectableText(option.value),
+      ),
+    [element.options],
+  )
+  const { formSubmissionModel, elements, parent } =
+    useFormSubmissionModelWithParent(hasInjectableOptions)
   const conditionallyShownOptions = conditionallyShownOptionsElement?.options
   //options that are shown due to conditional logic
   const shownOptions = React.useMemo<FormTypes.ChoiceElementOption[]>(() => {
@@ -51,6 +64,9 @@ export default function useFormElementOptions<T>({
 
   //
   const withInjectedOptions = React.useMemo(() => {
+    if (!hasInjectableOptions) {
+      return shownOptions
+    }
     return shownOptions.reduce<FormTypes.ChoiceElementOption[]>(
       (memo, option) => {
         const newOptions = processInjectableOption({
@@ -71,6 +87,7 @@ export default function useFormElementOptions<T>({
   }, [
     elements,
     formSubmissionModel,
+    hasInjectableOptions,
     parent,
     shownOptions,
     taskContext,
