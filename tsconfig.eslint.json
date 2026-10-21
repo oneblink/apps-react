@@ -1,6 +1,12 @@
 {
   "extends": ["./tsconfig.json"],
-  "include": ["./src", "./tests", "eslint.config.mjs", "vite.config.ts"],
+  "include": [
+    "./src",
+    "./tests",
+    "eslint.config.mjs",
+    "eslint-rules",
+    "vite.config.ts"
+  ],
   "compilerOptions": {
     "rootDir": "./"
   }
