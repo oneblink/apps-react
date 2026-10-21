@@ -133,7 +133,7 @@ async function uploadAttachments(
               formElement,
               value,
             )
-            // eslint-disable-next-line no-restricted-syntax -- see prepareSubmissionData()
+            // eslint-disable-next-line oneblink/no-shared-form-value-mutation -- see prepareSubmissionData()
             submission[formElement.name] = newValue
             break
           }

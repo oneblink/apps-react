@@ -21,7 +21,9 @@ assigning properties, `push`/`splice`/`sort` on existing arrays, `delete`, or
 Mutating an object you created yourself in the same function (e.g. a `reduce`
 accumulator) is fine.
 
-The `no-restricted-syntax` rule in `eslint.config.mjs` reports mutations of
-these values by their usual variable names. It cannot follow aliases (e.g.
+The `oneblink/no-shared-form-value-mutation` rule
+(`eslint-rules/no-shared-form-value-mutation.mjs`, configured in
+`eslint.config.mjs`) reports mutations of these values by their usual variable
+names. It cannot follow aliases (e.g.
 `const entries = submission.entries; entries.push(...)`), so do not rely on it
 alone.
