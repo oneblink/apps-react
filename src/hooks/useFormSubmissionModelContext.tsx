@@ -1,10 +1,15 @@
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import { FormElement } from '@oneblink/types/typescript/forms'
 import * as React from 'react'
+import { weakMapMemoize } from 'reselect'
 import cleanFormSubmissionModel from '../services/cleanFormSubmissionModel'
 import { FormElementsConditionallyShown } from '../types/form'
 
 export type FormSubmissionModelContextValue = {
+  /**
+   * Must not be mutated in place, the same object is cached and shared between
+   * every provider and consumer rendered with the same submission.
+   */
   formSubmissionModel: SubmissionTypes.S3SubmissionData['submission']
   parent?: FormSubmissionModelContextValue
   elements: FormElement[]
@@ -46,52 +51,22 @@ const FormSubmissionModelContext = React.createContext<
 >(undefined)
 
 // Every page and section provider cleans the same root submission, so the
-// result is shared between providers rendered with the same arguments.
-const cleanFormSubmissionModelCache = new WeakMap<
-  SubmissionTypes.S3SubmissionData['submission'],
-  WeakMap<
-    FormTypes.FormElement[],
-    WeakMap<object, SubmissionTypes.S3SubmissionData['submission']>
-  >
->()
-const NO_FORM_ELEMENTS_CONDITIONALLY_SHOWN = {}
-function getCleanFormSubmissionModel(
-  model: SubmissionTypes.S3SubmissionData['submission'],
-  elements: FormTypes.FormElement[],
-  formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
-) {
-  if (typeof model !== 'object' || model === null) {
-    return cleanFormSubmissionModel(
+// result is shared between providers rendered with the same arguments. This
+// relies on nothing mutating the submission, elements or cleaned models in
+// place.
+const getCleanFormSubmissionModel = weakMapMemoize(
+  (
+    model: SubmissionTypes.S3SubmissionData['submission'],
+    elements: FormTypes.FormElement[],
+    formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
+  ) =>
+    cleanFormSubmissionModel(
       model,
       elements,
       formElementsConditionallyShown,
       true,
-    ).model
-  }
-  let byElements = cleanFormSubmissionModelCache.get(model)
-  if (!byElements) {
-    byElements = new WeakMap()
-    cleanFormSubmissionModelCache.set(model, byElements)
-  }
-  let byConditionallyShown = byElements.get(elements)
-  if (!byConditionallyShown) {
-    byConditionallyShown = new WeakMap()
-    byElements.set(elements, byConditionallyShown)
-  }
-  const conditionallyShownKey =
-    formElementsConditionallyShown ?? NO_FORM_ELEMENTS_CONDITIONALLY_SHOWN
-  let cleanModel = byConditionallyShown.get(conditionallyShownKey)
-  if (!cleanModel) {
-    cleanModel = cleanFormSubmissionModel(
-      model,
-      elements,
-      formElementsConditionallyShown,
-      true,
-    ).model
-    byConditionallyShown.set(conditionallyShownKey, cleanModel)
-  }
-  return cleanModel
-}
+    ).model,
+)
 
 export function FormSubmissionModelContextProvider({
   children,

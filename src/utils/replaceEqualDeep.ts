@@ -1,4 +1,6 @@
-function isPlainObject(value: unknown): value is Record<string, unknown> {
+export function isPlainObject(
+  value: unknown,
+): value is Record<string, unknown> {
   if (typeof value !== 'object' || value === null) {
     return false
   }
@@ -12,6 +14,11 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * `next` is deeply equal to `previous`, `previous` is returned. This keeps
  * object identities stable across renders so memoised components can bail out
  * of rendering when their slice of a large computed object has not changed.
+ *
+ * The name, borrowed from TanStack Query's equivalent function, reads as
+ * "replace equal values, deeply": it is not an equality check, it returns a
+ * value in which unchanged parts are replaced by their previous instances
+ * (structural sharing).
  */
 export default function replaceEqualDeep<T>(previous: unknown, next: T): T {
   if (previous === next) {
