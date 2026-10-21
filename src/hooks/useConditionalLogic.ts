@@ -2,6 +2,7 @@ import { Sentry } from '../apps'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import * as React from 'react'
 import { conditionalLogicService } from '@oneblink/sdk-core'
+import useStructuralSharing from './useStructuralSharing'
 
 export default function useConditionalLogic({
   formElements,
@@ -37,10 +38,13 @@ export default function useConditionalLogic({
         submissionConditionallyEnabled: isSubmissionEnabled,
       }
     }, [formElements, submission, enableSubmission, errorCallback])
+  const sharedFormElementsConditionallyShown = useStructuralSharing(
+    formElementsConditionallyShown,
+  )
 
   return {
     conditionalLogicError,
-    formElementsConditionallyShown,
+    formElementsConditionallyShown: sharedFormElementsConditionallyShown,
     submissionConditionallyEnabled,
   }
 }
