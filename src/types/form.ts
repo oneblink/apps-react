@@ -1,6 +1,9 @@
 import { FormTypes, SubmissionTypes, IntegrationTypes } from '@oneblink/types'
 import { NewS3SubmissionData } from '@oneblink/types/typescript/submissions'
 
+// Conditionally shown and validation results are structurally shared between
+// renders (see `useStructuralSharing()`), so they must never be mutated in
+// place. Create new objects instead.
 export {
   FormElementConditionallyShownElement,
   FormElementConditionallyShown,
@@ -10,6 +13,10 @@ export {
 export type FormElementKey = string
 export type RepeatableSetEntryIndex = string
 
+/**
+ * Must not be mutated in place, the same objects are shared between renders and
+ * with other components.
+ */
 export type FormElementsValidation = Record<
   FormElementKey,
   FormElementValidation

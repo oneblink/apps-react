@@ -3,12 +3,41 @@ import { BaseNewFormSubmission } from '../types/submissions'
 import { executePendingQueueAttachmentProgressListeners } from './pending-queue'
 import uploadAttachment from './uploadAttachment'
 import { Attachment } from '../attachments-service'
+import { isPlainObject } from '../../utils/replaceEqualDeep'
 
+/**
+ * Uploads any attachments that have not been uploaded yet.
+ *
+ * The submission is updated in place so that attachments uploaded before a
+ * failure are kept on the pending queue submission and not uploaded again on
+ * retry. Never pass a submission that is shared with form state, pass a copy
+ * from `copySubmissionData()` instead.
+ */
 export default async function prepareSubmissionData({
   definition,
   submission,
 }: BaseNewFormSubmission): Promise<BaseNewFormSubmission['submission']> {
   return await uploadAttachments(definition.id, definition.elements, submission)
+}
+
+/**
+ * Copies the arrays and plain objects in a submission (leaving values such as
+ * `Blob`s shared) so that it can be passed to `prepareSubmissionData()` without
+ * mutating the original.
+ */
+export function copySubmissionData<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map(copySubmissionData) as T
+  }
+  if (isPlainObject(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [
+        key,
+        copySubmissionData(nestedValue),
+      ]),
+    ) as T
+  }
+  return value
 }
 
 async function maybeUploadAttachment(
@@ -104,6 +133,7 @@ async function uploadAttachments(
               formElement,
               value,
             )
+            // eslint-disable-next-line no-restricted-syntax -- see prepareSubmissionData()
             submission[formElement.name] = newValue
             break
           }
