@@ -1683,7 +1683,9 @@ function OneBlinkFormBase({
                                                           }
                                                           displayValidationMessages={
                                                             hasAttemptedSubmit ||
-                                                            isDisplayingCurrentPageError
+                                                            (isDisplayingCurrentPageError &&
+                                                              pageElement.id ===
+                                                                currentPage.id)
                                                           }
                                                           pageElement={
                                                             pageElement
