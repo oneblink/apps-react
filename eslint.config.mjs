@@ -25,6 +25,7 @@ export default defineConfig([
     './dist/**',
     './docs/**',
     './scripts/**',
+    './perf-harness/dist/**',
   ]),
   pluginMicrosoftSdl.configs.recommended,
   reactHooks.configs.flat.recommended,
