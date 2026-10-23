@@ -7,6 +7,7 @@ type Props = {
   warningIconClassName?: string
   warningMessageClassName?: string
   warningMessage?: string
+  hideSuccessIcon?: boolean
   children: React.ReactNode
 }
 
@@ -15,46 +16,52 @@ function ReceiptList({
   warningIconClassName,
   warningMessageClassName,
   warningMessage,
+  hideSuccessIcon,
   children,
 }: Props) {
   return (
     <div className="ob-list has-dividers has-shadow has-margin-bottom-4">
-      <div className="ob-list__item">
-        <div className="ob-list__content-wrapper">
-          <div className="ob-list__content">
-            {!warningMessage ? (
-              <p className="has-text-centered">
-                <MaterialIcon
-                  className={clsx(
-                    'has-text-success icon-x-large',
-                    successIconClassName,
-                  )}
-                >
-                  check_circle_outline
-                </MaterialIcon>
-              </p>
-            ) : (
-              <>
+      {(!!warningMessage || !hideSuccessIcon) && (
+        <div className="ob-list__item">
+          <div className="ob-list__content-wrapper">
+            <div className="ob-list__content">
+              {!warningMessage ? (
                 <p className="has-text-centered">
                   <MaterialIcon
                     className={clsx(
-                      'has-text-danger icon-x-large',
-                      warningIconClassName,
+                      'has-text-success icon-x-large',
+                      successIconClassName,
                     )}
                   >
-                    warning
+                    check_circle_outline
                   </MaterialIcon>
                 </p>
-                <p
-                  className={clsx('has-text-centered', warningMessageClassName)}
-                >
-                  {warningMessage}
-                </p>
-              </>
-            )}
+              ) : (
+                <>
+                  <p className="has-text-centered">
+                    <MaterialIcon
+                      className={clsx(
+                        'has-text-danger icon-x-large',
+                        warningIconClassName,
+                      )}
+                    >
+                      warning
+                    </MaterialIcon>
+                  </p>
+                  <p
+                    className={clsx(
+                      'has-text-centered',
+                      warningMessageClassName,
+                    )}
+                  >
+                    {warningMessage}
+                  </p>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {children}
     </div>
   )
