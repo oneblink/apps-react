@@ -193,7 +193,10 @@ function FormElementRepeatableSet({
 
                 if (entryIndex >= index) {
                   const newEntryIndex = entryIndex + 1
-                  section.id = `${startOfId ? startOfId : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                  return {
+                    ...section,
+                    id: `${startOfId ? startOfId : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`,
+                  }
                 }
               }
 
@@ -266,7 +269,11 @@ function FormElementRepeatableSet({
                         const prefix = match[1]
                         const restOfId = match[3]
                         const newEntryIndex = oldEntryIndex - 1
-                        section.id = `${prefix ? prefix : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`
+                        state.push({
+                          ...section,
+                          id: `${prefix ? prefix : ''}${element.name}_entry-${newEntryIndex}_${restOfId}`,
+                        })
+                        return state
                       }
                     }
                   }
@@ -386,8 +393,7 @@ function FormElementRepeatableSet({
   const ariaDescribedby = useElementAriaDescribedby(id, element)
 
   const showAddButton = React.useMemo(
-    () =>
-      maxSetEntries === undefined || entries.length < maxSetEntries,
+    () => maxSetEntries === undefined || entries.length < maxSetEntries,
     [maxSetEntries, entries.length],
   )
 
@@ -578,16 +584,21 @@ const RepeatableSetEntry = React.memo<RepeatableSetEntryProps>(
           const entries = currentFormSubmission.submission[
             element.name
           ] as Array<SubmissionTypes.S3SubmissionData['submission']>
-          const repeatableSetExecutedLookups =
-            (currentFormSubmission.executedLookups?.[
-              element.name
-            ] as ExecutedLookups[]) ?? Array.from(Array(entries.length))
+          const existingExecutedLookups = (currentFormSubmission
+            .executedLookups?.[element.name] ??
+            Array.from(Array(entries.length))) as ExecutedLookups[]
+          const repeatableSetExecutedLookups = Array.isArray(
+            existingExecutedLookups,
+          )
+            ? [...existingExecutedLookups]
+            : existingExecutedLookups
           // if the repeatable set is prefilled or has minimum entries then executed lookups exists,
           // but is an empty array
-          for (let i = 0; i < entries.length; i++) {
-            if (!repeatableSetExecutedLookups[index]) {
-              repeatableSetExecutedLookups[index] = {}
-            }
+          if (
+            Array.isArray(repeatableSetExecutedLookups) &&
+            !repeatableSetExecutedLookups[index]
+          ) {
+            repeatableSetExecutedLookups[index] = {}
           }
           let newExecutedLookups: ExecutedLookups = {}
           const elements = currentFormSubmission.elements.map((formElement) => {

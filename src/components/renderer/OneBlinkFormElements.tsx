@@ -253,95 +253,97 @@ function OneBlinkFormElements<T extends FormTypes._NestedElementsElement>({
 
 export default React.memo(OneBlinkFormElements)
 
-function FormElementSwitchContainer(
-  props: Omit<
-    FormElementSwitchProps,
-    'isDirty' | 'setIsDirty' | 'readOnly' | 'descendantsReadOnly'
-  > & {
-    /**
-     * Lock inherited from a parent container (the parent’s
-     * `descendantsReadOnly` / `childrenReadOnly`). Combined with form-level
-     * read-only and this element’s definition `readOnly` to decide whether
-     * descendants are locked. A child included in `editableFormElementIds`
-     * ignores this inherited lock.
-     */
-    parentReadOnly?: boolean
-    /**
-     * When set, this value is used as this element’s `readOnly` instead of the
-     * usual calculation. See `readOnlyOverride` on `OneBlinkFormElements`.
-     */
-    readOnlyOverride?: boolean
-  },
-) {
-  const { element, formElementValidation, displayValidationMessage } = props
-  const audience = useFormAudience()
-  const isFormReadOnly = useFormIsReadOnly()
-  const isFormElementReadOnly = useIsFormElementReadOnly(
-    element,
-    props.parentReadOnly,
-  )
-  const descendantsReadOnly =
-    isFormReadOnly ||
-    props.parentReadOnly === true ||
-    ('readOnly' in element && element.readOnly === true)
-  const readOnly = props.readOnlyOverride ?? isFormElementReadOnly
+const FormElementSwitchContainer = React.memo(
+  function FormElementSwitchContainer(
+    props: Omit<
+      FormElementSwitchProps,
+      'isDirty' | 'setIsDirty' | 'readOnly' | 'descendantsReadOnly'
+    > & {
+      /**
+       * Lock inherited from a parent container (the parent’s
+       * `descendantsReadOnly` / `childrenReadOnly`). Combined with form-level
+       * read-only and this element’s definition `readOnly` to decide whether
+       * descendants are locked. A child included in `editableFormElementIds`
+       * ignores this inherited lock.
+       */
+      parentReadOnly?: boolean
+      /**
+       * When set, this value is used as this element’s `readOnly` instead of the
+       * usual calculation. See `readOnlyOverride` on `OneBlinkFormElements`.
+       */
+      readOnlyOverride?: boolean
+    },
+  ) {
+    const { element, formElementValidation, displayValidationMessage } = props
+    const audience = useFormAudience()
+    const isFormReadOnly = useFormIsReadOnly()
+    const isFormElementReadOnly = useIsFormElementReadOnly(
+      element,
+      props.parentReadOnly,
+    )
+    const descendantsReadOnly =
+      isFormReadOnly ||
+      props.parentReadOnly === true ||
+      ('readOnly' in element && element.readOnly === true)
+    const readOnly = props.readOnlyOverride ?? isFormElementReadOnly
 
-  const [isDirty, setIsDirty] = useBooleanState(false)
-  const elementDOMId = React.useMemo(
-    () => new ElementDOMId(props.id),
-    [props.id],
-  )
-  const getValidationClass = () => {
-    if (!('elements' in element)) {
-      if (!formElementValidation) {
-        return 'ob-element__valid'
-      }
-      if (isDirty || displayValidationMessage) {
-        return 'ob-element__invalid'
+    const [isDirty, setIsDirty] = useBooleanState(false)
+    const elementDOMId = React.useMemo(
+      () => new ElementDOMId(props.id),
+      [props.id],
+    )
+    const getValidationClass = () => {
+      if (!('elements' in element)) {
+        if (!formElementValidation) {
+          return 'ob-element__valid'
+        }
+        if (isDirty || displayValidationMessage) {
+          return 'ob-element__invalid'
+        }
       }
     }
-  }
-  const validationClassName = getValidationClass()
+    const validationClassName = getValidationClass()
 
-  if (element.type === 'page' || element.type === 'section') {
-    return null
-  }
+    if (element.type === 'page' || element.type === 'section') {
+      return null
+    }
 
-  // A captcha proves a human is making a new submission, so it is omitted
-  // whenever this element cannot take new input: an approver edit (not a new
-  // submission), a read-only form, or a `readOnly` ancestor. The last case was
-  // previously handled by stripping captchas from the definition in
-  // `recursivelySetReadOnly`. `useFormValidation` drops the same captchas, so
-  // an omitted one can never block submission with an unreachable error.
-  if (element.type === 'captcha' && (audience === 'APPROVER' || readOnly)) {
-    return null
-  }
+    // A captcha proves a human is making a new submission, so it is omitted
+    // whenever this element cannot take new input: an approver edit (not a new
+    // submission), a read-only form, or a `readOnly` ancestor. The last case was
+    // previously handled by stripping captchas from the definition in
+    // `recursivelySetReadOnly`. `useFormValidation` drops the same captchas, so
+    // an omitted one can never block submission with an unreachable error.
+    if (element.type === 'captcha' && (audience === 'APPROVER' || readOnly)) {
+      return null
+    }
 
-  return (
-    <div
-      id={elementDOMId.elementContainerDOMId}
-      data-element-id={element.id}
-      className={clsx(
-        'ob-element cypress-element-container',
-        element.customCssClasses,
-        validationClassName,
-        {
-          'is-hidden': isElementHiddenForAudience(element, audience),
-        },
-      )}
-      data-cypress-element-name={element.name}
-      data-ob-name={element.name}
-    >
-      <FormElementSwitch
-        {...props}
-        readOnly={readOnly}
-        descendantsReadOnly={descendantsReadOnly}
-        isDirty={isDirty}
-        setIsDirty={setIsDirty}
-      />
-    </div>
-  )
-}
+    return (
+      <div
+        id={elementDOMId.elementContainerDOMId}
+        data-element-id={element.id}
+        className={clsx(
+          'ob-element cypress-element-container',
+          element.customCssClasses,
+          validationClassName,
+          {
+            'is-hidden': isElementHiddenForAudience(element, audience),
+          },
+        )}
+        data-cypress-element-name={element.name}
+        data-ob-name={element.name}
+      >
+        <FormElementSwitch
+          {...props}
+          readOnly={readOnly}
+          descendantsReadOnly={descendantsReadOnly}
+          isDirty={isDirty}
+          setIsDirty={setIsDirty}
+        />
+      </div>
+    )
+  },
+)
 
 const FormElementSwitch = React.memo(function OneBlinkFormElement({
   formId,

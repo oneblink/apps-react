@@ -26,6 +26,7 @@ import cleanFormSubmissionModel from './services/cleanFormSubmissionModel'
 import PageFormElements from './components/renderer/PageFormElements'
 import useFormValidation from './hooks/useFormValidation'
 import useConditionalLogic from './hooks/useConditionalLogic'
+import useStructuralSharing from './hooks/useStructuralSharing'
 import usePages from './hooks/usePages'
 import useLookups from './hooks/useLookups'
 import { FormDefinitionContext } from './hooks/useFormDefinition'
@@ -647,7 +648,7 @@ function OneBlinkFormBase({
     [captchaType],
   )
 
-  const formElementsValidation = React.useMemo<
+  const unsharedFormElementsValidation = React.useMemo<
     FormElementsValidation | undefined
   >(
     () =>
@@ -673,6 +674,9 @@ function OneBlinkFormBase({
       audience,
       expandedEditableFormElementIds,
     ],
+  )
+  const formElementsValidation = useStructuralSharing(
+    unsharedFormElementsValidation,
   )
 
   React.useEffect(() => {
@@ -1679,7 +1683,9 @@ function OneBlinkFormBase({
                                                           }
                                                           displayValidationMessages={
                                                             hasAttemptedSubmit ||
-                                                            isDisplayingCurrentPageError
+                                                            (isDisplayingCurrentPageError &&
+                                                              pageElement.id ===
+                                                                currentPage.id)
                                                           }
                                                           pageElement={
                                                             pageElement

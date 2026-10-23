@@ -73,8 +73,13 @@ function FormElementLookupButton({
     (setter, options) => {
       onLookup((data) => {
         const dataAfterSetting = setter(data)
-        dataAfterSetting.submission[element.name] = true
-        return dataAfterSetting
+        return {
+          ...dataAfterSetting,
+          submission: {
+            ...dataAfterSetting.submission,
+            [element.name]: true,
+          },
+        }
       }, options)
     },
     [element.name, onLookup],

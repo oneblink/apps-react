@@ -29,6 +29,8 @@ function sectionStateToBoolean(state: 'COLLAPSED' | 'EXPANDED') {
   return false
 }
 
+const EMPTY_SECTION_STATE: NonNullable<SectionState> = []
+
 function FormElementSection<T extends FormTypes._NestedElementsElement>({
   element,
   childrenReadOnly,
@@ -36,7 +38,7 @@ function FormElementSection<T extends FormTypes._NestedElementsElement>({
   displayValidationMessages,
   onUpdateFormElements,
   sectionHeaderId,
-  sectionState = [],
+  sectionState = EMPTY_SECTION_STATE,
   ...props
 }: Omit<Props<T>, 'elements' | 'readOnly'> & {
   element: FormTypes.SectionElement
