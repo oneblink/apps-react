@@ -264,6 +264,7 @@ function PaymentReceipt({
                 ? undefined
                 : transaction.errorMessage || undefined
             }
+            hideSuccessIcon={!!postSubmissionSuccessHtml}
           >
             {postSubmissionSuccessHtml && (
               <div className="ob-list__item ob-payment-receipt__success-message">
