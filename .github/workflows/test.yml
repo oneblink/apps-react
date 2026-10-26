@@ -20,4 +20,6 @@ jobs:
           node-version: 24
       - run: npm ci
       - run: npm test
-      - run: npm run bench
+      # check-limits.mjs appends a results table to the job summary.
+      - name: Benchmark
+        run: npm run bench
