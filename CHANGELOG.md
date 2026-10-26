@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `skipDefaultValues` prop to `<OneBlinkReadOnlyForm />` and `options.generateDefaultDataOptions.skipDefaultValues` argument to `useFormSubmissionState()` to prevent form element default values being applied to fields left blank in an existing submission
+- `options.generateDefaultDataOptions.skipDefaultValues` argument to `useFormSubmissionState()` to prevent form element default values being applied to fields left blank in an existing submission
+
+### Changed
+
+- `<OneBlinkReadOnlyForm />` no longer applies form element default values to fields left blank in `initialSubmission`
 
 ### Fixed
 
