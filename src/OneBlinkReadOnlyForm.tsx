@@ -8,10 +8,13 @@ const noop = () => {}
 function UncontrolledOneBlinkReadOnlyForm({
   form,
   initialSubmission,
+  skipDefaultValues,
   ...rest
 }: Extract<OneBlinkReadOnlyFormProps, { form: FormTypes.Form }>) {
   const [{ submission, definition, executedLookups }, setFormSubmission] =
-    useFormSubmissionState(form, initialSubmission)
+    useFormSubmissionState(form, initialSubmission, undefined, undefined, {
+      generateDefaultDataOptions: { skipDefaultValues },
+    })
 
   return (
     <OneBlinkFormBase
@@ -54,6 +57,12 @@ function OneBlinkReadOnlyForm(props: OneBlinkReadOnlyFormProps) {
  * `executedLookups`) to keep selected inputs editable. Selecting a `form` or
  * `infoPage` element makes all of its descendants editable. This component does
  * **not** render the submit, cancel or save draft buttons.
+ *
+ * When rendering an existing submission, set `skipDefaultValues` so form
+ * element default values are not applied to fields that were left blank. When
+ * using `editableFormElementIds`, set
+ * `options.generateDefaultDataOptions.skipDefaultValues` when calling
+ * `useFormSubmissionState()` instead.
  *
  * It is also recommended to import the `css` from this library as well.
  *

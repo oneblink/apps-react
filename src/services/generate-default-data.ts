@@ -467,13 +467,27 @@ function parsePreFillData(
   }
 }
 
+export type GenerateDefaultDataOptions = {
+  /**
+   * Set to `true` when `preFillData` is an existing submission (e.g. one being
+   * reviewed by an approver) so form element default values are not applied to
+   * fields that were left blank.
+   */
+  skipDefaultValues?: boolean
+}
+
 export default function generateDefaultData(
   elements: FormTypes.FormElement[],
   preFillData: SubmissionTypes.S3SubmissionData['submission'],
+  options?: GenerateDefaultDataOptions,
 ): SubmissionTypes.S3SubmissionData['submission'] {
   return elements.reduce<SubmissionTypes.S3SubmissionData['submission']>(
     (m, el) => {
-      if (el.type !== 'page' && el.type !== 'section' && el.name in m) {
+      if (
+        el.type !== 'page' &&
+        el.type !== 'section' &&
+        (el.name in m || options?.skipDefaultValues)
+      ) {
         m[el.name] = parsePreFillData(el, m[el.name])
         return m
       }
@@ -509,7 +523,7 @@ export default function generateDefaultData(
         case 'section':
         case 'page': {
           if (Array.isArray(el.elements)) {
-            Object.assign(m, generateDefaultData(el.elements, m))
+            Object.assign(m, generateDefaultData(el.elements, m, options))
           }
           break
         }

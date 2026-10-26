@@ -186,8 +186,15 @@ export type OneBlinkReadOnlyFormProps = OneBlinkFormDisplayProps &
         editableFormElementIds: string[]
         form?: never
         initialSubmission?: never
+        skipDefaultValues?: never
       })
     | (OneBlinkFormUncontrolledProps & {
+        /**
+         * Set to `true` when `initialSubmission` is an existing submission so
+         * form element default values are not applied to fields that were left
+         * blank. False by default.
+         */
+        skipDefaultValues?: boolean
         /** Omit to render every form element as read-only. */
         editableFormElementIds?: never
         definition?: never
