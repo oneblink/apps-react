@@ -1,7 +1,9 @@
 import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
-import generateDefaultData from '../services/generate-default-data'
+import generateDefaultData, {
+  GenerateDefaultDataOptions,
+} from '../services/generate-default-data'
 import { ExecutedLookups, SectionState } from '../types/form'
 /**
  * This function is a simple wrapper around the react hook `useState()`. The
@@ -37,6 +39,12 @@ import { ExecutedLookups, SectionState } from '../types/form'
  * @param initialSubmission The initial submission data to populate the form
  *   with
  * @param lastElementUpdated
+ * @param sectionState
+ * @param options Additional options for initialising the form submission state
+ * @param options.generateDefaultDataOptions Options used when generating the
+ *   initial submission data. Pass `{ skipDefaultValues: true }` when
+ *   `initialSubmission` is an existing submission so form element default
+ *   values are not applied to fields that were left blank.
  * @returns
  * @group Hooks
  */
@@ -45,6 +53,9 @@ export default function useFormSubmissionState(
   initialSubmission?: SubmissionTypes.S3SubmissionData['submission'],
   lastElementUpdated?: FormTypes.FormElement,
   sectionState?: SectionState,
+  options?: {
+    generateDefaultDataOptions?: GenerateDefaultDataOptions
+  },
 ) {
   return React.useState<{
     definition: FormTypes.Form
@@ -57,6 +68,7 @@ export default function useFormSubmissionState(
     const defaultData = generateDefaultData(
       definition.elements,
       initialSubmission || {},
+      options?.generateDefaultDataOptions,
     )
     return {
       definition,

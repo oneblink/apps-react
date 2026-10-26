@@ -2381,4 +2381,131 @@ describe('generateDefaultData()', () => {
       })
     })
   })
+
+  describe('"skipDefaultValues" option', () => {
+    const textElement: FormTypes.TextElement = {
+      name: 'text',
+      label: 'text',
+      type: 'text',
+      required: false,
+      id: '9b9e477b-577c-44a6-a727-cef8dd57670a',
+      defaultValue: 'default text',
+      conditionallyShow: false,
+      requiresAllConditionallyShowPredicates: false,
+      readOnly: false,
+      isDataLookup: false,
+      isElementLookup: false,
+    }
+    const elements: FormTypes.FormElement[] = [
+      {
+        id: '5f1b1a43-68e1-4b5c-a7b2-0bd2b1b3f6a1',
+        type: 'page',
+        label: 'page',
+        conditionallyShow: false,
+        requiresAllConditionallyShowPredicates: false,
+        elements: [
+          {
+            id: 'a4f2cbbf-1ad4-4c5e-8d6d-6a8d38cb2f8e',
+            type: 'section',
+            label: 'section',
+            isCollapsed: false,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            elements: [textElement],
+          },
+          {
+            name: 'number',
+            label: 'number',
+            type: 'number',
+            required: false,
+            id: 'f3c2b2a4-8f2e-4f0a-9a43-5d6d1c2b7e19',
+            defaultValue: 5,
+            isSlider: false,
+            isInteger: false,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            readOnly: false,
+            isDataLookup: false,
+            isElementLookup: false,
+          },
+          {
+            formId: 1,
+            name: 'form',
+            type: 'form',
+            id: 'd572b61d-2602-4dc2-9d95-b7ddcafb929f',
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            elements: [textElement],
+          },
+          {
+            name: 'repeatableSet',
+            label: 'repeatableSet',
+            type: 'repeatableSet',
+            id: 'd0b1a6bc-8ec4-488c-9d42-5c1109bfad94',
+            readOnly: false,
+            minSetEntries: 1,
+            conditionallyShow: false,
+            requiresAllConditionallyShowPredicates: false,
+            elements: [textElement],
+          },
+        ],
+      },
+    ]
+
+    test('it should not set default values for missing data', () => {
+      const result = generateDefaultData(
+        elements,
+        {},
+        { skipDefaultValues: true },
+      )
+
+      expect(result).toEqual({
+        text: undefined,
+        number: undefined,
+        form: undefined,
+        repeatableSet: undefined,
+      })
+    })
+
+    test('it should still parse existing data', () => {
+      const result = generateDefaultData(
+        elements,
+        {
+          text: 'existing',
+          number: 'invalid',
+          form: { text: 'nested' },
+          repeatableSet: [{}],
+        },
+        { skipDefaultValues: true },
+      )
+
+      expect(result).toEqual({
+        text: 'existing',
+        number: undefined,
+        form: { text: 'nested' },
+        repeatableSet: [
+          {
+            [ENTRY_ID_PROPERTY_NAME]: 'my-uuid',
+            text: undefined,
+          },
+        ],
+      })
+    })
+
+    test('it should set default values when not set', () => {
+      const result = generateDefaultData(elements, {})
+
+      expect(result).toEqual({
+        text: 'default text',
+        number: 5,
+        form: { text: 'default text' },
+        repeatableSet: [
+          {
+            [ENTRY_ID_PROPERTY_NAME]: 'my-uuid',
+            text: 'default text',
+          },
+        ],
+      })
+    })
+  })
 })

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `options.generateDefaultDataOptions.skipDefaultValues` argument to `useFormSubmissionState()` to prevent form element default values being applied to fields left blank in an existing submission
+
+### Changed
+
+- `<OneBlinkReadOnlyForm />` no longer applies form element default values to fields left blank in `initialSubmission`
+
 ### Fixed
 
 - forms with many repeatable set entries becoming sluggish because every entry re-rendered on each change
