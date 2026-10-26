@@ -6,7 +6,9 @@ import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import tenants from '../../tenants'
 import { getUserToken } from '../user-token'
 import Sentry from '../../Sentry'
-import prepareSubmissionData from '../prepareSubmissionData'
+import prepareSubmissionData, {
+  copySubmissionData,
+} from '../prepareSubmissionData'
 import { DraftSubmission, ProgressListener } from '../../types/submissions'
 import generateOneBlinkUploader from '../generateOneBlinkUploader'
 import { OneBlinkStorageError } from '@oneblink/storage'
@@ -19,7 +21,10 @@ async function uploadDraftData(
   abortSignal?: AbortSignal,
 ) {
   try {
-    const submission = await prepareSubmissionData(draftSubmission)
+    const submission = await prepareSubmissionData({
+      ...draftSubmission,
+      submission: copySubmissionData(draftSubmission.submission),
+    })
     const oneblinkUploader = generateOneBlinkUploader()
     const userToken = getUserToken()
     console.log('Attempting to upload draft data')

@@ -36,6 +36,9 @@ export function getCleanRepeatableSetConfiguration(
   submission: SubmissionTypes.S3SubmissionData['submission'] | undefined,
   formElementsConditionallyShown: FormElementsConditionallyShown | undefined,
 ) {
+  if (typeof setEntries !== 'object') {
+    return getRepeatableSetEntriesConfiguration(setEntries, elements, {})
+  }
   if (submission) {
     const { model } = cleanFormSubmissionModel(
       submission,

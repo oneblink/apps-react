@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
 import pluginMicrosoftSdl from '@microsoft/eslint-plugin-sdl'
+import noSharedFormValueMutation from './eslint-rules/no-shared-form-value-mutation.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,6 +25,7 @@ export default defineConfig([
     './dist/**',
     './docs/**',
     './scripts/**',
+    './perf-harness/dist/**',
   ]),
   pluginMicrosoftSdl.configs.recommended,
   reactHooks.configs.flat.recommended,
@@ -36,7 +38,12 @@ export default defineConfig([
       ),
     ),
 
-    plugins: { '@typescript-eslint': fixupPluginRules(typescriptEslint) },
+    plugins: {
+      '@typescript-eslint': fixupPluginRules(typescriptEslint),
+      oneblink: {
+        rules: { 'no-shared-form-value-mutation': noSharedFormValueMutation },
+      },
+    },
 
     languageOptions: {
       globals: { ...globals.browser },
@@ -59,6 +66,28 @@ export default defineConfig([
       '@typescript-eslint/explicit-module-boundary-types': 0,
       '@typescript-eslint/no-empty-interface': 0,
       '@typescript-eslint/ban-ts-comment': 'off',
+      // Values that are structurally shared or cached between renders.
+      // Mutating them in place leaves memoised components rendering stale
+      // data (see AGENTS.md).
+      'oneblink/no-shared-form-value-mutation': [
+        'error',
+        {
+          names: [
+            'formElementsConditionallyShown',
+            'formElementConditionallyShown',
+            'conditionallyShownOptionsElement',
+            'formElementsValidation',
+            'formElementValidation',
+            'formSubmissionModel',
+            'submission',
+            'currentFormSubmission',
+            'executedLookups',
+            'existingExecutedLookups',
+            'sectionState',
+            'currentSectionState',
+          ],
+        },
+      ],
     },
   },
 ])
