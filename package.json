@@ -126,7 +126,7 @@
     "url": "git+https://github.com/oneblink/apps-react.git"
   },
   "scripts": {
-    "bench": "vitest bench --run",
+    "bench": "vitest bench --run --outputJson bench-results.json && node tests/performance/check-limits.mjs bench-results.json",
     "build": "tsc && npm run build:css",
     "build:css": "npm run copy:sass && npm run copy:styles && sass ./dist/styles.scss ./dist/styles.css --load-path ./node_modules --no-source-map",
     "copy:sass": "copyfiles -u 1 ./src/styles.scss ./dist",
@@ -139,7 +139,7 @@
     "pretest": "npm run fixpack && npm run eslint && npm run typescript",
     "release": "oneblink-release repository --no-name --update-dependents --force-update-dependency",
     "start": "tsc-watch",
-    "test": "vitest",
+    "test": "vitest run",
     "types": "npm i -D github:oneblink/types",
     "typescript": "tsc --noEmit",
     "update-dependents": "oneblink-release update-dependents --force-update-dependency"

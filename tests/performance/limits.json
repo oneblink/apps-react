@@ -1,0 +1,14 @@
+{
+  "200 entries across 20 pages": {
+    "mount and unmount": 9000,
+    "type in a field on the first page": 60,
+    "type in a field in a repeatable set entry": 80,
+    "navigate to the first samples page and back": 100
+  },
+  "200 entries in one repeatable set": {
+    "mount and unmount": 10000,
+    "type in a field on the first page": 60,
+    "type in a field in a repeatable set entry": 80,
+    "navigate to the first samples page and back": 350
+  }
+}
