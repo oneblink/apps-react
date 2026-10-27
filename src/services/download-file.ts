@@ -92,6 +92,47 @@ const handleError = (error?: Error) => {
   }
 }
 
+export const SUBMISSION_PDF_NOT_READY_CONFLICT = 'SUBMISSION_NOT_READY'
+
+export class SubmissionPdfNotReadyError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'SubmissionPdfNotReadyError'
+  }
+}
+
+export async function downloadSubmissionPdf(url: string, fileName: string) {
+  const response = await fetch(url)
+  if (!response.ok) {
+    if (response.status === 409) {
+      const body: unknown = await response.json().catch(() => undefined)
+      if (
+        body &&
+        typeof body === 'object' &&
+        'conflict' in body &&
+        body.conflict === SUBMISSION_PDF_NOT_READY_CONFLICT &&
+        'message' in body &&
+        typeof body.message === 'string'
+      ) {
+        throw new SubmissionPdfNotReadyError(body.message)
+      }
+    }
+    throw new Error(
+      `Unable to download file. HTTP Status Code: ${response.status}`,
+    )
+  }
+
+  const blob = await response.blob()
+  const downloadName = fileName.toLowerCase().endsWith('.pdf')
+    ? fileName
+    : `${fileName}.pdf`
+  await downloadFile(blob, downloadName)
+}
+
+export function reportDownloadError(error?: Error) {
+  handleError(error)
+}
+
 export async function downloadFileLegacy(dataURI: string, fileName: string) {
   try {
     return await downloadFile(dataURI, fileName)

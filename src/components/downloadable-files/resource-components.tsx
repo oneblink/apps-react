@@ -6,6 +6,11 @@ import useLoadDataState from '../../hooks/useLoadDataState'
 import OneBlinkAppsErrorOriginalMessage from '../renderer/OneBlinkAppsErrorOriginalMessage'
 import clsx from 'clsx'
 import { useLayout } from './LayoutProvider'
+import {
+  downloadSubmissionPdf,
+  reportDownloadError,
+  SubmissionPdfNotReadyError,
+} from '../../services/download-file'
 
 type Attachment = Awaited<
   ReturnType<typeof submissionService.getPostSubmissionAttachments>
@@ -123,10 +128,18 @@ const getFileTypeIcon = (type: string) => {
 export const SingleFileDisplay = ({
   attachment,
   className,
+  retryIfSubmissionNotReady,
 }: {
   attachment: Attachment
   className?: string
+  /**
+   * Download the file in the page instead of navigating away. When the
+   * submission PDF is not ready yet, show a Try again button.
+   */
+  retryIfSubmissionNotReady?: boolean
 }) => {
+  const [isDownloading, setIsDownloading] = React.useState(false)
+  const [notReadyMessage, setNotReadyMessage] = React.useState<string>()
   const { avatar } = React.useMemo(() => {
     const avatar = () => {
       return attachment.contentType.includes('image') ? (
@@ -145,28 +158,82 @@ export const SingleFileDisplay = ({
     return { avatar: avatar() }
   }, [attachment.filename, attachment.contentType, attachment.signedUrl])
 
+  const download = React.useCallback(async () => {
+    setIsDownloading(true)
+    setNotReadyMessage(undefined)
+    try {
+      await downloadSubmissionPdf(attachment.signedUrl, attachment.filename)
+    } catch (error) {
+      if (error instanceof SubmissionPdfNotReadyError) {
+        setNotReadyMessage(error.message)
+        return
+      }
+      reportDownloadError(error instanceof Error ? error : undefined)
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [attachment.filename, attachment.signedUrl])
+
+  const fileDetails = (
+    <>
+      {avatar}
+      <div className="ob-downloadable-files__content">
+        <div className="ob-downloadable-files__filename ob-downloadable-files__text">
+          {attachment.filename}
+        </div>
+        <div className="ob-downloadable-files__filetype ob-downloadable-files__text">
+          {isDownloading
+            ? 'Downloading...'
+            : attachment.contentType.split('/')[1] || 'Unknown'}
+        </div>
+      </div>
+      <MaterialIcon className="ob-downloadable-files__download-icon">
+        download
+      </MaterialIcon>
+    </>
+  )
+
   return (
     <Tooltip title={attachment.filename} arrow>
-      <a
-        href={attachment.signedUrl}
-        target="_blank"
-        rel="noreferrer"
-        download
-        className={clsx('ob-downloadable-files__item', className)}
-      >
-        {avatar}
-        <div className="ob-downloadable-files__content">
-          <div className="ob-downloadable-files__filename ob-downloadable-files__text">
-            {attachment.filename}
+      <div>
+        {retryIfSubmissionNotReady ? (
+          <button
+            type="button"
+            disabled={isDownloading}
+            onClick={() => {
+              void download()
+            }}
+            className={clsx('ob-downloadable-files__item', className)}
+          >
+            {fileDetails}
+          </button>
+        ) : (
+          <a
+            href={attachment.signedUrl}
+            target="_blank"
+            rel="noreferrer"
+            download
+            className={clsx('ob-downloadable-files__item', className)}
+          >
+            {fileDetails}
+          </a>
+        )}
+        {notReadyMessage && (
+          <div className="ob-downloadable-files__not-ready">
+            <p className="cypress-pdf-download-not-ready">{notReadyMessage}</p>
+            <button
+              type="button"
+              className="button ob-button is-primary cypress-retry-pdf-download-button"
+              disabled={isDownloading}
+              onClick={() => {
+                void download()
+              }}
+            >
+              Try again
+            </button>
           </div>
-          <div className="ob-downloadable-files__filetype ob-downloadable-files__text">
-            {attachment.contentType.split('/')[1] || 'Unknown'}
-          </div>
-        </div>
-        <MaterialIcon className="ob-downloadable-files__download-icon">
-          download
-        </MaterialIcon>
-      </a>
+        )}
+      </div>
     </Tooltip>
   )
 }

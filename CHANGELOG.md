@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Receipt PDF downloads showing an internal error when the submission is still being processed, instead offer a Try again button
 - forms with many repeatable set entries becoming sluggish because every entry re-rendered on each change
 - saving a draft modifying the attachments of the form being filled in
 
