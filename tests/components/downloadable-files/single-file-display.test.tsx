@@ -9,8 +9,8 @@ const { downloadSubmissionPdf, reportDownloadError } = vi.hoisted(() => ({
 
 vi.mock('../../../src/services/download-file', () => {
   class SubmissionPdfNotReadyError extends Error {
-    constructor() {
-      super('The submission is still being processed. Please try again.')
+    constructor(message: string) {
+      super(message)
       this.name = 'SubmissionPdfNotReadyError'
     }
   }
@@ -18,8 +18,6 @@ vi.mock('../../../src/services/download-file', () => {
   return {
     downloadSubmissionPdf,
     reportDownloadError,
-    SUBMISSION_PDF_NOT_READY_MESSAGE:
-      'The submission is still being processed. Please try again.',
     SubmissionPdfNotReadyError,
   }
 })
@@ -61,7 +59,9 @@ async function render(retryIfSubmissionNotReady?: boolean) {
 describe('SingleFileDisplay receipt download', () => {
   test('shows a try again button when the submission PDF is not ready', async () => {
     downloadSubmissionPdf.mockRejectedValueOnce(
-      new SubmissionPdfNotReadyError(),
+      new SubmissionPdfNotReadyError(
+        'The submission is still being processed. Please try again.',
+      ),
     )
     const { container, unmount } = await render(true)
 

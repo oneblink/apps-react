@@ -92,12 +92,11 @@ const handleError = (error?: Error) => {
   }
 }
 
-export const SUBMISSION_PDF_NOT_READY_MESSAGE =
-  'The submission is still being processed. Please try again.'
+export const SUBMISSION_PDF_NOT_READY_CONFLICT = 'SUBMISSION_NOT_READY'
 
 export class SubmissionPdfNotReadyError extends Error {
-  constructor() {
-    super(SUBMISSION_PDF_NOT_READY_MESSAGE)
+  constructor(message: string) {
+    super(message)
     this.name = 'SubmissionPdfNotReadyError'
   }
 }
@@ -110,10 +109,12 @@ export async function downloadSubmissionPdf(url: string, fileName: string) {
       if (
         body &&
         typeof body === 'object' &&
+        'conflict' in body &&
+        body.conflict === SUBMISSION_PDF_NOT_READY_CONFLICT &&
         'message' in body &&
-        body.message === SUBMISSION_PDF_NOT_READY_MESSAGE
+        typeof body.message === 'string'
       ) {
-        throw new SubmissionPdfNotReadyError()
+        throw new SubmissionPdfNotReadyError(body.message)
       }
     }
     throw new Error(

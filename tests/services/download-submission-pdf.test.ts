@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import fileSaver from 'file-saver'
 import {
   downloadSubmissionPdf,
-  SUBMISSION_PDF_NOT_READY_MESSAGE,
+  SUBMISSION_PDF_NOT_READY_CONFLICT,
   SubmissionPdfNotReadyError,
 } from '../../src/services/download-file'
 
@@ -77,12 +77,19 @@ describe('downloadSubmissionPdf', () => {
           body: {
             statusCode: 409,
             error: 'Conflict',
-            message: SUBMISSION_PDF_NOT_READY_MESSAGE,
+            message: 'The submission is still being processed. Please try again.',
+            conflict: SUBMISSION_PDF_NOT_READY_CONFLICT,
           },
         }),
       ),
     )
 
+    await expect(
+      downloadSubmissionPdf('https://example.test/pdf', 'Submission'),
+    ).rejects.toMatchObject({
+      name: 'SubmissionPdfNotReadyError',
+      message: 'The submission is still being processed. Please try again.',
+    })
     await expect(
       downloadSubmissionPdf('https://example.test/pdf', 'Submission'),
     ).rejects.toBeInstanceOf(SubmissionPdfNotReadyError)
@@ -106,7 +113,7 @@ describe('downloadSubmissionPdf', () => {
     expect(fileSaver.saveAs).not.toHaveBeenCalled()
   })
 
-  test('throws a download error when a 409 body is not the not-ready message', async () => {
+  test('throws a download error when a 409 body is not the not-ready conflict', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(

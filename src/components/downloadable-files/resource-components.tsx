@@ -9,7 +9,6 @@ import { useLayout } from './LayoutProvider'
 import {
   downloadSubmissionPdf,
   reportDownloadError,
-  SUBMISSION_PDF_NOT_READY_MESSAGE,
   SubmissionPdfNotReadyError,
 } from '../../services/download-file'
 
@@ -140,7 +139,7 @@ export const SingleFileDisplay = ({
   retryIfSubmissionNotReady?: boolean
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false)
-  const [notReady, setNotReady] = React.useState(false)
+  const [notReadyMessage, setNotReadyMessage] = React.useState<string>()
   const { avatar } = React.useMemo(() => {
     const avatar = () => {
       return attachment.contentType.includes('image') ? (
@@ -161,12 +160,12 @@ export const SingleFileDisplay = ({
 
   const download = React.useCallback(async () => {
     setIsDownloading(true)
-    setNotReady(false)
+    setNotReadyMessage(undefined)
     try {
       await downloadSubmissionPdf(attachment.signedUrl, attachment.filename)
     } catch (error) {
       if (error instanceof SubmissionPdfNotReadyError) {
-        setNotReady(true)
+        setNotReadyMessage(error.message)
         return
       }
       reportDownloadError(error instanceof Error ? error : undefined)
@@ -219,11 +218,9 @@ export const SingleFileDisplay = ({
             {fileDetails}
           </a>
         )}
-        {notReady && (
+        {notReadyMessage && (
           <div className="ob-downloadable-files__not-ready">
-            <p className="cypress-pdf-download-not-ready">
-              {SUBMISSION_PDF_NOT_READY_MESSAGE}
-            </p>
+            <p className="cypress-pdf-download-not-ready">{notReadyMessage}</p>
             <button
               type="button"
               className="button ob-button is-primary cypress-retry-pdf-download-button"
