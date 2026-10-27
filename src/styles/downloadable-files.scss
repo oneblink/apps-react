@@ -81,3 +81,22 @@
 .ob-downloadable-files__error-pdf {
   padding-bottom: $size-4;
 }
+
+button.ob-downloadable-files__item {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+.ob-downloadable-files__not-ready {
+  margin-top: $size-6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $size-6;
+}

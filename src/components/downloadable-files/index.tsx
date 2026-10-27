@@ -77,6 +77,7 @@ function DownloadableFiles({
                 signedUrl: url,
                 contentType: 'application/pdf',
               }}
+              retryIfSubmissionNotReady
               className={`cypress-receipt-download-pdf-button-${id}`}
             />
           ),
