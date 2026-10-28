@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - OneBlink US tenant locale returning `en-AU`
 
+## [13.5.0] - 2026-10-28
+
 ### Added
 
 - `options.generateDefaultDataOptions.skipDefaultValues` argument to `useFormSubmissionState()` to prevent form element default values being applied to fields left blank in an existing submission
@@ -24,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Receipt PDF downloads showing an internal error when the submission is still being processed, instead offer a Try again button
 - forms with many repeatable set entries becoming sluggish because every entry re-rendered on each change
 - saving a draft modifying the attachments of the form being filled in
+
+### Dependencies
+
+- update @oneblink/sdk-core to [10.2.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [10.1.0-beta.9](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- depend upon reselect [5.3.0](https://github.com/reduxjs/reselect/releases/tag/v5.3.0)
 
 ## [13.4.0] - 2026-10-25
 
