@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- OneBlink US tenant locale returning `en-AU`
+
 ## [13.5.0] - 2026-10-28
 
 ### Added
