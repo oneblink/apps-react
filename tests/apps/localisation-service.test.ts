@@ -2,6 +2,31 @@ import tenants from '../../src/apps/tenants'
 import * as localisationService from '../../src/apps/localisation-service'
 import { describe, expect, test } from 'vitest'
 
+test('date-fns formats follow the tenant locale', () => {
+  tenants.useOneBlink()
+  expect(localisationService.getLocale()).toBe('en-AU')
+  expect(localisationService.getDateFnsFormats().shortDate).toBe('dd/MM/yyyy')
+  expect(localisationService.getDateFnsFormats().shortDateTime).toBe(
+    'dd/MM/yyyy h:mm a',
+  )
+
+  tenants.useCivicPlus()
+  expect(localisationService.getLocale()).toBe('en-US')
+  expect(localisationService.getDateFnsFormats().shortDate).toBe('MM/dd/yyyy')
+  expect(localisationService.getDateFnsFormats().shortDateTime).toBe(
+    'MM/dd/yyyy h:mm a',
+  )
+
+  tenants.useOneBlinkUS()
+  expect(localisationService.getLocale()).toBe('en-US')
+  expect(localisationService.getDateFnsFormats().shortDate).toBe('MM/dd/yyyy')
+  expect(localisationService.getDateFnsFormats().shortDateTime).toBe(
+    'MM/dd/yyyy h:mm a',
+  )
+
+  tenants.useOneBlink()
+})
+
 describe('parseDayOnlyDate / generateDate', () => {
   test('date-only values are parsed as local midnight', () => {
     const date = localisationService.parseDayOnlyDate('2023-05-04')

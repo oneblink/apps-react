@@ -174,6 +174,7 @@ class Tenants {
   get locale() /* : string */ {
     switch (this.tenant) {
       case 'civicplus':
+      case 'oneblinkUS':
         return 'en-US'
       case 'oneblink':
       default:
