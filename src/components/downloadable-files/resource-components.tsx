@@ -125,6 +125,15 @@ const getFileTypeIcon = (type: string) => {
   return 'attach_file'
 }
 
+/** Waits between attempts after the first download. Three attempts in total. */
+const SUBMISSION_PDF_RETRY_DELAYS_MS = [1000, 5000]
+
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
 export const SingleFileDisplay = ({
   attachment,
   className,
@@ -134,12 +143,19 @@ export const SingleFileDisplay = ({
   className?: string
   /**
    * Download the file in the page instead of navigating away. When the
-   * submission PDF is not ready yet, show a Try again button.
+   * submission PDF is not ready yet, retry with a backoff, then show the error
+   * and a Try again button.
    */
   retryIfSubmissionNotReady?: boolean
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false)
   const [notReadyMessage, setNotReadyMessage] = React.useState<string>()
+  const requestIdRef = React.useRef(0)
+  React.useEffect(() => {
+    return () => {
+      requestIdRef.current += 1
+    }
+  }, [])
   const { avatar } = React.useMemo(() => {
     const avatar = () => {
       return attachment.contentType.includes('image') ? (
@@ -159,18 +175,45 @@ export const SingleFileDisplay = ({
   }, [attachment.filename, attachment.contentType, attachment.signedUrl])
 
   const download = React.useCallback(async () => {
+    const requestId = ++requestIdRef.current
     setIsDownloading(true)
     setNotReadyMessage(undefined)
     try {
-      await downloadSubmissionPdf(attachment.signedUrl, attachment.filename)
-    } catch (error) {
-      if (error instanceof SubmissionPdfNotReadyError) {
-        setNotReadyMessage(error.message)
-        return
+      for (
+        let attempt = 0;
+        attempt <= SUBMISSION_PDF_RETRY_DELAYS_MS.length;
+        attempt++
+      ) {
+        if (requestId !== requestIdRef.current) {
+          return
+        }
+        try {
+          await downloadSubmissionPdf(attachment.signedUrl, attachment.filename)
+          return
+        } catch (error) {
+          if (requestId !== requestIdRef.current) {
+            return
+          }
+          const retryDelay = SUBMISSION_PDF_RETRY_DELAYS_MS[attempt]
+          if (
+            error instanceof SubmissionPdfNotReadyError &&
+            retryDelay !== undefined
+          ) {
+            await delay(retryDelay)
+            continue
+          }
+          if (error instanceof SubmissionPdfNotReadyError) {
+            setNotReadyMessage(error.message)
+            return
+          }
+          reportDownloadError(error instanceof Error ? error : undefined)
+          return
+        }
       }
-      reportDownloadError(error instanceof Error ? error : undefined)
     } finally {
-      setIsDownloading(false)
+      if (requestId === requestIdRef.current) {
+        setIsDownloading(false)
+      }
     }
   }, [attachment.filename, attachment.signedUrl])
 
@@ -193,48 +236,50 @@ export const SingleFileDisplay = ({
     </>
   )
 
+  const fileButton = retryIfSubmissionNotReady ? (
+    <button
+      type="button"
+      disabled={isDownloading}
+      onClick={() => {
+        void download()
+      }}
+      className={clsx('ob-downloadable-files__item', className)}
+    >
+      {fileDetails}
+    </button>
+  ) : (
+    <a
+      href={attachment.signedUrl}
+      target="_blank"
+      rel="noreferrer"
+      download
+      className={clsx('ob-downloadable-files__item', className)}
+    >
+      {fileDetails}
+    </a>
+  )
+
   return (
-    <Tooltip title={attachment.filename} arrow>
-      <div>
-        {retryIfSubmissionNotReady ? (
+    <div>
+      <Tooltip title={attachment.filename} arrow>
+        <div>{fileButton}</div>
+      </Tooltip>
+      {notReadyMessage && (
+        <div className="ob-downloadable-files__not-ready">
+          <p className="cypress-pdf-download-not-ready">{notReadyMessage}</p>
           <button
             type="button"
+            className="button ob-button is-primary cypress-retry-pdf-download-button"
             disabled={isDownloading}
             onClick={() => {
               void download()
             }}
-            className={clsx('ob-downloadable-files__item', className)}
           >
-            {fileDetails}
+            Try again
           </button>
-        ) : (
-          <a
-            href={attachment.signedUrl}
-            target="_blank"
-            rel="noreferrer"
-            download
-            className={clsx('ob-downloadable-files__item', className)}
-          >
-            {fileDetails}
-          </a>
-        )}
-        {notReadyMessage && (
-          <div className="ob-downloadable-files__not-ready">
-            <p className="cypress-pdf-download-not-ready">{notReadyMessage}</p>
-            <button
-              type="button"
-              className="button ob-button is-primary cypress-retry-pdf-download-button"
-              disabled={isDownloading}
-              onClick={() => {
-                void download()
-              }}
-            >
-              Try again
-            </button>
-          </div>
-        )}
-      </div>
-    </Tooltip>
+        </div>
+      )}
+    </div>
   )
 }
 

@@ -32,7 +32,13 @@ const attachment = {
   contentType: 'application/pdf',
 }
 
+const notReadyError = () =>
+  new SubmissionPdfNotReadyError(
+    'The submission is still being processed. Please try again.',
+  )
+
 afterEach(() => {
+  vi.useRealTimers()
   document.body.replaceChildren()
   downloadSubmissionPdf.mockReset()
   reportDownloadError.mockReset()
@@ -56,45 +62,98 @@ async function render(retryIfSubmissionNotReady?: boolean) {
   }
 }
 
+async function click(element: Element | null | undefined) {
+  await React.act(async () => {
+    element?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+  })
+}
+
+async function advance(ms: number) {
+  await React.act(async () => {
+    await vi.advanceTimersByTimeAsync(ms)
+  })
+}
+
 describe('SingleFileDisplay receipt download', () => {
-  test('shows a try again button when the submission PDF is not ready', async () => {
-    downloadSubmissionPdf.mockRejectedValueOnce(
-      new SubmissionPdfNotReadyError(
-        'The submission is still being processed. Please try again.',
-      ),
-    )
+  test('retries a not-ready submission PDF, then shows try again without a tooltip', async () => {
+    downloadSubmissionPdf
+      .mockRejectedValueOnce(notReadyError())
+      .mockRejectedValueOnce(notReadyError())
+      .mockRejectedValueOnce(notReadyError())
     const { container, unmount } = await render(true)
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
 
     const downloadButton = container.querySelector(
       '.cypress-receipt-download-pdf-button-1',
     )
     expect(downloadButton?.tagName).toBe('BUTTON')
 
-    await React.act(async () => {
-      downloadButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    })
+    await click(downloadButton)
 
     expect(downloadSubmissionPdf).toHaveBeenCalledWith(
       attachment.signedUrl,
       attachment.filename,
     )
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(1)
+    expect(
+      container.querySelector('.cypress-retry-pdf-download-button'),
+    ).toBeNull()
+
+    await advance(999)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(1)
+
+    await advance(1)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(2)
+    expect(
+      container.querySelector('.cypress-pdf-download-not-ready'),
+    ).toBeNull()
+
+    await advance(4999)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(2)
+
+    await advance(1)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(3)
     expect(
       container.querySelector('.cypress-pdf-download-not-ready')?.textContent,
     ).toBe('The submission is still being processed. Please try again.')
 
-    downloadSubmissionPdf.mockResolvedValueOnce(undefined)
     const retryButton = container.querySelector(
       '.cypress-retry-pdf-download-button',
     )
     expect(retryButton?.textContent).toBe('Try again')
+    expect(retryButton?.getAttribute('title')).toBeNull()
+    expect(downloadButton?.parentElement?.contains(retryButton ?? null)).toBe(
+      false,
+    )
 
-    await React.act(async () => {
-      retryButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    })
+    downloadSubmissionPdf.mockResolvedValueOnce(undefined)
+    await click(retryButton)
 
-    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(2)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(4)
     expect(
       container.querySelector('.cypress-pdf-download-not-ready'),
+    ).toBeNull()
+    expect(reportDownloadError).not.toHaveBeenCalled()
+
+    await unmount()
+  })
+
+  test('stops retrying when a later attempt succeeds', async () => {
+    downloadSubmissionPdf
+      .mockRejectedValueOnce(notReadyError())
+      .mockResolvedValueOnce(undefined)
+    const { container, unmount } = await render(true)
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    await click(
+      container.querySelector('.cypress-receipt-download-pdf-button-1'),
+    )
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(1)
+
+    await advance(1000)
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(2)
+    expect(
+      container.querySelector('.cypress-retry-pdf-download-button'),
     ).toBeNull()
     expect(reportDownloadError).not.toHaveBeenCalled()
 
@@ -105,12 +164,11 @@ describe('SingleFileDisplay receipt download', () => {
     downloadSubmissionPdf.mockRejectedValueOnce(new Error('network'))
     const { container, unmount } = await render(true)
 
-    await React.act(async () => {
-      container
-        .querySelector('.cypress-receipt-download-pdf-button-1')
-        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
-    })
+    await click(
+      container.querySelector('.cypress-receipt-download-pdf-button-1'),
+    )
 
+    expect(downloadSubmissionPdf).toHaveBeenCalledTimes(1)
     expect(reportDownloadError).toHaveBeenCalledWith(expect.any(Error))
     expect(
       container.querySelector('.cypress-retry-pdf-download-button'),
