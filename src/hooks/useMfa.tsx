@@ -26,6 +26,7 @@ type MfaState = {
 
 export const MfaContext = React.createContext<
   MfaState & {
+    authenticatorAppDisplayName?: string
     beginMfaSetup: (mfaMethod: mfaService.MfaMethod) => Promise<void>
     openMfaSetupMethodDialog: () => void
     closeMfaSetupMethodDialog: () => void
@@ -57,6 +58,7 @@ export const MfaContext = React.createContext<
   isSettingPreferredMfaMethod: false,
   isPhoneNumberDialogOpen: false,
   isRemovePhoneNumberDialogOpen: false,
+  authenticatorAppDisplayName: undefined,
   beginMfaSetup: async () => {},
   openMfaSetupMethodDialog: () => {},
   closeMfaSetupMethodDialog: () => {},
@@ -194,9 +196,16 @@ function setPreferredMfaMethodInSettings(
 export function MfaProvider({
   children,
   isExternalIdentityProviderUser,
+  authenticatorAppDisplayName,
 }: {
   children: React.ReactNode
   isExternalIdentityProviderUser: boolean
+  /**
+   * Name shown in authenticator apps when a user sets up an authenticator.
+   * When omitted, the product name is used. Console sign-in omits this so it
+   * continues to show the product name.
+   */
+  authenticatorAppDisplayName?: string
 }) {
   const [state, setState] = React.useState<MfaState>({
     isExternalIdentityProviderUser,
@@ -616,6 +625,7 @@ export function MfaProvider({
   const value = React.useMemo(() => {
     return {
       ...state,
+      authenticatorAppDisplayName,
       clearMfaSetupError,
       loadMfa,
       beginMfaSetup,
@@ -657,6 +667,7 @@ export function MfaProvider({
     completeMfaAuthenticatorAppSetup,
     cancelDisablingMfa,
     completeDisablingMfa,
+    authenticatorAppDisplayName,
   ])
 
   return <MfaContext.Provider value={value}>{children}</MfaContext.Provider>

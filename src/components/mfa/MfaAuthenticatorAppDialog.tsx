@@ -23,6 +23,7 @@ function MfaAuthenticatorAppDialog() {
     mfaAuthenticatorAppSetup,
     cancelMfaAuthenticatorAppSetup,
     completeMfaAuthenticatorAppSetup,
+    authenticatorAppDisplayName,
   } = useMfa()
 
   const [code, setState] = React.useState('')
@@ -33,9 +34,10 @@ function MfaAuthenticatorAppDialog() {
     if (mfaAuthenticatorAppSetup) {
       return mfaService.generateMfaAuthenticatorAppQrCodeUrl(
         mfaAuthenticatorAppSetup,
+        authenticatorAppDisplayName,
       )
     }
-  }, [mfaAuthenticatorAppSetup])
+  }, [authenticatorAppDisplayName, mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
   const handleSubmit = React.useCallback(
@@ -100,6 +102,9 @@ function MfaAuthenticatorAppDialog() {
             <Typography variant="body2" sx={{ mb: 2 }}>
               Use an authenticator app or browser extension to scan the QR code
               below.
+              {authenticatorAppDisplayName
+                ? ` This account will appear as "${authenticatorAppDisplayName}".`
+                : ''}
             </Typography>
 
             <Box marginBottom={2}>
