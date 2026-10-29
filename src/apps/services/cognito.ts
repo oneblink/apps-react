@@ -434,18 +434,30 @@ function getUserFriendlyName(): string | undefined {
  * }
  * ```
  *
+ * @param mfaAuthenticatorAppSetup
+ * @param authenticatorAppDisplayName Name shown in the authenticator app. When
+ *   omitted, the product name is used. Console sign-in omits this.
  * @returns
  */
 function generateMfaAuthenticatorAppQrCodeUrl(
   mfaAuthenticatorAppSetup: Awaited<
     ReturnType<typeof setupMfaAuthenticatorApp>
   >,
+  authenticatorAppDisplayName?: string,
 ): string | undefined {
   const profile = getUserProfile()
   if (!profile || !mfaAuthenticatorAppSetup) {
     return
   }
 
+  const displayName = authenticatorAppDisplayName?.trim()
+  if (displayName) {
+    const issuer = encodeURIComponent(displayName)
+    return `otpauth://totp/${issuer}:${profile.email}?secret=${mfaAuthenticatorAppSetup.secretCode}&issuer=${issuer}`
+  }
+
+  // Console MFA keeps the product name, including the unencoded space in
+  // "OneBlink LcS". App users pass authenticatorAppDisplayName instead.
   return `otpauth://totp/${tenants.current.productShortName}:${profile.email}?secret=${mfaAuthenticatorAppSetup.secretCode}&issuer=${tenants.current.productShortName}`
 }
 

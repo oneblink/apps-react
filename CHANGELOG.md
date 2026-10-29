@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- optional `authenticatorAppDisplayName` on `<MfaProvider />` for the name shown in authenticator apps. When omitted, the product name is used
 - `options.generateDefaultDataOptions.skipDefaultValues` argument to `useFormSubmissionState()` to prevent form element default values being applied to fields left blank in an existing submission
 
 ### Changed
