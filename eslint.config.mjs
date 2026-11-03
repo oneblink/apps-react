@@ -1,5 +1,6 @@
 import { defineConfig, globalIgnores } from 'eslint/config'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import globals from 'globals'
@@ -8,8 +9,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
-import pluginMicrosoftSdl from '@microsoft/eslint-plugin-sdl'
 import noSharedFormValueMutation from './eslint-rules/no-shared-form-value-mutation.mjs'
+import pluginSecurity from 'eslint-plugin-security'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -19,6 +20,19 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 })
 
+const pluginSecurityStrict = {
+  ...pluginSecurity.configs.recommended,
+  rules: {
+    ...Object.fromEntries(
+      Object.keys(pluginSecurity.configs.recommended.rules).map((rule) => [
+        rule,
+        'error',
+      ]),
+    ),
+    'security/detect-object-injection': 'warn',
+  },
+}
+
 export default defineConfig([
   globalIgnores([
     './node_modules/**',
@@ -27,7 +41,7 @@ export default defineConfig([
     './scripts/**',
     './perf-harness/dist/**',
   ]),
-  pluginMicrosoftSdl.configs.recommended,
+  pluginSecurityStrict,
   reactHooks.configs.flat.recommended,
   {
     extends: fixupConfigRules(
@@ -37,31 +51,27 @@ export default defineConfig([
         'prettier',
       ),
     ),
-
     plugins: {
+      react,
       '@typescript-eslint': fixupPluginRules(typescriptEslint),
       oneblink: {
         rules: { 'no-shared-form-value-mutation': noSharedFormValueMutation },
       },
     },
-
     languageOptions: {
       globals: { ...globals.browser },
-
       parser: tsParser,
       ecmaVersion: 12,
       sourceType: 'module',
-
       parserOptions: {
         ecmaFeatures: { jsx: true },
         project: './tsconfig.eslint.json',
       },
     },
-
     settings: { react: { version: 'detect' } },
-
     rules: {
       'react/prop-types': 0,
+      'react/no-danger': 'warn',
       '@typescript-eslint/no-empty-function': 0,
       '@typescript-eslint/explicit-module-boundary-types': 0,
       '@typescript-eslint/no-empty-interface': 0,

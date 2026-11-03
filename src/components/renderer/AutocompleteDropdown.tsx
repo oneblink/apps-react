@@ -378,6 +378,7 @@ export default React.memo(AutocompleteDropdown) as typeof AutocompleteDropdown
 function highlightLabel(text: string, phrase: string) {
   if (phrase) {
     text = text.replace(
+      // eslint-disable-next-line security/detect-non-literal-regexp -- special characters in the phrase are escaped
       new RegExp(
         '(' +
           phrase.replace(

@@ -7,6 +7,7 @@
  *
  * Usage: node tests/performance/check-limits.mjs <report.json>
  */
+/* eslint-disable security/detect-non-literal-fs-filename -- paths come from the CLI arguments and CI environment */
 import { appendFile, readFile } from 'node:fs/promises'
 import process from 'node:process'
 
@@ -23,7 +24,17 @@ const report = JSON.parse(await readFile(reportPath, 'utf8'))
 
 const failures = []
 const measured = new Set()
-/** @type {Array<{ groupName: string, benchmarkName: string, median: string, mean: string, limit: string, ofLimit: string, result: string }>} */
+/**
+ * @type {{
+ *   groupName: string
+ *   benchmarkName: string
+ *   median: string
+ *   mean: string
+ *   limit: string
+ *   ofLimit: string
+ *   result: string
+ * }[]}
+ */
 const rows = []
 
 for (const file of report.files) {
@@ -122,7 +133,15 @@ function cell(value) {
 }
 
 /**
- * @param {Array<{ groupName: string, benchmarkName: string, median: string, mean: string, limit: string, ofLimit: string, result: string }>} summaryRows
+ * @param {{
+ *   groupName: string
+ *   benchmarkName: string
+ *   median: string
+ *   mean: string
+ *   limit: string
+ *   ofLimit: string
+ *   result: string
+ * }[]} summaryRows
  * @param {number} failureCount
  * @returns {string}
  */
