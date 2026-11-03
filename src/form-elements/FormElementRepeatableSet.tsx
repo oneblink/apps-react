@@ -181,6 +181,7 @@ function FormElementRepeatableSet({
         sectionState: (currentSectionState) => {
           return (
             currentSectionState?.map((section) => {
+              // eslint-disable-next-line security/detect-non-literal-regexp -- element name comes from the form definition
               const idPrefixPattern = new RegExp(
                 `(.+)?${element.name}_entry-(.+)_(.+)`,
               )
@@ -243,6 +244,7 @@ function FormElementRepeatableSet({
                 }[],
                 section,
               ) => {
+                // eslint-disable-next-line security/detect-non-literal-regexp -- element name comes from the form definition
                 const idPrefixPattern = new RegExp(
                   `(.+)?${element.name}_entry-(\\d+)`,
                 )
@@ -258,6 +260,7 @@ function FormElementRepeatableSet({
                   if (section.id.startsWith(parentElementPath)) {
                     // Match pattern: {elementName}_entry-{index}_
                     // also yields a prefix and suffix for any match found
+                    // eslint-disable-next-line security/detect-non-literal-regexp -- element name comes from the form definition
                     const idPrefixWithFullIdPattern = new RegExp(
                       `(.+)?${element.name}_entry-(\\d+)_(.+)`,
                     )

@@ -25,6 +25,7 @@ export default function useSignUp({
     // regex source: https://www.w3resource.com/javascript/form/email-validation.php#:~:text=To%20get%20a%20valid%20email,%5D%2B)*%24%2F.
     return {
       isInvalid: !username.match(
+        // eslint-disable-next-line security/detect-unsafe-regex -- the "." separator prevents catastrophic backtracking in the repeated group
         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
       ),
     }

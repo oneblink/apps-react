@@ -429,6 +429,7 @@ export const validators = {
 
     let pattern = options.pattern
     if (isString(pattern)) {
+      // eslint-disable-next-line security/detect-non-literal-regexp -- pattern is configured on the form definition
       pattern = new RegExp(options.pattern, options.flags)
     }
     const match = pattern.exec(value)
