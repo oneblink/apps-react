@@ -1,7 +1,31 @@
+import { format, isMatch, isValid, parse } from 'date-fns'
 import * as EmailValidator from 'email-validator'
 
 const EMPTY_STRING_REGEXP = /^\s*$/
 const FORMAT_REGEXP = /(%?)%\{([^}]+)\}/g
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+const DATE_ONLY_FORMAT = 'yyyy-MM-dd'
+const DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+
+/**
+ * Date answers must be `yyyy-MM-dd`. `Date.parse` is browser-defined and
+ * accepts strings such as `28-06-04`, which later ISO parsers reject.
+ */
+function isStrictDateOnlyValue(value: string): boolean {
+  if (!DATE_ONLY_PATTERN.test(value)) {
+    return false
+  }
+  const date = parse(value, DATE_ONLY_FORMAT, new Date())
+  return isValid(date) && format(date, DATE_ONLY_FORMAT) === value
+}
+
+/** Datetime and time answers are full ISO timestamps, including milliseconds. */
+function isStrictDateTimeValue(value: string): boolean {
+  if (!isMatch(value, DATE_TIME_FORMAT)) {
+    return false
+  }
+  return isValid(parse(value, DATE_TIME_FORMAT, new Date()))
+}
 
 /**
  * Checks if the value is a number. This function does not consider NaN a number
@@ -359,6 +383,14 @@ export const validators = {
 
     let num = value
     if (isString(value)) {
+      const matchesFormat = options.dateOnly
+        ? isStrictDateOnlyValue(value)
+        : isStrictDateTimeValue(value)
+      if (!matchesFormat) {
+        const err =
+          options.notValid || options.message || 'must be a valid date'
+        return [formatValidationMessage(err, { value })]
+      }
       num = Date.parse(value)
     }
 
