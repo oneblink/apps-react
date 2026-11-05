@@ -25,10 +25,27 @@ export async function generateHeaders() {
 
 export class HTTPError extends Error {
   status: number
+  /** Machine-readable conflict from the API error payload, when present. */
+  conflict?: string
 
-  constructor(statusCode: number, message: string) {
+  constructor(statusCode: number, message: string, conflict?: string) {
     super(message)
     this.status = statusCode
+    this.conflict = conflict
+  }
+}
+
+function readErrorPayload(body: unknown): {
+  message: string
+  conflict?: string
+} {
+  if (!body || typeof body !== 'object') {
+    return { message: '' }
+  }
+  const payload = body as { message?: unknown; conflict?: unknown }
+  return {
+    message: typeof payload.message === 'string' ? payload.message : '',
+    conflict: typeof payload.conflict === 'string' ? payload.conflict : undefined,
   }
 }
 
@@ -63,7 +80,12 @@ export async function fetchJSON<T>(
     return body
   }
 
-  throw new HTTPError(response.status, body.message)
+  const errorPayload = readErrorPayload(body)
+  throw new HTTPError(
+    response.status,
+    errorPayload.message,
+    errorPayload.conflict,
+  )
 }
 
 export async function searchRequest<T>(
@@ -131,7 +153,11 @@ export async function deleteRequest(
 
   const res = await fetchWithError(url, opts)
   if (!res.ok) {
-    const errorPayload = await res.json()
-    throw new HTTPError(res.status, errorPayload.message)
+    const errorPayload = readErrorPayload(await res.json())
+    throw new HTTPError(
+      res.status,
+      errorPayload.message,
+      errorPayload.conflict,
+    )
   }
 }

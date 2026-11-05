@@ -258,6 +258,8 @@ export async function getFormSubmissionApproval(
  * @param abortSignal
  * @returns
  */
+export const PAYMENT_IN_PROGRESS_CONFLICT = 'PAYMENT_IN_PROGRESS'
+
 export async function createApprovalStepPayment(
   formSubmissionApprovalId: string,
   body: {
@@ -271,11 +273,29 @@ export async function createApprovalStepPayment(
   paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
   customerReferenceNumber?: string
 }> {
-  return await postRequest(
-    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
-    body,
-    abortSignal,
-  )
+  try {
+    return await postRequest(
+      `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
+      body,
+      abortSignal,
+    )
+  } catch (error) {
+    if (
+      error instanceof HTTPError &&
+      error.status === 409 &&
+      error.conflict === PAYMENT_IN_PROGRESS_CONFLICT
+    ) {
+      throw new OneBlinkAppsError(
+        'A payment is already in progress for this step. Finish or cancel that payment before starting another.',
+        {
+          httpStatusCode: error.status,
+          conflict: PAYMENT_IN_PROGRESS_CONFLICT,
+          originalError: error,
+        },
+      )
+    }
+    throw error
+  }
 }
 
 export async function skipApprovalStepPayment(
