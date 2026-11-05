@@ -2,13 +2,19 @@ import { paymentService } from '../../apps'
 import { SubmissionTypes } from '@oneblink/types'
 import React from 'react'
 import WestpacQuickStreamPaymentForm from './WestpacQuickStreamPaymentForm'
-import useQuery from '../../hooks/useQuery'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
 import MaterialIcon from '../MaterialIcon'
 import { CaptchaType } from '../../types/form'
+import type { PaymentFormSession } from '../../apps/services/payment-handoff'
 
+/**
+ * Renders the payment form for a payment that is taken inside the application
+ * (for example Westpac QuickStream). The payment session is provided by the
+ * application, so the form does not depend on where the payment was started.
+ */
 function PaymentForm({
+  session,
   captchaSiteKey,
   captchaType,
   onCompleted,
@@ -16,46 +22,32 @@ function PaymentForm({
   appImageUrl,
   title,
 }: {
-  captchaSiteKey: string
+  session: PaymentFormSession
+  /** When provided, a CAPTCHA is shown and must be completed to make the payment */
+  captchaSiteKey?: string
   captchaType?: CaptchaType
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
-    paymentReceiptUrl: string
   }) => void
-  onCancelled: (result: { paymentReceiptUrl: string }) => void
+  onCancelled: () => void
   appImageUrl?: string
   title?: string
 }) {
-  const query = useQuery()
-
   const loadPaymentFormConfiguration = React.useCallback(
     async (abortSignal: AbortSignal) => {
-      const formSubmissionPaymentId = query.formSubmissionPaymentId
-      if (typeof formSubmissionPaymentId !== 'string') {
-        throw new Error(
-          'It looks like you are attempting to make an unknown payment.',
-        )
-      }
-
-      const { formSubmissionResult, paymentSubmissionEvent } =
-        await paymentService.getFormSubmissionResultPayment()
-      switch (paymentSubmissionEvent.type) {
+      switch (session.paymentType) {
         case 'WESTPAC_QUICK_STREAM': {
           const { supplierBusinessCode, publishableApiKey, isTestMode } =
             await paymentService.westpacQuickStream.getPaymentFormConfiguration(
               {
-                formSubmissionPaymentId,
-                formSubmissionResult,
-                paymentSubmissionEvent,
+                session,
                 abortSignal,
               },
             )
           return {
             renderPaymentForm: () => (
               <WestpacQuickStreamPaymentForm
-                formSubmissionResult={formSubmissionResult}
-                paymentSubmissionEvent={paymentSubmissionEvent}
-                formSubmissionPaymentId={formSubmissionPaymentId}
+                session={session}
                 supplierBusinessCode={supplierBusinessCode}
                 publishableApiKey={publishableApiKey}
                 isTestMode={isTestMode}
@@ -69,11 +61,6 @@ function PaymentForm({
             ),
           }
         }
-        default: {
-          throw new Error(
-            `"${paymentSubmissionEvent.type}" payment events do not support a custom payment form.`,
-          )
-        }
       }
     },
     [
@@ -82,7 +69,7 @@ function PaymentForm({
       captchaType,
       onCancelled,
       onCompleted,
-      query.formSubmissionPaymentId,
+      session,
       title,
     ],
   )

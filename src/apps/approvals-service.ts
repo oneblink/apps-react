@@ -1,4 +1,9 @@
-import { SubmissionTypes, ApprovalTypes, FormTypes } from '@oneblink/types'
+import {
+  SubmissionTypes,
+  ApprovalTypes,
+  FormTypes,
+  SubmissionEventTypes,
+} from '@oneblink/types'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { isOffline } from './offline-service'
 import {
@@ -30,6 +35,7 @@ export type FormApprovalFlowInstanceHistory = {
   formSubmissionMetaEdits: SubmissionTypes.FormSubmissionMetaEdit[]
   formSubmissionApprovals: ApprovalTypes.FormSubmissionApproval[]
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
+  formSubmissionPayments?: SubmissionTypes.FormSubmissionPayment[]
 }
 
 export type FormSubmissionApprovalResponse = {
@@ -252,6 +258,37 @@ export async function getFormSubmissionApproval(
  * @param abortSignal
  * @returns
  */
+export async function createApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  body: {
+    redirectUrl: string
+    paymentFormUrl?: string
+  },
+  abortSignal?: AbortSignal,
+): Promise<{
+  hostedFormUrl: string
+  amount: number
+  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+  customerReferenceNumber?: string
+}> {
+  return await postRequest(
+    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
+    body,
+    abortSignal,
+  )
+}
+
+export async function skipApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  abortSignal?: AbortSignal,
+): Promise<ApprovalTypes.FormSubmissionApproval> {
+  return await postRequest(
+    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/skip-payment`,
+    {},
+    abortSignal,
+  )
+}
+
 export async function updateFormSubmissionApproval(
   formSubmissionApproval: ApprovalTypes.FormSubmissionApproval,
   abortSignal?: AbortSignal,

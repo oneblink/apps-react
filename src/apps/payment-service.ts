@@ -28,6 +28,15 @@ import {
 const KEY = 'PAYMENT_SUBMISSION_RESULT'
 
 export { HandlePaymentResult, PaymentReceiptItem, westpacQuickStream }
+export {
+  paymentProviderRendersInApp,
+  getPaymentHandoff,
+  getPaymentFormSession,
+} from './services/payment-handoff'
+export type {
+  InAppPaymentType,
+  PaymentFormSession,
+} from './services/payment-handoff'
 
 function getPaymentProvider(
   formSubmissionResult: FormSubmissionResult,
