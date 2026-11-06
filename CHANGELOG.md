@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- components to support approval payment steps
+- **[BREAKING]** `<PaymentForm />` to require a `session` prop (`PaymentFormSession`) instead of reading the payment from the URL and local storage. `captchaSiteKey` is now optional, and `onCompleted` and `onCancelled` no longer receive `paymentReceiptUrl`. `onCancelled` now takes no arguments.
 
 ### Fixed
 
