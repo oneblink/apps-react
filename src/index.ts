@@ -66,6 +66,7 @@ export { default as ProgressBar } from './components/renderer/ProgressBar'
 export { default as LoadingWithMessage } from './components/LoadingWithMessage'
 export { default as PaymentReceipt } from './PaymentReceipt'
 export { default as PaymentForm } from './components/payments/PaymentForm'
+export { default as SessionPaymentForm } from './components/payments/SessionPaymentForm'
 
 export { default as CalendarBookingsForm } from './components/calendar-bookings/CalendarBookingsForm'
 export { default as CalendarBookingsRescheduleForm } from './components/calendar-bookings/CalendarBookingsReschedulingForm'

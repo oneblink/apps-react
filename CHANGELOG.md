@@ -9,11 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `paymentService.getCompletedPaymentReceiptUrl()` and `paymentService.getCancelledPaymentReceiptUrl()` for in-app payment receipt URLs. Hosts of the payment form call these instead of a provider-specific receipt URL.
-
-### Changed
-
-- **[BREAKING]** `<PaymentForm />` to require a `session` prop (`PaymentFormSession`) instead of reading the payment from the URL and local storage. `captchaSiteKey` is now optional, and `onCompleted` and `onCancelled` no longer receive `paymentReceiptUrl`. `onCancelled` now takes no arguments.
+- `<SessionPaymentForm />` for an in-app payment form that takes a `PaymentFormSession`. `<PaymentForm />` renders it for form submission payments and still passes `paymentReceiptUrl` to `onCompleted` and `onCancelled`.
+- `paymentService.getCompletedPaymentReceiptUrl()` and `paymentService.getCancelledPaymentReceiptUrl()` for in-app payment receipt URLs.
 
 ### Fixed
 
