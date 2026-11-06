@@ -21,6 +21,13 @@ import {
   replaceSubmissionFormatters,
 } from './localisation-service'
 import {
+  getPaymentFormSession,
+  getPaymentHandoff,
+  paymentProviderRendersInApp,
+  type InAppPaymentType,
+  type PaymentFormSession,
+} from './services/payment-handoff'
+import {
   getSchedulingBooking,
   removeSchedulingBooking,
 } from './services/schedulingHandlers'
@@ -28,6 +35,66 @@ import {
 const KEY = 'PAYMENT_SUBMISSION_RESULT'
 
 export { HandlePaymentResult, PaymentReceiptItem, westpacQuickStream }
+export { paymentProviderRendersInApp, getPaymentHandoff, getPaymentFormSession }
+export type { InAppPaymentType, PaymentFormSession }
+
+/**
+ * Receipt URLs for providers whose payment form is rendered by the app. Add a
+ * new in-app provider here so hosts of that form can redirect to a receipt
+ * without knowing which provider took the payment.
+ */
+function getInAppPaymentReceipts(formSubmissionResult: FormSubmissionResult) {
+  const paymentType = formSubmissionResult.payment?.submissionEvent.type
+  if (!paymentType || !paymentProviderRendersInApp(paymentType)) {
+    throw new OneBlinkAppsError(
+      'It looks like you are attempting to view a receipt for an unsupported payment.',
+    )
+  }
+
+  switch (paymentType) {
+    case 'WESTPAC_QUICK_STREAM': {
+      return westpacQuickStream
+    }
+    default: {
+      const unsupportedPaymentType: never = paymentType
+      throw new OneBlinkAppsError(
+        `It looks like you are attempting to view a receipt for an unsupported payment (${unsupportedPaymentType}).`,
+      )
+    }
+  }
+}
+
+/**
+ * Get the receipt URL for a completed in-app payment. The receipt page verifies
+ * the transaction from the query parameters on this URL.
+ *
+ * @param options
+ * @returns
+ */
+export function getCompletedPaymentReceiptUrl(options: {
+  formSubmissionResult: FormSubmissionResult
+  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+}): string {
+  return getInAppPaymentReceipts(
+    options.formSubmissionResult,
+  ).getCompletedPaymentReceiptUrl(options)
+}
+
+/**
+ * Get the receipt URL for a cancelled in-app payment.
+ *
+ * @param formSubmissionResult
+ * @param formSubmissionPaymentId
+ * @returns
+ */
+export function getCancelledPaymentReceiptUrl(
+  formSubmissionResult: FormSubmissionResult,
+  formSubmissionPaymentId: string,
+): string {
+  return getInAppPaymentReceipts(
+    formSubmissionResult,
+  ).getCancelledPaymentReceiptUrl(formSubmissionResult, formSubmissionPaymentId)
+}
 
 function getPaymentProvider(
   formSubmissionResult: FormSubmissionResult,

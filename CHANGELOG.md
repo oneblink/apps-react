@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `paymentService.getCompletedPaymentReceiptUrl()` and `paymentService.getCancelledPaymentReceiptUrl()` for in-app payment receipt URLs. Hosts of the payment form call these instead of a provider-specific receipt URL.
+
+### Changed
+
+- **[BREAKING]** `<PaymentForm />` to require a `session` prop (`PaymentFormSession`) instead of reading the payment from the URL and local storage. `captchaSiteKey` is now optional, and `onCompleted` and `onCancelled` no longer receive `paymentReceiptUrl`. `onCancelled` now takes no arguments.
+
 ### Fixed
 
 - OneBlink US tenant locale returning `en-AU`

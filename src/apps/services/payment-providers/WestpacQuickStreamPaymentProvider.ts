@@ -1,7 +1,6 @@
-import { SubmissionEventTypes } from '@oneblink/types'
+import { SubmissionEventTypes, SubmissionTypes } from '@oneblink/types'
 import { PaymentProvider } from '../../types/payments'
 import { FormSubmissionResult } from '../../types/submissions'
-import replaceInjectablesWithSubmissionValues from '../replaceInjectablesWithSubmissionValues'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import {
   generateAmountReceiptItem,
@@ -14,6 +13,7 @@ import {
   completeWestpacQuickStreamTransaction,
   getCustomFormPaymentConfiguration,
 } from '../api/payment'
+import { PaymentFormSession } from '../payment-handoff'
 
 export default class WestpacQuickStreamPaymentProvider implements PaymentProvider<SubmissionEventTypes.WestpacQuickStreamSubmissionEvent> {
   constructor(
@@ -83,15 +83,15 @@ export default class WestpacQuickStreamPaymentProvider implements PaymentProvide
   }
 }
 
+/**
+ * Get the QuickStream configuration needed to render the card form for a
+ * payment session.
+ */
 export async function getPaymentFormConfiguration({
-  formSubmissionResult,
-  formSubmissionPaymentId,
-  paymentSubmissionEvent,
+  session,
   abortSignal,
 }: {
-  formSubmissionResult: FormSubmissionResult
-  formSubmissionPaymentId: string
-  paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent
+  session: PaymentFormSession
   abortSignal: AbortSignal
 }): Promise<{
   supplierBusinessCode: string
@@ -104,10 +104,9 @@ export async function getPaymentFormConfiguration({
       publishableApiKey: string
       isTestMode: boolean
     }>(
-      `/forms/${formSubmissionResult.definition.id}/westpac-quick-stream-payment/${formSubmissionPaymentId}`,
+      `/forms/${session.formId}/westpac-quick-stream-payment/${session.formSubmissionPaymentId}`,
       {
-        integrationEnvironmentId:
-          paymentSubmissionEvent.configuration.environmentId,
+        integrationEnvironmentId: session.integrationEnvironmentId,
       },
       abortSignal,
     )
@@ -119,48 +118,77 @@ export async function getPaymentFormConfiguration({
   }
 }
 
+/**
+ * Complete the QuickStream transaction for a payment session.
+ *
+ * `recaptcha` is required for payments started from a form submission and
+ * omitted for payments started from an approval step.
+ */
 export async function completeTransaction({
-  formSubmissionPaymentId,
-  formSubmissionResult,
-  paymentSubmissionEvent,
+  session,
   singleUseTokenId,
-  captchaSiteKey,
-  captchaToken,
+  recaptcha,
   abortSignal,
 }: {
-  formSubmissionPaymentId: string
-  formSubmissionResult: FormSubmissionResult
-  paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent
+  session: PaymentFormSession
   singleUseTokenId: string
-  captchaSiteKey: string
-  captchaToken: string
-  abortSignal?: AbortSignal
-}) {
-  if (!formSubmissionResult.payment) {
-    throw new Error(
-      '"formSubmissionResult.payment" must have a value to complete transactions',
-    )
+  recaptcha?: {
+    siteKey: string
+    token: string
   }
-
+  abortSignal?: AbortSignal
+}): Promise<{
+  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+}> {
   const { formSubmissionPayment } = await completeWestpacQuickStreamTransaction(
-    formSubmissionResult.definition.id,
+    session.formId,
     {
-      formSubmissionPaymentId,
+      formSubmissionPaymentId: session.formSubmissionPaymentId,
       singleUseTokenId,
-      integrationEnvironmentId:
-        paymentSubmissionEvent.configuration.environmentId,
-      customerReferenceNumber: replaceInjectablesWithSubmissionValues(
-        paymentSubmissionEvent.configuration.customerReferenceNumber,
-        formSubmissionResult,
-      ).text,
-      principalAmount: formSubmissionResult.payment.amount,
-      recaptcha: {
-        siteKey: captchaSiteKey,
-        token: captchaToken,
-      },
+      integrationEnvironmentId: session.integrationEnvironmentId,
+      customerReferenceNumber: session.customerReferenceNumber,
+      principalAmount: session.amount,
+      recaptcha,
     },
     abortSignal,
   )
+
+  return {
+    formSubmissionPayment,
+  }
+}
+
+/** Cancel the QuickStream payment for a payment session. */
+export async function cancelPayment({
+  session,
+  abortSignal,
+}: {
+  session: PaymentFormSession
+  abortSignal?: AbortSignal
+}): Promise<void> {
+  await cancelWestpacQuickStreamPayment(
+    session.formId,
+    session.formSubmissionPaymentId,
+    abortSignal,
+  )
+}
+
+/**
+ * Get the receipt URL for a completed QuickStream transaction. The receipt page
+ * verifies the transaction using the query parameters added here.
+ */
+export function getCompletedPaymentReceiptUrl({
+  formSubmissionResult,
+  formSubmissionPayment,
+}: {
+  formSubmissionResult: FormSubmissionResult
+  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+}): string {
+  if (!formSubmissionResult.payment) {
+    throw new Error(
+      '"formSubmissionResult.payment" must have a value to create a receipt URL',
+    )
+  }
 
   const url = new URL(formSubmissionResult.payment.paymentReceiptUrl)
   if (
@@ -199,32 +227,19 @@ export async function completeTransaction({
     }
   }
 
-  return {
-    formSubmissionPayment,
-    paymentReceiptUrl: url.href,
-  }
+  return url.href
 }
 
-export async function cancelPayment({
-  formSubmissionPaymentId,
-  formSubmissionResult,
-  abortSignal,
-}: {
-  formSubmissionPaymentId: string
-  formSubmissionResult: FormSubmissionResult
-  abortSignal?: AbortSignal
-}) {
+/** Get the receipt URL for a cancelled QuickStream payment. */
+export function getCancelledPaymentReceiptUrl(
+  formSubmissionResult: FormSubmissionResult,
+  formSubmissionPaymentId: string,
+): string {
   if (!formSubmissionResult.payment) {
     throw new Error(
-      '"formSubmissionResult.payment" must have a value to cancel payments',
+      '"formSubmissionResult.payment" must have a value to create a receipt URL',
     )
   }
-
-  await cancelWestpacQuickStreamPayment(
-    formSubmissionResult.definition.id,
-    formSubmissionPaymentId,
-    abortSignal,
-  )
 
   const url = new URL(formSubmissionResult.payment.paymentReceiptUrl)
   if (formSubmissionResult.submissionId) {
@@ -241,7 +256,5 @@ export async function cancelPayment({
   url.searchParams.append('summaryCode', '1')
   url.searchParams.append('responseDescription', 'Payment Cancelled')
 
-  return {
-    paymentReceiptUrl: url.href,
-  }
+  return url.href
 }

@@ -1,4 +1,9 @@
-import { SubmissionTypes, ApprovalTypes, FormTypes } from '@oneblink/types'
+import {
+  SubmissionTypes,
+  ApprovalTypes,
+  FormTypes,
+  SubmissionEventTypes,
+} from '@oneblink/types'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { isOffline } from './offline-service'
 import {
@@ -30,6 +35,7 @@ export type FormApprovalFlowInstanceHistory = {
   formSubmissionMetaEdits: SubmissionTypes.FormSubmissionMetaEdit[]
   formSubmissionApprovals: ApprovalTypes.FormSubmissionApproval[]
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
+  formSubmissionPayments?: SubmissionTypes.FormSubmissionPayment[]
 }
 
 export type FormSubmissionApprovalResponse = {
@@ -252,6 +258,57 @@ export async function getFormSubmissionApproval(
  * @param abortSignal
  * @returns
  */
+export const PAYMENT_IN_PROGRESS_CONFLICT = 'PAYMENT_IN_PROGRESS'
+
+export async function createApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  body: {
+    redirectUrl: string
+    paymentFormUrl?: string
+  },
+  abortSignal?: AbortSignal,
+): Promise<{
+  hostedFormUrl: string
+  amount: number
+  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+  customerReferenceNumber?: string
+}> {
+  try {
+    return await postRequest(
+      `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
+      body,
+      abortSignal,
+    )
+  } catch (error) {
+    if (
+      error instanceof HTTPError &&
+      error.status === 409 &&
+      error.conflict === PAYMENT_IN_PROGRESS_CONFLICT
+    ) {
+      throw new OneBlinkAppsError(
+        'A payment is already in progress for this step. Finish or cancel that payment before starting another.',
+        {
+          httpStatusCode: error.status,
+          conflict: PAYMENT_IN_PROGRESS_CONFLICT,
+          originalError: error,
+        },
+      )
+    }
+    throw error
+  }
+}
+
+export async function skipApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  abortSignal?: AbortSignal,
+): Promise<ApprovalTypes.FormSubmissionApproval> {
+  return await postRequest(
+    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/skip-payment`,
+    {},
+    abortSignal,
+  )
+}
+
 export async function updateFormSubmissionApproval(
   formSubmissionApproval: ApprovalTypes.FormSubmissionApproval,
   abortSignal?: AbortSignal,

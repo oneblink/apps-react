@@ -15,6 +15,7 @@ import {
   PendingQueueAction,
 } from './services/pending-queue'
 import replaceInjectablesWithSubmissionValues from './services/replaceInjectablesWithSubmissionValues'
+import { getFormSubmissionPaymentHandoff } from './services/payment-handoff'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import Sentry from './Sentry'
 import prepareSubmissionData from './services/prepareSubmissionData'
@@ -478,7 +479,7 @@ async function executePostSubmissionAction(
     redirectUrl = submissionResult.scheduling.bookingUrl
   } else if (submissionResult.payment) {
     postSubmissionAction = 'URL'
-    redirectUrl = submissionResult.payment.hostedFormUrl
+    redirectUrl = getFormSubmissionPaymentHandoff(submissionResult)
   } else if (submissionResult.taskCompletion) {
     postSubmissionAction = 'URL'
     redirectUrl = submissionResult.taskCompletion.redirectUrl

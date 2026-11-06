@@ -151,6 +151,7 @@ function getFormApprovalFlowInstanceNodes(
           | 'parentStepLabelsId'
           | 'isConcurrentWithPrevious'
           | 'isConcurrentWithNext'
+          | 'isPaymentStep'
         >
     >
   >((memo, step) => {
@@ -168,6 +169,16 @@ function getFormApprovalFlowInstanceNodes(
             isConcurrentWithNext: index < step.nodes.length - 1,
           })
         }
+        break
+      }
+      case 'PAYMENT': {
+        memo.push({
+          ...step,
+          isPaymentStep: true,
+          isConcurrentWithPrevious: false,
+          isConcurrentWithNext: false,
+          parentStepLabelsId: step.label,
+        })
         break
       }
       case 'STANDARD':
@@ -304,13 +315,19 @@ export function getFlowInstanceNodesWithMeta(
       isClarificationRequired = true
     }
 
+    const updatedByText = associatedApproval?.updatedBy
+      ? ` by ${associatedApproval.updatedBy}`
+      : ''
     let description = 'Awaiting previous approvals'
     if (step.isSkipped) {
       description = 'Skipped based on form submission'
+    } else if (step.isPaymentStep && associatedApproval?.paymentSkipped) {
+      description = `Payment skipped${updatedByText}`
+    } else if (step.isPaymentStep && status?.value === 'APPROVED') {
+      description = `Payment completed${updatedByText}`
+    } else if (step.isPaymentStep && status?.value === 'PENDING') {
+      description = 'Awaiting payment'
     } else if (status) {
-      const updatedByText = associatedApproval?.updatedBy
-        ? ` by ${associatedApproval.updatedBy}`
-        : ''
       description = `${status.label}${updatedByText}`
     } else if (isAfterDeniedStep) {
       description = 'Denied in a previous step'

@@ -1,10 +1,10 @@
 import {
   OneBlinkAppsError,
   paymentService,
-  submissionService,
   localisationService,
 } from '../../apps'
-import { SubmissionTypes, SubmissionEventTypes } from '@oneblink/types'
+import { SubmissionTypes } from '@oneblink/types'
+import type { PaymentFormSession } from '../../apps/services/payment-handoff'
 import clsx from 'clsx'
 import React from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
@@ -59,9 +59,7 @@ declare global {
   }
 }
 function WestpacQuickStreamPaymentForm({
-  formSubmissionResult,
-  paymentSubmissionEvent,
-  formSubmissionPaymentId,
+  session,
   supplierBusinessCode,
   publishableApiKey,
   isTestMode,
@@ -72,19 +70,17 @@ function WestpacQuickStreamPaymentForm({
   appImageUrl,
   title,
 }: {
-  formSubmissionResult: submissionService.FormSubmissionResult
-  paymentSubmissionEvent: SubmissionEventTypes.WestpacQuickStreamSubmissionEvent
-  formSubmissionPaymentId: string
+  session: PaymentFormSession
   supplierBusinessCode: string
   publishableApiKey: string
   isTestMode: boolean
-  captchaSiteKey: string
+  /** When provided, a CAPTCHA is required before the payment is completed */
+  captchaSiteKey?: string
   captchaType?: CaptchaType
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
-    paymentReceiptUrl: string
   }) => void
-  onCancelled: (result: { paymentReceiptUrl: string }) => void
+  onCancelled: () => void
   appImageUrl?: string
   title?: string
 }) {
@@ -299,27 +295,32 @@ function WestpacQuickStreamPaymentForm({
         return
       }
 
-      const { recaptchaToken, displayCaptchaRequired } =
-        await getRecaptchaToken()
+      let recaptcha: { siteKey: string; token: string } | undefined
+      if (captchaSiteKey) {
+        const { recaptchaToken, displayCaptchaRequired } =
+          await getRecaptchaToken()
 
-      if (!recaptchaToken) {
-        setCompleteTransactionState({
-          captchaToken: null,
-          displayCaptchaRequired,
-          isCompletingTransaction: false,
-          completeTransactionError: null,
-        })
-        return
+        if (!recaptchaToken) {
+          setCompleteTransactionState({
+            captchaToken: null,
+            displayCaptchaRequired,
+            isCompletingTransaction: false,
+            completeTransactionError: null,
+          })
+          return
+        }
+
+        recaptcha = {
+          siteKey: captchaSiteKey,
+          token: recaptchaToken,
+        }
       }
 
       paymentService.westpacQuickStream
         .completeTransaction({
+          session,
           singleUseTokenId: data.singleUseToken.singleUseTokenId,
-          formSubmissionResult,
-          formSubmissionPaymentId,
-          paymentSubmissionEvent,
-          captchaSiteKey,
-          captchaToken: recaptchaToken,
+          recaptcha,
         })
         .then(onCompleted)
         .catch((error) => {
@@ -330,15 +331,7 @@ function WestpacQuickStreamPaymentForm({
           }))
         })
     })
-  }, [
-    trustedFrame,
-    getRecaptchaToken,
-    formSubmissionResult,
-    formSubmissionPaymentId,
-    paymentSubmissionEvent,
-    captchaSiteKey,
-    onCompleted,
-  ])
+  }, [trustedFrame, getRecaptchaToken, session, captchaSiteKey, onCompleted])
 
   const [{ isCancellingTransaction, cancelError }, setCancelState] =
     React.useState<{
@@ -362,11 +355,10 @@ function WestpacQuickStreamPaymentForm({
       cancelError: null,
     })
     try {
-      const result = await paymentService.westpacQuickStream.cancelPayment({
-        formSubmissionPaymentId,
-        formSubmissionResult,
+      await paymentService.westpacQuickStream.cancelPayment({
+        session,
       })
-      onCancelled(result)
+      onCancelled()
     } catch (error) {
       console.warn('Failed to cancel payment', error)
       setCancelState({
@@ -374,7 +366,7 @@ function WestpacQuickStreamPaymentForm({
         cancelError: error as Error,
       })
     }
-  }, [formSubmissionPaymentId, formSubmissionResult, onCancelled])
+  }, [session, onCancelled])
 
   return (
     <>
@@ -429,16 +421,14 @@ function WestpacQuickStreamPaymentForm({
             <div className="ob-payment-form__westpac-quickstream-amount">
               <div>Amount</div>
               <div className="ob-payment-form__westpac-quickstream-amount-value">
-                {localisationService.formatCurrency(
-                  formSubmissionResult.payment?.amount ?? 0,
-                )}
+                {localisationService.formatCurrency(session.amount)}
               </div>
             </div>
             <div
               data-quickstream-api="creditCardContainer"
               className="quickstream-credit-card-container"
             ></div>
-            {!isLoading && !loadError && (
+            {!isLoading && !loadError && captchaSiteKey && (
               <>
                 <ReCAPTCHA
                   {...recaptchaProps}

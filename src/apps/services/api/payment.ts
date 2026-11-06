@@ -81,7 +81,11 @@ async function completeWestpacQuickStreamTransaction(
     integrationEnvironmentId: string
     customerReferenceNumber: string
     principalAmount: number
-    recaptcha: NonNullable<NewFormSubmission['recaptchas']>[number]
+    /**
+     * Required for payments started from a form submission. Not used for
+     * approval payments.
+     */
+    recaptcha?: NonNullable<NewFormSubmission['recaptchas']>[number]
   },
   abortSignal?: AbortSignal,
 ) {
