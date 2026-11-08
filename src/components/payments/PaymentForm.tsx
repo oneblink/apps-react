@@ -1,20 +1,19 @@
 import { paymentService } from '../../apps'
 import { SubmissionTypes } from '@oneblink/types'
 import React from 'react'
-import WestpacQuickStreamPaymentForm from './WestpacQuickStreamPaymentForm'
 import useLoadDataState from '../../hooks/useLoadDataState'
 import OnLoading from '../renderer/OnLoading'
 import MaterialIcon from '../MaterialIcon'
 import { CaptchaType } from '../../types/form'
-import type { PaymentFormSession } from '../../apps/services/payment-handoff'
+import SessionPaymentForm from './SessionPaymentForm'
 
 /**
- * Renders the payment form for a payment that is taken inside the application
- * (for example Westpac QuickStream). The payment session is provided by the
- * application, so the form does not depend on where the payment was started.
+ * Renders the in-app payment form for a form submission. Reads the payment
+ * session from the page URL and the submission result from local storage, then
+ * renders `<SessionPaymentForm />`. `onCompleted` and `onCancelled` receive the
+ * receipt URL for that submission.
  */
 function PaymentForm({
-  session,
   captchaSiteKey,
   captchaType,
   onCompleted,
@@ -22,59 +21,33 @@ function PaymentForm({
   appImageUrl,
   title,
 }: {
-  session: PaymentFormSession
-  /** When provided, a CAPTCHA is shown and must be completed to make the payment */
-  captchaSiteKey?: string
+  captchaSiteKey: string
   captchaType?: CaptchaType
   onCompleted: (result: {
     formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+    paymentReceiptUrl: string
   }) => void
-  onCancelled: () => void
+  onCancelled: (result: { paymentReceiptUrl: string }) => void
   appImageUrl?: string
   title?: string
 }) {
-  const loadPaymentFormConfiguration = React.useCallback(
-    async (abortSignal: AbortSignal) => {
-      switch (session.paymentType) {
-        case 'WESTPAC_QUICK_STREAM': {
-          const { supplierBusinessCode, publishableApiKey, isTestMode } =
-            await paymentService.westpacQuickStream.getPaymentFormConfiguration(
-              {
-                session,
-                abortSignal,
-              },
-            )
-          return {
-            renderPaymentForm: () => (
-              <WestpacQuickStreamPaymentForm
-                session={session}
-                supplierBusinessCode={supplierBusinessCode}
-                publishableApiKey={publishableApiKey}
-                isTestMode={isTestMode}
-                captchaSiteKey={captchaSiteKey}
-                captchaType={captchaType}
-                onCompleted={onCompleted}
-                onCancelled={onCancelled}
-                appImageUrl={appImageUrl}
-                title={title}
-              />
-            ),
-          }
-        }
-      }
-    },
-    [
-      appImageUrl,
-      captchaSiteKey,
-      captchaType,
-      onCancelled,
-      onCompleted,
-      session,
-      title,
-    ],
-  )
+  const loadPayment = React.useCallback(async () => {
+    const session = paymentService.getPaymentFormSession(window.location.search)
+    const { formSubmissionResult } =
+      await paymentService.getFormSubmissionResultPayment()
+    const paymentType = formSubmissionResult.payment?.submissionEvent.type
+    if (
+      !paymentType ||
+      !paymentService.paymentProviderRendersInApp(paymentType)
+    ) {
+      throw new Error(
+        `"${paymentType}" payment events do not support a custom payment form.`,
+      )
+    }
+    return { session, formSubmissionResult }
+  }, [])
 
-  const [state] = useLoadDataState(loadPaymentFormConfiguration)
+  const [state] = useLoadDataState(loadPayment)
 
   switch (state.status) {
     case 'LOADING': {
@@ -105,9 +78,83 @@ function PaymentForm({
       )
     }
     case 'SUCCESS': {
-      return state.result.renderPaymentForm()
+      return (
+        <SubmissionPaymentForm
+          session={state.result.session}
+          formSubmissionResult={state.result.formSubmissionResult}
+          captchaSiteKey={captchaSiteKey}
+          captchaType={captchaType}
+          onCompleted={onCompleted}
+          onCancelled={onCancelled}
+          appImageUrl={appImageUrl}
+          title={title}
+        />
+      )
     }
   }
+}
+
+function SubmissionPaymentForm({
+  session,
+  formSubmissionResult,
+  captchaSiteKey,
+  captchaType,
+  onCompleted,
+  onCancelled,
+  appImageUrl,
+  title,
+}: {
+  session: paymentService.PaymentFormSession
+  formSubmissionResult: Parameters<
+    typeof paymentService.getCancelledPaymentReceiptUrl
+  >[0]
+  captchaSiteKey: string
+  captchaType?: CaptchaType
+  onCompleted: (result: {
+    formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+    paymentReceiptUrl: string
+  }) => void
+  onCancelled: (result: { paymentReceiptUrl: string }) => void
+  appImageUrl?: string
+  title?: string
+}) {
+  const handleCompleted = React.useCallback(
+    ({
+      formSubmissionPayment,
+    }: {
+      formSubmissionPayment: SubmissionTypes.FormSubmissionPayment
+    }) => {
+      onCompleted({
+        formSubmissionPayment,
+        paymentReceiptUrl: paymentService.getCompletedPaymentReceiptUrl({
+          formSubmissionResult,
+          formSubmissionPayment,
+        }),
+      })
+    },
+    [formSubmissionResult, onCompleted],
+  )
+
+  const handleCancelled = React.useCallback(() => {
+    onCancelled({
+      paymentReceiptUrl: paymentService.getCancelledPaymentReceiptUrl(
+        formSubmissionResult,
+        session.formSubmissionPaymentId,
+      ),
+    })
+  }, [formSubmissionResult, onCancelled, session.formSubmissionPaymentId])
+
+  return (
+    <SessionPaymentForm
+      session={session}
+      captchaSiteKey={captchaSiteKey}
+      captchaType={captchaType}
+      onCompleted={handleCompleted}
+      onCancelled={handleCancelled}
+      appImageUrl={appImageUrl}
+      title={title}
+    />
+  )
 }
 
 export default React.memo(PaymentForm)
