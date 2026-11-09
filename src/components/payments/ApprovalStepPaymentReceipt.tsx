@@ -27,6 +27,9 @@ function ApprovalStepPaymentReceipt({
           paymentFormUrl: submissionResult.payment.paymentFormUrl,
           form: submissionResult.definition,
           submissionId: submissionResult.submissionId,
+          // A failed or cancelled checkout can still be pending until the
+          // provider reports the result. Replace it so this retry can start.
+          replacePendingPayment: true,
         },
       )
       window.location.assign(
@@ -52,9 +55,10 @@ function ApprovalStepPaymentReceipt({
 }
 
 /**
- * Component for rendering an approval step payment receipt. Try Again starts
- * another payment for the same approval step. The developer implements what
- * happens when the user clicks 'Done' or 'Cancel'.
+ * Component for rendering an approval step payment receipt. Try Again replaces
+ * a checkout that is still in progress and starts another payment for the same
+ * approval step. The developer implements what happens when the user clicks
+ * 'Done' or 'Cancel'.
  *
  * It is also recommended to import the `css` from this library as well.
  *

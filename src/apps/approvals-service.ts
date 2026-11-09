@@ -362,7 +362,12 @@ export async function createApprovalStepPayment(
 
   await rememberPaymentSubmissionResult({
     submission: {},
-    definition: form,
+    // The post-submission receipt is written for the original submitter.
+    // This result has no submission to fill its injectables.
+    definition: {
+      ...form,
+      postSubmissionReceipt: undefined,
+    },
     preFillFormDataId: null,
     submissionId,
     submissionTimestamp: new Date().toISOString(),
