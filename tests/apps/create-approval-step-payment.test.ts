@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { FormTypes } from '@oneblink/types'
 import {
   createApprovalStepPayment,
   PAYMENT_IN_PROGRESS_CONFLICT,
@@ -27,6 +28,8 @@ describe('createApprovalStepPayment()', () => {
 
     const error = await createApprovalStepPayment('approval-1', {
       redirectUrl: 'https://approvals.example/return',
+      form: { id: 1 } as FormTypes.Form,
+      submissionId: 'submission-1',
     }).catch((caught: unknown) => caught)
 
     expect(error).toBeInstanceOf(OneBlinkAppsError)

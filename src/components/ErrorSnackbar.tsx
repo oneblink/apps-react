@@ -45,6 +45,13 @@ function ErrorSnackbar({
     >
       <Alert
         severity="error"
+        sx={{
+          alignItems: 'center',
+          '& .MuiAlert-action': {
+            padding: 0,
+            paddingLeft: 0.5,
+          },
+        }}
         action={
           <IconButton
             key="close"

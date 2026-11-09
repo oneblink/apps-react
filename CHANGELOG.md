@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `<SessionPaymentForm />` for an in-app payment form that takes a `PaymentFormSession`. `<PaymentForm />` renders it for form submission payments and still passes `paymentReceiptUrl` to `onCompleted` and `onCancelled`.
 - `paymentService.getCompletedPaymentReceiptUrl()` and `paymentService.getCancelledPaymentReceiptUrl()` for in-app payment receipt URLs.
+- `<ApprovalStepPaymentReceipt />` for approval step payment receipts.
+- `paymentService.getFailureDetailsFromFormSubmissionPayment()` for the stored failure message and each provider's response fields.
 
 ### Fixed
 
