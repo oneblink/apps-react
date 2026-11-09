@@ -1,7 +1,6 @@
 import { paymentService } from '@oneblink/sdk-core'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { createPaymentConfiguration } from './services/api/payment'
-import utilsService from './services/utils'
 import { SubmissionEventTypes, SubmissionTypes } from '@oneblink/types'
 import { FormSubmission, FormSubmissionResult } from './types/submissions'
 import {
@@ -31,8 +30,10 @@ import {
   getSchedulingBooking,
   removeSchedulingBooking,
 } from './services/schedulingHandlers'
-
-const KEY = 'PAYMENT_SUBMISSION_RESULT'
+import {
+  retrieveFormSubmissionResult,
+  rememberPaymentSubmissionResult,
+} from './services/payment-submission-result'
 
 export { HandlePaymentResult, PaymentReceiptItem, westpacQuickStream }
 export { paymentProviderRendersInApp, getPaymentHandoff, getPaymentFormSession }
@@ -151,8 +152,7 @@ function getPaymentProvider(
 export async function handlePaymentQuerystring(
   query: Record<string, unknown>,
 ): Promise<HandlePaymentResult> {
-  const submissionResult =
-    await utilsService.getLocalForageItem<FormSubmissionResult | null>(KEY)
+  const submissionResult = await retrieveFormSubmissionResult()
   // If the current transaction does not match the submission
   // we will display message to user indicating
   // they are looking for the wrong transaction receipt.
@@ -275,7 +275,7 @@ export async function handlePaymentSubmissionEvent({
   )
 
   if (!paymentConfiguration) {
-    await utilsService.setLocalForageItem(KEY, {
+    await rememberPaymentSubmissionResult({
       ...formSubmissionResult,
       scheduling: null,
       payment: null,
@@ -292,7 +292,7 @@ export async function handlePaymentSubmissionEvent({
   }
   console.log('Created Payment configuration to start transaction', payment)
 
-  await utilsService.setLocalForageItem(KEY, {
+  await rememberPaymentSubmissionResult({
     ...formSubmissionResult,
     scheduling: null,
     payment,
@@ -305,8 +305,7 @@ export async function getFormSubmissionResultPayment(): Promise<{
   formSubmissionResult: FormSubmissionResult
   paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
 }> {
-  const formSubmissionResult =
-    await utilsService.getLocalForageItem<FormSubmissionResult | null>(KEY)
+  const formSubmissionResult = await retrieveFormSubmissionResult()
 
   if (!formSubmissionResult) {
     throw new OneBlinkAppsError(
@@ -346,5 +345,29 @@ export function getDisplayDetailsFromFormSubmissionPayment(
   return paymentService.getDisplayDetailsFromFormSubmissionPayment(
     formSubmissionPayment,
     replaceSubmissionFormatters,
+  )
+}
+
+/**
+ * Retrieve the failure message and provider response fields for a form
+ * submission payment. Returns an empty array unless the payment failed.
+ *
+ * #### Example
+ *
+ * ```js
+ * const failureDetails =
+ *   paymentService.getFailureDetailsFromFormSubmissionPayment(
+ *     formSubmissionPayment,
+ *   )
+ * ```
+ *
+ * @param formSubmissionPayment
+ * @returns
+ */
+export function getFailureDetailsFromFormSubmissionPayment(
+  formSubmissionPayment: SubmissionTypes.FormSubmissionPayment,
+) {
+  return paymentService.getFailureDetailsFromFormSubmissionPayment(
+    formSubmissionPayment,
   )
 }

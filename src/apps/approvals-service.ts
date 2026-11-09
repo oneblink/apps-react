@@ -16,6 +16,7 @@ import {
 } from './services/fetch'
 import tenants from './tenants'
 import Sentry from './Sentry'
+import { rememberPaymentSubmissionResult } from './services/payment-submission-result'
 export { getFlowInstanceNodesWithMeta } from '../services/getFlowInstanceNodesWithMeta'
 
 export type FormSubmissionApprovalsResponse = {
@@ -26,6 +27,8 @@ export type FormSubmissionApprovalsResponse = {
     latestSuccessfulFormSubmissionPayment:
       | SubmissionTypes.FormSubmissionPayment
       | undefined
+    /** True while this approval has a checkout that has not finished. */
+    paymentInProgress?: boolean
   }>
 }
 
@@ -35,7 +38,7 @@ export type FormApprovalFlowInstanceHistory = {
   formSubmissionMetaEdits: SubmissionTypes.FormSubmissionMetaEdit[]
   formSubmissionApprovals: ApprovalTypes.FormSubmissionApproval[]
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
-  formSubmissionPayments?: SubmissionTypes.FormSubmissionPayment[]
+  approvalStepPayments?: SubmissionTypes.FormSubmissionPayment[]
 }
 
 export type FormSubmissionApprovalResponse = {
@@ -231,6 +234,187 @@ export async function getFormSubmissionApproval(
 }
 
 /**
+ * Conflict code on the error thrown when an approval step already has a
+ * checkout in progress.
+ *
+ * #### Example
+ *
+ * ```js
+ * import {
+ *   approvalsService,
+ *   OneBlinkAppsError,
+ * } from '@oneblink/apps-react'
+ *
+ * try {
+ *   await approvalsService.createApprovalStepPayment(
+ *     formSubmissionApprovalId,
+ *     {
+ *       redirectUrl,
+ *       paymentFormUrl,
+ *       form,
+ *       submissionId,
+ *     },
+ *   )
+ * } catch (error) {
+ *   if (
+ *     error instanceof OneBlinkAppsError &&
+ *     error.conflict === approvalsService.PAYMENT_IN_PROGRESS_CONFLICT
+ *   ) {
+ *     console.log('A payment is already in progress')
+ *   }
+ * }
+ * ```
+ */
+export const PAYMENT_IN_PROGRESS_CONFLICT = 'PAYMENT_IN_PROGRESS'
+
+/**
+ * Create a payment for an approval step. Returns the details needed to send the
+ * user to the payment provider. When the provider redirects to `redirectUrl`,
+ * the receipt for this payment can be displayed. Throws an `OneBlinkAppsError`
+ * with `conflict` set to `PAYMENT_IN_PROGRESS_CONFLICT` when a checkout for
+ * this step is already in progress.
+ *
+ * #### Example
+ *
+ * ```js
+ * const payment = await approvalsService.createApprovalStepPayment(
+ *   'd27966cc-128d-48a2-b681-6ad52012e113',
+ *   {
+ *     redirectUrl:
+ *       'https://approvals.example/approvals/d27966cc-128d-48a2-b681-6ad52012e113/payment-receipt',
+ *     paymentFormUrl:
+ *       'https://approvals.example/approvals/d27966cc-128d-48a2-b681-6ad52012e113/payment',
+ *     form,
+ *     submissionId: '89c6e98e-f56f-45fc-84fe-c4fc62331d34',
+ *   },
+ * )
+ * ```
+ *
+ * @param formSubmissionApprovalId
+ * @param options
+ * @param options.redirectUrl The URL the payment provider redirects to when the
+ *   payment finishes.
+ * @param options.paymentFormUrl The in-app payment page. Required for providers
+ *   that render their payment form in the app.
+ * @param options.form The form definition for this approval.
+ * @param options.submissionId The submission this approval belongs to.
+ * @param options.replacePendingPayment Cancel a checkout that is already in
+ *   progress so this payment can start. Leave unset to reject that checkout.
+ * @param abortSignal
+ * @returns
+ */
+export async function createApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  options: {
+    redirectUrl: string
+    paymentFormUrl?: string
+    form: FormTypes.Form
+    submissionId: string
+    replacePendingPayment?: boolean
+  },
+  abortSignal?: AbortSignal,
+): Promise<{
+  hostedFormUrl: string
+  amount: number
+  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+  customerReferenceNumber?: string
+}> {
+  const {
+    redirectUrl,
+    paymentFormUrl,
+    form,
+    submissionId,
+    replacePendingPayment,
+  } = options
+  let result: {
+    hostedFormUrl: string
+    amount: number
+    paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+    customerReferenceNumber?: string
+  }
+  try {
+    result = await postRequest(
+      `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
+      {
+        redirectUrl,
+        paymentFormUrl,
+        replacePendingPayment,
+      },
+      abortSignal,
+    )
+  } catch (error) {
+    if (
+      error instanceof HTTPError &&
+      error.status === 409 &&
+      error.conflict === PAYMENT_IN_PROGRESS_CONFLICT
+    ) {
+      throw new OneBlinkAppsError(
+        'A payment is already in progress for this step. Finish or cancel that payment before starting another.',
+        {
+          httpStatusCode: error.status,
+          conflict: PAYMENT_IN_PROGRESS_CONFLICT,
+          originalError: error,
+        },
+      )
+    }
+    throw error
+  }
+
+  await rememberPaymentSubmissionResult({
+    submission: {},
+    // The post-submission receipt is written for the original submitter.
+    // This result has no submission to fill its injectables.
+    definition: {
+      ...form,
+      postSubmissionReceipt: undefined,
+    },
+    preFillFormDataId: null,
+    submissionId,
+    submissionTimestamp: new Date().toISOString(),
+    payment: {
+      amount: result.amount,
+      paymentReceiptUrl: redirectUrl,
+      paymentFormUrl,
+      hostedFormUrl: result.hostedFormUrl,
+      submissionEvent: result.paymentSubmissionEvent,
+    },
+    scheduling: null,
+    isInPendingQueue: false,
+    isOffline: false,
+    isUploadingAttachments: false,
+  })
+
+  return result
+}
+
+/**
+ * Skip the payment for an approval step and continue the approval flow.
+ *
+ * #### Example
+ *
+ * ```js
+ * const formSubmissionApproval =
+ *   await approvalsService.skipApprovalStepPayment(
+ *     'd27966cc-128d-48a2-b681-6ad52012e113',
+ *   )
+ * ```
+ *
+ * @param formSubmissionApprovalId
+ * @param abortSignal
+ * @returns
+ */
+export async function skipApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  abortSignal?: AbortSignal,
+): Promise<ApprovalTypes.FormSubmissionApproval> {
+  return await postRequest(
+    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/skip-payment`,
+    {},
+    abortSignal,
+  )
+}
+
+/**
  * Update a single FormSubmissionApproval assigned to the current user.
  *
  * #### Example
@@ -258,57 +442,6 @@ export async function getFormSubmissionApproval(
  * @param abortSignal
  * @returns
  */
-export const PAYMENT_IN_PROGRESS_CONFLICT = 'PAYMENT_IN_PROGRESS'
-
-export async function createApprovalStepPayment(
-  formSubmissionApprovalId: string,
-  body: {
-    redirectUrl: string
-    paymentFormUrl?: string
-  },
-  abortSignal?: AbortSignal,
-): Promise<{
-  hostedFormUrl: string
-  amount: number
-  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
-  customerReferenceNumber?: string
-}> {
-  try {
-    return await postRequest(
-      `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment`,
-      body,
-      abortSignal,
-    )
-  } catch (error) {
-    if (
-      error instanceof HTTPError &&
-      error.status === 409 &&
-      error.conflict === PAYMENT_IN_PROGRESS_CONFLICT
-    ) {
-      throw new OneBlinkAppsError(
-        'A payment is already in progress for this step. Finish or cancel that payment before starting another.',
-        {
-          httpStatusCode: error.status,
-          conflict: PAYMENT_IN_PROGRESS_CONFLICT,
-          originalError: error,
-        },
-      )
-    }
-    throw error
-  }
-}
-
-export async function skipApprovalStepPayment(
-  formSubmissionApprovalId: string,
-  abortSignal?: AbortSignal,
-): Promise<ApprovalTypes.FormSubmissionApproval> {
-  return await postRequest(
-    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/skip-payment`,
-    {},
-    abortSignal,
-  )
-}
-
 export async function updateFormSubmissionApproval(
   formSubmissionApproval: ApprovalTypes.FormSubmissionApproval,
   abortSignal?: AbortSignal,
