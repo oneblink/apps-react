@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { formElementsService } from '@oneblink/sdk-core'
+import { OneBlinkAppsError } from '../apps'
 import { generateHeaders } from '../apps/services/fetch'
 import {
   isOffline as isNavigatorOffline,
@@ -177,7 +178,9 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
     async (search: string, abortSignal: AbortSignal) => {
       try {
         if (isOffline || isNavigatorOffline()) {
-          throw new Error(OFFLINE_ERROR_MESSAGE)
+          throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+            isOffline: true,
+          })
         }
 
         const headers = await generateHeaders()
@@ -199,7 +202,9 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
         if (abortSignal.aborted || !isNavigatorOffline()) {
           throw error
         }
-        throw new Error(OFFLINE_ERROR_MESSAGE)
+        throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+          isOffline: true,
+        })
       }
     },
     [isOffline, searchQuerystringParameter, searchUrl],

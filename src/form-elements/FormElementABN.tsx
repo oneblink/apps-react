@@ -14,6 +14,7 @@ import {
   isOffline as isNavigatorOffline,
   OFFLINE_ERROR_MESSAGE,
 } from '../apps/offline-service'
+import { OneBlinkAppsError } from '../apps'
 import { abnService } from '@oneblink/sdk-core'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
@@ -32,7 +33,9 @@ type Props = {
 
 function getAbnLookupError(err: unknown): Error {
   if (isNavigatorOffline()) {
-    return new Error(OFFLINE_ERROR_MESSAGE)
+    return new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+      isOffline: true,
+    })
   }
   return err as Error
 }
@@ -75,7 +78,7 @@ function FormElementABN({
     if (!isSearchStringValid || currentABNNumber === searchString) {
       if (!isSearchStringValid) {
         setState((current) =>
-          current.error?.message === OFFLINE_ERROR_MESSAGE
+          current.error instanceof OneBlinkAppsError && current.error.isOffline
             ? { isLoading: false, error: null }
             : current,
         )
@@ -86,7 +89,9 @@ function FormElementABN({
     if (isOffline) {
       setState({
         isLoading: false,
-        error: new Error(OFFLINE_ERROR_MESSAGE),
+        error: new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+          isOffline: true,
+        }),
       })
       return
     }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import clsx from 'clsx'
-import { Sentry } from '../../apps'
+import { OneBlinkAppsError, Sentry } from '../../apps'
 import {
   isOffline as isNavigatorOffline,
   OFFLINE_ERROR_MESSAGE,
@@ -237,7 +237,9 @@ function AutocompleteDropdown<T>({
         // Cancelling will throw an error.
         if (!abortController.signal.aborted) {
           if (isNavigatorOffline()) {
-            newError = new Error(OFFLINE_ERROR_MESSAGE)
+            newError = new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+              isOffline: true,
+            })
           } else {
             console.warn('Error while fetching autocomplete options', error)
             Sentry.captureException(error)
