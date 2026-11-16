@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- address and autocomplete elements running a lookup twice when an option is selected with the mouse and focus then leaves the field
+
 ### Added
 
 - `<SessionPaymentForm />` for an in-app payment form that takes a `PaymentFormSession`. `<PaymentForm />` renders it for form submission payments and still passes `paymentReceiptUrl` to `onCompleted` and `onCancelled`.
