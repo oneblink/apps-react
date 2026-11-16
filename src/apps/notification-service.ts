@@ -3,7 +3,7 @@ import {
   createNotificationsSubscription,
   deleteNotificationsSubscription,
 } from './services/api/notifications'
-import { isOffline } from './offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from './offline-service'
 import tenants from './tenants'
 import Sentry from './Sentry'
 import { FormsAppsTypes } from '@oneblink/types'
@@ -88,12 +88,9 @@ async function isSubscribed(): Promise<boolean> {
  */
 async function subscribe(formsAppId: number): Promise<boolean> {
   if (isOffline()) {
-    throw new OneBlinkAppsError(
-      'You are currently offline, please connect to the internet and try again.',
-      {
-        isOffline: true,
-      },
-    )
+    throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+      isOffline: true,
+    })
   }
 
   const swRegistration = await getServiceWorkerRegistration()
@@ -194,12 +191,9 @@ async function subscribe(formsAppId: number): Promise<boolean> {
  */
 async function unsubscribe(formsAppId: number): Promise<void> {
   if (isOffline()) {
-    throw new OneBlinkAppsError(
-      'You are currently offline, please connect to the internet and try again.',
-      {
-        isOffline: true,
-      },
-    )
+    throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+      isOffline: true,
+    })
   }
 
   const swRegistration = await getServiceWorkerRegistration()
@@ -273,13 +267,10 @@ export async function getEmailSubscriptions(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -360,13 +351,10 @@ export async function updateEmailSubscriptions(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {

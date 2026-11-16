@@ -1,6 +1,10 @@
 import * as React from 'react'
 import clsx from 'clsx'
 import { Sentry } from '../../apps'
+import {
+  isOffline as isNavigatorOffline,
+  OFFLINE_ERROR_MESSAGE,
+} from '../../apps/offline-service'
 
 import useBooleanState from '../../hooks/useBooleanState'
 import { IsDirtyProps } from '../../types/form'
@@ -232,9 +236,13 @@ function AutocompleteDropdown<T>({
       } catch (error) {
         // Cancelling will throw an error.
         if (!abortController.signal.aborted) {
-          console.warn('Error while fetching autocomplete options', error)
-          Sentry.captureException(error)
-          newError = error as Error
+          if (isNavigatorOffline()) {
+            newError = new Error(OFFLINE_ERROR_MESSAGE)
+          } else {
+            console.warn('Error while fetching autocomplete options', error)
+            Sentry.captureException(error)
+            newError = error as Error
+          }
         }
       }
       if (!ignore) {

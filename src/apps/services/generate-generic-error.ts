@@ -1,4 +1,4 @@
-import { isOffline } from '../offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from '../offline-service'
 import { HTTPError } from './fetch'
 import OneBlinkAppsError from '../services/errors/oneBlinkAppsError'
 import Sentry from '../Sentry'
@@ -9,13 +9,10 @@ const generateGenericError = (err: unknown, abortSignal?: AbortSignal) => {
   }
   const error = err as HTTPError
   if (isOffline()) {
-    throw new OneBlinkAppsError(
-      'You are currently offline, please connect to the internet and try again',
-      {
-        originalError: error,
-        isOffline: true,
-      },
-    )
+    throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+      originalError: error,
+      isOffline: true,
+    })
   }
   switch (error.status) {
     case 400: {

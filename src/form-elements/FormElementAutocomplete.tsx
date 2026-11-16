@@ -1,6 +1,11 @@
 import * as React from 'react'
 import { formElementsService } from '@oneblink/sdk-core'
 import { generateHeaders } from '../apps/services/fetch'
+import {
+  isOffline as isNavigatorOffline,
+  OFFLINE_ERROR_MESSAGE,
+} from '../apps/offline-service'
+import useIsOffline from '../hooks/useIsOffline'
 
 import FormElementOptions from '../components/renderer/FormElementOptions'
 import useFormElementOptions from '../hooks/useFormElementOptions'
@@ -165,27 +170,39 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   autocompleteAttributes,
 }: AutocompleteFetchProps) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
+  const isOffline = useIsOffline()
   const [label, setLabel] = React.useState('')
 
   const handleSearch = React.useCallback(
     async (search: string, abortSignal: AbortSignal) => {
-      const headers = await generateHeaders()
-      const url = new URL(searchUrl)
-      url.searchParams.append(searchQuerystringParameter, search)
-      const response = await fetch(url.href, {
-        headers,
-        signal: abortSignal,
-      })
+      try {
+        if (isOffline || isNavigatorOffline()) {
+          throw new Error(OFFLINE_ERROR_MESSAGE)
+        }
 
-      if (!response.ok) {
-        const text = await response.text()
-        throw new Error(text)
+        const headers = await generateHeaders()
+        const url = new URL(searchUrl)
+        url.searchParams.append(searchQuerystringParameter, search)
+        const response = await fetch(url.href, {
+          headers,
+          signal: abortSignal,
+        })
+
+        if (!response.ok) {
+          const text = await response.text()
+          throw new Error(text)
+        }
+
+        const data = await response.json()
+        return formElementsService.parseDynamicFormElementOptions(data)
+      } catch (error) {
+        if (abortSignal.aborted || !isNavigatorOffline()) {
+          throw error
+        }
+        throw new Error(OFFLINE_ERROR_MESSAGE)
       }
-
-      const data = await response.json()
-      return formElementsService.parseDynamicFormElementOptions(data)
     },
-    [searchQuerystringParameter, searchUrl],
+    [isOffline, searchQuerystringParameter, searchUrl],
   )
 
   // Ensure the label is set if the value is set outside of this component

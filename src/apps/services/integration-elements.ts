@@ -11,7 +11,7 @@ import {
 } from '@oneblink/types'
 
 import OneBlinkAppsError from '../services/errors/oneBlinkAppsError'
-import { isOffline } from '../offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from '../offline-service'
 import {
   deleteRequest,
   fetchJSON,
@@ -146,13 +146,10 @@ export async function getGeoscapeReverseGeocoding({
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -484,13 +481,10 @@ export async function getBSBRecord(
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -738,13 +732,10 @@ export async function publishHCMSContentItem({
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -817,13 +808,10 @@ export async function draftHCMSContentItem({
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -974,13 +962,10 @@ export async function searchCivicPlusHCMSContentItems({
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -1058,13 +1043,10 @@ export async function deleteCivicPlusHCMSContentItem({
     }
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {

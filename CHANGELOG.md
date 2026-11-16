@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- ABN, autocomplete search and BSB elements showing "Failed to fetch" instead of the offline message
+
 ### Added
 
 - `<SessionPaymentForm />` for an in-app payment form that takes a `PaymentFormSession`. `<PaymentForm />` renders it for form submission payments and still passes `paymentReceiptUrl` to `onCompleted` and `onCancelled`.

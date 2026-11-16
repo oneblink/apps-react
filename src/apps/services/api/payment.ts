@@ -3,7 +3,7 @@ import { HTTPError, deleteRequest, getRequest, postRequest } from '../fetch'
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import tenants from '../../tenants'
 import Sentry from '../../Sentry'
-import { isOffline } from '../../offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from '../../offline-service'
 import { NewFormSubmission } from '../../submission-service'
 
 async function getCustomFormPaymentConfiguration<T>(
@@ -160,13 +160,10 @@ async function cancelWestpacQuickStreamPayment(
 
     const httpError = error as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet to continue',
-        {
-          originalError: httpError,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: httpError,
+        isOffline: true,
+      })
     }
     switch (httpError.status) {
       case 400:
