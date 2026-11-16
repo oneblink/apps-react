@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- auto save data still existing after submitting, saving a draft, cancelling or navigating away when an auto save was already in progress, or after submitting when a change was made at the same time (e.g. recaptchas being reset)
+- `autoSaveService.deleteAutoSaveData()` not deleting the last element updated, section state and elapsed duration saved alongside the submission
+
+### Fixed
+
 - OneBlink US tenant locale returning `en-AU`
 
 ### Dependencies

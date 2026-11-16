@@ -93,8 +93,19 @@ export default function useFormSubmissionAutoSaveState({
     autoSavePreviousElapsedDurationSeconds: 0,
   })
 
+  // Changes made before submitting can be applied after the submit handler
+  // has run (e.g. recaptchas being reset) and must not recreate the auto save
+  // data. Changes made after submitting are still auto saved in case the
+  // submission fails and the user keeps editing.
+  const submitCountRef = React.useRef(0)
+
+  // Incremented when the auto save data is deleted so that an auto save in
+  // progress does not write the rest of its data afterwards.
+  const deleteCountRef = React.useRef(0)
+
   const throttledAutoSave = React.useMemo(() => {
     return _throttle(
+      // eslint-disable-next-line react-hooks/refs
       (
         model: SubmissionTypes.S3SubmissionData['submission'],
         lastElementUpdated?: FormElement,
@@ -108,11 +119,13 @@ export default function useFormSubmissionAutoSaveState({
               return
             }
           }
+          const deleteCount = deleteCountRef.current
+          const isStopped = () => deleteCountRef.current !== deleteCount
           console.log('Auto saving...')
           autoSaveService
             .upsertAutoSaveData(definition.id, autoSaveKey, model)
             .then(() => {
-              if (lastElementUpdated) {
+              if (lastElementUpdated && !isStopped()) {
                 return autoSaveService.upsertAutoSaveData<FormElement>(
                   definition.id,
                   `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
@@ -121,7 +134,7 @@ export default function useFormSubmissionAutoSaveState({
               }
             })
             .then(() => {
-              if (sectionState) {
+              if (sectionState && !isStopped()) {
                 return autoSaveService.upsertAutoSaveData<{
                   sectionState: SectionState
                 }>(definition.id, `SECTION_STATE_${autoSaveKey}`, {
@@ -130,11 +143,14 @@ export default function useFormSubmissionAutoSaveState({
               }
             })
             .then(() => {
-              return autoSaveService.upsertAutoSaveData<{
-                previousElapsedDurationSeconds: number
-              }>(definition.id, `PREVIOUS_ELAPSED_DURATION_${autoSaveKey}`, {
-                previousElapsedDurationSeconds: getCurrentSubmissionDuration(),
-              })
+              if (!isStopped()) {
+                return autoSaveService.upsertAutoSaveData<{
+                  previousElapsedDurationSeconds: number
+                }>(definition.id, `PREVIOUS_ELAPSED_DURATION_${autoSaveKey}`, {
+                  previousElapsedDurationSeconds:
+                    getCurrentSubmissionDuration(),
+                })
+              }
             })
             .catch((error) => {
               console.warn('Error while auto saving', error)
@@ -154,6 +170,7 @@ export default function useFormSubmissionAutoSaveState({
   }, [throttledAutoSave])
 
   const deleteAutoSaveSubmission = React.useCallback(() => {
+    deleteCountRef.current++
     return autoSaveService
       .deleteAutoSaveData(definition.id, autoSaveKey)
       .catch((error) => {
@@ -164,6 +181,7 @@ export default function useFormSubmissionAutoSaveState({
 
   const handleSubmit = React.useCallback(
     (submissionResult: submissionService.NewFormSubmission) => {
+      submitCountRef.current++
       cancelAutoSave()
       if (removeAutoSaveDataBeforeSubmit !== false) {
         deleteAutoSaveSubmission()
@@ -269,13 +287,17 @@ export default function useFormSubmissionAutoSaveState({
 
   const setFormSubmissionAutoSave: SetFormSubmission = React.useCallback(
     (formSubmission, options) => {
+      const submitCount = submitCountRef.current
       setFormSubmission((currentFormSubmission) => {
         const newFormSubmission =
           typeof formSubmission === 'function'
             ? formSubmission(currentFormSubmission)
             : formSubmission
 
-        if (!options?.isDerivedChange) {
+        if (
+          !options?.isDerivedChange &&
+          submitCount === submitCountRef.current
+        ) {
           throttledAutoSave(
             newFormSubmission.submission,
             newFormSubmission.lastElementUpdated,
