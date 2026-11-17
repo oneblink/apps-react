@@ -76,9 +76,14 @@ function AutocompleteDropdown<T>({
   const [error, setError] = React.useState<Error | null>(null)
   const [isFetchingOptions, setIsFetchingOptions] = React.useState(false)
   const [isOpen, onOpen, onClose] = useBooleanState(false)
+  // Address elements store the resolved record, not the option id, so the
+  // `value` prop will not equal `option.value` after a choice. Track the
+  // chosen id so blur does not select it again and run a second lookup.
+  const selectedOptionValueRef = React.useRef<string | undefined>(undefined)
 
   const onSelectOption = React.useCallback(
     (option: AutocompleteOption<T>) => {
+      selectedOptionValueRef.current = option.value
       onChangeLabel(option.label)
       onChangeValue(option.value, option.data)
       onClose()
@@ -125,7 +130,10 @@ function AutocompleteDropdown<T>({
           if (option) {
             // If the new option is not equal to the option that is currently selected,
             // we want to update to the new option to ensure that it gets changed.
-            if (inputOption.value !== option.value) {
+            const alreadySelected =
+              inputOption.value === option.value ||
+              selectedOptionValueRef.current === option.value
+            if (!alreadySelected) {
               console.log('Setting value after blurring away from autocomplete')
               onSelectOption(option)
             }
@@ -134,6 +142,7 @@ function AutocompleteDropdown<T>({
         }
 
         console.log('Removing label after blurring away from autocomplete')
+        selectedOptionValueRef.current = undefined
         onChangeValue(undefined)
         onChangeLabel('')
       }
@@ -265,6 +274,7 @@ function AutocompleteDropdown<T>({
     //If there is no value set, we want to clear the label
     //This is to satisfy lookups that return undefined.
     if (!value) {
+      selectedOptionValueRef.current = undefined
       onChangeLabel('')
     }
   }, [onChangeLabel, value])
