@@ -10,6 +10,16 @@ function getAutoSaveKey(
   return `${autosaveKeyPrefix}${formId}_${autoSaveKey || defaultAutoSaveKey}`
 }
 
+// Writes and deletes are run one at a time. A write is several storage
+// operations, so a delete that starts part way through one would be undone
+// by the rest of the write.
+let queue: Promise<unknown> = Promise.resolve()
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const result = queue.then(task)
+  queue = result.catch(() => {})
+  return result
+}
+
 /**
  * Get keys for autosave data.
  *
@@ -79,11 +89,12 @@ export async function upsertAutoSaveData<T extends Record<string, unknown>>(
   model: T,
 ): Promise<T> {
   const key = getAutoSaveKey(formId, autoSaveKey)
-  return utilsService.setLocalForageItem(key, model)
+  return enqueue(() => utilsService.setLocalForageItem(key, model))
 }
 
 /**
- * Delete saved data.
+ * Delete saved data, including the last element updated, section state and
+ * elapsed duration saved alongside it.
  *
  * #### Example
  *
@@ -101,8 +112,18 @@ export async function deleteAutoSaveData(
   formId: number,
   autoSaveKey: string | null | undefined,
 ): Promise<void> {
-  const key = getAutoSaveKey(formId, autoSaveKey)
-  return utilsService.removeLocalForageItem(key)
+  await enqueue(() =>
+    Promise.all(
+      [
+        autoSaveKey,
+        `LAST_ELEMENT_UPDATED_${autoSaveKey}`,
+        `SECTION_STATE_${autoSaveKey}`,
+        `PREVIOUS_ELAPSED_DURATION_${autoSaveKey}`,
+      ].map((key) =>
+        utilsService.removeLocalForageItem(getAutoSaveKey(formId, key)),
+      ),
+    ),
+  )
 }
 
 /**
@@ -117,8 +138,10 @@ export async function deleteAutoSaveData(
  * @returns
  */
 export async function deleteAllAutosaveData() {
-  const keys = await getAutoSaveKeys()
-  console.log('Deleting all autosave data from local forage...')
-  await Promise.all(keys.map((k) => utilsService.removeLocalForageItem(k)))
-  console.log('All Autosave data deleted from local forage successfully.')
+  await enqueue(async () => {
+    const keys = await getAutoSaveKeys()
+    console.log('Deleting all autosave data from local forage...')
+    await Promise.all(keys.map((k) => utilsService.removeLocalForageItem(k)))
+    console.log('All Autosave data deleted from local forage successfully.')
+  })
 }

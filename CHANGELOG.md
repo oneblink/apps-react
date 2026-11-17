@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- auto save data still existing after submitting, saving a draft, cancelling or navigating away when an auto save was already in progress, or after submitting when a change was made at the same time (e.g. recaptchas being reset)
+- `autoSaveService.deleteAutoSaveData()` not deleting the last element updated, section state and elapsed duration saved alongside the submission
+- address and autocomplete elements running a lookup twice when an option is selected with the mouse and focus then leaves the field
+
+## [13.6.0] - 2026-11-17
+
 ### Added
 
 - `isHidden` and `hiddenFrom` on page elements to hide a page from submitters, approvers, or both
@@ -21,6 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - OneBlink US tenant locale returning `en-AU`
+
+### Dependencies
+
+- update @oneblink/sdk-core to [10.3.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [10.2.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [9.0.2-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [9.0.0-beta.4](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [13.5.0] - 2026-10-28
 

@@ -4,9 +4,13 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { FormTypes, SubmissionTypes } from '@oneblink/types'
 import useFormSubmissionAutoSaveState from '../../src/hooks/useFormSubmissionAutoSaveState'
 
-const { getAutoSaveData } = vi.hoisted(() => ({
-  getAutoSaveData: vi.fn(),
-}))
+const { getAutoSaveData, upsertAutoSaveData, deleteAutoSaveData } = vi.hoisted(
+  () => ({
+    getAutoSaveData: vi.fn(),
+    upsertAutoSaveData: vi.fn(),
+    deleteAutoSaveData: vi.fn(),
+  }),
+)
 
 vi.mock('../../src/apps', async (importOriginal) => {
   const original = await importOriginal<typeof import('../../src/apps')>()
@@ -15,8 +19,8 @@ vi.mock('../../src/apps', async (importOriginal) => {
     autoSaveService: {
       ...original.autoSaveService,
       getAutoSaveData,
-      upsertAutoSaveData: vi.fn().mockResolvedValue(undefined),
-      deleteAutoSaveData: vi.fn().mockResolvedValue(undefined),
+      upsertAutoSaveData,
+      deleteAutoSaveData,
     },
   }
 })
@@ -222,15 +226,19 @@ type AutoSaveState = ReturnType<typeof useFormSubmissionAutoSaveState>
 function Host({
   form,
   stateRef,
+  removeAutoSaveDataBeforeSubmit,
 }: {
   form: FormTypes.Form
   stateRef: React.RefObject<AutoSaveState | null>
+  removeAutoSaveDataBeforeSubmit?: boolean
 }) {
   const state = useFormSubmissionAutoSaveState({
     form,
+    removeAutoSaveDataBeforeSubmit,
     autoSaveKey: AUTO_SAVE_KEY,
     onCancel: () => {},
     onSubmit: () => {},
+    onSaveDraft: () => {},
   })
   React.useEffect(() => {
     stateRef.current = state
@@ -266,12 +274,48 @@ async function resumeAutoSave(
   return submission
 }
 
+async function renderHost({
+  removeAutoSaveDataBeforeSubmit,
+}: { removeAutoSaveDataBeforeSubmit?: boolean } = {}) {
+  getAutoSaveData.mockResolvedValue(null)
+  const stateRef = React.createRef<AutoSaveState>()
+  const root = createRoot(
+    document.body.appendChild(document.createElement('div')),
+  )
+  await React.act(async () => {
+    root.render(
+      <Host
+        form={form}
+        stateRef={stateRef}
+        removeAutoSaveDataBeforeSubmit={removeAutoSaveDataBeforeSubmit}
+      />,
+    )
+  })
+  const getState = () => stateRef.current as AutoSaveState
+  const changeName = (name: string) =>
+    getState().setFormSubmission((current) => ({
+      ...current,
+      submission: { ...current.submission, name },
+      lastElementUpdated: textElement,
+    }))
+  return { getState, changeName, root }
+}
+
+const newFormSubmission = {
+  definition: form,
+  submission: {},
+  recaptchas: [],
+}
+
 beforeEach(() => {
   vi.stubEnv('TZ', 'UTC')
   getAutoSaveData.mockReset()
+  upsertAutoSaveData.mockReset().mockResolvedValue(undefined)
+  deleteAutoSaveData.mockReset().mockResolvedValue(undefined)
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   vi.unstubAllEnvs()
   document.body.replaceChildren()
 })
@@ -392,5 +436,114 @@ describe('useFormSubmissionAutoSaveState()', () => {
     )
 
     expect(submission).toStrictEqual(emptySubmission)
+  })
+})
+
+describe('useFormSubmissionAutoSaveState() auto saving', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  test('auto saves changes after the throttle period', async () => {
+    const { changeName, root } = await renderHost()
+
+    await React.act(async () => changeName('Blinky Bill'))
+    await React.act(async () => vi.advanceTimersByTimeAsync(10000))
+
+    expect(upsertAutoSaveData).toHaveBeenCalledWith(
+      form.id,
+      AUTO_SAVE_KEY,
+      expect.objectContaining({ name: 'Blinky Bill' }),
+    )
+    await React.act(async () => root.unmount())
+  })
+
+  const submit = (state: AutoSaveState) => state.handleSubmit(newFormSubmission)
+  const saveDraft = (state: AutoSaveState) =>
+    state.handleSaveDraft?.({
+      definition: form,
+      submission: {},
+      backgroundUpload: false,
+    })
+
+  test('does not auto save changes made while submitting', async () => {
+    const { getState, changeName, root } = await renderHost()
+
+    await React.act(async () => changeName('Blinky Bill'))
+    // Mirrors recaptchas being reset in the same tick as submitting, where
+    // the state updater only runs after the submit handler has returned.
+    await React.act(async () => {
+      changeName('Nutsy')
+      submit(getState())
+    })
+    await React.act(async () => vi.advanceTimersByTimeAsync(20000))
+
+    expect(upsertAutoSaveData).not.toHaveBeenCalled()
+    expect(deleteAutoSaveData).toHaveBeenCalledWith(form.id, AUTO_SAVE_KEY)
+    await React.act(async () => root.unmount())
+  })
+
+  test.each([true, false])(
+    'auto saves changes made after submitting when removeAutoSaveDataBeforeSubmit is %s',
+    async (removeAutoSaveDataBeforeSubmit) => {
+      const { getState, changeName, root } = await renderHost({
+        removeAutoSaveDataBeforeSubmit,
+      })
+
+      await React.act(async () => changeName('Blinky Bill'))
+      await React.act(async () => submit(getState()))
+      await React.act(async () => vi.advanceTimersByTimeAsync(20000))
+      expect(upsertAutoSaveData).not.toHaveBeenCalled()
+
+      await React.act(async () => changeName('After'))
+      await React.act(async () => vi.advanceTimersByTimeAsync(10000))
+      expect(upsertAutoSaveData).toHaveBeenCalledWith(
+        form.id,
+        AUTO_SAVE_KEY,
+        expect.objectContaining({ name: 'After' }),
+      )
+      await React.act(async () => root.unmount())
+    },
+  )
+
+  test('auto saves changes made after saving a draft', async () => {
+    const { getState, changeName, root } = await renderHost()
+
+    await React.act(async () => changeName('Blinky Bill'))
+    await React.act(async () => saveDraft(getState()))
+    await React.act(async () => vi.advanceTimersByTimeAsync(20000))
+    expect(upsertAutoSaveData).not.toHaveBeenCalled()
+    expect(deleteAutoSaveData).toHaveBeenCalledWith(form.id, AUTO_SAVE_KEY)
+
+    await React.act(async () => changeName('After'))
+    await React.act(async () => vi.advanceTimersByTimeAsync(10000))
+    expect(upsertAutoSaveData).toHaveBeenCalledWith(
+      form.id,
+      AUTO_SAVE_KEY,
+      expect.objectContaining({ name: 'After' }),
+    )
+    await React.act(async () => root.unmount())
+  })
+
+  test('stops writing an in progress auto save after submitting', async () => {
+    let resolveUpsert: () => void = () => {}
+    upsertAutoSaveData.mockImplementationOnce(
+      () => new Promise<void>((resolve) => (resolveUpsert = resolve)),
+    )
+    const { getState, changeName, root } = await renderHost()
+
+    await React.act(async () => changeName('Blinky Bill'))
+    await React.act(async () => vi.advanceTimersByTimeAsync(10000))
+    await React.act(async () => submit(getState()))
+    await React.act(async () => resolveUpsert())
+
+    expect(upsertAutoSaveData.mock.calls).toStrictEqual([
+      [
+        form.id,
+        AUTO_SAVE_KEY,
+        expect.objectContaining({ name: 'Blinky Bill' }),
+      ],
+    ])
+    await React.act(async () => root.unmount())
   })
 })
