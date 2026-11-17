@@ -9,6 +9,10 @@ import {
   FormElementsValidation,
 } from '../types/form'
 import { injectDynamicElements } from '../services/dynamic-elements'
+import {
+  getNavigablePages,
+  getRenderedPages,
+} from '../services/page-visibility'
 
 export default function usePages({
   pages,
@@ -16,12 +20,14 @@ export default function usePages({
   formElementsConditionallyShown,
   hasAttemptedSubmit,
   scrollToTopOfPage,
+  audience,
 }: {
   pages: FormTypes.PageElement[]
   formElementsValidation: FormElementsValidation | undefined
   formElementsConditionallyShown: FormElementsConditionallyShown
   hasAttemptedSubmit: boolean
   scrollToTopOfPage?: boolean
+  audience: FormTypes.FormElementHiddenFromAudience
 }) {
   const scrollToTopOfPageHTMLElementRef = React.useRef<HTMLDivElement>(null)
   const [visitedPageIds, setVisitedPageIds] = React.useState<string[]>([])
@@ -35,27 +41,44 @@ export default function usePages({
     return injectDynamicElements(pages) as FormTypes.PageElement[]
   }, [pages])
 
-  const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
-    return pagesWithDynamicElements.filter((pageElement) => {
-      return !formElementsConditionallyShown?.[pageElement.id]?.isHidden
-    })
+  const renderedPages = React.useMemo<FormTypes.PageElement[]>(() => {
+    return getRenderedPages(
+      pagesWithDynamicElements,
+      formElementsConditionallyShown,
+    )
   }, [formElementsConditionallyShown, pagesWithDynamicElements])
 
-  const [currentPageId, setCurrentPageId] = React.useState(visiblePages[0].id)
+  const visiblePages = React.useMemo<FormTypes.PageElement[]>(() => {
+    return getNavigablePages(
+      pagesWithDynamicElements,
+      formElementsConditionallyShown,
+      audience,
+    )
+  }, [audience, formElementsConditionallyShown, pagesWithDynamicElements])
+
+  const [currentPageId, setCurrentPageId] = React.useState(
+    () => visiblePages[0]?.id ?? '',
+  )
 
   const currentPage = React.useMemo(() => {
-    const currentPageById = visiblePages.find((pageElement) => {
-      return pageElement.id === currentPageId
-    })
-    if (currentPageById) {
-      return currentPageById
-    } else {
-      return visiblePages[0]
+    if (!visiblePages.length) {
+      return undefined
     }
+    return (
+      visiblePages.find((pageElement) => {
+        return pageElement.id === currentPageId
+      }) ?? visiblePages[0]
+    )
   }, [currentPageId, visiblePages])
 
+  React.useEffect(() => {
+    if (currentPage && currentPage.id !== currentPageId) {
+      setCurrentPageId(currentPage.id)
+    }
+  }, [currentPage, currentPageId])
+
   const currentPageIndex = React.useMemo(
-    () => visiblePages.indexOf(currentPage),
+    () => (currentPage ? visiblePages.indexOf(currentPage) : -1),
     [currentPage, visiblePages],
   )
 
@@ -69,6 +92,9 @@ export default function usePages({
 
   const setPageId = React.useCallback(
     (pageId: string) => {
+      if (!visiblePages.some((page) => page.id === pageId)) {
+        return
+      }
       setVisitedPageIds((currentVisitedPageIds) => {
         if (currentVisitedPageIds.includes(currentPageId)) {
           return currentVisitedPageIds
@@ -120,34 +146,31 @@ export default function usePages({
       currentPageId,
       isShowingMultiplePages,
       scrollToTopOfPage,
+      visiblePages,
     ],
   )
 
   const goToNextPage = React.useCallback(() => {
-    for (let i = 0; i < visiblePages.length; i++) {
-      const page = visiblePages[i]
-      if (page.id === currentPageId) {
-        const nextVisiblePage = visiblePages[i + 1]
-        if (nextVisiblePage) {
-          setPageId(nextVisiblePage.id)
-        }
-        break
-      }
+    if (!currentPage) {
+      return
     }
-  }, [currentPageId, setPageId, visiblePages])
+    const index = visiblePages.indexOf(currentPage)
+    const nextVisiblePage = visiblePages[index + 1]
+    if (nextVisiblePage) {
+      setPageId(nextVisiblePage.id)
+    }
+  }, [currentPage, setPageId, visiblePages])
 
   const goToPreviousPage = React.useCallback(() => {
-    for (let i = visiblePages.length - 1; i > -1; i--) {
-      const page = visiblePages[i]
-      if (page && page.id === currentPageId) {
-        const previousVisiblePage = visiblePages[i - 1]
-        if (previousVisiblePage) {
-          setPageId(previousVisiblePage.id)
-        }
-        break
-      }
+    if (!currentPage) {
+      return
     }
-  }, [currentPageId, setPageId, visiblePages])
+    const index = visiblePages.indexOf(currentPage)
+    const previousVisiblePage = visiblePages[index - 1]
+    if (previousVisiblePage) {
+      setPageId(previousVisiblePage.id)
+    }
+  }, [currentPage, setPageId, visiblePages])
 
   const checkDisplayPageError = React.useCallback(
     (page: FormTypes.PageElement) => {
@@ -184,10 +207,14 @@ export default function usePages({
   const firstVisiblePage = visiblePages[0]
   const lastVisiblePage = visiblePages[visiblePages.length - 1]
   const isLastVisiblePage =
-    lastVisiblePage && lastVisiblePage.id === currentPageId
+    !!currentPage && !!lastVisiblePage && lastVisiblePage.id === currentPage.id
   const isFirstVisiblePage =
-    firstVisiblePage && firstVisiblePage.id === currentPageId
-  const isDisplayingCurrentPageError = checkDisplayPageError(currentPage)
+    !!currentPage &&
+    !!firstVisiblePage &&
+    firstVisiblePage.id === currentPage.id
+  const isDisplayingCurrentPageError = currentPage
+    ? checkDisplayPageError(currentPage)
+    : false
 
   // Clean up when form is navigated away
   React.useEffect(() => {
@@ -197,6 +224,7 @@ export default function usePages({
   }, [])
 
   return {
+    renderedPages,
     visiblePages,
     isFirstVisiblePage,
     isLastVisiblePage,
