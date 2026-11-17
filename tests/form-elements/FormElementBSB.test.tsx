@@ -35,6 +35,16 @@ const element: FormTypes.BSBElement = {
   isElementLookup: false,
 }
 
+const commonwealthBank = {
+  bsb: '123-456',
+  financialInstitutionMnemonic: 'CBA',
+  name: 'Commonwealth Bank',
+  street: '1 Bank St',
+  suburb: 'Sydney',
+  state: 'NSW',
+  postcode: '2000',
+}
+
 let unmount: (() => Promise<void>) | undefined
 
 function setOnLine(onLine: boolean) {
@@ -54,13 +64,23 @@ afterEach(async () => {
   setOnLine(true)
 })
 
-function BsbHarness() {
-  const [value, setValue] = React.useState<unknown>(undefined)
+function BsbHarness({
+  initialValue,
+  onValue,
+}: {
+  initialValue?: unknown
+  onValue?: (value: unknown) => void
+}) {
+  const [value, setValue] = React.useState<unknown>(initialValue)
   const onChange = React.useCallback<
     React.ComponentProps<typeof FormElementBSB>['onChange']
-  >((_element, change) => {
-    setValue(change.value)
-  }, [])
+  >(
+    (_element, change) => {
+      onValue?.(change.value)
+      setValue(change.value)
+    },
+    [onValue],
+  )
   return (
     <FormElementBSB
       id="bsb-1"
@@ -77,13 +97,19 @@ function BsbHarness() {
   )
 }
 
-async function render() {
+async function render(options?: {
+  initialValue?: unknown
+  onValue?: (value: unknown) => void
+}) {
   const container = document.body.appendChild(document.createElement('div'))
   const root = createRoot(container)
   await React.act(async () => {
     root.render(
       <IsOfflineContextProvider>
-        <BsbHarness />
+        <BsbHarness
+          initialValue={options?.initialValue}
+          onValue={options?.onValue}
+        />
       </IsOfflineContextProvider>,
     )
   })
@@ -95,6 +121,13 @@ async function goOffline() {
   setOnLine(false)
   await React.act(async () => {
     window.dispatchEvent(new Event('offline'))
+  })
+}
+
+async function goOnline() {
+  setOnLine(true)
+  await React.act(async () => {
+    window.dispatchEvent(new Event('online'))
   })
 }
 
@@ -142,15 +175,7 @@ describe('FormElementBSB offline lookup', () => {
   })
 
   test('keeps a validated BSB when connectivity drops', async () => {
-    vi.spyOn(formService, 'getBSBRecord').mockResolvedValue({
-      bsb: '123-456',
-      financialInstitutionMnemonic: 'CBA',
-      name: 'Commonwealth Bank',
-      street: '1 Bank St',
-      suburb: 'Sydney',
-      state: 'NSW',
-      postcode: '2000',
-    })
+    vi.spyOn(formService, 'getBSBRecord').mockResolvedValue(commonwealthBank)
 
     const container = await render()
     await enterBsb(container, '123-456')
@@ -161,5 +186,78 @@ describe('FormElementBSB offline lookup', () => {
 
     expect(container.textContent).toContain('CBA - Commonwealth Bank')
     expect(validationMessage(container)).toBeUndefined()
+  })
+
+  test('keeps a validated BSB when connectivity returns and the retry would fail', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValueOnce(commonwealthBank)
+      .mockRejectedValueOnce(new Error('network'))
+    const values: unknown[] = []
+
+    const container = await render({
+      onValue: (value) => {
+        values.push(value)
+      },
+    })
+    await enterBsb(container, '123-456')
+
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(values.at(-1)).toBe('123-456')
+
+    await goOffline()
+    await goOnline()
+
+    expect(getBSBRecord).toHaveBeenCalledTimes(1)
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(validationMessage(container)).toBeUndefined()
+    expect(values.at(-1)).toBe('123-456')
+  })
+
+  test('looks up a stored BSB while online', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValue(commonwealthBank)
+
+    const container = await render({ initialValue: '123-456' })
+
+    expect(getBSBRecord).toHaveBeenCalledOnce()
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+  })
+
+  test('looks up a BSB entered offline once connectivity returns', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValue(commonwealthBank)
+
+    const container = await render()
+    await goOffline()
+    await enterBsb(container, '123-456')
+
+    expect(getBSBRecord).not.toHaveBeenCalled()
+    expect(validationMessage(container)).toBe(OFFLINE_ERROR_MESSAGE)
+
+    await goOnline()
+
+    expect(getBSBRecord).toHaveBeenCalledOnce()
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(validationMessage(container)).toBeUndefined()
+  })
+
+  test('looks up a BSB again after it is edited away from a validated value', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValue(commonwealthBank)
+
+    const container = await render()
+    await enterBsb(container, '123-456')
+    await enterBsb(container, '123-45')
+
+    expect(container.textContent).not.toContain('CBA - Commonwealth Bank')
+
+    await enterBsb(container, '123-456')
+
+    expect(getBSBRecord).toHaveBeenCalledTimes(2)
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
   })
 })

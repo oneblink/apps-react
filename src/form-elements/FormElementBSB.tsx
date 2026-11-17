@@ -52,6 +52,9 @@ function FormElementBSB({
   const validatedBsbRef = React.useRef(
     typeof value === 'string' ? value : undefined,
   )
+  // Mirrors `bsbRecord` for the lookup effect. The effect must not list the
+  // record as a dependency: clearing it to start a lookup would abort that lookup.
+  const bsbRecordRef = React.useRef<MiscTypes.BSBRecord | null>(null)
   const [hasFocus, setHasFocus, removeFocus] = useBooleanState(false)
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
@@ -66,6 +69,7 @@ function FormElementBSB({
   })
 
   React.useEffect(() => {
+    bsbRecordRef.current = bsbRecord
     if (bsbRecord?.bsb) {
       validatedBsbRef.current = bsbRecord.bsb
     }
@@ -93,7 +97,14 @@ function FormElementBSB({
       return
     }
 
-    if (isOffline && validatedBsbRef.current === text) {
+    // This text was already accepted. Offline, leave a stored BSB alone.
+    // Online, leave it alone when its bank record is still showing — a
+    // reconnect would otherwise clear that record and, if the retry failed,
+    // replace the known-good value with { isInvalid: true }.
+    if (
+      validatedBsbRef.current === text &&
+      (isOffline || bsbRecordRef.current)
+    ) {
       return
     }
 
