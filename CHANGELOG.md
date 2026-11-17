@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- auto save data still existing after submitting, saving a draft, cancelling or navigating away when an auto save was already in progress, or after submitting when a change was made at the same time (e.g. recaptchas being reset)
+- `autoSaveService.deleteAutoSaveData()` not deleting the last element updated, section state and elapsed duration saved alongside the submission
+
 ## [13.6.0] - 2026-11-17
 
 ### Added
@@ -15,11 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `paymentService.getCompletedPaymentReceiptUrl()` and `paymentService.getCancelledPaymentReceiptUrl()` for in-app payment receipt URLs.
 - `<ApprovalStepPaymentReceipt />` for approval step payment receipts.
 - `paymentService.getFailureDetailsFromFormSubmissionPayment()` for the stored failure message and each provider's response fields.
-
-### Fixed
-
-- auto save data still existing after submitting, saving a draft, cancelling or navigating away when an auto save was already in progress, or after submitting when a change was made at the same time (e.g. recaptchas being reset)
-- `autoSaveService.deleteAutoSaveData()` not deleting the last element updated, section state and elapsed duration saved alongside the submission
 
 ### Fixed
 
