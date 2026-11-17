@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - address and autocomplete elements running a lookup twice when an option is selected with the mouse and focus then leaves the field
 
+## [13.6.0] - 2026-11-17
+
 ### Added
 
 - `<SessionPaymentForm />` for an in-app payment form that takes a `PaymentFormSession`. `<PaymentForm />` renders it for form submission payments and still passes `paymentReceiptUrl` to `onCompleted` and `onCancelled`.
@@ -21,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - OneBlink US tenant locale returning `en-AU`
+
+### Dependencies
+
+- update @oneblink/sdk-core to [10.3.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md) (from [10.2.0-beta.1](https://github.com/oneblink/sdk-core-js/blob/master/CHANGELOG.md))
+
+- update @oneblink/storage to [9.0.2-beta.1](https://github.com/oneblink/storage/blob/master/CHANGELOG.md) (from [9.0.0-beta.4](https://github.com/oneblink/storage/blob/master/CHANGELOG.md))
 
 ## [13.5.0] - 2026-10-28
 
