@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `isHidden` and `hiddenFrom` on page elements to hide a page from submitters, approvers, or both
+
 ### Fixed
 
 - auto save data still existing after submitting, saving a draft, cancelling or navigating away when an auto save was already in progress, or after submitting when a change was made at the same time (e.g. recaptchas being reset)
@@ -14,10 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - address and autocomplete elements running a lookup twice when an option is selected with the mouse and focus then leaves the field
 
 ## [13.6.0] - 2026-11-17
-
-### Added
-
-- `isHidden` and `hiddenFrom` on page elements to hide a page from submitters, approvers, or both
 
 ### Added
 
