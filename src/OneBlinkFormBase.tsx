@@ -697,6 +697,7 @@ function OneBlinkFormBase({
 
   const {
     visiblePages,
+    renderedPages,
     isFirstVisiblePage,
     isLastVisiblePage,
     isDisplayingCurrentPageError,
@@ -717,6 +718,7 @@ function OneBlinkFormBase({
     formElementsValidation,
     formElementsConditionallyShown,
     scrollToTopOfPage,
+    audience,
   })
 
   // #endregion
@@ -1502,7 +1504,7 @@ function OneBlinkFormBase({
                       >
                         <div>
                           <div ref={scrollToTopOfPageHTMLElementRef} />
-                          {isShowingMultiplePages && (
+                          {isShowingMultiplePages && currentPage && (
                             <div
                               className={clsx('ob-steps-navigation', {
                                 'is-active': isStepsHeaderActive,
@@ -1664,7 +1666,7 @@ function OneBlinkFormBase({
                                                   <OnUploadAttachmentContext.Provider
                                                     value={onUploadAttachment}
                                                   >
-                                                    {visiblePages.map(
+                                                    {renderedPages.map(
                                                       (
                                                         pageElement: FormTypes.PageElement,
                                                       ) => (
@@ -1672,7 +1674,7 @@ function OneBlinkFormBase({
                                                           key={pageElement.id}
                                                           isActive={
                                                             pageElement.id ===
-                                                            currentPage.id
+                                                            currentPage?.id
                                                           }
                                                           formId={definition.id}
                                                           formElementsConditionallyShown={
@@ -1685,7 +1687,7 @@ function OneBlinkFormBase({
                                                             hasAttemptedSubmit ||
                                                             (isDisplayingCurrentPageError &&
                                                               pageElement.id ===
-                                                                currentPage.id)
+                                                                currentPage?.id)
                                                           }
                                                           pageElement={
                                                             pageElement
@@ -1716,7 +1718,7 @@ function OneBlinkFormBase({
                               </InjectPagesContext.Provider>
                             </div>
 
-                            {isShowingMultiplePages && (
+                            {isShowingMultiplePages && currentPage && (
                               <div className="steps-actions">
                                 <div className="steps-action">
                                   <button
@@ -2025,7 +2027,8 @@ function OneBlinkFormBase({
                           </React.Fragment>
                         )}
                       {shouldUseNavigableValidationErrorsNotification &&
-                        isShowingValidationErrorsCard && (
+                        isShowingValidationErrorsCard &&
+                        currentPage && (
                           <ValidationErrorsCard
                             visiblePages={visiblePages}
                             formElementsValidation={formElementsValidation}

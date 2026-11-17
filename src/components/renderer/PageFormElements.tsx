@@ -14,6 +14,8 @@ import {
 } from '../../types/form'
 import { IsPageVisibleProvider } from '../../hooks/useIsPageVisible'
 import { useMarkFormDirty } from '../../hooks/useFormIsDirty'
+import useFormAudience from '../../hooks/useFormAudience'
+import isElementHiddenForAudience from '../../services/isElementHiddenForAudience'
 
 export type Props = {
   formId: number
@@ -110,6 +112,12 @@ function PageFormElements({
   )
 
   const form = useFormDefinition()
+  const audience = useFormAudience()
+  const isHiddenFromAudience = isElementHiddenForAudience(
+    pageElement,
+    audience,
+  )
+  const isPageVisible = isActive && !isHiddenFromAudience
 
   const handleUpdateFormElements = React.useCallback<UpdateFormElementsHandler>(
     (updateFormElements) => {
@@ -150,14 +158,17 @@ function PageFormElements({
   )
 
   return (
-    <IsPageVisibleProvider isPageVisible={isActive}>
+    <IsPageVisibleProvider isPageVisible={isPageVisible}>
       <div>
         <div
           id={pageElement.id}
           key={pageElement.id}
-          className={clsx('ob-page step-content is-active cypress-page', {
-            'is-invisible': !isActive,
+          className={clsx('ob-page step-content cypress-page', {
+            'is-active': !isHiddenFromAudience,
+            'is-invisible': !isActive && !isHiddenFromAudience,
+            'is-hidden': isHiddenFromAudience,
           })}
+          hidden={isHiddenFromAudience}
           aria-label={pageElement.label}
           role="region"
           tabIndex={-1}
