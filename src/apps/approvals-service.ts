@@ -5,7 +5,7 @@ import {
   SubmissionEventTypes,
 } from '@oneblink/types'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
-import { isOffline } from './offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from './offline-service'
 import {
   deleteRequest,
   getRequest,
@@ -458,13 +458,10 @@ export async function updateFormSubmissionApproval(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -562,13 +559,10 @@ export async function reopenFormApprovalFlowInstance(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -660,13 +654,10 @@ export async function closeFormApprovalFlowInstance(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -729,13 +720,10 @@ export async function getFormApprovalFlows(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -923,13 +911,10 @@ export async function getFormApprovalUsernames(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -1017,13 +1002,10 @@ export async function createApprovalAdditionalNote({
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -1120,13 +1102,10 @@ export async function updateApprovalAdditionalNote({
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {
@@ -1211,13 +1190,10 @@ export async function deleteApprovalAdditionalNote({
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 401: {

@@ -7,7 +7,7 @@ import {
   getRequest,
   postRequest,
 } from './services/fetch'
-import { isOffline } from './offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from './offline-service'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 
 export interface TaskAvailability {
@@ -260,13 +260,10 @@ export async function completeTask({
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 403: {
@@ -331,13 +328,10 @@ export async function deleteCompletedTask(
 
     const error = err as HTTPError
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
     switch (error.status) {
       case 403: {

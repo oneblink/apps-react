@@ -9,6 +9,12 @@ import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import useAbnLookupAuthenticationGuid from '../hooks/useAbnLookupAuthenticationGuid'
+import useIsOffline from '../hooks/useIsOffline'
+import {
+  isOffline as isNavigatorOffline,
+  OFFLINE_ERROR_MESSAGE,
+} from '../apps/offline-service'
+import { OneBlinkAppsError } from '../apps'
 import { abnService } from '@oneblink/sdk-core'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
@@ -25,6 +31,15 @@ type Props = {
   autocompleteAttributes?: string
 } & IsDirtyProps
 
+function getAbnLookupError(err: unknown): Error {
+  if (isNavigatorOffline()) {
+    return new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+      isOffline: true,
+    })
+  }
+  return err as Error
+}
+
 function FormElementABN({
   id,
   element,
@@ -39,6 +54,7 @@ function FormElementABN({
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
   const abnLookupAuthenticationGuid = useAbnLookupAuthenticationGuid()
+  const isOffline = useIsOffline()
   const [label, setLabel] = React.useState(
     value ? abnService.getABNNumberFromABNRecord(value) || '' : '',
   )
@@ -60,6 +76,23 @@ function FormElementABN({
       ? abnService.getABNNumberFromABNRecord(value)
       : ''
     if (!isSearchStringValid || currentABNNumber === searchString) {
+      if (!isSearchStringValid) {
+        setState((current) =>
+          current.error instanceof OneBlinkAppsError && current.error.isOffline
+            ? { isLoading: false, error: null }
+            : current,
+        )
+      }
+      return
+    }
+
+    if (isOffline) {
+      setState({
+        isLoading: false,
+        error: new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+          isOffline: true,
+        }),
+      })
       return
     }
 
@@ -158,7 +191,7 @@ function FormElementABN({
         if (!abortController.signal.aborted) {
           setState({
             isLoading: false,
-            error: err as Error,
+            error: getAbnLookupError(err),
           })
         }
       }
@@ -169,7 +202,15 @@ function FormElementABN({
     return () => {
       abortController.abort()
     }
-  }, [abnLookupAuthenticationGuid, element, isFocused, label, onChange, value])
+  }, [
+    abnLookupAuthenticationGuid,
+    element,
+    isFocused,
+    isOffline,
+    label,
+    onChange,
+    value,
+  ])
 
   // Ensure the label is set if the value is set outside of this component
   React.useEffect(() => {

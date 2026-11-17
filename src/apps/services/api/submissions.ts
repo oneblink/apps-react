@@ -1,6 +1,6 @@
 import OneBlinkAppsError from '../errors/oneBlinkAppsError'
 import Sentry from '../../Sentry'
-import { isOffline } from '../../offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from '../../offline-service'
 import { getDeviceInformation } from '../getDeviceInformation'
 import { FormSubmission, ProgressListener } from '../../types/submissions'
 import { getUserToken } from '../user-token'
@@ -220,13 +220,10 @@ export async function downloadFormSubmission({
     Sentry.captureException(error)
 
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error instanceof Error ? error : undefined,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error instanceof Error ? error : undefined,
+        isOffline: true,
+      })
     }
 
     if (error instanceof OneBlinkStorageError) {

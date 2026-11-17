@@ -6,7 +6,12 @@ import LookupButton from '../components/renderer/LookupButton'
 import { FormTypes, MiscTypes } from '@oneblink/types'
 import FormElementLabelContainer from '../components/renderer/FormElementLabelContainer'
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
-import { formService } from '../apps'
+import { formService, OneBlinkAppsError } from '../apps'
+import useIsOffline from '../hooks/useIsOffline'
+import {
+  isOffline as isNavigatorOffline,
+  OFFLINE_ERROR_MESSAGE,
+} from '../apps/offline-service'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
@@ -40,7 +45,16 @@ function FormElementBSB({
   autocompleteAttributes,
 }: Props) {
   const ariaDescribedby = useElementAriaDescribedby(id, element)
+  const isOffline = useIsOffline()
   const [text, setText] = React.useState(typeof value === 'string' ? value : '')
+  // A BSB already stored on the submission, or returned by a successful lookup.
+  // Kept in a ref so a connectivity change can see it without starting another lookup.
+  const validatedBsbRef = React.useRef(
+    typeof value === 'string' ? value : undefined,
+  )
+  // Mirrors `bsbRecord` for the lookup effect. The effect must not list the
+  // record as a dependency: clearing it to start a lookup would abort that lookup.
+  const bsbRecordRef = React.useRef<MiscTypes.BSBRecord | null>(null)
   const [hasFocus, setHasFocus, removeFocus] = useBooleanState(false)
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
@@ -53,6 +67,13 @@ function FormElementBSB({
     errorMessage: null,
     bsbRecord: null,
   })
+
+  React.useEffect(() => {
+    bsbRecordRef.current = bsbRecord
+    if (bsbRecord?.bsb) {
+      validatedBsbRef.current = bsbRecord.bsb
+    }
+  }, [bsbRecord])
 
   React.useEffect(() => {
     if (bsbRecord) {
@@ -71,6 +92,29 @@ function FormElementBSB({
       setState({
         isLoading: false,
         errorMessage: null,
+        bsbRecord: null,
+      })
+      return
+    }
+
+    // This text was already accepted. Offline, leave a stored BSB alone.
+    // Online, leave it alone when its bank record is still showing — a
+    // reconnect would otherwise clear that record and, if the retry failed,
+    // replace the known-good value with { isInvalid: true }.
+    if (
+      validatedBsbRef.current === text &&
+      (isOffline || bsbRecordRef.current)
+    ) {
+      return
+    }
+
+    if (isOffline) {
+      onChange(element, {
+        value: { isInvalid: true, isValidating: false },
+      })
+      setState({
+        isLoading: false,
+        errorMessage: OFFLINE_ERROR_MESSAGE,
         bsbRecord: null,
       })
       return
@@ -103,12 +147,17 @@ function FormElementBSB({
       } catch (error) {
         console.warn('Error validating BSB number', error)
         if (!abortController.signal.aborted) {
+          const isOfflineError =
+            isNavigatorOffline() ||
+            (error instanceof OneBlinkAppsError && error.isOffline)
           onChange(element, {
             value: { isInvalid: true, isValidating: false },
           })
           setState({
             isLoading: false,
-            errorMessage: `The BSB number "${text}" does not exist`,
+            errorMessage: isOfflineError
+              ? OFFLINE_ERROR_MESSAGE
+              : `The BSB number "${text}" does not exist`,
             bsbRecord: null,
           })
         }
@@ -120,7 +169,7 @@ function FormElementBSB({
     return () => {
       abortController.abort()
     }
-  }, [formId, isValidFormat, text, onChange, element])
+  }, [formId, isOffline, isValidFormat, text, onChange, element])
 
   const { isLookingUp } = React.useContext(LookupNotificationContext)
   const isDisplayingValidationMessage =

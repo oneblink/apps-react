@@ -5,7 +5,7 @@ import {
 } from '@oneblink/types'
 import tenants from './tenants'
 import { HTTPError, getRequest, searchRequest } from './services/fetch'
-import { isOffline } from './offline-service'
+import { isOffline, OFFLINE_ERROR_MESSAGE } from './offline-service'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import Sentry from './Sentry'
 
@@ -127,13 +127,10 @@ export async function getFormSubmissionMetaList(
     const error = err as HTTPError
 
     if (isOffline()) {
-      throw new OneBlinkAppsError(
-        'You are currently offline, please connect to the internet and try again',
-        {
-          originalError: error,
-          isOffline: true,
-        },
-      )
+      throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
+        originalError: error,
+        isOffline: true,
+      })
     }
 
     switch (error.status) {
