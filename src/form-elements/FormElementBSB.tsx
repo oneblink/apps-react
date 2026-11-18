@@ -55,6 +55,9 @@ function FormElementBSB({
   // Mirrors `bsbRecord` for the lookup effect. The effect must not list the
   // record as a dependency: clearing it to start a lookup would abort that lookup.
   const bsbRecordRef = React.useRef<MiscTypes.BSBRecord | null>(null)
+  // Latest submission value, read by the lookup effect without re-running it
+  // when that effect itself writes a new value.
+  const valueRef = React.useRef(value)
   const [hasFocus, setHasFocus, removeFocus] = useBooleanState(false)
   const isValidFormat = /\d{3}-\d{3}/.test(text)
 
@@ -84,23 +87,41 @@ function FormElementBSB({
   }, [bsbRecord, element, onChange, value])
 
   React.useEffect(() => {
-    if (text === '') {
+    valueRef.current = value
+  }, [value])
+
+  React.useEffect(() => {
+    // Editing away from a validated BSB forgets that lookup. Typing the same
+    // number back is a new check, so offline it shows the offline message
+    // instead of keeping the previous result.
+    if (
+      validatedBsbRef.current !== undefined &&
+      validatedBsbRef.current !== text
+    ) {
+      validatedBsbRef.current = undefined
+    }
+
+    if (text === '' || !isValidFormat) {
+      setState((current) =>
+        !current.isLoading && !current.errorMessage && !current.bsbRecord
+          ? current
+          : {
+              isLoading: false,
+              errorMessage: null,
+              bsbRecord: null,
+            },
+      )
+      if (valueRef.current !== undefined) {
+        onChange(element, { value: undefined })
+      }
       return
     }
 
-    if (!isValidFormat) {
-      setState({
-        isLoading: false,
-        errorMessage: null,
-        bsbRecord: null,
-      })
-      return
-    }
-
-    // This text was already accepted. Offline, leave a stored BSB alone.
-    // Online, leave it alone when its bank record is still showing — a
-    // reconnect would otherwise clear that record and, if the retry failed,
-    // replace the known-good value with { isInvalid: true }.
+    // This text was already accepted and has not been edited since.
+    // Offline, leave a stored BSB alone. Online, leave it alone when its
+    // bank record is still showing — a reconnect would otherwise clear that
+    // record and, if the retry failed, replace the known-good value with
+    // { isInvalid: true }.
     if (
       validatedBsbRef.current === text &&
       (isOffline || bsbRecordRef.current)
