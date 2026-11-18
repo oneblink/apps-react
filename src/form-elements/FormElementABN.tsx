@@ -86,16 +86,6 @@ function FormElementABN({
       return
     }
 
-    if (isOffline) {
-      setState({
-        isLoading: false,
-        error: new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
-          isOffline: true,
-        }),
-      })
-      return
-    }
-
     setState({
       isLoading: true,
       error: null,
