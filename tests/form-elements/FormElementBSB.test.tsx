@@ -244,6 +244,44 @@ describe('FormElementBSB offline lookup', () => {
     expect(validationMessage(container)).toBeUndefined()
   })
 
+  test('shows an offline message when a validated BSB is edited and retyped', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValue(commonwealthBank)
+    const values: unknown[] = []
+
+    const container = await render({
+      onValue: (value) => {
+        values.push(value)
+      },
+    })
+    await enterBsb(container, '123-456')
+
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(values.at(-1)).toBe('123-456')
+
+    await goOffline()
+    await enterBsb(container, '123-45')
+
+    expect(container.textContent).not.toContain('CBA - Commonwealth Bank')
+    expect(validationMessage(container)).toBeUndefined()
+    expect(values.at(-1)).toBeUndefined()
+
+    await enterBsb(container, '123-456')
+
+    expect(getBSBRecord).toHaveBeenCalledTimes(1)
+    expect(validationMessage(container)).toBe(OFFLINE_ERROR_MESSAGE)
+    expect(container.textContent).not.toContain('CBA - Commonwealth Bank')
+    expect(values.at(-1)).toEqual({ isInvalid: true, isValidating: false })
+
+    await goOnline()
+
+    expect(getBSBRecord).toHaveBeenCalledTimes(2)
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(validationMessage(container)).toBeUndefined()
+    expect(values.at(-1)).toBe('123-456')
+  })
+
   test('looks up a BSB again after it is edited away from a validated value', async () => {
     const getBSBRecord = vi
       .spyOn(formService, 'getBSBRecord')
