@@ -150,22 +150,47 @@ function validationMessage(container: HTMLElement) {
   return container.querySelector('.cypress-validation-message')?.textContent
 }
 
+function offlineError() {
+  return new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, { isOffline: true })
+}
+
 describe('FormElementBSB offline lookup', () => {
-  test('shows an offline message instead of saying the BSB does not exist', async () => {
-    const getBSBRecord = vi.spyOn(formService, 'getBSBRecord')
+  test('shows a BSB record served from the cache while offline', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValue(commonwealthBank)
+    const values: unknown[] = []
+
+    const container = await render({
+      onValue: (value) => {
+        values.push(value)
+      },
+    })
+    await goOffline()
+    await enterBsb(container, '123-456')
+
+    expect(getBSBRecord).toHaveBeenCalledOnce()
+    expect(container.textContent).toContain('CBA - Commonwealth Bank')
+    expect(validationMessage(container)).toBeUndefined()
+    expect(values.at(-1)).toBe('123-456')
+  })
+
+  test('shows an offline message when an offline lookup is not cached', async () => {
+    const getBSBRecord = vi
+      .spyOn(formService, 'getBSBRecord')
+      .mockRejectedValue(offlineError())
 
     const container = await render()
     await goOffline()
     await enterBsb(container, '123-456')
 
+    expect(getBSBRecord).toHaveBeenCalledOnce()
     expect(validationMessage(container)).toBe(OFFLINE_ERROR_MESSAGE)
-    expect(getBSBRecord).not.toHaveBeenCalled()
+    expect(validationMessage(container)).not.toContain('does not exist')
   })
 
   test('shows an offline message when the lookup fails because the device is offline', async () => {
-    vi.spyOn(formService, 'getBSBRecord').mockRejectedValue(
-      new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, { isOffline: true }),
-    )
+    vi.spyOn(formService, 'getBSBRecord').mockRejectedValue(offlineError())
 
     const container = await render()
     await enterBsb(container, '123-456')
@@ -228,18 +253,19 @@ describe('FormElementBSB offline lookup', () => {
   test('looks up a BSB entered offline once connectivity returns', async () => {
     const getBSBRecord = vi
       .spyOn(formService, 'getBSBRecord')
+      .mockRejectedValueOnce(offlineError())
       .mockResolvedValue(commonwealthBank)
 
     const container = await render()
     await goOffline()
     await enterBsb(container, '123-456')
 
-    expect(getBSBRecord).not.toHaveBeenCalled()
+    expect(getBSBRecord).toHaveBeenCalledOnce()
     expect(validationMessage(container)).toBe(OFFLINE_ERROR_MESSAGE)
 
     await goOnline()
 
-    expect(getBSBRecord).toHaveBeenCalledOnce()
+    expect(getBSBRecord).toHaveBeenCalledTimes(2)
     expect(container.textContent).toContain('CBA - Commonwealth Bank')
     expect(validationMessage(container)).toBeUndefined()
   })
@@ -247,6 +273,8 @@ describe('FormElementBSB offline lookup', () => {
   test('shows an offline message when a validated BSB is edited and retyped', async () => {
     const getBSBRecord = vi
       .spyOn(formService, 'getBSBRecord')
+      .mockResolvedValueOnce(commonwealthBank)
+      .mockRejectedValueOnce(offlineError())
       .mockResolvedValue(commonwealthBank)
     const values: unknown[] = []
 
@@ -269,14 +297,14 @@ describe('FormElementBSB offline lookup', () => {
 
     await enterBsb(container, '123-456')
 
-    expect(getBSBRecord).toHaveBeenCalledTimes(1)
+    expect(getBSBRecord).toHaveBeenCalledTimes(2)
     expect(validationMessage(container)).toBe(OFFLINE_ERROR_MESSAGE)
     expect(container.textContent).not.toContain('CBA - Commonwealth Bank')
     expect(values.at(-1)).toEqual({ isInvalid: true, isValidating: false })
 
     await goOnline()
 
-    expect(getBSBRecord).toHaveBeenCalledTimes(2)
+    expect(getBSBRecord).toHaveBeenCalledTimes(3)
     expect(container.textContent).toContain('CBA - Commonwealth Bank')
     expect(validationMessage(container)).toBeUndefined()
     expect(values.at(-1)).toBe('123-456')

@@ -476,15 +476,15 @@ export async function getBSBRecord(
       abortSignal,
     )
   } catch (err) {
-    if (!abortSignal?.aborted) {
-      Sentry.captureException(err)
-    }
     const error = err as HTTPError
     if (isOffline()) {
       throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
         originalError: error,
         isOffline: true,
       })
+    }
+    if (!abortSignal?.aborted) {
+      Sentry.captureException(err)
     }
     switch (error.status) {
       case 401: {

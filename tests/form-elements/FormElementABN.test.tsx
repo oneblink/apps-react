@@ -59,7 +59,7 @@ function setOnLine(onLine: boolean) {
   })
 }
 
-async function render() {
+async function render(onChange = vi.fn()) {
   const container = document.body.appendChild(document.createElement('div'))
   const root = createRoot(container)
   await React.act(async () => {
@@ -70,7 +70,7 @@ async function render() {
           element={element}
           readOnly={false}
           value={undefined}
-          onChange={vi.fn()}
+          onChange={onChange}
           displayValidationMessage={false}
           validationMessage={undefined}
           isDirty={false}
@@ -109,19 +109,53 @@ function validationMessage(container: HTMLElement) {
   return container.querySelector('.cypress-validation-message')?.textContent
 }
 
+const abrResponse = `<ABRPayloadSearchResults>
+  <response>
+    <businessEntity202001>
+      <ABN>
+        <identifierValue>29114830723</identifierValue>
+        <isCurrentIndicator>Y</isCurrentIndicator>
+      </ABN>
+      <mainName>
+        <organisationName>Example Pty Ltd</organisationName>
+      </mainName>
+    </businessEntity202001>
+  </response>
+</ABRPayloadSearchResults>`
+
 describe('FormElementABN offline lookup', () => {
-  test('shows an offline message instead of a failed-to-fetch error', async () => {
-    const fetchMock = vi.fn()
+  test('uses an ABN record served from the cache while offline', async () => {
+    const fetchMock = vi.fn(async () => new Response(abrResponse))
+    vi.stubGlobal('fetch', fetchMock)
+    const onChange = vi.fn()
+
+    const container = await render(onChange)
+    await goOffline()
+    await enterAbn(container, '29114830723')
+
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(onChange).toHaveBeenCalledWith(element, {
+      value: expect.objectContaining({
+        ABN: expect.objectContaining({ identifierValue: '29114830723' }),
+      }),
+    })
+    expect(validationMessage(container)).toBeUndefined()
+  })
+
+  test('shows an offline message when an offline lookup is not cached', async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new TypeError('Failed to fetch')
+    })
     vi.stubGlobal('fetch', fetchMock)
 
     const container = await render()
     await goOffline()
     await enterAbn(container, '29114830723')
 
+    expect(fetchMock).toHaveBeenCalledOnce()
     expect(validationMessage(container)).toBe(
       'You are currently offline, please connect to the internet and try again',
     )
-    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   test('replaces a failed lookup with an offline message when connectivity drops', async () => {
@@ -142,7 +176,12 @@ describe('FormElementABN offline lookup', () => {
   })
 
   test('clears the offline message when the ABN is no longer complete', async () => {
-    vi.stubGlobal('fetch', vi.fn())
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('Failed to fetch')
+      }),
+    )
 
     const container = await render()
     await goOffline()
@@ -161,14 +200,17 @@ describe('FormElementABN offline lookup', () => {
     const container = await render()
     await goOffline()
     await enterAbn(container, '29114830723')
-    expect(fetchMock).not.toHaveBeenCalled()
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(validationMessage(container)).toBe(
+      'You are currently offline, please connect to the internet and try again',
+    )
 
     setOnLine(true)
     await React.act(async () => {
       window.dispatchEvent(new Event('online'))
     })
 
-    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(validationMessage(container)).toBe('ABR is unavailable')
   })
 })

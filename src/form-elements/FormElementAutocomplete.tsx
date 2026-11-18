@@ -177,12 +177,6 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
   const handleSearch = React.useCallback(
     async (search: string, abortSignal: AbortSignal) => {
       try {
-        if (isOffline || isNavigatorOffline()) {
-          throw new OneBlinkAppsError(OFFLINE_ERROR_MESSAGE, {
-            isOffline: true,
-          })
-        }
-
         const headers = await generateHeaders()
         const url = new URL(searchUrl)
         url.searchParams.append(searchQuerystringParameter, search)
@@ -207,6 +201,9 @@ const AutocompleteFetch = React.memo(function AutocompleteFetch({
         })
       }
     },
+    // `isOffline` gives a new callback on connectivity changes so the
+    // dropdown searches again when the device reconnects.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isOffline, searchQuerystringParameter, searchUrl],
   )
 

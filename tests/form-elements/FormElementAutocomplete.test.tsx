@@ -91,16 +91,34 @@ function searchError(container: HTMLElement) {
 }
 
 describe('FormElementAutocomplete offline search', () => {
-  test('shows an offline message instead of a failed-to-fetch error', async () => {
-    const fetchMock = vi.fn()
+  test('shows search results served from the cache while offline', async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(JSON.stringify([{ label: 'Abbey Road', value: 'abbey' }])),
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const container = await render()
     await goOffline()
     await search(container, 'ab')
 
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(searchError(container)).toBeUndefined()
+    expect(container.textContent).toContain('Abbey Road')
+  })
+
+  test('shows an offline message when an offline search is not cached', async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new TypeError('Failed to fetch')
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const container = await render()
+    await goOffline()
+    await search(container, 'ab')
+
+    expect(fetchMock).toHaveBeenCalledOnce()
     expect(searchError(container)).toBe(OFFLINE_ERROR_MESSAGE)
-    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   test('replaces a failed search with an offline message when connectivity drops', async () => {

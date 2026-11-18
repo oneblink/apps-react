@@ -8,10 +8,7 @@ import FormElementLabelContainer from '../components/renderer/FormElementLabelCo
 import { FormElementValueChangeHandler, IsDirtyProps } from '../types/form'
 import { formService, OneBlinkAppsError } from '../apps'
 import useIsOffline from '../hooks/useIsOffline'
-import {
-  isOffline as isNavigatorOffline,
-  OFFLINE_ERROR_MESSAGE,
-} from '../apps/offline-service'
+import { OFFLINE_ERROR_MESSAGE } from '../apps/offline-service'
 import { LookupNotificationContext } from '../hooks/useLookupNotification'
 import useElementAriaDescribedby from '../hooks/useElementAriaDescribedby'
 import FormElementValidationMessage from '../components/renderer/FormElementValidationMessage'
@@ -129,18 +126,6 @@ function FormElementBSB({
       return
     }
 
-    if (isOffline) {
-      onChange(element, {
-        value: { isInvalid: true, isValidating: false },
-      })
-      setState({
-        isLoading: false,
-        errorMessage: OFFLINE_ERROR_MESSAGE,
-        bsbRecord: null,
-      })
-      return
-    }
-
     setState({
       isLoading: true,
       errorMessage: null,
@@ -169,8 +154,7 @@ function FormElementBSB({
         console.warn('Error validating BSB number', error)
         if (!abortController.signal.aborted) {
           const isOfflineError =
-            isNavigatorOffline() ||
-            (error instanceof OneBlinkAppsError && error.isOffline)
+            error instanceof OneBlinkAppsError && error.isOffline
           onChange(element, {
             value: { isInvalid: true, isValidating: false },
           })
