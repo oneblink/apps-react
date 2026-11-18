@@ -171,7 +171,7 @@ function FormElementPointAddressV3({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-point-address-v3-details-error-message"
         />
       )}

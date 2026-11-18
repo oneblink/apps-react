@@ -155,7 +155,7 @@ function FormElementAPINSWLiquorLicence({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-api-nsw-liquor-licence-error-message"
         />
       )}

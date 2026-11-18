@@ -144,7 +144,7 @@ function FormElementGeoscapeAddress({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-geoscape-address-details-error-message"
         />
       )}

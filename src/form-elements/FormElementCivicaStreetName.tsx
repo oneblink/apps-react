@@ -111,7 +111,7 @@ function FormElementCivicaStreetName({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-civica-street-name-error-message"
         />
       )}
