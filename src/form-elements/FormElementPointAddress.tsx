@@ -156,7 +156,7 @@ function FormElementPointAddress({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-point-address-details-error-message"
         />
       )}

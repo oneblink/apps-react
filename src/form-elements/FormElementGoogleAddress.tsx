@@ -257,7 +257,7 @@ function FormElementGoogleAddress({
 
       {error && (
         <FormElementValidationMessage
-          message={error.toString()}
+          message={error.message}
           className="cypress-google-address-details-error-message"
         />
       )}
