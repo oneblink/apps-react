@@ -391,22 +391,6 @@ export async function createApprovalStepPayment(
 }
 
 /**
- * Skip the payment for an approval step and continue the approval flow.
- *
- * #### Example
- *
- * ```js
- * const formSubmissionApproval =
- *   await approvalsService.skipApprovalStepPayment(
- *     'd27966cc-128d-48a2-b681-6ad52012e113',
- *   )
- * ```
- *
- * @param formSubmissionApprovalId
- * @param abortSignal
- * @returns
- */
-/**
  * Email a recipient a link to review the submission and pay this approval step.
  *
  * #### Example
@@ -447,6 +431,22 @@ export async function requestApprovalStepPayment(
   )
 }
 
+/**
+ * Skip the payment for an approval step and continue the approval flow.
+ *
+ * #### Example
+ *
+ * ```js
+ * const formSubmissionApproval =
+ *   await approvalsService.skipApprovalStepPayment(
+ *     'd27966cc-128d-48a2-b681-6ad52012e113',
+ *   )
+ * ```
+ *
+ * @param formSubmissionApprovalId
+ * @param abortSignal
+ * @returns
+ */
 export async function skipApprovalStepPayment(
   formSubmissionApprovalId: string,
   abortSignal?: AbortSignal,
