@@ -15,7 +15,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">PendingSubmissionsContextValue</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#deletependingsubmission">deletePendingSubmission</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">pendingTimestamp</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#hidefailednotification">hideFailedNotification</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#hidesuccessnotification">hideSuccessNotification</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#isloading">isLoading</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#isprocessingpendingqueue">isProcessingPendingQueue</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#isshowingfailednotification">isShowingFailedNotification</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#isshowingsuccessnotification">isShowingSuccessNotification</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#loaderror">loadError</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#pendingsubmissions">pendingSubmissions</a><span class="tsd-signature-symbol">:</span> <a href="submissionService.PendingFormSubmission.html" class="tsd-signature-type tsd-kind-type-alias">PendingFormSubmission</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#processpendingqueue">processPendingQueue</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#reloadpendingsubmissions">reloadPendingSubmissions</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L8">src/hooks/usePendingSubmissions.tsx:8</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L8">src/hooks/usePendingSubmissions.tsx:8</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -44,14 +44,14 @@
 <div class="tsd-comment tsd-typography"><p>A function to remove a submission from the pending submissions</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L28">src/hooks/usePendingSubmissions.tsx:28</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L28">src/hooks/usePendingSubmissions.tsx:28</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="hidefailednotification"><span>hide<wbr/>Failed<wbr/>Notification</span><a href="#hidefailednotification" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">hideFailedNotification</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span></div>
 <div class="tsd-comment tsd-typography"><p>A function to hide the notification when a submission fails to process</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L32">src/hooks/usePendingSubmissions.tsx:32</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L32">src/hooks/usePendingSubmissions.tsx:32</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="hidesuccessnotification"><span>hide<wbr/>Success<wbr/>Notification</span><a href="#hidesuccessnotification" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">hideSuccessNotification</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span></div>
@@ -59,42 +59,42 @@
 successfully</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L39">src/hooks/usePendingSubmissions.tsx:39</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L39">src/hooks/usePendingSubmissions.tsx:39</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isloading"><span>is<wbr/>Loading</span><a href="#isloading" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">isLoading</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p><code>true</code> if the pending submissions are currently loading</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L10">src/hooks/usePendingSubmissions.tsx:10</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L10">src/hooks/usePendingSubmissions.tsx:10</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isprocessingpendingqueue"><span>is<wbr/>Processing<wbr/>Pending<wbr/>Queue</span><a href="#isprocessingpendingqueue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">isProcessingPendingQueue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p><code>true</code> submissions that where submitted offline are being processed</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L19">src/hooks/usePendingSubmissions.tsx:19</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L19">src/hooks/usePendingSubmissions.tsx:19</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isshowingfailednotification"><span>is<wbr/>Showing<wbr/>Failed<wbr/>Notification</span><a href="#isshowingfailednotification" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">isShowingFailedNotification</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p><code>true</code> if a submission being processed fails</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L30">src/hooks/usePendingSubmissions.tsx:30</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L30">src/hooks/usePendingSubmissions.tsx:30</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="isshowingsuccessnotification"><span>is<wbr/>Showing<wbr/>Success<wbr/>Notification</span><a href="#isshowingsuccessnotification" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">isShowingSuccessNotification</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 <div class="tsd-comment tsd-typography"><p><code>true</code> if a submission being processed completes successfully.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L34">src/hooks/usePendingSubmissions.tsx:34</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L34">src/hooks/usePendingSubmissions.tsx:34</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="loaderror"><span>load<wbr/>Error</span><a href="#loaderror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">loadError</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>An Error object if loading pending submissions fails</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L12">src/hooks/usePendingSubmissions.tsx:12</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L12">src/hooks/usePendingSubmissions.tsx:12</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pendingsubmissions"><span>pending<wbr/>Submissions</span><a href="#pendingsubmissions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pendingSubmissions</span><span class="tsd-signature-symbol">:</span> <a href="submissionService.PendingFormSubmission.html" class="tsd-signature-type tsd-kind-type-alias">PendingFormSubmission</a><span class="tsd-signature-symbol">[]</span></div>
@@ -102,14 +102,14 @@ successfully</p>
 online</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L17">src/hooks/usePendingSubmissions.tsx:17</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L17">src/hooks/usePendingSubmissions.tsx:17</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="processpendingqueue"><span>process<wbr/>Pending<wbr/>Queue</span><a href="#processpendingqueue" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">processPendingQueue</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span></div>
 <div class="tsd-comment tsd-typography"><p>A function to trigger processing of the pending queue</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L21">src/hooks/usePendingSubmissions.tsx:21</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L21">src/hooks/usePendingSubmissions.tsx:21</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="reloadpendingsubmissions"><span>reload<wbr/>Pending<wbr/>Submissions</span><a href="#reloadpendingsubmissions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">reloadPendingSubmissions</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">unknown</span></div>
@@ -117,7 +117,7 @@ online</p>
 offline</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/fd185dd94805015d8b8fc52e3f52ae820b64c1d1/src/hooks/usePendingSubmissions.tsx#L26">src/hooks/usePendingSubmissions.tsx:26</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/oneblink/apps-react/blob/a31dcf7742b44b51783c4e02339a1dda92dae59c/src/hooks/usePendingSubmissions.tsx#L26">src/hooks/usePendingSubmissions.tsx:26</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

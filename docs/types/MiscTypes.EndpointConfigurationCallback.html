@@ -46,7 +46,18 @@
 <div class="tsd-comment tsd-typography"><p>The identifier for the organisation managed secret that is associated
 with the endpoint. Should represent the secret string used for verifying
 the authenticity of the request made from the OneBlink system.</p>
-</div></li>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-agent">
+<h4 class="tsd-anchor-link" id="agent">Agent<a href="#agent" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>You may remove this property when the user asks to clear the
+secret. On a callback workflow event, do that with a workflow_event_patch
+that sets this property to null, and leave the URL unchanged. Do not set
+it to a new id. A callback workflow event cannot be saved from the
+Workflow tab without a secret, so tell the user they need to choose one
+before saving. On an email or PDF attachment endpoint this secret can
+stay removed: omit it from the endpoint, do not set it to null. Do not
+mention this property name to the user.</p>
+</div></div></li>
 <li class="tsd-parameter">
 <h5><span class="tsd-kind-property">url</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>URL that the request is made to.</p>
