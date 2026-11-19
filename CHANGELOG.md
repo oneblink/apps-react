@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.7.0] - 2026-11-19
+
 ### Added
 
 - `isHidden` and `hiddenFrom` on page elements to hide a page from submitters, approvers, or both
