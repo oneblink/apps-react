@@ -1,7 +1,11 @@
 import { paymentService } from '@oneblink/sdk-core'
 import OneBlinkAppsError from './services/errors/oneBlinkAppsError'
 import { createPaymentConfiguration } from './services/api/payment'
-import { SubmissionEventTypes, SubmissionTypes } from '@oneblink/types'
+import {
+  FormTypes,
+  SubmissionEventTypes,
+  SubmissionTypes,
+} from '@oneblink/types'
 import { FormSubmission, FormSubmissionResult } from './types/submissions'
 import {
   HandlePaymentResult,
@@ -34,9 +38,12 @@ import {
   retrieveFormSubmissionResult,
   rememberPaymentSubmissionResult,
 } from './services/payment-submission-result'
+import { HTTPError, postRequest } from './services/fetch'
+import tenants from './tenants'
 
 export { HandlePaymentResult, PaymentReceiptItem, westpacQuickStream }
 export { paymentProviderRendersInApp, getPaymentHandoff, getPaymentFormSession }
+export { rememberPaymentSubmissionResult }
 export type { InAppPaymentType, PaymentFormSession }
 
 /**
@@ -346,6 +353,196 @@ export function getDisplayDetailsFromFormSubmissionPayment(
     formSubmissionPayment,
     replaceSubmissionFormatters,
   )
+}
+
+const paymentRequestConflictMessages = {
+  PAYMENT_REQUEST_NOT_FOUND: 'This payment link is not valid.',
+  PAYMENT_REQUEST_ALREADY_PAID: 'This payment has already been completed.',
+  PAYMENT_REQUEST_SKIPPED:
+    'This payment was skipped, so there is nothing to pay.',
+  PAYMENT_REQUEST_DENIED: 'This payment was denied and can no longer be paid.',
+  PAYMENT_REQUEST_CLARIFICATION_REQUIRED:
+    'This submission was sent back for clarification, so this payment link can no longer be used.',
+  PAYMENT_REQUEST_SUBMISSION_REMOVED:
+    'The submission for this payment has been removed, so it can no longer be paid.',
+  PAYMENT_REQUEST_UNAVAILABLE: 'This payment request is no longer available.',
+  PAYMENT_IN_PROGRESS:
+    'A payment is already in progress for this step. Finish that payment before starting another.',
+} as const
+
+function paymentRequestConflictMessage(
+  conflict: string | undefined,
+): string | undefined {
+  switch (conflict) {
+    case 'PAYMENT_REQUEST_NOT_FOUND': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_NOT_FOUND
+    }
+    case 'PAYMENT_REQUEST_ALREADY_PAID': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_ALREADY_PAID
+    }
+    case 'PAYMENT_REQUEST_SKIPPED': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_SKIPPED
+    }
+    case 'PAYMENT_REQUEST_DENIED': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_DENIED
+    }
+    case 'PAYMENT_REQUEST_CLARIFICATION_REQUIRED': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_CLARIFICATION_REQUIRED
+    }
+    case 'PAYMENT_REQUEST_SUBMISSION_REMOVED': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_SUBMISSION_REMOVED
+    }
+    case 'PAYMENT_REQUEST_UNAVAILABLE': {
+      return paymentRequestConflictMessages.PAYMENT_REQUEST_UNAVAILABLE
+    }
+    case 'PAYMENT_IN_PROGRESS': {
+      return paymentRequestConflictMessages.PAYMENT_IN_PROGRESS
+    }
+    default: {
+      return undefined
+    }
+  }
+}
+
+function throwPaymentRequestError(error: unknown): never {
+  if (error instanceof OneBlinkAppsError) {
+    throw error
+  }
+  if (error instanceof HTTPError) {
+    throw new OneBlinkAppsError(
+      paymentRequestConflictMessage(error.conflict) ??
+        (error.status === 409
+          ? paymentRequestConflictMessages.PAYMENT_REQUEST_UNAVAILABLE
+          : error.message ||
+            paymentRequestConflictMessages.PAYMENT_REQUEST_UNAVAILABLE),
+      {
+        httpStatusCode: error.status,
+        conflict: error.conflict,
+      },
+    )
+  }
+  throw new OneBlinkAppsError(
+    error instanceof Error && error.message
+      ? error.message
+      : paymentRequestConflictMessages.PAYMENT_REQUEST_UNAVAILABLE,
+  )
+}
+
+/**
+ * Load the latest submission for a payment request. The token is the secret
+ * from the review link and is not stored by the client beyond this call. Throws
+ * an `OneBlinkAppsError` when the link can no longer be used.
+ */
+export async function reviewFormSubmissionPaymentRequest(
+  paymentRequestToken: string,
+  abortSignal?: AbortSignal,
+): Promise<{
+  form: FormTypes.Form
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  submissionId: string
+}> {
+  if (!paymentRequestToken) {
+    throw new OneBlinkAppsError(
+      paymentRequestConflictMessages.PAYMENT_REQUEST_NOT_FOUND,
+    )
+  }
+  try {
+    return await postRequest(
+      `${tenants.current.apiOrigin}/form-submission-payment-requests/review`,
+      { paymentRequestToken },
+      abortSignal,
+    )
+  } catch (error) {
+    throwPaymentRequestError(error)
+  }
+}
+
+/**
+ * Start checkout for a payment request and store the result for the receipt
+ * page. The hosted payment URL is built by the server from the submission's
+ * forms app.
+ *
+ * #### Example
+ *
+ * ```js
+ * const payment = await paymentService.startFormSubmissionPaymentRequest(
+ *   paymentRequestToken,
+ *   {
+ *     form,
+ *     submission,
+ *     submissionId: '89c6e98e-f56f-45fc-84fe-c4fc62331d34',
+ *     paymentReceiptUrl: `${window.location.origin}/payment-receipt`,
+ *     paymentFormUrl: `${window.location.origin}/payment-form`,
+ *   },
+ * )
+ * ```
+ *
+ * @param paymentRequestToken The secret from the review link.
+ * @param options
+ * @param options.form The form definition returned by the review.
+ * @param options.submission The submission returned by the review.
+ * @param options.submissionId The submission this payment belongs to.
+ * @param options.paymentReceiptUrl The URL the payment provider redirects to
+ *   when the payment finishes.
+ * @param options.paymentFormUrl The in-app payment page. Required for providers
+ *   that render their payment form in the app.
+ * @returns
+ * @throws {OneBlinkAppsError} When the payment request can no longer be paid.
+ */
+export async function startFormSubmissionPaymentRequest(
+  paymentRequestToken: string,
+  options: {
+    form: FormTypes.Form
+    submission: SubmissionTypes.S3SubmissionData['submission']
+    submissionId: string
+    paymentReceiptUrl: string
+    paymentFormUrl?: string
+  },
+): Promise<{
+  hostedFormUrl: string
+  amount: number
+  paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+  customerReferenceNumber?: string
+}> {
+  let result: {
+    hostedFormUrl: string
+    amount: number
+    paymentSubmissionEvent: SubmissionEventTypes.FormPaymentEvent
+    customerReferenceNumber?: string
+  }
+  try {
+    result = await postRequest(
+      `${tenants.current.apiOrigin}/form-submission-payment-requests/start`,
+      { paymentRequestToken },
+    )
+  } catch (error) {
+    throwPaymentRequestError(error)
+  }
+
+  await rememberPaymentSubmissionResult({
+    submission: options.submission,
+    // The post-submission receipt is written for the original submitter.
+    definition: {
+      ...options.form,
+      postSubmissionReceipt: undefined,
+    },
+    preFillFormDataId: null,
+    submissionId: options.submissionId,
+    submissionTimestamp: new Date().toISOString(),
+    payment: {
+      amount: result.amount,
+      paymentReceiptUrl: options.paymentReceiptUrl,
+      paymentFormUrl: options.paymentFormUrl,
+      hostedFormUrl: result.hostedFormUrl,
+      submissionEvent: result.paymentSubmissionEvent,
+    },
+    scheduling: null,
+    isInPendingQueue: false,
+    isOffline: false,
+    isUploadingAttachments: false,
+  })
+
+  return result
 }
 
 /**
