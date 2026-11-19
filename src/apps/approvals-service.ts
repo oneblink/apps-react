@@ -29,8 +29,8 @@ export type FormSubmissionApprovalsResponse = {
       | undefined
     /** True while this approval has a checkout that has not finished. */
     paymentInProgress?: boolean
-    /** True when a payment request has been sent for this step. */
-    paymentRequested?: boolean
+    /** Payment requests sent for this step, oldest first. */
+    paymentRequests?: SubmissionTypes.FormSubmissionPaymentRequest[]
   }>
 }
 
