@@ -29,6 +29,8 @@ export type FormSubmissionApprovalsResponse = {
       | undefined
     /** True while this approval has a checkout that has not finished. */
     paymentInProgress?: boolean
+    /** True when a payment request has been sent for this step. */
+    paymentRequested?: boolean
   }>
 }
 
@@ -39,6 +41,7 @@ export type FormApprovalFlowInstanceHistory = {
   formSubmissionApprovals: ApprovalTypes.FormSubmissionApproval[]
   successfulFormSubmissionPayment?: SubmissionTypes.FormSubmissionPayment
   approvalStepPayments?: SubmissionTypes.FormSubmissionPayment[]
+  paymentRequests?: SubmissionTypes.FormSubmissionPaymentRequest[]
 }
 
 export type FormSubmissionApprovalResponse = {
@@ -403,6 +406,47 @@ export async function createApprovalStepPayment(
  * @param abortSignal
  * @returns
  */
+/**
+ * Email a recipient a link to review the submission and pay this approval step.
+ *
+ * #### Example
+ *
+ * ```js
+ * const { paymentRequests } =
+ *   await approvalsService.requestApprovalStepPayment(
+ *     'd27966cc-128d-48a2-b681-6ad52012e113',
+ *     {
+ *       delivery: {
+ *         method: 'EMAIL',
+ *         email: 'payer@example.com',
+ *         name: 'Alex',
+ *       },
+ *     },
+ *   )
+ * ```
+ *
+ * @param formSubmissionApprovalId
+ * @param options
+ * @param options.delivery How to send the request. Only email is supported.
+ * @param abortSignal
+ * @returns The payment requests sent for this step. Tokens are not included.
+ */
+export async function requestApprovalStepPayment(
+  formSubmissionApprovalId: string,
+  options: {
+    delivery: SubmissionTypes.FormSubmissionPaymentRequestDelivery
+  },
+  abortSignal?: AbortSignal,
+): Promise<{
+  paymentRequests: SubmissionTypes.FormSubmissionPaymentRequest[]
+}> {
+  return await postRequest(
+    `${tenants.current.apiOrigin}/form-submission-approvals/${formSubmissionApprovalId}/payment-requests`,
+    options,
+    abortSignal,
+  )
+}
+
 export async function skipApprovalStepPayment(
   formSubmissionApprovalId: string,
   abortSignal?: AbortSignal,
