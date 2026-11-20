@@ -130,6 +130,7 @@ describe('payment request errors', () => {
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({
+          'Cache-Control': 'no-store',
           'x-oneblink-request-body': JSON.stringify({
             paymentRequestToken: 'token-1',
           }),

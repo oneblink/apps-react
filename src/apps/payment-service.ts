@@ -465,7 +465,9 @@ export async function reviewFormSubmissionPaymentRequest(
     // cannot change the HTTP method, and S3 rejects a POST. The payment token
     // travels in `x-oneblink-request-body`. The bearer token is forwarded so
     // the API can confirm a private form is being reviewed by its submitter.
+    // The URL is the same for every token, so the response must not be cached.
     const headers = await generateHeaders()
+    headers['Cache-Control'] = 'no-store'
     headers['x-oneblink-request-body'] = JSON.stringify({
       paymentRequestToken,
     })
