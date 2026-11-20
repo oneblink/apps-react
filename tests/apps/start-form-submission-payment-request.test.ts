@@ -109,6 +109,36 @@ describe('payment request errors', () => {
     expect(rememberPaymentSubmissionResult).not.toHaveBeenCalled()
   })
 
+  it('loads the submission with GET and the payment token header', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        form: { id: 1 },
+        submission: {},
+        submissionId: 'submission-1',
+      }),
+    }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await reviewFormSubmissionPaymentRequest('token-1')
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(
+        '/storage/form-submission-payment-requests/review',
+      ),
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Cache-Control': 'no-store',
+          'x-oneblink-request-body': JSON.stringify({
+            paymentRequestToken: 'token-1',
+          }),
+        }),
+      }),
+    )
+  })
+
   it('uses the unavailable message for an unknown conflict', async () => {
     vi.stubGlobal(
       'fetch',
@@ -130,6 +160,29 @@ describe('payment request errors', () => {
     expect(error).toMatchObject({
       message: 'This payment request is no longer available.',
       conflict: 'OTHER',
+    })
+  })
+
+  it('marks a 401 as requiring login', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 401,
+        json: async () => ({
+          message: 'You do not have access to this service',
+        }),
+      })),
+    )
+
+    const error = await reviewFormSubmissionPaymentRequest('token-1').catch(
+      (caught: unknown) => caught,
+    )
+
+    expect(error).toBeInstanceOf(OneBlinkAppsError)
+    expect(error).toMatchObject({
+      httpStatusCode: 401,
+      requiresLogin: true,
     })
   })
 
