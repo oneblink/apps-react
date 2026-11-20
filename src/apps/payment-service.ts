@@ -38,7 +38,12 @@ import {
   retrieveFormSubmissionResult,
   rememberPaymentSubmissionResult,
 } from './services/payment-submission-result'
-import { HTTPError, postRequest } from './services/fetch'
+import {
+  fetchJSON,
+  generateHeaders,
+  HTTPError,
+  postRequest,
+} from './services/fetch'
 import tenants from './tenants'
 
 export { HandlePaymentResult, PaymentReceiptItem, westpacQuickStream }
@@ -418,6 +423,7 @@ function throwPaymentRequestError(error: unknown): never {
       {
         httpStatusCode: error.status,
         conflict: error.conflict,
+        requiresLogin: error.status === 401,
       },
     )
   }
@@ -428,6 +434,15 @@ function throwPaymentRequestError(error: unknown): never {
   )
 }
 
+export type FormSubmissionPaymentReview = {
+  form: FormTypes.Form
+  submission: SubmissionTypes.S3SubmissionData['submission']
+  submissionId: string
+  task?: SubmissionTypes.S3SubmissionData['task']
+  taskGroup?: SubmissionTypes.S3SubmissionData['taskGroup']
+  taskGroupInstance?: SubmissionTypes.S3SubmissionData['taskGroupInstance']
+}
+
 /**
  * Load the latest submission for a payment request. The token is the secret
  * from the review link and is not stored by the client beyond this call. Throws
@@ -436,21 +451,31 @@ function throwPaymentRequestError(error: unknown): never {
 export async function reviewFormSubmissionPaymentRequest(
   paymentRequestToken: string,
   abortSignal?: AbortSignal,
-): Promise<{
-  form: FormTypes.Form
-  submission: SubmissionTypes.S3SubmissionData['submission']
-  submissionId: string
-}> {
+): Promise<FormSubmissionPaymentReview> {
   if (!paymentRequestToken) {
     throw new OneBlinkAppsError(
       paymentRequestConflictMessages.PAYMENT_REQUEST_NOT_FOUND,
     )
   }
   try {
-    return await postRequest(
-      `${tenants.current.apiOrigin}/form-submission-payment-requests/review`,
-      { paymentRequestToken },
-      abortSignal,
+    // Goes through `/storage` so that Lambda@Edge asks the API where the
+    // submission is stored. The submission itself is then read from S3 through
+    // the payment review Object Lambda, so it does not pass through the API or
+    // the load balancer. The viewer request is a GET because Lambda@Edge
+    // cannot change the HTTP method, and S3 rejects a POST. The payment token
+    // travels in `x-oneblink-request-body`. The bearer token is forwarded so
+    // the API can confirm a private form is being reviewed by its submitter.
+    const headers = await generateHeaders()
+    headers['x-oneblink-request-body'] = JSON.stringify({
+      paymentRequestToken,
+    })
+    return await fetchJSON<FormSubmissionPaymentReview>(
+      `${tenants.current.apiOrigin}/storage/form-submission-payment-requests/review`,
+      {
+        method: 'GET',
+        headers,
+        signal: abortSignal,
+      },
     )
   } catch (error) {
     throwPaymentRequestError(error)
