@@ -64,7 +64,9 @@ function PaymentReceipt({
           )
         }
         // The payer is not the submitter, so the payment has to be started
-        // using the payment request that the first attempt was made with
+        // using the payment request that the first attempt was made with. The
+        // server replaces a checkout that is still pending when a payment
+        // request is started, so unlike an approver there is nothing to opt in to
         const result = await paymentService.startFormSubmissionPaymentRequest(
           paymentRequestToken,
           {
