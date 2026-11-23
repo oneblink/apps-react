@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `approvalsService.requestApprovalStepPayment()`
 - `paymentService.reviewFormSubmissionPaymentRequest()`
 - `paymentService.startFormSubmissionPaymentRequest()`
+- `primaryActionLabel`, `onPrimaryActionClick`, `isPrimaryActionLoading` and `isPrimaryActionDisabled` on `<OneBlinkReadOnlyForm />` to render a button in place of the submit button on the last visible page
 
 ## [13.7.0] - 2026-11-19
 
