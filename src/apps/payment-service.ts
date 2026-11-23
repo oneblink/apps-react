@@ -38,6 +38,7 @@ import {
   retrieveFormSubmissionResult,
   rememberPaymentSubmissionResult,
 } from './services/payment-submission-result'
+import { rememberPaymentRequestToken } from './services/payment-request-token'
 import {
   fetchJSON,
   generateHeaders,
@@ -487,7 +488,9 @@ export async function reviewFormSubmissionPaymentRequest(
 /**
  * Start checkout for a payment request and store the result for the receipt
  * page. The hosted payment URL is built by the server from the submission's
- * forms app.
+ * forms app. The token is kept in session storage for the tab so that Try Again
+ * on `<PaymentReceipt />` can start another payment for the same payment
+ * request.
  *
  * #### Example
  *
@@ -568,6 +571,9 @@ export async function startFormSubmissionPaymentRequest(
     isOffline: false,
     isUploadingAttachments: false,
   })
+  // The payer is not the submitter, so `<PaymentReceipt />` needs the token to
+  // start another payment if this one fails
+  rememberPaymentRequestToken(options.submissionId, paymentRequestToken)
 
   return result
 }
