@@ -6,6 +6,7 @@ import {
 } from '../../src/apps/payment-service'
 import OneBlinkAppsError from '../../src/apps/services/errors/oneBlinkAppsError'
 import { rememberPaymentSubmissionResult } from '../../src/apps/services/payment-submission-result'
+import { getRememberedPaymentRequestToken } from '../../src/apps/services/payment-request-token'
 
 vi.mock('../../src/apps/services/payment-submission-result', () => ({
   rememberPaymentSubmissionResult: vi.fn(),
@@ -15,6 +16,7 @@ describe('startFormSubmissionPaymentRequest()', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.mocked(rememberPaymentSubmissionResult).mockClear()
+    sessionStorage.clear()
   })
 
   it('remembers the reviewed submission without the submitter receipt', async () => {
@@ -72,11 +74,40 @@ describe('startFormSubmissionPaymentRequest()', () => {
       paymentRequestToken: 'token-1',
     })
   })
+
+  it('remembers the token for the submission so the receipt can try again', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          hostedFormUrl: 'https://pay.example/checkout',
+          amount: 43,
+          paymentSubmissionEvent: {
+            type: 'BPOINT',
+            configuration: { environmentId: 'env' },
+          },
+        }),
+      })),
+    )
+
+    await startFormSubmissionPaymentRequest('token-1', {
+      form: { id: 1 } as FormTypes.Form,
+      submission: {},
+      submissionId: 'submission-1',
+      paymentReceiptUrl: 'https://forms.example/payment-receipt',
+    })
+
+    expect(getRememberedPaymentRequestToken('submission-1')).toBe('token-1')
+    expect(getRememberedPaymentRequestToken('submission-2')).toBeUndefined()
+  })
 })
 
 describe('payment request errors', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    sessionStorage.clear()
   })
 
   it('throws a friendly OneBlinkAppsError for a known conflict', async () => {
@@ -107,6 +138,7 @@ describe('payment request errors', () => {
       conflict: 'PAYMENT_REQUEST_ALREADY_PAID',
     })
     expect(rememberPaymentSubmissionResult).not.toHaveBeenCalled()
+    expect(getRememberedPaymentRequestToken('submission-1')).toBeUndefined()
   })
 
   it('loads the submission with GET and the payment token header', async () => {

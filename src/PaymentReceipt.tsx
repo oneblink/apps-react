@@ -1,7 +1,11 @@
 import * as React from 'react'
 import { useHistory } from 'react-router-dom'
-import { paymentService, submissionService } from './apps'
+import { OneBlinkAppsError, paymentService, submissionService } from './apps'
 import SessionPaymentReceipt from './components/payments/SessionPaymentReceipt'
+import {
+  forgetPaymentRequestToken,
+  getRememberedPaymentRequestToken,
+} from './apps/services/payment-request-token'
 
 const { handlePaymentSubmissionEvent } = paymentService
 
@@ -30,6 +34,7 @@ function PaymentReceipt({
 
   const handleDone = React.useCallback(
     async (submissionResult: submissionService.FormSubmissionResult) => {
+      forgetPaymentRequestToken(submissionResult.submissionId)
       await onDone({ ...submissionResult, payment: null })
     },
     [onDone],
@@ -37,6 +42,7 @@ function PaymentReceipt({
 
   const handleCancel = React.useCallback(
     async (submissionResult: submissionService.FormSubmissionResult) => {
+      forgetPaymentRequestToken(submissionResult.submissionId)
       await onCancel({ ...submissionResult, payment: null })
     },
     [onCancel],
@@ -45,6 +51,39 @@ function PaymentReceipt({
   const handleTryAgain = React.useCallback(
     async (submissionResult: submissionService.FormSubmissionResult) => {
       if (!submissionResult.payment) {
+        return
+      }
+
+      const paymentRequestToken = getRememberedPaymentRequestToken(
+        submissionResult.submissionId,
+      )
+      if (paymentRequestToken) {
+        if (!submissionResult.submissionId) {
+          throw new OneBlinkAppsError(
+            'It looks like you are attempting to make a payment for an unknown submission.',
+          )
+        }
+        // The payer is not the submitter, so the payment has to be started
+        // using the payment request that the first attempt was made with
+        const result = await paymentService.startFormSubmissionPaymentRequest(
+          paymentRequestToken,
+          {
+            form: submissionResult.definition,
+            submission: submissionResult.submission,
+            submissionId: submissionResult.submissionId,
+            paymentReceiptUrl: submissionResult.payment.paymentReceiptUrl,
+            paymentFormUrl: submissionResult.payment.paymentFormUrl,
+          },
+        )
+        window.location.assign(
+          paymentService.getPaymentHandoff({
+            hostedFormUrl: result.hostedFormUrl,
+            paymentSubmissionEvent: result.paymentSubmissionEvent,
+            formId: submissionResult.definition.id,
+            amount: result.amount,
+            customerReferenceNumber: result.customerReferenceNumber,
+          }),
+        )
         return
       }
 
@@ -83,6 +122,10 @@ function PaymentReceipt({
  * Component for rendering a OneBlink Form Payment Receipt. This component will
  * payment receipt but it is up to the developer to implement what happens when
  * the user clicks 'Done'.
+ *
+ * 'Try Again' starts another payment for the payment request when the payment
+ * was started with `paymentService.startFormSubmissionPaymentRequest()` in the
+ * same browser tab.
  *
  * It is also recommended to import the `css` from this library as well.
  *
