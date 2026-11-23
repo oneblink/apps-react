@@ -175,7 +175,30 @@ type OneBlinkFormDisplayProps = {
   audience: FormTypes.FormElementHiddenFromAudience
 }
 
+type OneBlinkReadOnlyFormPrimaryActionProps =
+  | {
+      /**
+       * Renders a button on the last visible page in the position the submit
+       * button would be, such as a button to continue to payment. Requires
+       * `onPrimaryActionClick`. The `buttons` styling does not apply.
+       */
+      primaryActionLabel: string
+      /** Called when the primary action button is clicked. */
+      onPrimaryActionClick: () => unknown
+      /** Show the primary action button as loading and prevent it being clicked. */
+      isPrimaryActionLoading?: boolean
+      /** Prevent the primary action button from being clicked. */
+      isPrimaryActionDisabled?: boolean
+    }
+  | {
+      primaryActionLabel?: never
+      onPrimaryActionClick?: never
+      isPrimaryActionLoading?: never
+      isPrimaryActionDisabled?: never
+    }
+
 export type OneBlinkReadOnlyFormProps = OneBlinkFormDisplayProps &
+  OneBlinkReadOnlyFormPrimaryActionProps &
   (
     | (OneBlinkFormControlledProps & {
         /**
@@ -328,6 +351,10 @@ export type OneBlinkFormControlledProps = {
 type Props = OneBlinkFormBaseProps &
   OneBlinkFormControlledProps & {
     isReadOnly: boolean
+    primaryActionLabel?: string
+    onPrimaryActionClick?: () => unknown
+    isPrimaryActionLoading?: boolean
+    isPrimaryActionDisabled?: boolean
   }
 
 function OneBlinkFormBase({
@@ -339,6 +366,10 @@ function OneBlinkFormBase({
   isPreview,
   submission,
   isReadOnly,
+  primaryActionLabel,
+  onPrimaryActionClick,
+  isPrimaryActionLoading,
+  isPrimaryActionDisabled,
   onCancel,
   onSubmit,
   onSaveDraft,
@@ -1845,6 +1876,28 @@ function OneBlinkFormBase({
                               )}
                             </div>
                           )}
+                          {isReadOnly &&
+                            primaryActionLabel &&
+                            onPrimaryActionClick &&
+                            isLastVisiblePage && (
+                              <div className="buttons ob-buttons ob-buttons-submit">
+                                <span className="ob-buttons-submit__spacer"></span>
+                                <button
+                                  type="button"
+                                  className={clsx(
+                                    'button ob-button is-primary ob-button-primary-action cypress-primary-action-button',
+                                    { 'is-loading': isPrimaryActionLoading },
+                                  )}
+                                  disabled={
+                                    isPrimaryActionDisabled ||
+                                    isPrimaryActionLoading
+                                  }
+                                  onClick={() => onPrimaryActionClick()}
+                                >
+                                  {primaryActionLabel}
+                                </button>
+                              </div>
+                            )}
                         </div>
                       </form>
 
