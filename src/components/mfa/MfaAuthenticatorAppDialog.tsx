@@ -15,6 +15,7 @@ import {
 import { mfaService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
 import useMfa from '../../hooks/useMfa'
+import useNullableState from '../../hooks/useNullableState'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import InputField from '../InputField'
 
@@ -40,6 +41,9 @@ function MfaAuthenticatorAppDialog() {
   }, [authenticatorAppDisplayName, mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
+  const [saveError, setSaveError, clearSaveError] =
+    useNullableState<Error>(null)
+
   const handleSubmit = React.useCallback(
     async (event: React.SubmitEvent<HTMLFormElement>) => {
       event.preventDefault()
@@ -49,18 +53,23 @@ function MfaAuthenticatorAppDialog() {
       }
 
       startSaving()
+      clearSaveError()
       try {
         await mfaAuthenticatorAppSetup.mfaCodeCallback(code)
         await completeMfaAuthenticatorAppSetup()
+      } catch (error) {
+        setSaveError(error as Error)
       } finally {
         stopSaving()
       }
     },
     [
+      clearSaveError,
       code,
       completeMfaAuthenticatorAppSetup,
       isSaving,
       mfaAuthenticatorAppSetup,
+      setSaveError,
       startSaving,
       stopSaving,
     ],
@@ -71,6 +80,7 @@ function MfaAuthenticatorAppDialog() {
       <Dialog
         open={!!mfaAuthenticatorAppSetup}
         onClose={cancelMfaAuthenticatorAppSetup}
+        slotProps={{ transition: { onEntering: clearSaveError } }}
         title="Complete MFA Setup"
       >
         <form onSubmit={handleSubmit}>
@@ -196,7 +206,10 @@ function MfaAuthenticatorAppDialog() {
               onChange={(event) => {
                 const newValue = event.target.value
                 setState(() => newValue)
+                clearSaveError()
               }}
+              error={!!saveError}
+              helperText={saveError?.message}
               disabled={isSaving}
               data-cypress="mfa-authenticator-app-code"
             />
