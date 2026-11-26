@@ -36,6 +36,70 @@ describe('Utility Functions', () => {
   })
 })
 
+describe('datetime', () => {
+  const formatDate = (date: Date) => date.toISOString()
+
+  it('accepts a date-only value and an ISO datetime', () => {
+    expect(
+      validators.datetime('2027-10-01', {
+        dateOnly: true,
+        format: formatDate,
+        earliest: '2027-01-01',
+        latest: '2027-12-31',
+      }),
+    ).toEqual([])
+    expect(
+      validators.datetime('2026-03-31T13:00:00.000Z', {
+        format: formatDate,
+      }),
+    ).toEqual([])
+  })
+
+  it('rejects date strings that are not yyyy-MM-dd', () => {
+    for (const value of [
+      '28-06-04',
+      '03/11/2026',
+      'NOW',
+      '2026-11-3',
+      '2024-02-31',
+    ]) {
+      expect(
+        validators.datetime(value, {
+          dateOnly: true,
+          format: formatDate,
+          notValid: 'Please select a valid date',
+        }),
+      ).toEqual(['Please select a valid date'])
+    }
+  })
+
+  it('rejects a datetime that is not a full ISO timestamp', () => {
+    expect(
+      validators.datetime('28-06-04', {
+        format: formatDate,
+        notValid: 'Please select a valid date and time',
+      }),
+    ).toEqual(['Please select a valid date and time'])
+    expect(
+      validators.datetime('2024-04-08T12:00:00Z', {
+        format: formatDate,
+        notValid: 'Please select a valid date and time',
+      }),
+    ).toEqual(['Please select a valid date and time'])
+  })
+
+  it('still reports a date that is outside the allowed range', () => {
+    expect(
+      validators.datetime('2020-01-01', {
+        dateOnly: true,
+        format: formatDate,
+        earliest: '2020-06-01',
+        tooEarly: 'Date cannot be before %{date}',
+      }).length,
+    ).toBe(1)
+  })
+})
+
 describe('Validators', () => {
   describe('presence', () => {
     it('should return an error for null or undefined values when allowEmpty is not explicitly set', () => {

@@ -390,6 +390,10 @@ export default function validateSubmission({
               formElement,
               'Please select a time',
             ),
+            ...validators.datetime(value, {
+              format: (date: Date) => localisationService.formatTime(date),
+              notValid: 'Please select a valid time',
+            }),
             ...validationExtensions.lookups({
               formElement,
               executedLookups,
