@@ -40,6 +40,13 @@ function MfaAuthenticatorAppDialog() {
   }, [authenticatorAppDisplayName, mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
+  const [saveError, setSaveError] = React.useState<Error | undefined>()
+
+  const handleCancel = React.useCallback(() => {
+    setSaveError(undefined)
+    cancelMfaAuthenticatorAppSetup()
+  }, [cancelMfaAuthenticatorAppSetup])
+
   const handleSubmit = React.useCallback(
     async (event: React.SubmitEvent<HTMLFormElement>) => {
       event.preventDefault()
@@ -49,9 +56,12 @@ function MfaAuthenticatorAppDialog() {
       }
 
       startSaving()
+      setSaveError(undefined)
       try {
         await mfaAuthenticatorAppSetup.mfaCodeCallback(code)
         await completeMfaAuthenticatorAppSetup()
+      } catch (error) {
+        setSaveError(error as Error)
       } finally {
         stopSaving()
       }
@@ -70,7 +80,7 @@ function MfaAuthenticatorAppDialog() {
     <React.Fragment>
       <Dialog
         open={!!mfaAuthenticatorAppSetup}
-        onClose={cancelMfaAuthenticatorAppSetup}
+        onClose={handleCancel}
         title="Complete MFA Setup"
       >
         <form onSubmit={handleSubmit}>
@@ -196,7 +206,10 @@ function MfaAuthenticatorAppDialog() {
               onChange={(event) => {
                 const newValue = event.target.value
                 setState(() => newValue)
+                setSaveError(undefined)
               }}
+              error={!!saveError}
+              helperText={saveError?.message}
               disabled={isSaving}
               data-cypress="mfa-authenticator-app-code"
             />
@@ -204,7 +217,7 @@ function MfaAuthenticatorAppDialog() {
           <DialogActions>
             <Button
               type="button"
-              onClick={cancelMfaAuthenticatorAppSetup}
+              onClick={handleCancel}
               disabled={isSaving}
             >
               Cancel

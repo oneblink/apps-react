@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `paymentService.startFormSubmissionPaymentRequest()`
 - `primaryActionLabel`, `onPrimaryActionClick`, `isPrimaryActionLoading` and `isPrimaryActionDisabled` on `<OneBlinkReadOnlyForm />` to render a button in place of the submit button on the last visible page
 
+### Fixed
+
+- `<MfaAuthenticatorAppDialog />` not displaying an error when an incorrect code is entered while setting up an authenticator app
+
 ## [13.7.0] - 2026-11-19
 
 ### Added
