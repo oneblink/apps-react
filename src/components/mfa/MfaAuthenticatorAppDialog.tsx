@@ -15,6 +15,7 @@ import {
 import { mfaService } from '../../apps'
 import useBooleanState from '../../hooks/useBooleanState'
 import useMfa from '../../hooks/useMfa'
+import useNullableState from '../../hooks/useNullableState'
 import { CopyToClipBoardIconButton } from '../CopyToClipboardIconButton'
 import InputField from '../InputField'
 
@@ -40,12 +41,8 @@ function MfaAuthenticatorAppDialog() {
   }, [authenticatorAppDisplayName, mfaAuthenticatorAppSetup])
 
   const [isSaving, startSaving, stopSaving] = useBooleanState(false)
-  const [saveError, setSaveError] = React.useState<Error | undefined>()
-
-  const handleCancel = React.useCallback(() => {
-    setSaveError(undefined)
-    cancelMfaAuthenticatorAppSetup()
-  }, [cancelMfaAuthenticatorAppSetup])
+  const [saveError, setSaveError, clearSaveError] =
+    useNullableState<Error>(null)
 
   const handleSubmit = React.useCallback(
     async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -56,7 +53,7 @@ function MfaAuthenticatorAppDialog() {
       }
 
       startSaving()
-      setSaveError(undefined)
+      clearSaveError()
       try {
         await mfaAuthenticatorAppSetup.mfaCodeCallback(code)
         await completeMfaAuthenticatorAppSetup()
@@ -67,10 +64,12 @@ function MfaAuthenticatorAppDialog() {
       }
     },
     [
+      clearSaveError,
       code,
       completeMfaAuthenticatorAppSetup,
       isSaving,
       mfaAuthenticatorAppSetup,
+      setSaveError,
       startSaving,
       stopSaving,
     ],
@@ -80,7 +79,8 @@ function MfaAuthenticatorAppDialog() {
     <React.Fragment>
       <Dialog
         open={!!mfaAuthenticatorAppSetup}
-        onClose={handleCancel}
+        onClose={cancelMfaAuthenticatorAppSetup}
+        slotProps={{ transition: { onEntering: clearSaveError } }}
         title="Complete MFA Setup"
       >
         <form onSubmit={handleSubmit}>
@@ -206,7 +206,7 @@ function MfaAuthenticatorAppDialog() {
               onChange={(event) => {
                 const newValue = event.target.value
                 setState(() => newValue)
-                setSaveError(undefined)
+                clearSaveError()
               }}
               error={!!saveError}
               helperText={saveError?.message}
@@ -217,7 +217,7 @@ function MfaAuthenticatorAppDialog() {
           <DialogActions>
             <Button
               type="button"
-              onClick={handleCancel}
+              onClick={cancelMfaAuthenticatorAppSetup}
               disabled={isSaving}
             >
               Cancel
