@@ -15,6 +15,7 @@ import {
 import BPOINTPaymentProvider from './services/payment-providers/BPOINTPaymentProvider'
 import CPPayPaymentProvider from './services/payment-providers/CPPayPaymentProvider'
 import NSWGovPayPaymentProvider from './services/payment-providers/NSWGovPayPaymentProvider'
+import StripePaymentProvider from './services/payment-providers/StripePaymentProvider'
 import WestpacQuickStreamPaymentProvider, * as westpacQuickStream from './services/payment-providers/WestpacQuickStreamPaymentProvider'
 import {
   addDaysToDate,
@@ -135,6 +136,12 @@ function getPaymentProvider(
     }
     case 'WESTPAC_QUICK_STREAM': {
       return new WestpacQuickStreamPaymentProvider(
+        paymentSubmissionEvent,
+        formSubmissionResult,
+      )
+    }
+    case 'STRIPE': {
+      return new StripePaymentProvider(
         paymentSubmissionEvent,
         formSubmissionResult,
       )

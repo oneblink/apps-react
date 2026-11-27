@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for Stripe payment events in `paymentService` and `<PaymentReceipt />`
 - `approvalsService.requestApprovalStepPayment()`
 - `paymentService.reviewFormSubmissionPaymentRequest()`
 - `paymentService.startFormSubmissionPaymentRequest()`
